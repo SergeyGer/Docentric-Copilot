@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PurchaseOrderDocument>
+  <MainData>
+    <PurchaseOrder>
+      <OrderId>PO-2026-1188</OrderId>
+      <OrderDate>2026-01-20</OrderDate>
+      <CurrencyCode>EUR</CurrencyCode>
+      <Vendor>
+        <AccountNum>V-0042</AccountNum>
+        <Name>Northwind Supplies Ltd</Name>
+        <Address>1 Harbour Road, Bristol, United Kingdom</Address>
+        <ContactEmail>orders@northwind-supplies.example</ContactEmail>
+      </Vendor>
+      <DeliveryTerms>DAP Berlin</DeliveryTerms>
+      <TotalAmount>2640.00</TotalAmount>
+    </PurchaseOrder>
+    <PurchaseOrderLines>
+      <Line>
+        <ItemId>PD-300</ItemId>
+        <Description>Office Chair Ergonomic</Description>
+        <Quantity>12</Quantity>
+        <UnitPrice>180.00</UnitPrice>
+        <LineAmount>2160.00</LineAmount>
+      </Line>
+      <Line>
+        <ItemId>PD-310</ItemId>
+        <Description>Monitor Stand</Description>
+        <Quantity>8</Quantity>
+        <UnitPrice>60.00</UnitPrice>
+        <LineAmount>480.00</LineAmount>
+      </Line>
+    </PurchaseOrderLines>
+  </MainData>
+  <GeneralData>
+    <Company>
+      <Name>Contoso Consulting AG</Name>
+      <CompanyLogo>iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAIAAACr/W2wAAABCUlEQVR42u3SUQmAQBQFURvYwzwGsJwl/dEMwoLucIZb4D3OckuhFi8Q0BLQEtAS0AJaAlqaBvS67d/uOK+x+/wiG7j5QJNtTdBkWxM02dYETbY1QZMNdBM02UA3QZMNdBM02UA3QZMNdBM02UDHRzbQZJMNNNkGNNkGNNlAA0020GSTDTTZZANNtgFNNtBAkw20kQ002WQDTTbZQJMNNNBkA21kA21kA0022UCTHZQNNNkp2UCTnZINNNkp2UCTnZINNNkp2UCTnZINNNkp2UBbSjbQlpINtKVkA20p2UBbSjbQlpINtKVkA20p2UBbSjbQlpL9GrQ0Y0ALaAloCWgJaAEtAS39rgczpEIN2sZpYwAAAABJRU5ErkJggg==</CompanyLogo>
+    </Company>
+  </GeneralData>
+</PurchaseOrderDocument>

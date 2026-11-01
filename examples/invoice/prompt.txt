@@ -1,0 +1,1 @@
+Create a tax invoice with the company logo, bill-to customer, invoice number and dates, a table of services with amounts, net, tax and gross totals, bank details in the footer and a reverse-charge note when the customer is in the EU and the invoice uses reverse charge.

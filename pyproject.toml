@@ -1,0 +1,137 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docentric-copilot"
+version = "0.1.0"
+description = "Schema-aware AI prompt-to-template engine for enterprise document automation"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Docentric Copilot contributors" }]
+keywords = ["docentric", "docx", "ooxml", "llm", "document-automation", "template-engineering"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Office/Business :: Office Suites",
+  "Topic :: Text Processing :: Markup :: XML",
+]
+dependencies = [
+  "fastapi>=0.115,<0.116",
+  "uvicorn[standard]>=0.32,<0.35",
+  "pydantic>=2.9,<3",
+  "lxml>=5.3,<7",
+  "python-docx>=1.1.2,<2",
+  "httpx>=0.27,<0.29",
+  "jinja2>=3.1,<4",
+  "typer>=0.15,<0.16",
+  "python-multipart>=0.0.12,<0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "pytest-timeout>=2.3,<3",
+  "ruff>=0.8,<0.9",
+  "mypy>=1.13,<2",
+  "playwright>=1.49,<2",
+  "anyio>=4.6,<5",
+]
+
+[project.scripts]
+docentric-copilot = "docentric_copilot.cli.main:app"
+
+[project.urls]
+Homepage = "https://github.com/SergeyGer/Docentric-Copilot"
+Documentation = "https://github.com/SergeyGer/Docentric-Copilot/tree/main/docs"
+Issues = "https://github.com/SergeyGer/Docentric-Copilot/issues"
+
+[tool.setuptools]
+# One distribution, several source roots. Each SOW package directory owns exactly
+# one subpackage of the `docentric_copilot` namespace; see docs/ARCHITECTURE.md.
+packages = [
+  "docentric_copilot",
+  "docentric_copilot.ddsp_parser",
+  "docentric_copilot.schema_resolver",
+  "docentric_copilot.template_ir",
+  "docentric_copilot.template_validator",
+  "docentric_copilot.docx_compiler",
+  "docentric_copilot.llm",
+  "docentric_copilot.planner",
+  "docentric_copilot.preview",
+  "docentric_copilot.evaluation",
+  "docentric_copilot.app",
+  "docentric_copilot.api",
+  "docentric_copilot.api.routes",
+  "docentric_copilot.cli",
+  "docentric_copilot.storage",
+]
+
+[tool.setuptools.package-dir]
+docentric_copilot = "packages/core/src/docentric_copilot"
+"docentric_copilot.ddsp_parser" = "packages/ddsp-parser/src/docentric_copilot/ddsp_parser"
+"docentric_copilot.schema_resolver" = "packages/schema-resolver/src/docentric_copilot/schema_resolver"
+"docentric_copilot.template_ir" = "packages/template-ir/src/docentric_copilot/template_ir"
+"docentric_copilot.template_validator" = "packages/template-validator/src/docentric_copilot/template_validator"
+"docentric_copilot.docx_compiler" = "packages/docx-compiler/src/docentric_copilot/docx_compiler"
+"docentric_copilot.llm" = "packages/llm-gateway/src/docentric_copilot/llm"
+"docentric_copilot.planner" = "packages/planner/src/docentric_copilot/planner"
+"docentric_copilot.preview" = "packages/renderer/src/docentric_copilot/preview"
+"docentric_copilot.evaluation" = "packages/evaluation/src/docentric_copilot/evaluation"
+"docentric_copilot.app" = "services/api/src/docentric_copilot/app"
+"docentric_copilot.api" = "services/api/src/docentric_copilot/api"
+"docentric_copilot.api.routes" = "services/api/src/docentric_copilot/api/routes"
+"docentric_copilot.cli" = "services/api/src/docentric_copilot/cli"
+"docentric_copilot.storage" = "services/api/src/docentric_copilot/storage"
+
+[tool.setuptools.package-data]
+"docentric_copilot.preview" = ["templates/*.html.j2"]
+"docentric_copilot.template_validator" = ["templates/*.html.j2"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+  "slow: long-running benchmarks",
+  "e2e: browser end-to-end tests",
+  "network: tests that would require real network access (always skipped)",
+]
+filterwarnings = ["error::DeprecationWarning:docentric_copilot.*"]
+
+[tool.coverage.run]
+branch = true
+source = ["docentric_copilot"]
+omit = ["*/tests/*", "*/api/*", "*/cli/*", "*/evaluation/*", "*/storage/*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages", "services", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RET", "PTH", "RUF"]
+ignore = ["E501", "B008", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "B011"]
+"**/conftest.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+exclude = ["apps/web", "tests/golden_files"]
+
+[[tool.mypy.overrides]]
+module = ["docx.*", "lxml.*"]
+ignore_missing_imports = true

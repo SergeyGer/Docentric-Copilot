@@ -1,0 +1,45 @@
+# Secrets — never commit credentials
+.git-token
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.whl
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+pnpm-debug.log*
+npm-debug.log*
+
+# Test / tooling artifacts
+.playwright/
+playwright-report/
+test-results/
+.tools/
+.benchmarks/
+benchmark-results/
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

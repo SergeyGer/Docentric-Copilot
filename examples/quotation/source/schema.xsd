@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="MainData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Quotation" type="QuotationType" minOccurs="1"/>
+        <xs:element name="QuotationLines" type="QuotationLinesType" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="QuotationType">
+    <xs:sequence>
+      <xs:element name="QuotationId" type="xs:string" minOccurs="1"/>
+      <xs:element name="QuotationDate" type="xs:date" minOccurs="1"/>
+      <xs:element name="ValidUntil" type="xs:date" minOccurs="0"/>
+      <xs:element name="CurrencyCode" type="xs:string" minOccurs="1"/>
+      <xs:element name="Customer" type="CustomerType" minOccurs="1"/>
+      <xs:element name="SalesOwner" type="xs:string" minOccurs="0"/>
+      <xs:element name="PaymentTerms" type="xs:string" minOccurs="0"/>
+      <xs:element name="TotalAmount" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="TaxAmount" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="BankDetails" type="BankType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerType">
+    <xs:sequence>
+      <xs:element name="AccountNum" type="xs:string" minOccurs="1"/>
+      <xs:element name="Name" type="xs:string" minOccurs="1"/>
+      <xs:element name="Address" type="xs:string" minOccurs="0"/>
+      <xs:element name="IsEU" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="VatNumber" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="QuotationLinesType">
+    <xs:sequence>
+      <xs:element name="Line" type="QuotationLineType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="QuotationLineType">
+    <xs:sequence>
+      <xs:element name="ItemId" type="xs:string" minOccurs="1"/>
+      <xs:element name="Description" type="xs:string" minOccurs="1"/>
+      <xs:element name="Quantity" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="Unit" type="xs:string" minOccurs="0"/>
+      <xs:element name="UnitPrice" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="LineAmount" type="xs:decimal" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BankType">
+    <xs:sequence>
+      <xs:element name="BankName" type="xs:string" minOccurs="1"/>
+      <xs:element name="Iban" type="xs:string" minOccurs="1"/>
+      <xs:element name="Swift" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="GeneralData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Company" type="CompanyType" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="CompanyType">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" minOccurs="1"/>
+      <xs:element name="CompanyLogo" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="VatNumber" type="xs:string" minOccurs="0"/>
+      <xs:element name="Address" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="Parameters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Language" type="xs:string" minOccurs="0"/>
+        <xs:element name="ShowVatNotice" type="xs:boolean" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

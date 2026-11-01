@@ -1,0 +1,1 @@
+Create a purchase order document with our company logo, vendor address, order number and date, a table of ordered items with quantities, unit prices and line amounts, a total and the delivery terms.

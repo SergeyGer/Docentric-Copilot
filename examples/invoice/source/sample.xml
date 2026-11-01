@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SalesInvoice>
+  <MainData>
+    <Invoice>
+      <InvoiceId>SI-2026-0042</InvoiceId>
+      <InvoiceDate>2026-02-14</InvoiceDate>
+      <DueDate>2026-03-16</DueDate>
+      <CurrencyCode>EUR</CurrencyCode>
+      <Customer>
+        <AccountNum>FR-2201</AccountNum>
+        <Name>Fabrikam Retail SARL</Name>
+        <Address>18 Rue de Lyon, 75012 Paris, France</Address>
+        <IsEU>true</IsEU>
+        <VatNumber>FR40303265045</VatNumber>
+      </Customer>
+      <NetAmount>4200.00</NetAmount>
+      <TaxAmount>798.00</TaxAmount>
+      <GrossAmount>4998.00</GrossAmount>
+      <ReverseCharge>false</ReverseCharge>
+      <BankDetails>
+        <BankName>Northwind Bank</BankName>
+        <Iban>DE44 5001 0517 5407 3249 31</Iban>
+      </BankDetails>
+    </Invoice>
+    <InvoiceLines>
+      <Line>
+        <ItemId>SV-010</ItemId>
+        <Description>Managed Service - February</Description>
+        <Quantity>1</Quantity>
+        <UnitPrice>4200.00</UnitPrice>
+        <LineAmount>4200.00</LineAmount>
+      </Line>
+    </InvoiceLines>
+  </MainData>
+  <GeneralData>
+    <Company>
+      <Name>Contoso Consulting AG</Name>
+      <CompanyLogo>iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAIAAACr/W2wAAABCUlEQVR42u3SUQmAQBQFURvYwzwGsJwl/dEMwoLucIZb4D3OckuhFi8Q0BLQEtAS0AJaAlqaBvS67d/uOK+x+/wiG7j5QJNtTdBkWxM02dYETbY1QZMNdBM02UA3QZMNdBM02UA3QZMNdBM02UDHRzbQZJMNNNkGNNkGNNlAA0020GSTDTTZZANNtgFNNtBAkw20kQ002WQDTTbZQJMNNNBkA21kA21kA0022UCTHZQNNNkp2UCTnZINNNkp2UCTnZINNNkp2UCTnZINNNkp2UBbSjbQlpINtKVkA20p2UBbSjbQlpINtKVkA20p2UBbSjbQlpL9GrQ0Y0ALaAloCWgJaAEtAS39rgczpEIN2sZpYwAAAABJRU5ErkJggg==</CompanyLogo>
+      <VatNumber>DE987654321</VatNumber>
+    </Company>
+  </GeneralData>
+  <Parameters>
+    <Language>en</Language>
+  </Parameters>
+</SalesInvoice>

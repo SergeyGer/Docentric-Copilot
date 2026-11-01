@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="MainData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PurchaseOrder" type="PurchaseOrderType" minOccurs="1"/>
+        <xs:element name="PurchaseOrderLines" type="PurchaseOrderLinesType" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="PurchaseOrderType">
+    <xs:sequence>
+      <xs:element name="OrderId" type="xs:string" minOccurs="1"/>
+      <xs:element name="OrderDate" type="xs:date" minOccurs="1"/>
+      <xs:element name="CurrencyCode" type="xs:string" minOccurs="1"/>
+      <xs:element name="Vendor" type="VendorType" minOccurs="1"/>
+      <xs:element name="DeliveryTerms" type="xs:string" minOccurs="0"/>
+      <xs:element name="TotalAmount" type="xs:decimal" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="VendorType">
+    <xs:sequence>
+      <xs:element name="AccountNum" type="xs:string" minOccurs="1"/>
+      <xs:element name="Name" type="xs:string" minOccurs="1"/>
+      <xs:element name="Address" type="xs:string" minOccurs="0"/>
+      <xs:element name="ContactEmail" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PurchaseOrderLinesType">
+    <xs:sequence>
+      <xs:element name="Line" type="PurchaseOrderLineType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PurchaseOrderLineType">
+    <xs:sequence>
+      <xs:element name="ItemId" type="xs:string" minOccurs="1"/>
+      <xs:element name="Description" type="xs:string" minOccurs="1"/>
+      <xs:element name="Quantity" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="UnitPrice" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="LineAmount" type="xs:decimal" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="GeneralData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Company" type="CompanyType" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="CompanyType">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" minOccurs="1"/>
+      <xs:element name="CompanyLogo" type="xs:base64Binary" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

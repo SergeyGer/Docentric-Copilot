@@ -1,0 +1,1 @@
+Create a professional sales quotation. Include the company logo, customer information, quotation date, product lines with quantities and unit prices, line amounts, final amount, bank details in the footer, and an EU VAT notice when the customer is in the EU and has a VAT number.

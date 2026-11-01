@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SalesQuotation>
+  <MainData>
+    <Quotation>
+      <QuotationId>SQ-100245</QuotationId>
+      <QuotationDate>2026-03-02</QuotationDate>
+      <ValidUntil>2026-04-01</ValidUntil>
+      <CurrencyCode>EUR</CurrencyCode>
+      <Customer>
+        <AccountNum>DE-1042</AccountNum>
+        <Name>Example Customer GmbH</Name>
+        <Address>Hauptstrasse 12, 10115 Berlin, Germany</Address>
+        <IsEU>true</IsEU>
+        <VatNumber>DE123456789</VatNumber>
+      </Customer>
+      <SalesOwner>Anna Keller</SalesOwner>
+      <PaymentTerms>Net 30 days</PaymentTerms>
+      <TotalAmount>1980.00</TotalAmount>
+      <TaxAmount>376.20</TaxAmount>
+      <BankDetails>
+        <BankName>Northwind Bank</BankName>
+        <Iban>DE44 5001 0517 5407 3249 31</Iban>
+        <Swift>NORTDEFFXXX</Swift>
+      </BankDetails>
+    </Quotation>
+    <QuotationLines>
+      <Line>
+        <ItemId>ES-100</ItemId>
+        <Description>Enterprise Subscription (annual)</Description>
+        <Quantity>2</Quantity>
+        <Unit>pcs</Unit>
+        <UnitPrice>750.00</UnitPrice>
+        <LineAmount>1500.00</LineAmount>
+      </Line>
+      <Line>
+        <ItemId>TR-200</ItemId>
+        <Description>Implementation Workshop</Description>
+        <Quantity>3</Quantity>
+        <Unit>days</Unit>
+        <UnitPrice>160.00</UnitPrice>
+        <LineAmount>480.00</LineAmount>
+      </Line>
+    </QuotationLines>
+  </MainData>
+  <GeneralData>
+    <Company>
+      <Name>Contoso Consulting AG</Name>
+      <CompanyLogo>iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAIAAACr/W2wAAABCUlEQVR42u3SUQmAQBQFURvYwzwGsJwl/dEMwoLucIZb4D3OckuhFi8Q0BLQEtAS0AJaAlqaBvS67d/uOK+x+/wiG7j5QJNtTdBkWxM02dYETbY1QZMNdBM02UA3QZMNdBM02UA3QZMNdBM02UDHRzbQZJMNNNkGNNkGNNlAA0020GSTDTTZZANNtgFNNtBAkw20kQ002WQDTTbZQJMNNNBkA21kA21kA0022UCTHZQNNNkp2UCTnZINNNkp2UCTnZINNNkp2UCTnZINNNkp2UBbSjbQlpINtKVkA20p2UBbSjbQlpINtKVkA20p2UBbSjbQlpL9GrQ0Y0ALaAloCWgJaAEtAS39rgczpEIN2sZpYwAAAABJRU5ErkJggg==</CompanyLogo>
+      <VatNumber>DE987654321</VatNumber>
+      <Address>Friedrichstrasse 88, 10117 Berlin, Germany</Address>
+    </Company>
+  </GeneralData>
+  <Parameters>
+    <Language>en</Language>
+    <ShowVatNotice>true</ShowVatNotice>
+  </Parameters>
+</SalesQuotation>

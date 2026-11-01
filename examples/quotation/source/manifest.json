@@ -1,0 +1,8 @@
+{
+  "format": "docentric-ax-ddsp",
+  "format_version": "1.0",
+  "generator": "docentric-copilot/scripts/build_examples.py",
+  "license": "Apache-2.0",
+  "name": "sales_quotation",
+  "synthetic": true
+}

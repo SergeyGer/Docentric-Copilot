@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from docentric_copilot.template_ir import CompileTarget, DesignStyle
 from docentric_copilot.template_validator import ValidationReport
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PlanOptionsRequest(BaseModel):

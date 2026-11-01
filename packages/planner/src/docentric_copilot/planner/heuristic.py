@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from typing import Any
 
 from docentric_copilot.ddsp_parser.models import NormalizedSchema, SchemaNode
 from docentric_copilot.schema_resolver.search import tokenize
@@ -19,6 +20,7 @@ from docentric_copilot.template_ir import (
     Cell,
     CompileTarget,
     Conditional,
+    DesignStyle,
     Document,
     DocumentMetadata,
     Expression,
@@ -120,6 +122,17 @@ def _score(path: str, include: tuple[str, ...], exclude: tuple[str, ...]) -> int
     return score
 
 
+def _collection_ancestor(schema: NormalizedSchema, path: str) -> str | None:
+    """Return the nearest enclosing collection path, if any."""
+    parts = path.split(".")
+    for index in range(1, len(parts)):
+        prefix = ".".join(parts[:index])
+        node = schema.node(prefix)
+        if node is not None and node.collection:
+            return prefix
+    return None
+
+
 def _best(
     schema: NormalizedSchema,
     include: tuple[str, ...],
@@ -137,6 +150,9 @@ def _best(
             continue
         if collection is not None and node.collection is not collection:
             continue
+        if collection is False and _collection_ancestor(schema, path) is not None:
+            # Document-level roles must never bind to collection item fields.
+            continue
         if collection is False and node.children:
             continue
         if types is not None and node.data_type not in types:
@@ -146,18 +162,33 @@ def _best(
         score = _score(path, include, exclude)
         if score <= 0:
             continue
-        if score > best_score or (score == best_score and best_path is not None and path < best_path):
+        if score > best_score or (
+            score == best_score and best_path is not None and path < best_path
+        ):
             best_path, best_score = path, score
     return best_path
 
 
 def _lines_collection(schema: NormalizedSchema) -> str | None:
-    candidates = [node for node in schema.collections() if _score(node.path, ("line", "item"), ()) > 0]
-    if not candidates:
-        candidates = schema.collections()
+    """Pick the collection that behaves like the document's line items."""
+    candidates = schema.collections()
     if not candidates:
         return None
-    return sorted(candidates, key=lambda node: (node.path.count("."), node.path))[0].path
+
+    def quality(node) -> tuple[int, int, str]:
+        children = [child for child in node.children if not child.children and not child.collection]
+        child_tokens = set()
+        for child in children:
+            child_tokens |= set(tokenize(child.name))
+        score = 0
+        if _score(node.path, ("line", "item"), ()) > 0:
+            score += 4
+        for token, weight in (("description", 3), ("quantity", 2), ("price", 2), ("amount", 2)):
+            if token in child_tokens:
+                score += weight
+        return (-score, -len(children), node.path)
+
+    return sorted(candidates, key=quality)[0].path
 
 
 def _line_children(schema: NormalizedSchema, lines: str | None) -> list[SchemaNode]:
@@ -167,6 +198,49 @@ def _line_children(schema: NormalizedSchema, lines: str | None) -> list[SchemaNo
     if node is None:
         return []
     return [child for child in node.children if not child.children and not child.collection]
+
+
+def _collection_chain(schema: NormalizedSchema, path: str) -> list[str]:
+    """Return enclosing collections from the outermost to ``path`` (inclusive)."""
+    chain: list[str] = []
+    parts = path.split(".")
+    for index in range(1, len(parts) + 1):
+        prefix = ".".join(parts[:index])
+        node = schema.node(prefix)
+        if node is not None and node.collection:
+            chain.append(prefix)
+    return chain
+
+
+def _alias_for(path: str, used: set[str] | None = None) -> str:
+    segment = re.sub(r"[^A-Za-z0-9]", "", path.rsplit(".", 1)[-1])
+    alias = re.sub(r"(?<!^)(?=[A-Z])", "_", segment).lower()
+    if len(alias) > 4 and alias.endswith("s") and not alias.endswith("ss"):
+        alias = alias[:-1]
+    alias = re.sub(r"[^a-z0-9_]", "", alias) or "row"
+    if not alias[0].isalpha():
+        alias = f"row{alias}"
+    alias = alias[:32]
+    if used is not None and alias in used:
+        index = 2
+        while f"{alias}{index}" in used:
+            index += 1
+        alias = f"{alias}{index}"
+    if used is not None:
+        used.add(alias)
+    return alias
+
+
+def _representative_field(schema: NormalizedSchema, collection_path: str) -> str | None:
+    node = schema.node(collection_path)
+    if node is None:
+        return None
+    for child in node.children:
+        if child.children or child.collection:
+            continue
+        if _score(child.name, ("id", "number", "name", "description", "title"), ()) > 0:
+            return child.path.rsplit(".", 1)[-1]
+    return None
 
 
 def _pick_child(
@@ -217,10 +291,27 @@ def discover_roles(schema: NormalizedSchema, requirement: str) -> Roles:
     party_tokens: tuple[str, ...] = (
         ("vendor", "supplier") if kind == "purchase_order" else ("customer", "client", "buyer")
     )
-    party_name = _best(schema, (*party_tokens, "name"))
-    party_address = _best(schema, (*party_tokens, "address"))
-    party_vat = _best(schema, (*party_tokens, "vat"))
-    party_id = _best(schema, (*party_tokens, "id", "account", "number"), exclude=("name", "vat"))
+
+    def party(include: tuple[str, ...], exclude: tuple[str, ...] = ()) -> str | None:
+        candidates = [
+            path
+            for path in schema.paths
+            if any(token in _path_tokens(path) for token in party_tokens)
+        ]
+        best_path: str | None = None
+        best_score = 0
+        for path in candidates:
+            score = _score(path, include, exclude)
+            if score > best_score or (
+                score == best_score and best_path is not None and path < best_path
+            ):
+                best_path, best_score = path, score
+        return best_path
+
+    party_name = party(("name",))
+    party_address = party(("address",))
+    party_vat = party(("vat",))
+    party_id = party(("id", "account", "number"), exclude=("name", "vat"))
 
     lines = _lines_collection(schema)
     children = _line_children(schema, lines)
@@ -257,7 +348,9 @@ def discover_roles(schema: NormalizedSchema, requirement: str) -> Roles:
         )
     )
     vat_flag = _best(schema, ("eu", "reverse", "charge", "vatnotice", "show"), types={"boolean"})
-    secondary_label = "Valid until" if secondary_date and "valid" in secondary_date.lower() else "Due date"
+    secondary_label = (
+        "Valid until" if secondary_date and "valid" in secondary_date.lower() else "Due date"
+    )
 
     return Roles(
         document_kind=kind,
@@ -382,13 +475,19 @@ def build_document(
         body.append(Paragraph(runs=meta_runs, space_after_pt=10))
 
     if roles.party_name or roles.party_address:
-        body.append(Heading(level=2, runs=[TextRun(text=roles.party_label)], style=_style(accent, 12, True)))
+        body.append(
+            Heading(level=2, runs=[TextRun(text=roles.party_label)], style=_style(accent, 12, True))
+        )
         if roles.party_name:
-            body.append(Paragraph(runs=[FieldBinding(path=roles.party_name, style=_style(bold=True))]))
+            body.append(
+                Paragraph(runs=[FieldBinding(path=roles.party_name, style=_style(bold=True))])
+            )
         if roles.party_id:
             body.append(_label_value("Account", roles.party_id))
         if roles.party_address:
-            body.append(Paragraph(runs=[FieldBinding(path=roles.party_address, style=_style(size=9.5))]))
+            body.append(
+                Paragraph(runs=[FieldBinding(path=roles.party_address, style=_style(size=9.5))])
+            )
         if roles.party_vat:
             body.append(_label_value("VAT number", roles.party_vat))
 
@@ -399,42 +498,72 @@ def build_document(
     elif roles.line_item:
         columns.append(_Column("Item", roles.line_item, 70.0))
     if roles.line_quantity:
-        columns.append(_Column("Qty", roles.line_quantity, 16.0, Alignment.RIGHT, ValueFormat.NUMBER, 0))
+        columns.append(
+            _Column("Qty", roles.line_quantity, 16.0, Alignment.RIGHT, ValueFormat.NUMBER, 0)
+        )
     if roles.line_price:
-        columns.append(_Column("Unit price", roles.line_price, 28.0, Alignment.RIGHT, ValueFormat.NUMBER, 2))
+        columns.append(
+            _Column("Unit price", roles.line_price, 28.0, Alignment.RIGHT, ValueFormat.NUMBER, 2)
+        )
     if roles.line_amount:
-        columns.append(_Column("Amount", roles.line_amount, 30.0, Alignment.RIGHT, ValueFormat.NUMBER, 2))
+        columns.append(
+            _Column("Amount", roles.line_amount, 30.0, Alignment.RIGHT, ValueFormat.NUMBER, 2)
+        )
 
     if roles.lines and columns:
         body.append(Heading(level=2, runs=[TextRun(text="Items")], style=_style(accent, 12, True)))
-        alias = roles.repeat_alias
-        body.append(
-            Table(
-                columns=[TableColumn(header=c.label, width_mm=c.width_mm, alignment=c.align) for c in columns],
-                repeat=TableRepeat(path=roles.lines, alias=alias),
-                row_template=[
-                    Cell(
-                        blocks=[
-                            Paragraph(
-                                runs=[
-                                    FieldBinding(
-                                        path=f"{alias}.{c.path.rsplit('.', 1)[-1]}",
-                                        format=c.fmt,
-                                        decimals=c.decimals,
-                                    )
-                                ],
-                                style=TextStyle(alignment=c.align),
-                            )
-                        ]
-                    )
-                    for c in columns
-                ],
-                show_header=True,
-                style=TableStyle(
-                    borders=True, header_background="#EEF2F7", zebra=True, font_size_pt=9.5
-                ),
-            )
+        chain = _collection_chain(schema, roles.lines)
+        used_aliases: set[str] = set()
+        aliases = {path: _alias_for(path, used_aliases) for path in chain}
+        inner_alias = aliases[roles.lines]
+        block: Any = Table(
+            columns=[
+                TableColumn(header=c.label, width_mm=c.width_mm, alignment=c.align) for c in columns
+            ],
+            repeat=TableRepeat(path=roles.lines, alias=inner_alias),
+            row_template=[
+                Cell(
+                    blocks=[
+                        Paragraph(
+                            runs=[
+                                FieldBinding(
+                                    path=f"{inner_alias}.{c.path.rsplit('.', 1)[-1]}",
+                                    format=c.fmt,
+                                    decimals=c.decimals,
+                                )
+                            ],
+                            style=TextStyle(alignment=c.align),
+                        )
+                    ]
+                )
+                for c in columns
+            ],
+            show_header=True,
+            style=TableStyle(
+                borders=True, header_background="#EEF2F7", zebra=True, font_size_pt=9.5
+            ),
         )
+        # Nested collections require an explicit enclosing repeat per level.
+        for ancestor in reversed(chain[:-1]):
+            alias = aliases[ancestor]
+            inner_blocks: list[Any] = [block]
+            representative = _representative_field(schema, ancestor)
+            if representative:
+                inner_blocks.insert(
+                    0,
+                    Paragraph(
+                        runs=[
+                            TextRun(
+                                text=f"{_humanize(ancestor.rsplit('.', 1)[-1])}: ",
+                                style=_style(bold=True),
+                            ),
+                            FieldBinding(path=f"{alias}.{representative}"),
+                        ],
+                        space_after_pt=2,
+                    ),
+                )
+            block = Repeat(path=ancestor, alias=alias, blocks=inner_blocks)
+        body.append(block)
 
     # ---------------------------------------------------------------- totals
     if roles.net:
@@ -473,12 +602,20 @@ def build_document(
             )
         ]
         if roles.party_vat:
-            notice_runs.extend([TextRun(text=" Customer VAT number: "), FieldBinding(path=roles.party_vat)])
+            notice_runs.extend(
+                [TextRun(text=" Customer VAT number: "), FieldBinding(path=roles.party_vat)]
+            )
         body.append(
             Conditional(
-                condition=Expression(operator=ExpressionOperator.EQUALS, field=roles.vat_flag, value=True),
+                condition=Expression(
+                    operator=ExpressionOperator.EQUALS, field=roles.vat_flag, value=True
+                ),
                 then_blocks=[
-                    Paragraph(runs=notice_runs, style=TextStyle(italic=True, font_size_pt=9), space_after_pt=8)
+                    Paragraph(
+                        runs=notice_runs,
+                        style=TextStyle(italic=True, font_size_pt=9),
+                        space_after_pt=8,
+                    )
                 ],
             )
         )
@@ -491,17 +628,21 @@ def build_document(
         bank_runs.append(TextRun(text=f"{_humanize(path.rsplit('.', 1)[-1])}: "))
         bank_runs.append(FieldBinding(path=path))
     if bank_runs:
-        footer.append(Paragraph(runs=[TextRun(text="Bank details")], style=_style(size=8.5, bold=True)))
+        footer.append(
+            Paragraph(runs=[TextRun(text="Bank details")], style=_style(size=8.5, bold=True))
+        )
         footer.append(Paragraph(runs=bank_runs, style=TextStyle(font_size_pt=8.5)))
 
     if not body:
-        body.append(Paragraph(runs=[TextRun(text="This schema does not expose any fields to bind.")]))
+        body.append(
+            Paragraph(runs=[TextRun(text="This schema does not expose any fields to bind.")])
+        )
 
     normalized_language = language.lower()[:2] if re.match(r"^[a-zA-Z]{2}", language) else "en"
     metadata = DocumentMetadata(
         template_name=f"{roles.document_kind}_template",
         source_schema_id=schema.schema_id,
-        design_style=design_style if design_style in _ACCENTS else "modern",
+        design_style=DesignStyle(design_style if design_style in _ACCENTS else "modern"),
         intent=requirement.strip()[:1_000] or None,
         generator=BASELINE_VERSION,
     )

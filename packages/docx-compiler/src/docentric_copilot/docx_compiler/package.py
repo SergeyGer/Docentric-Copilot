@@ -57,7 +57,10 @@ def normalize_package(data: bytes, *, compresslevel: int = 9) -> bytes:
         ) from exc
 
     buffer = io.BytesIO()
-    with source, zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=compresslevel) as target:
+    with (
+        source,
+        zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=compresslevel) as target,
+    ):
         for name in sorted(source.namelist()):
             if name.endswith("/"):
                 continue

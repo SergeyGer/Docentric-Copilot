@@ -39,7 +39,7 @@ class Scope:
 
     aliases: dict[str, str] = field(default_factory=dict)
 
-    def push(self, alias: str, collection_path: str) -> "Scope":
+    def push(self, alias: str, collection_path: str) -> Scope:
         merged = dict(self.aliases)
         merged[alias] = collection_path
         return Scope(aliases=merged)
@@ -70,16 +70,26 @@ def absolute_path(path: str, scope: Scope | None = None) -> tuple[str, str | Non
     return path, None
 
 
-def _inside_collection(absolute: str, scope: Scope) -> bool:
-    for collection_path in scope.aliases.values():
-        if absolute.startswith(f"{collection_path}."):
-            return True
-    return False
+def _enclosing_collections(schema: NormalizedSchema, absolute: str) -> list[str]:
+    """Return every collection node that is an ancestor of ``absolute``."""
+    parts = absolute.split(".")
+    collections: list[str] = []
+    for index in range(1, len(parts)):
+        prefix = ".".join(parts[:index])
+        node = schema.node(prefix)
+        if node is not None and node.collection:
+            collections.append(prefix)
+    return collections
 
 
-def resolve_value(
-    schema: NormalizedSchema, path: str, scope: Scope | None = None
-) -> ResolvedPath:
+def _inside_collection(schema: NormalizedSchema, absolute: str, scope: Scope) -> str | None:
+    for collection_path in _enclosing_collections(schema, absolute):
+        if collection_path not in scope.aliases.values():
+            return collection_path
+    return None
+
+
+def resolve_value(schema: NormalizedSchema, path: str, scope: Scope | None = None) -> ResolvedPath:
     """Resolve a scalar binding path, enforcing collection context rules."""
     resolved, alias = absolute_path(path, scope)
     node = schema.node(resolved)
@@ -104,12 +114,13 @@ def resolve_value(
             path=path,
             details={"resolved_path": resolved},
         )
-    if alias is None and scope is not None and _inside_collection(resolved, scope):
+    enclosing = _inside_collection(schema, resolved, scope or Scope())
+    if enclosing is not None:
         raise PathResolutionError(
             "context_violation",
-            f"'{path}' belongs to a collection and requires an enclosing repeat block",
+            f"'{path}' belongs to collection '{enclosing}' and requires an enclosing repeat block",
             path=path,
-            details={"resolved_path": resolved},
+            details={"resolved_path": resolved, "collection": enclosing},
         )
     return ResolvedPath(requested=path, absolute=resolved, node=node, alias=alias)
 
@@ -134,12 +145,13 @@ def resolve_collection(
             path=path,
             details={"resolved_path": resolved},
         )
-    if alias is None and scope is not None and _inside_collection(resolved, scope):
+    enclosing = _inside_collection(schema, resolved, scope or Scope())
+    if enclosing is not None and enclosing != resolved:
         raise PathResolutionError(
             "context_violation",
             f"'{path}' is a nested collection and requires an enclosing repeat block",
             path=path,
-            details={"resolved_path": resolved},
+            details={"resolved_path": resolved, "collection": enclosing},
         )
     return ResolvedPath(requested=path, absolute=resolved, node=node, alias=alias)
 

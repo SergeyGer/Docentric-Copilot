@@ -1,0 +1,1809 @@
+{
+  "components": {
+    "schemas": {
+      "ArtifactView": {
+        "additionalProperties": false,
+        "properties": {
+          "digest": {
+            "title": "Digest",
+            "type": "string"
+          },
+          "expires_at": {
+            "title": "Expires At",
+            "type": "number"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "filename",
+          "media_type",
+          "size_bytes",
+          "digest",
+          "url",
+          "expires_at"
+        ],
+        "title": "ArtifactView",
+        "type": "object"
+      },
+      "Body_upload_source_api_v1_sources_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "DDSP package or XML document",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_source_api_v1_sources_post",
+        "type": "object"
+      },
+      "CapabilitiesView": {
+        "additionalProperties": false,
+        "properties": {
+          "compilers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Compilers",
+            "type": "array"
+          },
+          "features": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Features",
+            "type": "object"
+          },
+          "limits": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Limits",
+            "type": "object"
+          }
+        },
+        "required": [
+          "compilers",
+          "features",
+          "limits"
+        ],
+        "title": "CapabilitiesView",
+        "type": "object"
+      },
+      "CheckResult": {
+        "additionalProperties": false,
+        "properties": {
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "maxItems": 200,
+            "title": "Findings",
+            "type": "array"
+          },
+          "id": {
+            "pattern": "^V[1-5]-[0-9]{3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "$ref": "#/components/schemas/Level"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CheckStatus"
+          },
+          "summary": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "level",
+          "name",
+          "status"
+        ],
+        "title": "CheckResult",
+        "type": "object"
+      },
+      "CheckStatus": {
+        "enum": [
+          "passed",
+          "failed",
+          "warning",
+          "skipped",
+          "not_tested"
+        ],
+        "title": "CheckStatus",
+        "type": "string"
+      },
+      "CompileOptionsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "document_name": {
+            "default": "document.docx",
+            "maxLength": 120,
+            "title": "Document Name",
+            "type": "string"
+          },
+          "include_compatibility_stamp": {
+            "default": false,
+            "title": "Include Compatibility Stamp",
+            "type": "boolean"
+          },
+          "render_mode": {
+            "default": "auto",
+            "enum": [
+              "auto",
+              "sample",
+              "placeholder"
+            ],
+            "title": "Render Mode",
+            "type": "string"
+          },
+          "use_sample_data": {
+            "default": true,
+            "title": "Use Sample Data",
+            "type": "boolean"
+          }
+        },
+        "title": "CompileOptionsRequest",
+        "type": "object"
+      },
+      "CompileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "ir": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir"
+          },
+          "options": {
+            "$ref": "#/components/schemas/CompileOptionsRequest"
+          },
+          "source_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "target": {
+            "$ref": "#/components/schemas/CompileTarget",
+            "default": "generic-docx"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "source_id"
+        ],
+        "title": "CompileRequest",
+        "type": "object"
+      },
+      "CompileResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactView"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ValidationReport"
+          },
+          "stats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Stats",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "job_id",
+          "status",
+          "artifact_id",
+          "ir_digest",
+          "validation",
+          "report"
+        ],
+        "title": "CompileResponse",
+        "type": "object"
+      },
+      "CompileTarget": {
+        "enum": [
+          "generic-docx",
+          "docentric-ax"
+        ],
+        "title": "CompileTarget",
+        "type": "string"
+      },
+      "DesignStyle": {
+        "enum": [
+          "classic",
+          "modern",
+          "minimal"
+        ],
+        "title": "DesignStyle",
+        "type": "string"
+      },
+      "Finding": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^V[1-5]-[0-9]{3}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "message": {
+            "maxLength": 1000,
+            "title": "Message",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "message"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthView": {
+        "additionalProperties": false,
+        "properties": {
+          "docentric_ax_adapter_enabled": {
+            "title": "Docentric Ax Adapter Enabled",
+            "type": "boolean"
+          },
+          "environment": {
+            "title": "Environment",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "environment",
+          "docentric_ax_adapter_enabled"
+        ],
+        "title": "HealthView",
+        "type": "object"
+      },
+      "JobView": {
+        "additionalProperties": false,
+        "properties": {
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "kind",
+          "status"
+        ],
+        "title": "JobView",
+        "type": "object"
+      },
+      "Level": {
+        "enum": [
+          "structural",
+          "semantic",
+          "logical",
+          "visual",
+          "compatibility"
+        ],
+        "title": "Level",
+        "type": "string"
+      },
+      "PlanOptionsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "language": {
+            "default": "en",
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+            "title": "Language",
+            "type": "string"
+          },
+          "max_generation_cost_usd": {
+            "default": 0.5,
+            "maximum": 50.0,
+            "minimum": 0.0,
+            "title": "Max Generation Cost Usd",
+            "type": "number"
+          },
+          "max_repair_attempts": {
+            "default": 1,
+            "maximum": 2.0,
+            "minimum": 0.0,
+            "title": "Max Repair Attempts",
+            "type": "integer"
+          },
+          "strict_validation": {
+            "default": true,
+            "title": "Strict Validation",
+            "type": "boolean"
+          }
+        },
+        "title": "PlanOptionsRequest",
+        "type": "object"
+      },
+      "PlanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "design_style": {
+            "$ref": "#/components/schemas/DesignStyle",
+            "default": "modern"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "options": {
+            "$ref": "#/components/schemas/PlanOptionsRequest"
+          },
+          "prompt": {
+            "maxLength": 5000,
+            "minLength": 3,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "provider": {
+            "default": "mock",
+            "maxLength": 40,
+            "minLength": 2,
+            "title": "Provider",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "target": {
+            "$ref": "#/components/schemas/CompileTarget",
+            "default": "generic-docx"
+          }
+        },
+        "required": [
+          "source_id",
+          "prompt"
+        ],
+        "title": "PlanRequest",
+        "type": "object"
+      },
+      "PlanResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactView"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "generation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation"
+          },
+          "ir": {
+            "additionalProperties": true,
+            "title": "Ir",
+            "type": "object"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "mapping": {
+            "additionalProperties": true,
+            "title": "Mapping",
+            "type": "object"
+          },
+          "removed_bindings": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Removed Bindings",
+            "type": "array"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ValidationReport"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "job_id",
+          "status",
+          "template_id",
+          "version",
+          "ir_digest",
+          "ir",
+          "mapping",
+          "report",
+          "validation"
+        ],
+        "title": "PlanResponse",
+        "type": "object"
+      },
+      "PreviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "ir": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir"
+          },
+          "source_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "source_id"
+        ],
+        "title": "PreviewRequest",
+        "type": "object"
+      },
+      "ProviderView": {
+        "additionalProperties": false,
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "default_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Model"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "configured"
+        ],
+        "title": "ProviderView",
+        "type": "object"
+      },
+      "RevisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "instruction": {
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Instruction",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "provider": {
+            "default": "mock",
+            "maxLength": 40,
+            "minLength": 2,
+            "title": "Provider",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "template_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Template Id",
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "source_id",
+          "template_id",
+          "instruction"
+        ],
+        "title": "RevisionRequest",
+        "type": "object"
+      },
+      "RevisionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactView"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "change_summary": {
+            "additionalProperties": true,
+            "title": "Change Summary",
+            "type": "object"
+          },
+          "changes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "ir": {
+            "additionalProperties": true,
+            "title": "Ir",
+            "type": "object"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "mapping": {
+            "additionalProperties": true,
+            "title": "Mapping",
+            "type": "object"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ValidationReport"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "job_id",
+          "status",
+          "template_id",
+          "version",
+          "ir_digest",
+          "ir",
+          "mapping",
+          "report",
+          "validation",
+          "change_summary"
+        ],
+        "title": "RevisionResponse",
+        "type": "object"
+      },
+      "SchemaView": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "normalized_schema": {
+            "additionalProperties": true,
+            "title": "Normalized Schema",
+            "type": "object"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "title": "Stats",
+            "type": "object"
+          }
+        },
+        "required": [
+          "source_id",
+          "normalized_schema",
+          "stats",
+          "diagnostics"
+        ],
+        "title": "SchemaView",
+        "type": "object"
+      },
+      "Severity": {
+        "enum": [
+          "error",
+          "warning",
+          "info"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "SourceView": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "entry_names": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entry Names",
+            "type": "array"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "sample_data_available": {
+            "title": "Sample Data Available",
+            "type": "boolean"
+          },
+          "schema_id": {
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "title": "Stats",
+            "type": "object"
+          }
+        },
+        "required": [
+          "source_id",
+          "filename",
+          "schema_id",
+          "sections",
+          "stats",
+          "sample_data_available",
+          "diagnostics",
+          "entry_names"
+        ],
+        "title": "SourceView",
+        "type": "object"
+      },
+      "ValidateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "ir": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir"
+          },
+          "source_id": {
+            "maxLength": 60,
+            "minLength": 4,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "target": {
+            "$ref": "#/components/schemas/CompileTarget",
+            "default": "generic-docx"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "source_id"
+        ],
+        "title": "ValidateRequest",
+        "type": "object"
+      },
+      "ValidateResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "overall": {
+            "title": "Overall",
+            "type": "string"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ValidationReport"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "validation",
+          "overall",
+          "report"
+        ],
+        "title": "ValidateResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "ValidationReport": {
+        "additionalProperties": false,
+        "description": "Machine readable report returned by the API and the CLI.",
+        "properties": {
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckResult"
+            },
+            "maxItems": 100,
+            "title": "Checks",
+            "type": "array"
+          },
+          "ir_digest": {
+            "default": "",
+            "maxLength": 64,
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "package": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package"
+          },
+          "schema_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Id"
+          },
+          "target": {
+            "default": "generic-docx",
+            "maxLength": 40,
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "ValidationReport",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
+    "title": "Docentric Copilot API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Root  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/artifacts/{artifact_id}": {
+      "get": {
+        "operationId": "download_artifact_api_v1_artifacts__artifact_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Artifact",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/artifacts/{artifact_id}/view": {
+      "get": {
+        "description": "Inline view for HTML artifacts (validation report, preview).",
+        "operationId": "view_artifact_api_v1_artifacts__artifact_id__view_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "View Artifact",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/capabilities": {
+      "get": {
+        "operationId": "capabilities_api_v1_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CapabilitiesView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capabilities",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_job_api_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/providers": {
+      "get": {
+        "operationId": "providers_api_v1_providers_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderView"
+                  },
+                  "title": "Response Providers Api V1 Providers Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Providers",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/sources": {
+      "post": {
+        "description": "Parse an untrusted DDSP package and register it as a data source.",
+        "operationId": "upload_source_api_v1_sources_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_source_api_v1_sources_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Source",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/sources/{source_id}/schema": {
+      "get": {
+        "description": "Return the normalized schema discovered for a source.",
+        "operationId": "get_schema_api_v1_sources__source_id__schema_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "source_id",
+            "required": true,
+            "schema": {
+              "title": "Source Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Schema",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/templates/compile": {
+      "post": {
+        "description": "Compile a validated IR into a DOCX artifact (deterministic, no LLM).",
+        "operationId": "compile_template_api_v1_templates_compile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compile Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/plan": {
+      "post": {
+        "description": "Turn a natural language requirement into a validated Template IR.",
+        "operationId": "plan_template_api_v1_templates_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Plan Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/preview": {
+      "post": {
+        "description": "Render the independent HTML preview of a template.",
+        "operationId": "preview_template_api_v1_templates_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/revise": {
+      "post": {
+        "description": "Create a new IR version from a natural language change request.",
+        "operationId": "revise_template_api_v1_templates_revise_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revise Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/validate": {
+      "post": {
+        "description": "Validate an IR against a source schema (V1-V5).",
+        "operationId": "validate_template_api_v1_templates_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/{template_id}/export/{version}": {
+      "get": {
+        "operationId": "export_version_api_v1_templates__template_id__export__version__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Export Version Api V1 Templates  Template Id  Export  Version  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Version",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/{template_id}/versions": {
+      "get": {
+        "operationId": "list_versions_api_v1_templates__template_id__versions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Versions Api V1 Templates  Template Id  Versions Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Versions",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_alias_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Alias Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Alias",
+        "tags": [
+          "system"
+        ]
+      }
+    }
+  }
+}

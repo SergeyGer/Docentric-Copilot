@@ -11,9 +11,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Final
 
-from lxml import etree  # type: ignore[import-untyped]
-
 from docentric_copilot.config import Limits
+from lxml import etree
 
 from .diagnostics import Diagnostic, DiagnosticCode, error, info, warning
 from .models import SchemaAttribute, SchemaNode, SchemaSection
@@ -189,9 +188,7 @@ class XsdToSchema:
                 if nested:
                     sections.extend(nested)
                     continue
-            sections.append(
-                SchemaSection(name=name, nodes=nodes, source=f"xsd:element:{name}")
-            )
+            sections.append(SchemaSection(name=name, nodes=nodes, source=f"xsd:element:{name}"))
             used_names.add(name)
         if self._budget.exhausted:
             self._diagnostics.append(
@@ -225,9 +222,7 @@ class XsdToSchema:
         if type_node is None:
             return []
         child_names = [
-            child.get("name")
-            for child in self._element_children(type_node)
-            if child.get("name")
+            child.get("name") for child in self._element_children(type_node) if child.get("name")
         ]
         if not child_names or not set(child_names).issubset(set(KNOWN_SECTIONS)):
             return []
@@ -237,7 +232,9 @@ class XsdToSchema:
             if not self._budget.consume():
                 break
             section_name = self._section_name(child, used_names)
-            nodes = self._children_of_element_type(child, section_name, depth=1, parent_path=section_name)
+            nodes = self._children_of_element_type(
+                child, section_name, depth=1, parent_path=section_name
+            )
             sections.append(
                 SchemaSection(name=section_name, nodes=nodes, source=f"xsd:element:{name}")
             )
@@ -263,7 +260,14 @@ class XsdToSchema:
                 continue
             if name == "element":
                 found.append(child)
-            elif name in {"sequence", "choice", "all", "complexType", "complexContent", "extension"}:
+            elif name in {
+                "sequence",
+                "choice",
+                "all",
+                "complexType",
+                "complexContent",
+                "extension",
+            }:
                 found.extend(self._element_children(child))
         return found
 

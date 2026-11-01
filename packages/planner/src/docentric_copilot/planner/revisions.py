@@ -34,7 +34,7 @@ class Change:
 def _walk(before: Any, after: Any, prefix: str, changes: list[Change]) -> None:
     if len(changes) >= _MAX_CHANGES:
         return
-    if type(before) is not type(after):  # noqa: E721 - strict comparison is intended
+    if type(before) is not type(after):
         changes.append(Change(prefix, "changed", before, after))
         return
     if isinstance(before, dict):

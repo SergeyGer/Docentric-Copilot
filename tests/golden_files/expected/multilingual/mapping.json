@@ -1,0 +1,21 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.InvoiceId",
+        "MainData.Invoice.CurrencyCode",
+        "MainData.Invoice.CustomerName",
+        "MainData.Invoice.TotalAmount"
+      ],
+      "confidence_score": 0.3333333333333333,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create an invoice document with the invoice number",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Invoice.InvoiceId:string",
+      "selected_field_path": "MainData.Invoice.InvoiceId",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "multilingual"
+}

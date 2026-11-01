@@ -1,0 +1,59 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": ""
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Contoso AG"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==  \u00b7  VAT: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+    }
+  ],
+  "media": [
+    "word/media/image1.png"
+  ],
+  "package": {
+    "entry_count": 20,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Document"
+    },
+    {
+      "alignment": "RIGHT (2)",
+      "style": "Normal",
+      "text": "Total: 42.00"
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=image_binding;digest=ffd6ca01a7580f6266b6ebe4aa0ff188;docentric-compatibility=not_tested",
+    "subject": "document_template",
+    "title": "Document"
+  },
+  "tables": []
+}

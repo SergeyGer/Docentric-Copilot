@@ -1,0 +1,62 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": ""
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": ""
+    }
+  ],
+  "media": [],
+  "package": {
+    "entry_count": 17,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Document"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "No.: DOC-1"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Customer"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Acme GmbH"
+    },
+    {
+      "alignment": "RIGHT (2)",
+      "style": "Normal",
+      "text": "Total: 125.50"
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=simple_fields;digest=a52148d38f4534f9e377a8b2ea6385cd;docentric-compatibility=not_tested",
+    "subject": "document_template",
+    "title": "Document"
+  },
+  "tables": []
+}

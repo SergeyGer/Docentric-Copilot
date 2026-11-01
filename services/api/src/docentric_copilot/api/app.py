@@ -9,11 +9,6 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-
 from docentric_copilot import __version__
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.config import Settings, get_settings
@@ -21,6 +16,10 @@ from docentric_copilot.errors import CopilotError
 from docentric_copilot.llm.gateway import LLMGateway
 from docentric_copilot.logging import configure_logging, get_logger
 from docentric_copilot.storage import Store
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 logger = get_logger(__name__)
 

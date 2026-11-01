@@ -9,9 +9,8 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MappingStatus(str, Enum):

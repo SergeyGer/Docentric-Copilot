@@ -14,7 +14,7 @@ from docentric_copilot.config import Settings, get_settings
 from docentric_copilot.errors import UnsupportedTargetError
 from docentric_copilot.template_ir import CompileTarget
 
-from .generic import CompileOptions, CompilationResult, DocentricAXCompiler, GenericDocxCompiler
+from .generic import CompilationResult, CompileOptions, DocentricAXCompiler, GenericDocxCompiler
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,0 +1,110 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "image_binding",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Name",
+              "path": "MainData.Company.Name",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Name"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "image",
+              "description": null,
+              "name": "CompanyLogo",
+              "path": "MainData.Company.CompanyLogo",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CompanyLogo"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Company",
+          "path": "MainData.Company",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Company"
+        },
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Title",
+              "path": "MainData.Report.Title",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Title"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.Report.TotalAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Report",
+          "path": "MainData.Report",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Report"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

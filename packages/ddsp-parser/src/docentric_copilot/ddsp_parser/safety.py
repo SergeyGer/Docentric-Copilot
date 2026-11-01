@@ -15,10 +15,13 @@ import zipfile
 from dataclasses import dataclass
 from typing import Final
 
-from lxml import etree  # type: ignore[import-untyped]
-
 from docentric_copilot.config import Limits
-from docentric_copilot.errors import InvalidInputError, SecurityViolationError, UnsupportedInputError
+from docentric_copilot.errors import (
+    InvalidInputError,
+    SecurityViolationError,
+    UnsupportedInputError,
+)
+from lxml import etree
 
 from .diagnostics import Diagnostic, DiagnosticCode, error, info, warning
 
@@ -70,9 +73,7 @@ def _safe_entry_name(name: str) -> bool:
         return False
     if "\\" in name or "\x00" in name:
         return False
-    if any(unicodedata.category(char).startswith("C") for char in name):
-        return False
-    return True
+    return not any(unicodedata.category(char).startswith("C") for char in name)
 
 
 def read_container(data: bytes, limits: Limits) -> tuple[list[ContainerEntry], list[Diagnostic]]:
@@ -127,7 +128,10 @@ def read_container(data: bytes, limits: Limits) -> tuple[list[ContainerEntry], l
                 raise SecurityViolationError(
                     "DDSP container expands beyond the configured limit",
                     code=DiagnosticCode.UNCOMPRESSED_SIZE_LIMIT.value,
-                    details={"declared_bytes": declared_total, "max_bytes": limits.max_uncompressed_bytes},
+                    details={
+                        "declared_bytes": declared_total,
+                        "max_bytes": limits.max_uncompressed_bytes,
+                    },
                 )
             if entry.compress_size > 0:
                 ratio = entry.file_size / entry.compress_size
@@ -156,7 +160,10 @@ def read_container(data: bytes, limits: Limits) -> tuple[list[ContainerEntry], l
                 raise SecurityViolationError(
                     "DDSP container expands beyond the configured limit",
                     code=DiagnosticCode.UNCOMPRESSED_SIZE_LIMIT.value,
-                    details={"entry": entry.filename[:120], "max_bytes": limits.max_uncompressed_bytes},
+                    details={
+                        "entry": entry.filename[:120],
+                        "max_bytes": limits.max_uncompressed_bytes,
+                    },
                 )
             entries.append(ContainerEntry(name=entry.filename, payload=payload, size=len(payload)))
 

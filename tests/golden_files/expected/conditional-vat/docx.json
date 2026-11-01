@@ -1,0 +1,77 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": ""
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": "VAT: SE556677889901"
+    }
+  ],
+  "media": [],
+  "package": {
+    "entry_count": 18,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Tax Invoice"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "No.: INV-77"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Customer"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Nordic Trading AB"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Net: 1,000.00"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Tax: 250.00"
+    },
+    {
+      "alignment": "RIGHT (2)",
+      "style": "Normal",
+      "text": "Total: 1,250.00"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "VAT notice: this document follows the EU VAT rules applicable to the customer tax status."
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=conditional_vat;digest=676cbe25621c5a9f86517f5c0c911396;docentric-compatibility=not_tested",
+    "subject": "invoice_template",
+    "title": "Tax Invoice"
+  },
+  "tables": []
+}

@@ -1,0 +1,135 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": "Bank details"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Bank Name: Northwind Bank  \u00b7  Iban: DE44 5001 0517 5407 3249 31  \u00b7  Swift: NORTDEFFXXX"
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Contoso Consulting AG"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Friedrichstrasse 88, 10117 Berlin, Germany  \u00b7  VAT: DE987654321"
+    }
+  ],
+  "media": [
+    "word/media/image1.png"
+  ],
+  "package": {
+    "entry_count": 21,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Sales Quotation"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "No.: SQ-100245    Date: 2026-03-02    Valid until: 2026-04-01    Currency: EUR"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Customer"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Example Customer GmbH"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Account: DE-1042"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Hauptstrasse 12, 10115 Berlin, Germany"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "VAT number: DE123456789"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Items"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Tax: 376.20"
+    },
+    {
+      "alignment": "RIGHT (2)",
+      "style": "Normal",
+      "text": "Total: 1,980.00"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Payment terms: Net 30 days"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "VAT notice: this document follows the EU VAT rules applicable to the customer tax status. Customer VAT number: DE123456789"
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=sales_quotation;digest=9f8d8ad173de468783ce0ecc78539498;docentric-compatibility=not_tested",
+    "subject": "quotation_template",
+    "title": "Sales Quotation"
+  },
+  "tables": [
+    [
+      [
+        "Description",
+        "Qty",
+        "Unit price",
+        "Amount"
+      ],
+      [
+        "Enterprise Subscription (annual)",
+        "2",
+        "750.00",
+        "1,500.00"
+      ],
+      [
+        "Implementation Workshop",
+        "3",
+        "160.00",
+        "480.00"
+      ]
+    ]
+  ]
+}

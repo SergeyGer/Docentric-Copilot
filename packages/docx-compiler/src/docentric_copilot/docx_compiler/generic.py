@@ -18,22 +18,12 @@ import re
 from datetime import datetime
 from typing import Any, Literal
 
-from docx import Document as DocxDocument
-from docx.document import Document as DocxDocumentType
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import parse_xml
-from docx.oxml.ns import nsdecls
-from docx.shared import Mm, Pt, RGBColor
-from docx.table import _Cell, Table as DocxTable
-from pydantic import BaseModel, ConfigDict, Field
-
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import CompilationFailedError, UnsupportedTargetError
 from docentric_copilot.schema_resolver.paths import (
     PathResolutionError,
     Scope,
     resolve_collection,
-    resolve_value,
 )
 from docentric_copilot.template_ir import (
     Alignment,
@@ -52,6 +42,15 @@ from docentric_copilot.template_ir import (
     TextStyle,
     ir_digest,
 )
+from docx import Document as DocxDocument
+from docx.document import Document as DocxDocumentType
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
+from docx.shared import Mm, Pt, RGBColor
+from docx.table import Table as DocxTable
+from docx.table import _Cell
+from pydantic import BaseModel, ConfigDict, Field
 
 from .context import SampleContext
 from .expression import evaluate
@@ -118,10 +117,11 @@ class GenericDocxCompiler:
         sample_data: dict[str, Any] | None = None,
     ) -> CompilationResult:
         resolved_options = options or CompileOptions()
-        if template.target is not CompileTarget.GENERIC_DOCX and not self.verified_compatibility:
+        target = CompileTarget(template.target)
+        if target is not CompileTarget.GENERIC_DOCX and not self.verified_compatibility:
             raise UnsupportedTargetError(
                 "This compiler only produces generic DOCX documents",
-                details={"target": template.target.value},
+                details={"target": target.value},
             )
 
         renderer = _Renderer(
@@ -280,7 +280,12 @@ class _Renderer:
 
     # ---------------------------------------------------------------- blocks
     def _render_blocks(
-        self, container: Any, blocks: list[Block], context: SampleContext, *, first_paragraph: bool = False
+        self,
+        container: Any,
+        blocks: list[Block],
+        context: SampleContext,
+        *,
+        first_paragraph: bool = False,
     ) -> None:
         for block in blocks:
             self._render_block(container, block, context, first_paragraph=first_paragraph)
@@ -391,7 +396,7 @@ class _Renderer:
             else:
                 run.add_picture(io.BytesIO(payload), width=Mm(42))
             self._stats["images"] += 1
-        except Exception:  # noqa: BLE001 - python-docx raises many image errors
+        except Exception:
             paragraph.add_run(f"[[{block.path}]]").italic = True
             self._stats["placeholders"] += 1
             self._warnings.append(f"Image for '{block.path}' could not be embedded")
@@ -460,15 +465,16 @@ class _Renderer:
                     paragraph.alignment = _ALIGN[column.alignment]
                 if block.style and block.style.header_background:
                     _shade_cell(cell, block.style.header_background)
-                if column.width_mm:
-                    cell.width = Mm(column.width_mm)
+                if column.width_mm is not None:
+                    cell.width = Mm(float(column.width_mm))
 
         for row in block.rows:
             docx_row = table.add_row()
             for index, source_cell in enumerate(row.cells):
                 self._render_cell(docx_row.cells[index], source_cell, context)
-                if block.columns[index].width_mm:
-                    docx_row.cells[index].width = Mm(block.columns[index].width_mm)
+                column_width = block.columns[index].width_mm
+                if column_width is not None:
+                    docx_row.cells[index].width = Mm(float(column_width))
 
         if block.repeat is not None and block.row_template is not None:
             try:
@@ -492,8 +498,9 @@ class _Renderer:
                 child = context.child(block.repeat.alias, collection.absolute, item)
                 for index, template_cell in enumerate(block.row_template):
                     self._render_cell(docx_row.cells[index], template_cell, child)
-                    if block.columns[index].width_mm:
-                        docx_row.cells[index].width = Mm(block.columns[index].width_mm)
+                    template_width = block.columns[index].width_mm
+                    if template_width is not None:
+                        docx_row.cells[index].width = Mm(float(template_width))
                     elif block.style and block.style.zebra and position % 2 == 1:
                         _shade_cell(docx_row.cells[index], "F7F9FC")
 
@@ -536,7 +543,7 @@ class _Renderer:
 
 def _shade_cell(cell: _Cell, hex_color: str) -> None:
     color = hex_color.lstrip("#").upper()
-    cell._tc.get_or_add_tcPr().append(  # noqa: SLF001 - python-docx has no public API
+    cell._tc.get_or_add_tcPr().append(
         parse_xml(rf'<w:shd {nsdecls("w")} w:val="clear" w:color="auto" w:fill="{color}"/>')
     )
 

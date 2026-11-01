@@ -1,0 +1,97 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "simple_fields",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Number",
+              "path": "MainData.Document.Number",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Number"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "date",
+              "description": null,
+              "name": "IssuedOn",
+              "path": "MainData.Document.IssuedOn",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:IssuedOn"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.Document.TotalAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CustomerName",
+              "path": "MainData.Document.CustomerName",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CustomerName"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Document",
+          "path": "MainData.Document",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Document"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

@@ -1,0 +1,115 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": ""
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Contoso Consulting AG"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAIAAACr/W2wAAABCUlEQVR42u3SUQmAQBQFURvYwzwGsJwl/dEMwoLucIZb4D3OckuhFi8Q0BLQEtAS0AJaAlqaBvS67d/uOK+x+/wiG7j5QJNtTdBkWxM02dYETbY1QZMNdBM02UA3QZMNdBM02UA3QZMNdBM02UDHRzbQZJMNNNkGNNkGNNlAA0020GSTDTTZZANNtgFNNtBAkw20kQ002WQDTTbZQJMNNNBkA21kA21kA0022UCTHZQNNNkp2UCTnZINNNkp2UCTnZINNNkp2UCTnZINNNkp2UBbSjbQlpINtKVkA20p2UBbSjbQlpINtKVkA20p2UBbSjbQlpL9GrQ0Y0ALaAloCWgJaAEtAS39rgczpEIN2sZpYwAAAABJRU5ErkJggg==  \u00b7  VAT: iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAIAAACr/W2wAAABCUlEQVR42u3SUQmAQBQFURvYwzwGsJwl/dEMwoLucIZb4D3OckuhFi8Q0BLQEtAS0AJaAlqaBvS67d/uOK+x+/wiG7j5QJNtTdBkWxM02dYETbY1QZMNdBM02UA3QZMNdBM02UA3QZMNdBM02UDHRzbQZJMNNNkGNNkGNNlAA0020GSTDTTZZANNtgFNNtBAkw20kQ002WQDTTbZQJMNNNBkA21kA21kA0022UCTHZQNNNkp2UCTnZINNNkp2UCTnZINNNkp2UCTnZINNNkp2UBbSjbQlpINtKVkA20p2UBbSjbQlpINtKVkA20p2UBbSjbQlpL9GrQ0Y0ALaAloCWgJaAEtAS39rgczpEIN2sZpYwAAAABJRU5ErkJggg=="
+    }
+  ],
+  "media": [
+    "word/media/image1.png"
+  ],
+  "package": {
+    "entry_count": 20,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Purchase Order"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "No.: PO-2026-1188    Date: 2026-01-20    Currency: EUR"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Vendor"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Northwind Supplies Ltd"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Account: V-0042"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "1 Harbour Road, Bristol, United Kingdom"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Items"
+    },
+    {
+      "alignment": "RIGHT (2)",
+      "style": "Normal",
+      "text": "Total: 2,640.00"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Delivery terms: DAP Berlin"
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=purchase_order;digest=e11fb03e2c4049cda3e0b65a83246f63;docentric-compatibility=not_tested",
+    "subject": "purchase_order_template",
+    "title": "Purchase Order"
+  },
+  "tables": [
+    [
+      [
+        "Description",
+        "Qty",
+        "Unit price",
+        "Amount"
+      ],
+      [
+        "Office Chair Ergonomic",
+        "12",
+        "180.00",
+        "2,160.00"
+      ],
+      [
+        "Monitor Stand",
+        "8",
+        "60.00",
+        "480.00"
+      ]
+    ]
+  ]
+}

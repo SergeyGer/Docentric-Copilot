@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from docentric_copilot.config import Settings, get_settings
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.docx_compiler import CompilationResult, CompileOptions
 from docentric_copilot.docx_compiler import compile_document as compile_with_registry
@@ -33,10 +34,16 @@ class TemplateService:
         self,
         gateway: LLMGateway | None = None,
         validator: ValidationEngine | None = None,
+        settings: Settings | None = None,
     ) -> None:
-        self._gateway = gateway or LLMGateway()
+        self._settings = settings or get_settings()
+        self._gateway = gateway or LLMGateway(self._settings)
         self._planner = TemplatePlanner(self._gateway)
-        self._validator = validator or ValidationEngine()
+        self._validator = validator or ValidationEngine(
+            max_blocks=self._settings.limits.max_ir_blocks,
+            max_depth=self._settings.limits.max_ir_depth,
+            max_text_length=self._settings.limits.max_text_length,
+        )
 
     @property
     def gateway(self) -> LLMGateway:
@@ -80,9 +87,7 @@ class TemplateService:
         sample_data: dict | None = None,
         package: bytes | None = None,
     ) -> ValidationReport:
-        return self._validator.validate(
-            document, schema, sample_data=sample_data, package=package
-        )
+        return self._validator.validate(document, schema, sample_data=sample_data, package=package)
 
     # ---------------------------------------------------------------- compile
     def compile(
@@ -116,7 +121,6 @@ class TemplateService:
         outcome = await self._planner.revise(
             schema, document, instruction, provider=provider, model=model, options=options
         )
-        report = self._validator.validate(outcome.document, schema)
         changes = diff_documents(document, outcome.document)
         return RevisionResult(
             outcome=outcome.model_copy(update={"changed": changes}),

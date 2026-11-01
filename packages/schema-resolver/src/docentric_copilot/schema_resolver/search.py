@@ -18,10 +18,45 @@ from .mapping import RequirementKind
 _WORD = re.compile(r"[A-Z]+(?![a-z])|[A-Z][a-z]+|[a-z0-9]+")
 _STOPWORDS = frozenset(
     {
-        "a", "an", "the", "and", "or", "of", "for", "with", "in", "on", "to", "from",
-        "create", "make", "generate", "professional", "document", "please", "show",
-        "include", "including", "display", "put", "add", "use", "using", "our", "their",
-        "is", "are", "be", "when", "if", "each", "all", "by", "as", "at", "it",
+        "a",
+        "an",
+        "the",
+        "and",
+        "or",
+        "of",
+        "for",
+        "with",
+        "in",
+        "on",
+        "to",
+        "from",
+        "create",
+        "make",
+        "generate",
+        "professional",
+        "document",
+        "please",
+        "show",
+        "include",
+        "including",
+        "display",
+        "put",
+        "add",
+        "use",
+        "using",
+        "our",
+        "their",
+        "is",
+        "are",
+        "be",
+        "when",
+        "if",
+        "each",
+        "all",
+        "by",
+        "as",
+        "at",
+        "it",
     }
 )
 
@@ -85,9 +120,10 @@ def expand(tokens: tuple[str, ...]) -> set[str]:
 
 def infer_kind(text: str) -> RequirementKind:
     lowered = text.lower()
-    if any(keyword in lowered for keyword in _TYPE_KEYWORDS[RequirementKind.COLLECTION]):
-        if any(word in lowered for word in ("lines", "items", "products", "rows", "table")):
-            return RequirementKind.COLLECTION
+    if any(keyword in lowered for keyword in _TYPE_KEYWORDS[RequirementKind.COLLECTION]) and any(
+        word in lowered for word in ("lines", "items", "products", "rows", "table")
+    ):
+        return RequirementKind.COLLECTION
     for kind in (
         RequirementKind.IMAGE,
         RequirementKind.DATE,
@@ -141,6 +177,10 @@ def _node_score(
             score += 0.8
         elif token in context_tokens:
             score += 0.25
+    if score <= 0:
+        # Type/name bonuses only refine a real textual match; on their own they
+        # would make every string field look like a candidate.
+        return 0.0
     if kind is RequirementKind.IMAGE and node.data_type == "image":
         score += 1.5
     if kind is RequirementKind.NUMBER and node.data_type == "number":
@@ -226,8 +266,8 @@ def decide_status(
 
 
 __all__ = [
-    "Candidate",
     "SYNONYMS",
+    "Candidate",
     "decide_status",
     "expand",
     "infer_kind",

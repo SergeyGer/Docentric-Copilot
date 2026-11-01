@@ -1,0 +1,245 @@
+/**
+ * Typed fetch wrapper for the Docentric Copilot REST API.
+ *
+ * Every failure is normalised to {@link ApiError}: HTTP errors carry the
+ * backend's `{ error: { code, message, details } }` envelope, while network
+ * failures and timeouts are reported with status `0`.
+ */
+
+import { isRecord } from "@/lib/guards";
+
+const DEFAULT_API_BASE_URL = "http://localhost:8000";
+const DEFAULT_TIMEOUT_MS = 30_000;
+
+function resolveBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const value = configured && configured.trim().length > 0 ? configured.trim() : DEFAULT_API_BASE_URL;
+  return value.replace(/\/+$/, "");
+}
+
+/** Base URL of the API this build talks to (no trailing slash). */
+export const API_BASE_URL = resolveBaseUrl();
+
+export interface ApiErrorInit {
+  status?: number;
+  code?: string;
+  details?: Record<string, unknown> | null;
+}
+
+/** A failed API call, already normalised for display in the UI. */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly code: string;
+  readonly details: Record<string, unknown> | null;
+
+  constructor(message: string, init: ApiErrorInit = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = init.status ?? 0;
+    this.code = init.code ?? "request_failed";
+    this.details = init.details ?? null;
+  }
+
+  static async fromResponse(response: Response): Promise<ApiError> {
+    let code = `http_${response.status}`;
+    let message = `The API returned HTTP ${response.status}.`;
+    let details: Record<string, unknown> | null = null;
+
+    try {
+      const text = await response.text();
+      if (text) {
+        const payload: unknown = JSON.parse(text);
+        if (isRecord(payload) && isRecord(payload.error)) {
+          const envelope = payload.error;
+          if (typeof envelope.code === "string" && envelope.code) {
+            code = envelope.code;
+          }
+          if (typeof envelope.message === "string" && envelope.message) {
+            message = envelope.message;
+          }
+          if (isRecord(envelope.details)) {
+            details = envelope.details;
+          } else if (envelope.details !== undefined && envelope.details !== null) {
+            details = { value: envelope.details };
+          }
+        }
+      }
+    } catch {
+      // The body was not the documented JSON envelope; keep the HTTP fallback.
+    }
+
+    return new ApiError(message, { status: response.status, code, details });
+  }
+}
+
+export interface ApiRequestOptions {
+  timeoutMs?: number;
+}
+
+export interface ApiRequestInit extends RequestInit {
+  /** Abort after this many milliseconds (defaults to 30s). */
+  timeoutMs?: number;
+}
+
+export function apiUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+  return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+async function execute(
+  path: string,
+  init: ApiRequestInit = {},
+  options: ApiRequestOptions = {},
+): Promise<Response> {
+  const { timeoutMs: initTimeout, ...requestInit } = init;
+  const timeoutMs = options.timeoutMs ?? initTimeout ?? DEFAULT_TIMEOUT_MS;
+
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+
+  const externalSignal = requestInit.signal;
+  const onExternalAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort();
+    } else {
+      externalSignal.addEventListener("abort", onExternalAbort, { once: true });
+    }
+  }
+
+  const headers = new Headers(requestInit.headers);
+  if (!headers.has("Accept")) {
+    headers.set("Accept", "application/json, text/html;q=0.9, */*;q=0.8");
+  }
+  if (requestInit.body && !(requestInit.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  try {
+    const response = await fetch(apiUrl(path), {
+      ...requestInit,
+      headers,
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw await ApiError.fromResponse(response);
+    }
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    if (timedOut) {
+      throw new ApiError(
+        `The request timed out after ${Math.round(timeoutMs / 1000)} seconds.`,
+        {
+          status: 0,
+          code: "request_timeout",
+          details: { path, timeout_ms: timeoutMs },
+        },
+      );
+    }
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError("The request was cancelled.", {
+        status: 0,
+        code: "request_cancelled",
+        details: { path },
+      });
+    }
+    throw new ApiError(
+      "Could not reach the API. Check that the backend is running and that NEXT_PUBLIC_API_BASE_URL points to it.",
+      {
+        status: 0,
+        code: "network_error",
+        details: {
+          path,
+          base_url: API_BASE_URL,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      },
+    );
+  } finally {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener("abort", onExternalAbort);
+  }
+}
+
+/** Perform a request and parse the JSON response body. */
+export async function apiRequest<T>(
+  path: string,
+  init: ApiRequestInit = {},
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const response = await execute(path, init, options);
+  if (response.status === 204) {
+    return undefined as T;
+  }
+  const text = await response.text();
+  if (!text) {
+    return undefined as T;
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new ApiError("The API returned a response that was not valid JSON.", {
+      status: response.status,
+      code: "invalid_response",
+      details: { path },
+    });
+  }
+}
+
+/** Perform a request and return the raw response body as text (HTML preview). */
+export async function apiRequestText(
+  path: string,
+  init: ApiRequestInit = {},
+  options: ApiRequestOptions = {},
+): Promise<string> {
+  const response = await execute(path, init, options);
+  return response.text();
+}
+
+/** POST a JSON body with the conventional headers. */
+export function postJson<T>(
+  path: string,
+  body: unknown,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: { "Content-Type": "application/json" },
+    },
+    options,
+  );
+}
+
+/**
+ * Start a browser download of an API artifact.
+ *
+ * The backend replies with `Content-Disposition: attachment`, so a synthetic
+ * anchor is enough even though the API origin differs from the web origin.
+ */
+export function triggerDownload(path: string, filename?: string): void {
+  if (typeof document === "undefined") {
+    return;
+  }
+  const anchor = document.createElement("a");
+  anchor.href = apiUrl(path);
+  anchor.rel = "noopener";
+  if (filename) {
+    anchor.download = filename;
+  }
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+}

@@ -1,0 +1,32 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.CustomerName",
+        "MainData.Invoice.InvoiceId",
+        "MainData.Invoice.VatNumber",
+        "MainData.Invoice.IsEU"
+      ],
+      "confidence_score": 0.5666666666666667,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create an invoice with the customer name",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Invoice.CustomerName:string",
+      "selected_field_path": "MainData.Invoice.CustomerName",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [],
+      "confidence_score": null,
+      "data_type": null,
+      "explanation": "No field in the schema satisfies this requirement.",
+      "requirement": "a product image gallery",
+      "requirement_id": "req_01",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing"
+    }
+  ],
+  "schema_id": "missing_data"
+}

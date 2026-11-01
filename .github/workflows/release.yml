@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  package:
+    name: Build distribution and images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build wheel and sdist
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+
+      - name: Verify the wheel installs and works
+        run: |
+          python -m venv /tmp/verify
+          /tmp/verify/bin/pip install dist/*.whl
+          /tmp/verify/bin/docentric-copilot version
+          /tmp/verify/bin/docentric-copilot inspect examples/quotation/sales-quotation.ddsp --json > /dev/null
+
+      - name: Build API image
+        run: docker build -t docentric-copilot-api:${GITHUB_REF_NAME} .
+
+      - name: Build web image
+        run: docker build -t docentric-copilot-web:${GITHUB_REF_NAME} apps/web
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          body: |
+            Docentric Copilot release.
+
+            **Compatibility status: unverified.** This release produces generic DOCX
+            documents. It does not claim Docentric AX compatibility; see
+            `docs/DOCENTRIC_AX_COMPATIBILITY.md`.

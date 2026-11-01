@@ -6,10 +6,9 @@ import json
 from collections.abc import Callable, Mapping
 from typing import Any
 
-from pydantic import ValidationError
-
 from docentric_copilot.errors import InvalidInputError
 from docentric_copilot.serialization import canonical_json, digest, pretty_json, to_plain
+from pydantic import ValidationError
 
 from .models import Document
 

@@ -18,7 +18,6 @@ from collections.abc import Callable
 from typing import Any
 
 import httpx
-
 from docentric_copilot.errors import ProviderError, ProviderNotConfiguredError
 
 from .models import GenerationResult, GenerationSettings, Message, Role, Usage
@@ -172,7 +171,9 @@ class BaseHTTPProvider(abc.ABC):
             sum(len(message.content) for message in messages) * _MAX_TOKENS_PER_CHAR
             + len(json.dumps(schema)) * 0.5
         )
-        worst_case = worst_case_cost_usd(settings.model, approx_prompt_tokens, settings.max_output_tokens)
+        worst_case = worst_case_cost_usd(
+            settings.model, approx_prompt_tokens, settings.max_output_tokens
+        )
         _, known = price_for(settings.model)
         if known and worst_case > settings.budget_usd:
             from docentric_copilot.errors import BudgetExceededError

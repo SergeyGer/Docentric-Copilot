@@ -12,10 +12,19 @@ execution layer (FR-03, FR-04, FR-05). It is intentionally narrow:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
-from pydantic import field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    StrictFloat,
+    StrictInt,
+    StrictStr,
+    field_validator,
+    model_validator,
+)
 
 # --------------------------------------------------------------------------- #
 # Shared primitives
@@ -99,7 +108,7 @@ class PageSettings(StrictModel):
 # Typed expressions (FR-04, section 5.4 of the specification)
 # --------------------------------------------------------------------------- #
 
-Scalar = Union[StrictBool, StrictInt, StrictFloat, StrictStr]
+Scalar = StrictBool | StrictInt | StrictFloat | StrictStr
 
 
 class ExpressionOperator(str, Enum):
@@ -224,7 +233,7 @@ class ImageBinding(StrictModel):
     alignment: Alignment | None = None
 
 
-InlineContent = Annotated[Union[TextRun, FieldBinding], Field(discriminator="kind")]
+InlineContent = Annotated[TextRun | FieldBinding, Field(discriminator="kind")]
 
 
 # --------------------------------------------------------------------------- #
@@ -326,7 +335,7 @@ class Table(StrictModel):
 
 
 Block = Annotated[
-    Union[Paragraph, Heading, ImageBinding, Repeat, Conditional, Table],
+    Paragraph | Heading | ImageBinding | Repeat | Conditional | Table,
     Field(discriminator="kind"),
 ]
 
@@ -379,6 +388,7 @@ for _model in (Cell, Repeat, Conditional, TableRow, Table, Paragraph, Heading, S
 
 __all__ = [
     "ALIAS_PATTERN",
+    "PATH_PATTERN",
     "Alignment",
     "Block",
     "Cell",
@@ -396,7 +406,6 @@ __all__ = [
     "InlineContent",
     "PageSettings",
     "Paragraph",
-    "PATH_PATTERN",
     "Repeat",
     "Section",
     "StrictModel",

@@ -1,0 +1,124 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "nested_list",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "OrderId",
+                  "path": "MainData.Orders.Order.OrderId",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:OrderId"
+                },
+                {
+                  "attributes": [],
+                  "children": [
+                    {
+                      "attributes": [],
+                      "children": [
+                        {
+                          "attributes": [],
+                          "children": [],
+                          "collection": false,
+                          "data_type": "string",
+                          "description": null,
+                          "name": "Description",
+                          "path": "MainData.Orders.Order.Lines.Line.Description",
+                          "required": false,
+                          "sample_value": null,
+                          "source": "xsd:element:Description"
+                        },
+                        {
+                          "attributes": [],
+                          "children": [],
+                          "collection": false,
+                          "data_type": "number",
+                          "description": null,
+                          "name": "Quantity",
+                          "path": "MainData.Orders.Order.Lines.Line.Quantity",
+                          "required": false,
+                          "sample_value": null,
+                          "source": "xsd:element:Quantity"
+                        }
+                      ],
+                      "collection": true,
+                      "data_type": "collection",
+                      "description": null,
+                      "name": "Line",
+                      "path": "MainData.Orders.Order.Lines.Line",
+                      "required": false,
+                      "sample_value": null,
+                      "source": "xsd:element:Line"
+                    }
+                  ],
+                  "collection": false,
+                  "data_type": "object",
+                  "description": null,
+                  "name": "Lines",
+                  "path": "MainData.Orders.Order.Lines",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:Lines"
+                }
+              ],
+              "collection": true,
+              "data_type": "collection",
+              "description": null,
+              "name": "Order",
+              "path": "MainData.Orders.Order",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Order"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Orders",
+          "path": "MainData.Orders",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Orders"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

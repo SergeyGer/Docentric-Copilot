@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import FileResponse, HTMLResponse
-
 from docentric_copilot import __version__
 from docentric_copilot.api.deps import get_service, get_settings, get_store
 from docentric_copilot.api.schemas import (
@@ -17,6 +14,8 @@ from docentric_copilot.app.service import TemplateService
 from docentric_copilot.config import Settings
 from docentric_copilot.docx_compiler import capabilities as compiler_capabilities
 from docentric_copilot.storage import Store
+from fastapi import APIRouter, Depends
+from fastapi.responses import FileResponse, HTMLResponse
 
 router = APIRouter(tags=["system"])
 

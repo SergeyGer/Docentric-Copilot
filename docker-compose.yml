@@ -1,0 +1,48 @@
+# Local deployment of the MVP: stateless API + Next.js frontend.
+# The API stores sources and artifacts in a volume with a TTL; nothing is sent
+# to a cloud LLM unless a provider is explicitly configured and selected.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docentric-copilot-api:0.1.0
+    ports:
+      - "8000:8000"
+    environment:
+      DC_ENV: production
+      DC_DATA_DIR: /data
+      DC_CORS_ORIGINS: http://localhost:3000
+      DC_LOG_JSON: "true"
+      # Optional provider credentials (never baked into the image):
+      # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - copilot-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    image: docentric-copilot-web:0.1.0
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      NODE_ENV: production
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  copilot-data:

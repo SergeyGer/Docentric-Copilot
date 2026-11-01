@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import HTMLResponse
-from starlette.concurrency import run_in_threadpool
-
 from docentric_copilot.api.deps import get_service, get_store
 from docentric_copilot.api.routes.common import (
     MEDIA_TYPES,
@@ -31,6 +27,9 @@ from docentric_copilot.errors import CopilotError, ValidationFailedError
 from docentric_copilot.storage import Store
 from docentric_copilot.template_ir import canonical_ir_json, ir_digest
 from docentric_copilot.template_validator import render_report_html
+from fastapi import APIRouter, Depends
+from fastapi.responses import HTMLResponse
+from starlette.concurrency import run_in_threadpool
 
 router = APIRouter(prefix="/templates", tags=["templates"])
 
@@ -141,9 +140,7 @@ async def validate_template(
     report = await run_in_threadpool(
         service.validate, document, schema, sample_data=record.sample_dict()
     )
-    return ValidateResponse(
-        validation=report.statuses(), overall=report.overall, report=report
-    )
+    return ValidateResponse(validation=report.statuses(), overall=report.overall, report=report)
 
 
 @router.post("/compile", response_model=CompileResponse)
@@ -165,9 +162,7 @@ async def compile_template(
         )
         document = document.model_copy(update={"target": request.target})
         sample = record.sample_dict() if request.options.use_sample_data else None
-        report = await run_in_threadpool(
-            service.validate, document, schema, sample_data=sample
-        )
+        report = await run_in_threadpool(service.validate, document, schema, sample_data=sample)
         if not report.can_compile:
             raise _validation_failure(report)
 
@@ -255,9 +250,7 @@ async def revise_template(
             provider=request.provider,
             model=request.model,
             design_style=(
-                document.metadata.design_style.value
-                if document.metadata.design_style
-                else "modern"
+                document.metadata.design_style.value if document.metadata.design_style else "modern"
             ),
             language=document.language,
             target=document.target.value,
@@ -353,9 +346,7 @@ def list_versions(template_id: str, store: Store = Depends(get_store)) -> dict:
 
 
 @router.get("/{template_id}/export/{version}")
-def export_version(
-    template_id: str, version: int, store: Store = Depends(get_store)
-) -> dict:
+def export_version(template_id: str, version: int, store: Store = Depends(get_store)) -> dict:
     record = store.get_version(template_id, version)
     from docentric_copilot.template_ir import load_document
 

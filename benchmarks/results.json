@@ -1,0 +1,178 @@
+{
+  "aggregate": {
+    "compile": {
+      "budget_ms": 5000,
+      "max_ms": 96.66,
+      "mean_ms": 83.3,
+      "min_ms": 76.32,
+      "name": "compile",
+      "p50_ms": 76.91,
+      "p95_ms": 94.68,
+      "runs": 3
+    },
+    "parse": {
+      "budget_ms": 2000,
+      "max_ms": 5.42,
+      "mean_ms": 3.43,
+      "min_ms": 2.42,
+      "name": "parse",
+      "p50_ms": 2.46,
+      "p95_ms": 5.12,
+      "runs": 3
+    },
+    "plan": {
+      "budget_ms": null,
+      "max_ms": 55.25,
+      "mean_ms": 48.33,
+      "min_ms": 44.74,
+      "name": "plan",
+      "p50_ms": 45.0,
+      "p95_ms": 54.22,
+      "runs": 3
+    },
+    "validate": {
+      "budget_ms": null,
+      "max_ms": 2.76,
+      "mean_ms": 2.51,
+      "min_ms": 2.32,
+      "name": "validate",
+      "p50_ms": 2.46,
+      "p95_ms": 2.73,
+      "runs": 3
+    }
+  },
+  "generated_by": "benchmarks/run_benchmarks.py",
+  "model": null,
+  "per_example": {
+    "invoice": {
+      "compile": {
+        "budget_ms": null,
+        "max_ms": 78.02,
+        "mean_ms": 69.58,
+        "min_ms": 65.62,
+        "name": "invoice.compile",
+        "p50_ms": 68.77,
+        "p95_ms": 76.32,
+        "runs": 5
+      },
+      "parse": {
+        "budget_ms": null,
+        "max_ms": 2.57,
+        "mean_ms": 2.03,
+        "min_ms": 1.72,
+        "name": "invoice.parse",
+        "p50_ms": 1.99,
+        "p95_ms": 2.46,
+        "runs": 5
+      },
+      "plan": {
+        "budget_ms": null,
+        "max_ms": 45.12,
+        "mean_ms": 41.68,
+        "min_ms": 39.36,
+        "name": "invoice.plan",
+        "p50_ms": 41.29,
+        "p95_ms": 44.74,
+        "runs": 5
+      },
+      "validate": {
+        "budget_ms": null,
+        "max_ms": 2.48,
+        "mean_ms": 2.16,
+        "min_ms": 1.83,
+        "name": "invoice.validate",
+        "p50_ms": 2.19,
+        "p95_ms": 2.46,
+        "runs": 5
+      }
+    },
+    "purchase-order": {
+      "compile": {
+        "budget_ms": null,
+        "max_ms": 99.15,
+        "mean_ms": 81.61,
+        "min_ms": 69.18,
+        "name": "purchase-order.compile",
+        "p50_ms": 77.45,
+        "p95_ms": 96.66,
+        "runs": 5
+      },
+      "parse": {
+        "budget_ms": null,
+        "max_ms": 2.49,
+        "mean_ms": 1.99,
+        "min_ms": 1.61,
+        "name": "purchase-order.parse",
+        "p50_ms": 1.89,
+        "p95_ms": 2.42,
+        "runs": 5
+      },
+      "plan": {
+        "budget_ms": null,
+        "max_ms": 57.79,
+        "mean_ms": 43.44,
+        "min_ms": 34.0,
+        "name": "purchase-order.plan",
+        "p50_ms": 41.46,
+        "p95_ms": 55.25,
+        "runs": 5
+      },
+      "validate": {
+        "budget_ms": null,
+        "max_ms": 2.81,
+        "mean_ms": 2.24,
+        "min_ms": 1.77,
+        "name": "purchase-order.validate",
+        "p50_ms": 2.16,
+        "p95_ms": 2.76,
+        "runs": 5
+      }
+    },
+    "quotation": {
+      "compile": {
+        "budget_ms": null,
+        "max_ms": 78.04,
+        "mean_ms": 70.16,
+        "min_ms": 63.7,
+        "name": "quotation.compile",
+        "p50_ms": 70.77,
+        "p95_ms": 76.91,
+        "runs": 5
+      },
+      "parse": {
+        "budget_ms": null,
+        "max_ms": 6.14,
+        "mean_ms": 2.9,
+        "min_ms": 1.89,
+        "name": "quotation.parse",
+        "p50_ms": 1.99,
+        "p95_ms": 5.42,
+        "runs": 5
+      },
+      "plan": {
+        "budget_ms": null,
+        "max_ms": 46.01,
+        "mean_ms": 41.02,
+        "min_ms": 37.44,
+        "name": "quotation.plan",
+        "p50_ms": 40.84,
+        "p95_ms": 45.0,
+        "runs": 5
+      },
+      "validate": {
+        "budget_ms": null,
+        "max_ms": 2.34,
+        "mean_ms": 2.09,
+        "min_ms": 1.94,
+        "name": "quotation.validate",
+        "p50_ms": 1.98,
+        "p95_ms": 2.32,
+        "runs": 5
+      }
+    }
+  },
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "provider": "mock",
+  "python": "3.12.3",
+  "runs_per_example": 5
+}

@@ -20,7 +20,7 @@ classifiers = [
   "Topic :: Text Processing :: Markup :: XML",
 ]
 dependencies = [
-  "fastapi>=0.115,<0.116",
+  "fastapi>=0.162,<0.163",
   "uvicorn[standard]>=0.32,<0.35",
   "pydantic>=2.9,<3",
   "lxml>=5.3,<7",
@@ -118,7 +118,7 @@ src = ["packages", "services", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RET", "PTH", "RUF"]
-ignore = ["E501", "B008", "RUF001", "RUF002", "RUF003"]
+ignore = ["E501", "B008", "RUF001", "RUF002", "RUF003", "UP042"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "B011"]
@@ -126,6 +126,22 @@ ignore = ["E501", "B008", "RUF001", "RUF002", "RUF003"]
 
 [tool.mypy]
 python_version = "3.12"
+# The distribution spreads one namespace over several source roots; mypy must be
+# told about each of them explicitly.
+mypy_path = [
+  "packages/core/src",
+  "packages/ddsp-parser/src",
+  "packages/schema-resolver/src",
+  "packages/template-ir/src",
+  "packages/template-validator/src",
+  "packages/docx-compiler/src",
+  "packages/llm-gateway/src",
+  "packages/planner/src",
+  "packages/renderer/src",
+  "packages/evaluation/src",
+  "services/api/src",
+]
+explicit_package_bases = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 no_implicit_optional = true

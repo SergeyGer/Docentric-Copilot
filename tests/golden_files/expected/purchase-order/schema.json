@@ -1,0 +1,299 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "purchase_order",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "OrderId",
+              "path": "MainData.PurchaseOrder.OrderId",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:OrderId"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "date",
+              "description": null,
+              "name": "OrderDate",
+              "path": "MainData.PurchaseOrder.OrderDate",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:OrderDate"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CurrencyCode",
+              "path": "MainData.PurchaseOrder.CurrencyCode",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:CurrencyCode"
+            },
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "AccountNum",
+                  "path": "MainData.PurchaseOrder.Vendor.AccountNum",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:AccountNum"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Name",
+                  "path": "MainData.PurchaseOrder.Vendor.Name",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Name"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Address",
+                  "path": "MainData.PurchaseOrder.Vendor.Address",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:Address"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "ContactEmail",
+                  "path": "MainData.PurchaseOrder.Vendor.ContactEmail",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:ContactEmail"
+                }
+              ],
+              "collection": false,
+              "data_type": "object",
+              "description": null,
+              "name": "Vendor",
+              "path": "MainData.PurchaseOrder.Vendor",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:Vendor"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "DeliveryTerms",
+              "path": "MainData.PurchaseOrder.DeliveryTerms",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:DeliveryTerms"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.PurchaseOrder.TotalAmount",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "PurchaseOrder",
+          "path": "MainData.PurchaseOrder",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:PurchaseOrder"
+        },
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "ItemId",
+                  "path": "MainData.PurchaseOrderLines.Line.ItemId",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:ItemId"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Description",
+                  "path": "MainData.PurchaseOrderLines.Line.Description",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Description"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "Quantity",
+                  "path": "MainData.PurchaseOrderLines.Line.Quantity",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Quantity"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "UnitPrice",
+                  "path": "MainData.PurchaseOrderLines.Line.UnitPrice",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:UnitPrice"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "LineAmount",
+                  "path": "MainData.PurchaseOrderLines.Line.LineAmount",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:LineAmount"
+                }
+              ],
+              "collection": true,
+              "data_type": "collection",
+              "description": null,
+              "name": "Line",
+              "path": "MainData.PurchaseOrderLines.Line",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Line"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "PurchaseOrderLines",
+          "path": "MainData.PurchaseOrderLines",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:PurchaseOrderLines"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    },
+    {
+      "name": "GeneralData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Name",
+              "path": "GeneralData.Company.Name",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:Name"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "image",
+              "description": null,
+              "name": "CompanyLogo",
+              "path": "GeneralData.Company.CompanyLogo",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CompanyLogo"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Company",
+          "path": "GeneralData.Company",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:Company"
+        }
+      ],
+      "source": "xsd:element:GeneralData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

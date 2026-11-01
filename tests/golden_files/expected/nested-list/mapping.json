@@ -1,0 +1,35 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Orders.Order.OrderId",
+        "MainData.Orders.Order.Lines.Line.Description",
+        "MainData.Orders.Order.Lines.Line.Quantity"
+      ],
+      "confidence_score": 0.1954545454545455,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create an order report with a list of orders",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Orders.Order.OrderId:string",
+      "selected_field_path": "MainData.Orders.Order.OrderId",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Orders.Order.Lines.Line",
+        "MainData.Orders.Order.Lines.Line.Description",
+        "MainData.Orders.Order.Lines.Line.Quantity"
+      ],
+      "confidence_score": 0.5571428571428572,
+      "data_type": "collection",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "their line items",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.Orders.Order.Lines.Line:collection",
+      "selected_field_path": "MainData.Orders.Order.Lines.Line",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "nested_list"
+}

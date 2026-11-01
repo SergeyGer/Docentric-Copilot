@@ -1,0 +1,20 @@
+{
+  "findings": [
+    "V5-001"
+  ],
+  "overall": "passed_unverified_compatibility",
+  "package_statuses": {
+    "docentric_compatibility": "not_tested",
+    "logical": "passed",
+    "semantic": "passed",
+    "structural": "passed",
+    "visual": "passed"
+  },
+  "statuses": {
+    "docentric_compatibility": "not_tested",
+    "logical": "passed",
+    "semantic": "passed",
+    "structural": "passed",
+    "visual": "passed"
+  }
+}

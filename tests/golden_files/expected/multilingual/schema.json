@@ -1,0 +1,97 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "multilingual",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "InvoiceId",
+              "path": "MainData.Invoice.InvoiceId",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:InvoiceId"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CustomerName",
+              "path": "MainData.Invoice.CustomerName",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CustomerName"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CurrencyCode",
+              "path": "MainData.Invoice.CurrencyCode",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CurrencyCode"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.Invoice.TotalAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Invoice",
+          "path": "MainData.Invoice",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Invoice"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

@@ -1,0 +1,133 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 2 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "SAMPLE004",
+      "location": null,
+      "message": "The package has no sample data document",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": false,
+  "schema_id": "missing_data",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "InvoiceId",
+              "path": "MainData.Invoice.InvoiceId",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:InvoiceId"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CustomerName",
+              "path": "MainData.Invoice.CustomerName",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CustomerName"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "VatNumber",
+              "path": "MainData.Invoice.VatNumber",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:VatNumber"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "boolean",
+              "description": null,
+              "name": "IsEU",
+              "path": "MainData.Invoice.IsEU",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:IsEU"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "NetAmount",
+              "path": "MainData.Invoice.NetAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:NetAmount"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TaxAmount",
+              "path": "MainData.Invoice.TaxAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TaxAmount"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.Invoice.TotalAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Invoice",
+          "path": "MainData.Invoice",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Invoice"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

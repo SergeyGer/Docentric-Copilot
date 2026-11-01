@@ -32,7 +32,7 @@ FIXED_TIME = (2024, 1, 1, 0, 0, 0)
 # --------------------------------------------------------------------------- #
 # Deterministic PNG logo so that image bindings can be compiled and previewed
 # --------------------------------------------------------------------------- #
-def _png(width: int, height: int, pixel: "callable[[int, int], tuple[int, int, int]]") -> bytes:
+def _png(width: int, height: int, pixel: callable[[int, int], tuple[int, int, int]]) -> bytes:
     rows = bytearray()
     for y in range(height):
         rows.append(0)  # filter type 0

@@ -1,0 +1,55 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Document.Number"
+      ],
+      "confidence_score": 0.31428571428571433,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create a simple document with the document number",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Document.Number:string",
+      "selected_field_path": "MainData.Document.Number",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [],
+      "confidence_score": null,
+      "data_type": null,
+      "explanation": "No field in the schema satisfies this requirement.",
+      "requirement": "issue date",
+      "requirement_id": "req_01",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Document.CustomerName"
+      ],
+      "confidence_score": 0.6428571428571429,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "customer name",
+      "requirement_id": "req_02",
+      "schema_evidence": "MainData.Document.CustomerName:string",
+      "selected_field_path": "MainData.Document.CustomerName",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Document.TotalAmount"
+      ],
+      "confidence_score": 0.6857142857142857,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "total amount",
+      "requirement_id": "req_03",
+      "schema_evidence": "MainData.Document.TotalAmount:number",
+      "selected_field_path": "MainData.Document.TotalAmount",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "simple_fields"
+}

@@ -1,0 +1,52 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.NetAmount",
+        "MainData.Invoice.TaxAmount",
+        "MainData.Invoice.TotalAmount",
+        "MainData.Invoice.InvoiceId"
+      ],
+      "confidence_score": 0.4666666666666667,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create a tax invoice with net",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Invoice.NetAmount:number",
+      "selected_field_path": "MainData.Invoice.NetAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.TotalAmount",
+        "MainData.Invoice.NetAmount",
+        "MainData.Invoice.TaxAmount"
+      ],
+      "confidence_score": 0.6857142857142857,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "total amounts",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.Invoice.TotalAmount:number",
+      "selected_field_path": "MainData.Invoice.TotalAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.IsEU",
+        "MainData.Invoice.CustomerName",
+        "MainData.Invoice.VatNumber",
+        "MainData.Invoice.TaxAmount"
+      ],
+      "confidence_score": 0.13181818181818183,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "a VAT notice when the customer is in the EU",
+      "requirement_id": "req_02",
+      "schema_evidence": "MainData.Invoice.CustomerName:string",
+      "selected_field_path": "MainData.Invoice.CustomerName",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "conditional_vat"
+}

@@ -1,0 +1,462 @@
+{
+  "container_format": "zip",
+  "diagnostics": [
+    {
+      "code": "INFO002",
+      "location": null,
+      "message": "ZIP container with 3 entries",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "manifest.json",
+      "message": "Manifest detected: docentric-ax-ddsp",
+      "severity": "info"
+    },
+    {
+      "code": "INFO002",
+      "location": "data/sample.xml",
+      "message": "Sample data loaded from 'data/sample.xml'",
+      "severity": "info"
+    }
+  ],
+  "format_version": "1.0",
+  "locales": [],
+  "sample_data_available": true,
+  "schema_id": "sales_quotation",
+  "sections": [
+    {
+      "name": "MainData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "QuotationId",
+              "path": "MainData.Quotation.QuotationId",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:QuotationId"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "date",
+              "description": null,
+              "name": "QuotationDate",
+              "path": "MainData.Quotation.QuotationDate",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:QuotationDate"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "date",
+              "description": null,
+              "name": "ValidUntil",
+              "path": "MainData.Quotation.ValidUntil",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:ValidUntil"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "CurrencyCode",
+              "path": "MainData.Quotation.CurrencyCode",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:CurrencyCode"
+            },
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "AccountNum",
+                  "path": "MainData.Quotation.Customer.AccountNum",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:AccountNum"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Name",
+                  "path": "MainData.Quotation.Customer.Name",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Name"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Address",
+                  "path": "MainData.Quotation.Customer.Address",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:Address"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "boolean",
+                  "description": null,
+                  "name": "IsEU",
+                  "path": "MainData.Quotation.Customer.IsEU",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:IsEU"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "VatNumber",
+                  "path": "MainData.Quotation.Customer.VatNumber",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:VatNumber"
+                }
+              ],
+              "collection": false,
+              "data_type": "object",
+              "description": null,
+              "name": "Customer",
+              "path": "MainData.Quotation.Customer",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:Customer"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "SalesOwner",
+              "path": "MainData.Quotation.SalesOwner",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:SalesOwner"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "PaymentTerms",
+              "path": "MainData.Quotation.PaymentTerms",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:PaymentTerms"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TotalAmount",
+              "path": "MainData.Quotation.TotalAmount",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:TotalAmount"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "number",
+              "description": null,
+              "name": "TaxAmount",
+              "path": "MainData.Quotation.TaxAmount",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:TaxAmount"
+            },
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "BankName",
+                  "path": "MainData.Quotation.BankDetails.BankName",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:BankName"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Iban",
+                  "path": "MainData.Quotation.BankDetails.Iban",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Iban"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Swift",
+                  "path": "MainData.Quotation.BankDetails.Swift",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:Swift"
+                }
+              ],
+              "collection": false,
+              "data_type": "object",
+              "description": null,
+              "name": "BankDetails",
+              "path": "MainData.Quotation.BankDetails",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:BankDetails"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Quotation",
+          "path": "MainData.Quotation",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:Quotation"
+        },
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "ItemId",
+                  "path": "MainData.QuotationLines.Line.ItemId",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:ItemId"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Description",
+                  "path": "MainData.QuotationLines.Line.Description",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Description"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "Quantity",
+                  "path": "MainData.QuotationLines.Line.Quantity",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:Quantity"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "string",
+                  "description": null,
+                  "name": "Unit",
+                  "path": "MainData.QuotationLines.Line.Unit",
+                  "required": false,
+                  "sample_value": null,
+                  "source": "xsd:element:Unit"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "UnitPrice",
+                  "path": "MainData.QuotationLines.Line.UnitPrice",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:UnitPrice"
+                },
+                {
+                  "attributes": [],
+                  "children": [],
+                  "collection": false,
+                  "data_type": "number",
+                  "description": null,
+                  "name": "LineAmount",
+                  "path": "MainData.QuotationLines.Line.LineAmount",
+                  "required": true,
+                  "sample_value": null,
+                  "source": "xsd:element:LineAmount"
+                }
+              ],
+              "collection": true,
+              "data_type": "collection",
+              "description": null,
+              "name": "Line",
+              "path": "MainData.QuotationLines.Line",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Line"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "QuotationLines",
+          "path": "MainData.QuotationLines",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:QuotationLines"
+        }
+      ],
+      "source": "xsd:element:MainData"
+    },
+    {
+      "name": "GeneralData",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Name",
+              "path": "GeneralData.Company.Name",
+              "required": true,
+              "sample_value": null,
+              "source": "xsd:element:Name"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "image",
+              "description": null,
+              "name": "CompanyLogo",
+              "path": "GeneralData.Company.CompanyLogo",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:CompanyLogo"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "VatNumber",
+              "path": "GeneralData.Company.VatNumber",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:VatNumber"
+            },
+            {
+              "attributes": [],
+              "children": [],
+              "collection": false,
+              "data_type": "string",
+              "description": null,
+              "name": "Address",
+              "path": "GeneralData.Company.Address",
+              "required": false,
+              "sample_value": null,
+              "source": "xsd:element:Address"
+            }
+          ],
+          "collection": false,
+          "data_type": "object",
+          "description": null,
+          "name": "Company",
+          "path": "GeneralData.Company",
+          "required": true,
+          "sample_value": null,
+          "source": "xsd:element:Company"
+        }
+      ],
+      "source": "xsd:element:GeneralData"
+    },
+    {
+      "name": "Parameters",
+      "nodes": [
+        {
+          "attributes": [],
+          "children": [],
+          "collection": false,
+          "data_type": "string",
+          "description": null,
+          "name": "Language",
+          "path": "Parameters.Language",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:Language"
+        },
+        {
+          "attributes": [],
+          "children": [],
+          "collection": false,
+          "data_type": "boolean",
+          "description": null,
+          "name": "ShowVatNotice",
+          "path": "Parameters.ShowVatNotice",
+          "required": false,
+          "sample_value": null,
+          "source": "xsd:element:ShowVatNotice"
+        }
+      ],
+      "source": "xsd:element:Parameters"
+    }
+  ],
+  "source": "docentric-ax-ddsp"
+}

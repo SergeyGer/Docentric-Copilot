@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, File, UploadFile
-
 from docentric_copilot.api.deps import get_settings, get_store
 from docentric_copilot.api.routes.common import load_source
 from docentric_copilot.api.schemas import SchemaView, SourceView
@@ -11,6 +9,7 @@ from docentric_copilot.config import Settings
 from docentric_copilot.ddsp_parser import parse_ddsp
 from docentric_copilot.errors import UnsupportedInputError
 from docentric_copilot.storage import Store
+from fastapi import APIRouter, Depends, File, UploadFile
 
 router = APIRouter(prefix="/sources", tags=["sources"])
 

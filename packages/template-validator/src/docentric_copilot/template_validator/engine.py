@@ -20,7 +20,6 @@ from docentric_copilot.schema_resolver.paths import (
 )
 from docentric_copilot.template_ir import (
     Block,
-    CompileTarget,
     Conditional,
     Document,
     Expression,
@@ -134,7 +133,9 @@ def _make(
 class ValidationEngine:
     """Run every validation level against a document."""
 
-    def __init__(self, max_blocks: int = 5_000, max_depth: int = 24, max_text_length: int = 20_000) -> None:
+    def __init__(
+        self, max_blocks: int = 5_000, max_depth: int = 24, max_text_length: int = 20_000
+    ) -> None:
         self._max_blocks = max_blocks
         self._max_depth = max_depth
         self._max_text_length = max_text_length
@@ -368,18 +369,35 @@ class ValidationEngine:
 
         errors = [finding for finding in findings if finding.severity is Severity.ERROR]
         return [
-            _make("V2-001", Level.SEMANTIC, "Binding paths exist", [f for f in errors if f.code == "V2-001"]),
-            _make("V2-002", Level.SEMANTIC, "Binding types are scalar", [f for f in errors if f.code == "V2-002"]),
+            _make(
+                "V2-001",
+                Level.SEMANTIC,
+                "Binding paths exist",
+                [f for f in errors if f.code == "V2-001"],
+            ),
+            _make(
+                "V2-002",
+                Level.SEMANTIC,
+                "Binding types are scalar",
+                [f for f in errors if f.code == "V2-002"],
+            ),
             _make(
                 "V2-003",
                 Level.SEMANTIC,
                 "Collection context is explicit",
                 [f for f in errors if f.code == "V2-003"],
             ),
-            _make("V2-004", Level.SEMANTIC, "Format matches data type", [f for f in errors if f.code == "V2-004"]),
+            _make(
+                "V2-004",
+                Level.SEMANTIC,
+                "Format matches data type",
+                [f for f in errors if f.code == "V2-004"],
+            ),
         ]
 
-    def _binding_format_findings(self, binding: FieldBinding | ImageBinding, data_type: str) -> list[Finding]:
+    def _binding_format_findings(
+        self, binding: FieldBinding | ImageBinding, data_type: str
+    ) -> list[Finding]:
         findings: list[Finding] = []
         if isinstance(binding, ImageBinding):
             if data_type not in {"image", "any"}:
@@ -471,8 +489,18 @@ class ValidationEngine:
             elif isinstance(block, Conditional):
                 findings.extend(self._condition_findings(block.condition, schema, node.scope))
         return [
-            _make("V3-001", Level.LOGICAL, "Repeat targets a collection", [f for f in findings if f.code == "V3-001"]),
-            _make("V3-002", Level.LOGICAL, "Repeat aliases are unique", [f for f in findings if f.code == "V3-002"]),
+            _make(
+                "V3-001",
+                Level.LOGICAL,
+                "Repeat targets a collection",
+                [f for f in findings if f.code == "V3-001"],
+            ),
+            _make(
+                "V3-002",
+                Level.LOGICAL,
+                "Repeat aliases are unique",
+                [f for f in findings if f.code == "V3-002"],
+            ),
             _make(
                 "V3-003",
                 Level.LOGICAL,
@@ -507,7 +535,10 @@ class ValidationEngine:
                 )
                 continue
             data_type = resolved.node.data_type
-            if node.operator in _COMPARISON_OPERATORS or node.operator is ExpressionOperator.CONTAINS:
+            if (
+                node.operator in _COMPARISON_OPERATORS
+                or node.operator is ExpressionOperator.CONTAINS
+            ):
                 if isinstance(node.value, bool) and data_type not in {"boolean", "any"}:
                     findings.append(
                         Finding(
@@ -533,7 +564,10 @@ class ValidationEngine:
                             location=node.field,
                         )
                     )
-                if node.operator is ExpressionOperator.CONTAINS and data_type not in {"string", "any"}:
+                if node.operator is ExpressionOperator.CONTAINS and data_type not in {
+                    "string",
+                    "any",
+                }:
                     findings.append(
                         Finding(
                             code="V3-003",

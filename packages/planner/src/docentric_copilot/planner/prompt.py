@@ -44,7 +44,9 @@ by the JSON schema attached to this request.
 MAX_SCHEMA_ROWS = 400
 
 
-def schema_fragment(schema: NormalizedSchema, *, max_rows: int = MAX_SCHEMA_ROWS) -> list[dict[str, Any]]:
+def schema_fragment(
+    schema: NormalizedSchema, *, max_rows: int = MAX_SCHEMA_ROWS
+) -> list[dict[str, Any]]:
     return schema.compact_fragment(max_nodes=max_rows)
 
 

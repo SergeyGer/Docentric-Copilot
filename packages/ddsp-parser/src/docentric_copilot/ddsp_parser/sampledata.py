@@ -14,9 +14,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from lxml import etree  # type: ignore[import-untyped]
-
 from docentric_copilot.config import Limits
+from lxml import etree
 
 from .diagnostics import Diagnostic, DiagnosticCode, info, warning
 from .models import NormalizedSchema, SchemaAttribute, SchemaNode, SchemaSection
@@ -73,7 +72,9 @@ def extract_sample_data(
     if root_name in section_names:
         return {root_name: _element_value(root)}, diagnostics
 
-    child_names = {_safe_identifier(local_name(child.tag)) for child in root if isinstance(child.tag, str)}
+    child_names = {
+        _safe_identifier(local_name(child.tag)) for child in root if isinstance(child.tag, str)
+    }
     matching = sorted(name for name in child_names if name in section_names)
     if matching:
         data: dict[str, Any] = {}
@@ -174,7 +175,12 @@ def coerce_sample_tree(
                         location=child_path,
                     )
                 )
-            coerced[key] = coerce_sample_tree(value, schema, diagnostics, child_path)
+            child_value = coerce_sample_tree(value, schema, diagnostics, child_path)
+            if node is not None and node.collection and not isinstance(child_value, list):
+                # A collection with a single item is still a list: the renderer and
+                # the repeat semantics must not depend on the sample cardinality.
+                child_value = [child_value]
+            coerced[key] = child_value
         return coerced
     node = schema.node(path) if path else None
     if node is None:
@@ -193,10 +199,10 @@ def _infer_scalar_type(values: list[str]) -> str:
     cleaned = [value.strip() for value in values if value.strip()]
     if not cleaned:
         return "string"
-    if all(value.lower() in _BOOLEANS for value in cleaned):
-        return "boolean"
     if all(_NUMBER.match(value.replace(" ", "")) for value in cleaned):
         return "number"
+    if all(value.lower() in {"true", "false", "yes", "no"} for value in cleaned):
+        return "boolean"
     if all(_DATE.match(value) for value in cleaned):
         return "date"
     return "string"
@@ -258,7 +264,9 @@ def infer_sections_from_sample(
     """Infer sections and nodes from a data document alone."""
     engine = _Inference(limits=limits)
     root_name = _safe_identifier(local_name(root.tag))
-    child_names = {_safe_identifier(local_name(child.tag)) for child in root if isinstance(child.tag, str)}
+    child_names = {
+        _safe_identifier(local_name(child.tag)) for child in root if isinstance(child.tag, str)
+    }
     sections: list[SchemaSection] = []
     if root_name in KNOWN_SECTIONS:
         sections.append(
@@ -299,8 +307,8 @@ def infer_sections_from_sample(
 
 
 __all__ = [
+    "_max_occurs",
     "coerce_sample_tree",
     "extract_sample_data",
     "infer_sections_from_sample",
-    "_max_occurs",
 ]

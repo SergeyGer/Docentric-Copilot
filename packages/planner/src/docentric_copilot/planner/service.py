@@ -11,8 +11,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, ValidationError
-
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError, ProviderError
 from docentric_copilot.llm.gateway import LLMGateway
@@ -55,6 +53,7 @@ from docentric_copilot.template_ir import (
     Table,
     iter_expressions,
 )
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .heuristic import BASELINE_VERSION, build_document
 from .prompt import build_messages, build_repair_message
@@ -291,7 +290,9 @@ def _check_expression(
         try:
             resolve_value(schema, node.field, scope)
         except PathResolutionError as exc:
-            removed.append(RemovedBinding(path=node.field, reason=exc.message, block_kind="conditional"))
+            removed.append(
+                RemovedBinding(path=node.field, reason=exc.message, block_kind="conditional")
+            )
             ok = False
     return ok
 
@@ -305,7 +306,9 @@ def _sanitize_inline(
             try:
                 resolve_value(schema, run.path, scope)
             except PathResolutionError as exc:
-                removed.append(RemovedBinding(path=run.path, reason=exc.message, block_kind="field"))
+                removed.append(
+                    RemovedBinding(path=run.path, reason=exc.message, block_kind="field")
+                )
                 continue
         kept.append(run)
     return kept
@@ -331,7 +334,9 @@ def sanitize_blocks(
             try:
                 resolve_value(schema, block.path, scope)
             except PathResolutionError as exc:
-                removed.append(RemovedBinding(path=block.path, reason=exc.message, block_kind="image"))
+                removed.append(
+                    RemovedBinding(path=block.path, reason=exc.message, block_kind="image")
+                )
                 continue
             kept.append(block)
         elif isinstance(block, Repeat):
@@ -355,7 +360,9 @@ def sanitize_blocks(
                 continue
             else_blocks = sanitize_blocks(block.else_blocks or [], schema, scope, removed)
             kept.append(
-                block.model_copy(update={"then_blocks": then_blocks, "else_blocks": else_blocks or None})
+                block.model_copy(
+                    update={"then_blocks": then_blocks, "else_blocks": else_blocks or None}
+                )
             )
         elif isinstance(block, Table):
             table_scope = scope
@@ -365,7 +372,9 @@ def sanitize_blocks(
                     collection = resolve_collection(schema, block.repeat.path, scope)
                 except PathResolutionError as exc:
                     removed.append(
-                        RemovedBinding(path=block.repeat.path, reason=exc.message, block_kind="table")
+                        RemovedBinding(
+                            path=block.repeat.path, reason=exc.message, block_kind="table"
+                        )
                     )
                     continue
                 table_scope = scope.push(block.repeat.alias, collection.absolute)
@@ -471,9 +480,11 @@ class TemplatePlanner:
         document = document.model_copy(update={"target": resolved_options.target})
         sanitized, removed = sanitize_document(document, schema)
         mapping = build_mapping_report(schema, sanitized, requirement, removed)
-        repairs = [
-            f"Removed {len(removed)} unresolvable reference(s) before compilation"
-        ] if removed else []
+        repairs = (
+            [f"Removed {len(removed)} unresolvable reference(s) before compilation"]
+            if removed
+            else []
+        )
         warnings: list[str] = []
         if provider != "mock" and sanitized.metadata.generator != BASELINE_VERSION:
             sanitized = sanitized.model_copy(
@@ -511,9 +522,7 @@ class TemplatePlanner:
             raise InvalidInputError("A revision instruction is required")
         previous_intent = document.metadata.intent or ""
         merged = f"{previous_intent}\nRevision request: {instruction}"[:2_000]
-        outcome = await self.plan(
-            schema, merged, provider=provider, model=model, options=options
-        )
+        outcome = await self.plan(schema, merged, provider=provider, model=model, options=options)
         changes = diff_documents(document, outcome.document)
         return outcome.model_copy(update={"changed": changes})
 
@@ -537,7 +546,10 @@ class TemplatePlanner:
                 )
             except ProviderError as exc:
                 last_error = exc
-                if attempt >= attempts or exc.code not in {"provider_invalid_output", "plan_invalid"}:
+                if attempt >= attempts or exc.code not in {
+                    "provider_invalid_output",
+                    "plan_invalid",
+                }:
                     raise
                 messages = [*messages, build_repair_message(exc.details.get("errors", []))]
         raise last_error or ProviderError(  # pragma: no cover - defensive

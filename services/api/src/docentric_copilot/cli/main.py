@@ -22,15 +22,19 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import typer
-
 from docentric_copilot import __version__
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.config import get_settings
 from docentric_copilot.ddsp_parser import ParsedSource, parse_ddsp
 from docentric_copilot.docx_compiler import CompileOptions
-from docentric_copilot.errors import CopilotError
+from docentric_copilot.errors import CopilotError, NotFoundError
 from docentric_copilot.planner import PlanOptions, TemplatePlanner
-from docentric_copilot.template_ir import CompileTarget, document_json_schema, ir_digest, load_document
+from docentric_copilot.template_ir import (
+    CompileTarget,
+    document_json_schema,
+    ir_digest,
+    load_document,
+)
 from docentric_copilot.template_validator import ValidationEngine, render_report_html
 
 app = typer.Typer(
@@ -62,7 +66,7 @@ def _read_bytes(path: str) -> tuple[bytes, str]:
         return sys.stdin.buffer.read(), "stdin.ddsp"
     target = Path(path)
     if not target.exists():
-        raise CopilotError(f"File not found: {path}", code="not_found", details={"path": path})
+        raise NotFoundError(f"File not found: {path}", details={"path": path})
     return target.read_bytes(), target.name
 
 
@@ -144,7 +148,9 @@ def inspect(
 @app.command()
 def plan(
     ddsp: Annotated[str, typer.Option("--ddsp", help="Path to a .ddsp package")],
-    prompt_file: Annotated[str, typer.Option("--prompt-file", help="File with the requirement text")],
+    prompt_file: Annotated[
+        str, typer.Option("--prompt-file", help="File with the requirement text")
+    ],
     provider: Annotated[str, typer.Option("--provider", help="LLM provider id")] = "mock",
     model: Annotated[str | None, typer.Option("--model", help="Model identifier")] = None,
     output: Annotated[Path, typer.Option("--output", help="Where to write the IR JSON")] = Path(
@@ -171,7 +177,9 @@ def plan(
             target=target,  # type: ignore[arg-type]
         )
         outcome = asyncio.run(
-            planner.plan(parsed.schema, requirement, provider=provider, model=model, options=options)
+            planner.plan(
+                parsed.schema, requirement, provider=provider, model=model, options=options
+            )
         )
         report = ValidationEngine().validate(outcome.document, parsed.schema)
         if not report.can_compile:
@@ -186,7 +194,9 @@ def plan(
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
-        json.dumps(outcome.document.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True)
+        json.dumps(
+            outcome.document.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True
+        )
         + "\n",
         encoding="utf-8",
     )
@@ -194,7 +204,10 @@ def plan(
         mapping_output.parent.mkdir(parents=True, exist_ok=True)
         mapping_output.write_text(
             json.dumps(
-                outcome.mapping.model_dump(mode="json"), ensure_ascii=False, indent=2, sort_keys=True
+                outcome.mapping.model_dump(mode="json"),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
             )
             + "\n",
             encoding="utf-8",
@@ -213,7 +226,7 @@ def plan(
         summary,
         as_json=as_json,
         message=(
-            f"IR written to {output} ({summary['ir_digest'][:12]})\n"
+            f"IR written to {output} ({str(summary['ir_digest'])[:12]})\n"
             f"Validation: {report.statuses()}\n"
             f"Mapping: {outcome.mapping.counts()}"
         ),
@@ -236,7 +249,9 @@ def validate(
     try:
         parsed = _load_source(ddsp)
         document = load_document(plan_file.read_text(encoding="utf-8"))
-        report = ValidationEngine().validate(document, parsed.schema, sample_data=parsed.sample_data)
+        report = ValidationEngine().validate(
+            document, parsed.schema, sample_data=parsed.sample_data
+        )
     except CopilotError as exc:
         _fail(exc, as_json=as_json)
         return
@@ -254,7 +269,11 @@ def validate(
         "errors": len(report.errors()),
         "report": report.model_dump(mode="json"),
     }
-    _emit(payload, as_json=as_json, message=f"Validation: {report.statuses()}\nOverall: {report.overall}")
+    _emit(
+        payload,
+        as_json=as_json,
+        message=f"Validation: {report.statuses()}\nOverall: {report.overall}",
+    )
     if not report.can_compile:
         raise typer.Exit(code=1)
 
@@ -263,7 +282,9 @@ def validate(
 def compile(
     ddsp: Annotated[str, typer.Option("--ddsp", help="Path to a .ddsp package")],
     plan_file: Annotated[Path, typer.Option("--plan", help="IR JSON file")],
-    output: Annotated[Path, typer.Option("--output", help="DOCX output path")] = Path("document.docx"),
+    output: Annotated[Path, typer.Option("--output", help="DOCX output path")] = Path(
+        "document.docx"
+    ),
     target: Annotated[str, typer.Option("--target")] = "generic-docx",
     render_mode: Annotated[str, typer.Option("--render-mode")] = "auto",
     as_json: Annotated[bool, typer.Option("--json", help="Machine readable output")] = False,
@@ -324,7 +345,9 @@ def compile(
 def preview(
     ddsp: Annotated[str, typer.Option("--ddsp", help="Path to a .ddsp package")],
     plan_file: Annotated[Path, typer.Option("--plan", help="IR JSON file")],
-    output: Annotated[Path, typer.Option("--output", help="HTML output path")] = Path("preview.html"),
+    output: Annotated[Path, typer.Option("--output", help="HTML output path")] = Path(
+        "preview.html"
+    ),
     as_json: Annotated[bool, typer.Option("--json", help="Machine readable output")] = False,
 ) -> None:
     """Render the independent HTML preview."""
@@ -367,7 +390,9 @@ def ir_schema(
     output: Annotated[Path | None, typer.Option("--output", help="Write schema to a file")] = None,
 ) -> None:
     """Print (or write) the JSON Schema of Template IR v1.0."""
-    payload = json.dumps(document_json_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    payload = (
+        json.dumps(document_json_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    )
     if output is None:
         typer.echo(payload, nl=False)
     else:

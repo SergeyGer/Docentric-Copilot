@@ -1,0 +1,122 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "GeneralData.Company.CompanyLogo"
+      ],
+      "confidence_score": 0.5,
+      "data_type": "image",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create a purchase order document with our company logo",
+      "requirement_id": "req_00",
+      "schema_evidence": "GeneralData.Company.CompanyLogo:image",
+      "selected_field_path": "GeneralData.Company.CompanyLogo",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrder.Vendor.Address",
+        "MainData.PurchaseOrder.Vendor.Name",
+        "MainData.PurchaseOrder.Vendor.AccountNum",
+        "MainData.PurchaseOrder.Vendor.ContactEmail"
+      ],
+      "confidence_score": 0.3928571428571429,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "vendor address",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.PurchaseOrder.Vendor.Address:string",
+      "selected_field_path": "MainData.PurchaseOrder.Vendor.Address",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrder.OrderId",
+        "MainData.PurchaseOrder.OrderDate",
+        "MainData.PurchaseOrder.CurrencyCode",
+        "MainData.PurchaseOrder.Vendor.AccountNum"
+      ],
+      "confidence_score": 0.42857142857142855,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "order number",
+      "requirement_id": "req_02",
+      "schema_evidence": "MainData.PurchaseOrder.OrderId:string",
+      "selected_field_path": "MainData.PurchaseOrder.OrderId",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrderLines.Line",
+        "MainData.PurchaseOrderLines.Line.ItemId",
+        "MainData.PurchaseOrderLines.Line.LineAmount",
+        "MainData.PurchaseOrderLines.Line.Description"
+      ],
+      "confidence_score": 0.2545454545454545,
+      "data_type": "collection",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "a table of ordered items with quantities",
+      "requirement_id": "req_03",
+      "schema_evidence": "MainData.PurchaseOrderLines.Line:collection",
+      "selected_field_path": "MainData.PurchaseOrderLines.Line",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrderLines.Line.UnitPrice"
+      ],
+      "confidence_score": 0.6785714285714286,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "unit prices",
+      "requirement_id": "req_04",
+      "schema_evidence": "MainData.PurchaseOrderLines.Line.UnitPrice:number",
+      "selected_field_path": "MainData.PurchaseOrderLines.Line.UnitPrice",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrderLines.Line.LineAmount",
+        "MainData.PurchaseOrder.TotalAmount",
+        "MainData.PurchaseOrderLines.Line.ItemId",
+        "MainData.PurchaseOrderLines.Line.Quantity"
+      ],
+      "confidence_score": 0.6785714285714286,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "line amounts",
+      "requirement_id": "req_05",
+      "schema_evidence": "MainData.PurchaseOrderLines.Line.LineAmount:number",
+      "selected_field_path": "MainData.PurchaseOrderLines.Line.LineAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrder.TotalAmount",
+        "MainData.PurchaseOrderLines.Line.LineAmount"
+      ],
+      "confidence_score": 0.72,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "a total",
+      "requirement_id": "req_06",
+      "schema_evidence": "MainData.PurchaseOrder.TotalAmount:number",
+      "selected_field_path": "MainData.PurchaseOrder.TotalAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.PurchaseOrder.DeliveryTerms"
+      ],
+      "confidence_score": 0.6,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "the delivery terms",
+      "requirement_id": "req_07",
+      "schema_evidence": "MainData.PurchaseOrder.DeliveryTerms:string",
+      "selected_field_path": "MainData.PurchaseOrder.DeliveryTerms",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "purchase_order"
+}

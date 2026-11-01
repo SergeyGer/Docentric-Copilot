@@ -5,11 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 import httpx
-from pydantic import BaseModel, ValidationError
-
 from docentric_copilot.config import ProviderSettings, Settings, get_settings
 from docentric_copilot.errors import ProviderError, ProviderNotConfiguredError
 from docentric_copilot.logging import get_logger
+from pydantic import BaseModel, ValidationError
 
 from .models import GenerationResult, GenerationSettings, Message
 from .providers import (
@@ -52,13 +51,13 @@ class LLMGateway:
 
     def _make_http_provider(self, name: str, provider_settings: ProviderSettings) -> Any:
         base_url = provider_settings.base_url or ""
-        qualified = {"api_key": provider_settings.api_key, "base_url": base_url, "client": self._client}
+        api_key = provider_settings.api_key
         if name == "openai":
-            return OpenAIProvider(**qualified)
+            return OpenAIProvider(api_key=api_key, base_url=base_url, client=self._client)
         if name == "anthropic":
-            return AnthropicProvider(**qualified)
+            return AnthropicProvider(api_key=api_key, base_url=base_url, client=self._client)
         if name == "gemini":
-            return GeminiProvider(**qualified)
+            return GeminiProvider(api_key=api_key, base_url=base_url, client=self._client)
         raise ProviderNotConfiguredError(  # pragma: no cover - defensive
             f"Unknown provider '{name}'",
             details={"provider": name},
@@ -68,7 +67,7 @@ class LLMGateway:
     @property
     def mock(self) -> MockProvider:
         provider = self._providers["mock"]
-        assert isinstance(provider, MockProvider)  # noqa: S101 - invariant
+        assert isinstance(provider, MockProvider)
         return provider
 
     def get(self, name: str) -> Any:
@@ -135,7 +134,9 @@ class LLMGateway:
             max_output_tokens=max_output_tokens or self._settings.llm_max_output_tokens,
             timeout_seconds=self._settings.llm_timeout_seconds,
             retries=self._settings.llm_max_retries,
-            budget_usd=self._settings.llm_max_generation_cost_usd if budget_usd is None else budget_usd,
+            budget_usd=self._settings.llm_max_generation_cost_usd
+            if budget_usd is None
+            else budget_usd,
         )
         try:
             result = await selected.generate_structured(
@@ -145,7 +146,7 @@ class LLMGateway:
             )
         except ProviderError:
             raise
-        except Exception as exc:  # noqa: BLE001 - normalize unknown adapter failures
+        except Exception as exc:
             raise ProviderError(
                 "The provider failed unexpectedly",
                 details={"provider": provider, "error": type(exc).__name__},
@@ -160,7 +161,10 @@ class LLMGateway:
                 details={
                     "provider": provider,
                     "errors": [
-                        {"location": ".".join(str(part) for part in error["loc"]), "message": error["msg"]}
+                        {
+                            "location": ".".join(str(part) for part in error["loc"]),
+                            "message": error["msg"],
+                        }
                         for error in exc.errors()[:10]
                     ],
                 },

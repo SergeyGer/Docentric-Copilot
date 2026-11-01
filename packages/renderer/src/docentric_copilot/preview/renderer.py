@@ -15,9 +15,6 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from jinja2 import Template
-from pydantic import BaseModel, ConfigDict
-
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.docx_compiler.context import SampleContext
 from docentric_copilot.docx_compiler.expression import evaluate
@@ -37,6 +34,8 @@ from docentric_copilot.template_ir import (
     Table,
     TextStyle,
 )
+from jinja2 import Template
+from pydantic import BaseModel, ConfigDict
 
 _TEMPLATE = Template(
     """<!DOCTYPE html>
@@ -145,7 +144,7 @@ class _PreviewRenderer:
         for extra in document.sections[1:]:
             body_parts.append(
                 '<div style="page-break-before: always; border-top: 1px dashed #e2e8f0; '
-                "margin-top: 24px; padding-top: 16px;\"></div>"
+                'margin-top: 24px; padding-top: 16px;"></div>'
             )
             body_parts.append(self._render_blocks(extra.body, context))
         page = document.page
@@ -188,12 +187,18 @@ class _PreviewRenderer:
             return self._conditional(block, context)
         if isinstance(block, Table):
             return self._table(block, context)
-        raise ValueError(f"unsupported block kind: {getattr(block, 'kind', '?')}")  # pragma: no cover
+        raise ValueError(
+            f"unsupported block kind: {getattr(block, 'kind', '?')}"
+        )  # pragma: no cover
 
     def _paragraph(self, block: Paragraph, context: SampleContext) -> str:
         style = _css(block.style)
-        space = f"margin-bottom:{block.space_after_pt}pt;" if block.space_after_pt is not None else ""
-        return f'<p style="{space}">{self._runs(block.runs, context, None, wrapper_style=style)}</p>'
+        space = (
+            f"margin-bottom:{block.space_after_pt}pt;" if block.space_after_pt is not None else ""
+        )
+        return (
+            f'<p style="{space}">{self._runs(block.runs, context, None, wrapper_style=style)}</p>'
+        )
 
     def _runs(
         self,
@@ -231,9 +236,7 @@ class _PreviewRenderer:
         source = _data_uri(value)
         if source is None:
             self._stats["placeholders"] += 1
-            return (
-                f'<p><span class="img-placeholder">image · {html.escape(block.path)}</span></p>'
-            )
+            return f'<p><span class="img-placeholder">image · {html.escape(block.path)}</span></p>'
         self._stats["images"] += 1
         width = f"width:{block.width_mm}mm;" if block.width_mm else "max-width:60mm;"
         return (
@@ -278,10 +281,10 @@ class _PreviewRenderer:
         rows: list[str] = []
         if block.show_header:
             headers = "".join(
-                f'<th style="width:{column.width_mm}mm;text-align:{_ALIGN.get(column.alignment, "left")}">'
+                f'<th style="width:{column.width_mm}mm;text-align:{(_ALIGN[column.alignment] if column.alignment else "left")}">'
                 f"{html.escape(column.header)}</th>"
                 if column.width_mm
-                else f'<th style="text-align:{_ALIGN.get(column.alignment, "left")}">'
+                else f'<th style="text-align:{(_ALIGN[column.alignment] if column.alignment else "left")}">'
                 f"{html.escape(column.header)}</th>"
                 for column in block.columns
             )
@@ -349,7 +352,9 @@ def _data_uri(value: Any) -> str | None:
         decoded = base64.b64decode(compact[:64] + "=" * (-len(compact[:64]) % 4), validate=False)
     except (binascii.Error, ValueError):
         return None
-    if not decoded or not any(decoded.startswith(magic) for magic in (b"\x89PNG", b"\xff\xd8", b"GIF8", b"BM")):
+    if not decoded or not any(
+        decoded.startswith(magic) for magic in (b"\x89PNG", b"\xff\xd8", b"GIF8", b"BM")
+    ):
         return None
     return f"data:image/png;base64,{compact}"
 

@@ -31,6 +31,7 @@ def _coerce_pair(left: Any, right: Any) -> tuple[Any, Any]:
     if left_number is not None and right_number is not None:
         return left_number, right_number
     if isinstance(left, bool) or isinstance(right, bool):
+
         def as_bool(value: Any) -> bool:
             if isinstance(value, bool):
                 return value

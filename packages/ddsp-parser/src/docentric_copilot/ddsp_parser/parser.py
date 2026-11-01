@@ -14,10 +14,9 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from lxml import etree  # type: ignore[import-untyped]
-
 from docentric_copilot.config import Limits, get_settings
 from docentric_copilot.errors import InvalidInputError, UnsupportedInputError
+from lxml import etree
 
 from .diagnostics import Diagnostic, DiagnosticCode, error, info, warning
 from .models import NormalizedSchema, SchemaSection
@@ -122,15 +121,14 @@ def _prioritise(entries: list[ContainerEntry]) -> list[ContainerEntry]:
     for entry in entries:
         lowered = entry.name.lower()
         (hinted if any(hint in lowered for hint in hints) else other).append(entry)
-    return [*sorted(hinted, key=lambda item: item.name), *sorted(other, key=lambda item: item.name)][
-        :_MAX_XML_DOCUMENTS
-    ]
+    return [
+        *sorted(hinted, key=lambda item: item.name),
+        *sorted(other, key=lambda item: item.name),
+    ][:_MAX_XML_DOCUMENTS]
 
 
 def _with_location(diagnostics: list[Diagnostic], location: str) -> list[Diagnostic]:
-    return [
-        item.model_copy(update={"location": item.location or location}) for item in diagnostics
-    ]
+    return [item.model_copy(update={"location": item.location or location}) for item in diagnostics]
 
 
 def _select_sections(
@@ -181,9 +179,7 @@ def parse_ddsp(
     elif container_format == "xml":
         entries = [ContainerEntry(name=filename, payload=data, size=len(data))]
         container_format = "xml"
-        diagnostics.append(
-            info(DiagnosticCode.FORMAT_DETECTED, "Input is a single XML document")
-        )
+        diagnostics.append(info(DiagnosticCode.FORMAT_DETECTED, "Input is a single XML document"))
     else:
         raise UnsupportedInputError(
             "The file is neither a DDSP ZIP container nor an XML document",
@@ -204,10 +200,12 @@ def parse_ddsp(
 
     schema_documents: list[tuple[str, etree._Element]] = []
     data_documents: list[tuple[str, etree._Element]] = []
+    parse_failures: list[InvalidInputError] = []
     for entry in xml_entries:
         try:
             root = parse_xml(entry.payload, resolved_limits, location=entry.name)
         except InvalidInputError as exc:  # non-fatal for secondary documents
+            parse_failures.append(exc)
             diagnostics.append(
                 warning(
                     DiagnosticCode.XML_PARSE_ERROR,
@@ -222,6 +220,16 @@ def parse_ddsp(
             data_documents.append((entry.name, root))
 
     if not schema_documents and not data_documents:
+        if parse_failures:
+            first = parse_failures[0]
+            raise InvalidInputError(
+                first.message,
+                code=first.code,
+                details={
+                    "location": first.details.get("location"),
+                    "failed_documents": len(parse_failures),
+                },
+            )
         raise UnsupportedInputError(
             "No usable XML documents were found inside the DDSP container",
             code=DiagnosticCode.NO_XML_CONTENT.value,
@@ -275,10 +283,10 @@ def parse_ddsp(
         )
 
     if schema.errors():
-        first = schema.errors()[0]
+        first_error = schema.errors()[0]
         raise UnsupportedInputError(
-            f"DDSP could not be normalized: {first.message}",
-            code=first.code.value,
+            f"DDSP could not be normalized: {first_error.message}",
+            code=first_error.code.value,
             details={
                 "diagnostics": [item.model_dump(mode="json") for item in schema.diagnostics[:50]]
             },

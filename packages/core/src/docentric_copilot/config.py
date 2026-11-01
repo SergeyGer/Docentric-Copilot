@@ -101,7 +101,6 @@ class Limits:
     max_ir_blocks: int = 5_000
     max_ir_depth: int = 24
     max_text_length: int = 20_000
-    parse_timeout_seconds: float = 10.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -135,7 +134,9 @@ class Settings:
             "environment": self.environment,
             "docentric_ax_adapter_enabled": self.enable_docentric_ax_adapter,
             "artifact_ttl_seconds": self.artifact_ttl_seconds,
-            "providers": [p.public_view() for p in sorted(self.providers.values(), key=lambda p: p.name)],
+            "providers": [
+                p.public_view() for p in sorted(self.providers.values(), key=lambda p: p.name)
+            ],
             "limits": {
                 "max_ddsp_bytes": self.limits.max_ddsp_bytes,
                 "max_uncompressed_bytes": self.limits.max_uncompressed_bytes,
@@ -146,7 +147,7 @@ class Settings:
 
 def _build_providers() -> dict[str, ProviderSettings]:
     gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    providers = {
+    return {
         "mock": ProviderSettings(
             name="mock",
             api_key="deterministic",
@@ -178,7 +179,6 @@ def _build_providers() -> dict[str, ProviderSettings]:
             models=tuple(_env_list("DC_GEMINI_MODELS")),
         ),
     }
-    return providers
 
 
 def _build_settings() -> Settings:
@@ -198,6 +198,7 @@ def _build_settings() -> Settings:
             max_xml_depth=_env_int("DC_MAX_XML_DEPTH", 64, minimum=4),
             max_schema_nodes=_env_int("DC_MAX_SCHEMA_NODES", 5_000, minimum=10),
             max_ir_blocks=_env_int("DC_MAX_IR_BLOCKS", 5_000, minimum=10),
+            max_ir_depth=_env_int("DC_MAX_IR_DEPTH", 24, minimum=2, maximum=64),
             max_text_length=_env_int("DC_MAX_TEXT_LENGTH", 20_000, minimum=100),
         ),
         artifact_ttl_seconds=_env_int("DC_ARTIFACT_TTL_SECONDS", 3600, minimum=60),
@@ -206,9 +207,7 @@ def _build_settings() -> Settings:
         providers=_build_providers(),
         llm_timeout_seconds=_env_float("DC_LLM_TIMEOUT_SECONDS", 60.0, minimum=1.0),
         llm_max_retries=_env_int("DC_LLM_MAX_RETRIES", 2, minimum=0, maximum=5),
-        llm_max_generation_cost_usd=_env_float(
-            "DC_LLM_MAX_GENERATION_COST_USD", 0.50, minimum=0.0
-        ),
+        llm_max_generation_cost_usd=_env_float("DC_LLM_MAX_GENERATION_COST_USD", 0.50, minimum=0.0),
         llm_max_output_tokens=_env_int("DC_LLM_MAX_OUTPUT_TOKENS", 8_000, minimum=256),
         log_level=_env_str("DC_LOG_LEVEL", "INFO").upper(),
         log_json=_env_bool("DC_LOG_JSON", True),

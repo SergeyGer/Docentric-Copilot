@@ -27,10 +27,14 @@ class CopilotError(Exception):
         *,
         details: dict[str, Any] | None = None,
         code: str | None = None,
+        location: str | None = None,
     ) -> None:
         super().__init__(message)
         self.message = message
         self.details: dict[str, Any] = details or {}
+        self.location = location
+        if location and "location" not in self.details:
+            self.details["location"] = location
         if code is not None:
             self.code = code
 
@@ -49,7 +53,7 @@ class InvalidInputError(CopilotError):
 
     code = "input_invalid"
     http_status = 400
-    exit_code = 2
+    exit_code = 3
 
 
 class UnsupportedInputError(CopilotError):

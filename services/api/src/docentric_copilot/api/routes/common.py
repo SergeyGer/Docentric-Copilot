@@ -8,8 +8,8 @@ from typing import Any
 from docentric_copilot.api.schemas import ArtifactView
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError, NotFoundError
-from docentric_copilot.serialization import canonical_json, digest
-from docentric_copilot.storage import ArtifactRecord, Store, SourceRecord
+from docentric_copilot.serialization import digest_bytes
+from docentric_copilot.storage import ArtifactRecord, SourceRecord, Store
 from docentric_copilot.template_ir import Document, canonical_ir_json, load_document
 
 MEDIA_TYPES = {
@@ -43,7 +43,7 @@ def publish(
         filename=filename,
         media_type=media_type,
         content=content,
-        digest=digest(content),
+        digest=digest_bytes(content),
         job_id=job_id,
         template_id=template_id,
     )

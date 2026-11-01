@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from fastapi import Request
-
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.config import Settings
 from docentric_copilot.storage import Store
+from fastapi import Request
 
 
 def get_settings(request: Request) -> Settings:

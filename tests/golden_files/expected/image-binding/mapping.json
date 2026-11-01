@@ -1,0 +1,46 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [
+        "MainData.Company.CompanyLogo"
+      ],
+      "confidence_score": 0.6111111111111112,
+      "data_type": "image",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Create a report with the company logo",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Company.CompanyLogo:image",
+      "selected_field_path": "MainData.Company.CompanyLogo",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Report.Title",
+        "MainData.Company.Name",
+        "MainData.Report.TotalAmount"
+      ],
+      "confidence_score": 0.13571428571428573,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "the report title",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.Company.Name:string",
+      "selected_field_path": "MainData.Company.Name",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Report.TotalAmount"
+      ],
+      "confidence_score": 0.6857142857142857,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "the total amount",
+      "requirement_id": "req_02",
+      "schema_evidence": "MainData.Report.TotalAmount:number",
+      "selected_field_path": "MainData.Report.TotalAmount",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "image_binding"
+}

@@ -13,8 +13,18 @@ from typing import Any
 from docentric_copilot.template_ir import FieldBinding, ValueFormat
 
 _MONTHS = (
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
 )
 
 
@@ -85,7 +95,7 @@ def format_value(value: Any, binding: FieldBinding) -> str:
             return parsed.isoformat()
         if fmt is ValueFormat.DATE_SHORT:
             return f"{parsed.day:02d} {_MONTHS[parsed.month - 1][:3]} {parsed.year}"
-        return f"{parsed.day:02d} {_MONTHS[parsed.month - 1]} {parsed.year}"
+        return f"{parsed.day} {_MONTHS[parsed.month - 1]} {parsed.year}"
     if fmt is ValueFormat.PERCENT:
         number = _as_number(value)
         if number is None:

@@ -13,9 +13,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
-
 from docentric_copilot.serialization import canonical_json, digest
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from .diagnostics import Diagnostic, Severity
 
@@ -54,7 +53,7 @@ class SchemaNode(BaseModel):
         """True when the node holds a single value (no children, not a list)."""
         return not self.children and not self.collection
 
-    def walk(self) -> "list[SchemaNode]":
+    def walk(self) -> list[SchemaNode]:
         nodes = [self]
         for child in self.children:
             nodes.extend(child.walk())
@@ -96,7 +95,7 @@ class NormalizedSchema(BaseModel):
     _index: dict[str, SchemaNode] = PrivateAttr(default_factory=dict)
 
     # ------------------------------------------------------------------ index
-    def model_post_init(self, __context: Any) -> None:  # noqa: D401
+    def model_post_init(self, __context: Any) -> None:
         index: dict[str, SchemaNode] = {}
         for section in self.sections:
             for node in section.nodes:
@@ -140,10 +139,7 @@ class NormalizedSchema(BaseModel):
         scalar_count = sum(1 for node in self._index.values() if not node.children)
         collection_count = sum(1 for node in self._index.values() if node.collection)
         attribute_count = sum(
-            1
-            for node in self._index.values()
-            for attribute in node.attributes
-            if attribute.name
+            1 for node in self._index.values() for attribute in node.attributes if attribute.name
         )
 
         def depth(nodes: list[SchemaNode], level: int) -> int:

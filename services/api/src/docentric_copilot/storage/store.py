@@ -216,9 +216,7 @@ class Store:
                 "SELECT * FROM sources WHERE id = ?", (source_id,)
             ).fetchone()
         if row is None:
-            raise NotFoundError(
-                "Data source not found", details={"source_id": source_id}
-            )
+            raise NotFoundError("Data source not found", details={"source_id": source_id})
         return SourceRecord(
             id=row["id"],
             filename=row["filename"],
@@ -417,7 +415,9 @@ class Store:
                 "SELECT * FROM artifacts WHERE id = ?", (artifact_id,)
             ).fetchone()
         if row is None:
-            raise ArtifactError("Artifact not found or expired", details={"artifact_id": artifact_id})
+            raise ArtifactError(
+                "Artifact not found or expired", details={"artifact_id": artifact_id}
+            )
         record = ArtifactRecord(
             id=row["id"],
             kind=row["kind"],

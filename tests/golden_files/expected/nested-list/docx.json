@@ -1,0 +1,82 @@
+{
+  "footer": [
+    {
+      "alignment": "None",
+      "style": "Footer",
+      "text": ""
+    }
+  ],
+  "header": [
+    {
+      "alignment": "None",
+      "style": "Header",
+      "text": ""
+    }
+  ],
+  "media": [],
+  "package": {
+    "entry_count": 17,
+    "has_document": true,
+    "has_styles": true
+  },
+  "page": {
+    "height_mm": 297.0,
+    "left_margin_mm": 20.0,
+    "top_margin_mm": 20.0,
+    "width_mm": 210.0
+  },
+  "paragraphs": [
+    {
+      "alignment": "None",
+      "style": "Heading 1",
+      "text": "Document"
+    },
+    {
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Items"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Order: O-1"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Order: O-2"
+    }
+  ],
+  "properties": {
+    "author": "Docentric Copilot",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=nested_list;digest=7788aab12c6ef84faab5dd118b94e62a;docentric-compatibility=not_tested",
+    "subject": "document_template",
+    "title": "Document"
+  },
+  "tables": [
+    [
+      [
+        "Description",
+        "Qty"
+      ],
+      [
+        "Widget",
+        "2"
+      ],
+      [
+        "Gadget",
+        "5"
+      ]
+    ],
+    [
+      [
+        "Description",
+        "Qty"
+      ],
+      [
+        "Bolt",
+        "10"
+      ]
+    ]
+  ]
+}

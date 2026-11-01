@@ -1,0 +1,170 @@
+{
+  "mappings": [
+    {
+      "candidate_field_paths": [],
+      "confidence_score": 1.0,
+      "data_type": null,
+      "explanation": "Satisfied by the document title.",
+      "requirement": "Create a professional sales quotation",
+      "requirement_id": "req_00",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "GeneralData.Company.CompanyLogo"
+      ],
+      "confidence_score": 0.7857142857142857,
+      "data_type": "image",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "Include the company logo",
+      "requirement_id": "req_01",
+      "schema_evidence": "GeneralData.Company.CompanyLogo:image",
+      "selected_field_path": "GeneralData.Company.CompanyLogo",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Quotation.Customer.Name",
+        "MainData.Quotation.Customer.AccountNum",
+        "MainData.Quotation.Customer.Address",
+        "MainData.Quotation.Customer.VatNumber"
+      ],
+      "confidence_score": 0.15,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "customer information",
+      "requirement_id": "req_02",
+      "schema_evidence": "MainData.Quotation.Customer.Name:string",
+      "selected_field_path": "MainData.Quotation.Customer.Name",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Quotation.QuotationDate",
+        "MainData.Quotation.QuotationId",
+        "MainData.Quotation.ValidUntil",
+        "MainData.Quotation.CurrencyCode"
+      ],
+      "confidence_score": 0.6857142857142857,
+      "data_type": "date",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "quotation date",
+      "requirement_id": "req_03",
+      "schema_evidence": "MainData.Quotation.QuotationDate:date",
+      "selected_field_path": "MainData.Quotation.QuotationDate",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.QuotationLines.Line",
+        "MainData.QuotationLines.Line.LineAmount",
+        "MainData.QuotationLines.Line.ItemId",
+        "MainData.QuotationLines.Line.Description"
+      ],
+      "confidence_score": 0.4444444444444444,
+      "data_type": "collection",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "product lines with quantities",
+      "requirement_id": "req_04",
+      "schema_evidence": "MainData.QuotationLines.Line:collection",
+      "selected_field_path": "MainData.QuotationLines.Line",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.QuotationLines.Line.UnitPrice",
+        "MainData.QuotationLines.Line.Unit"
+      ],
+      "confidence_score": 0.6785714285714286,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "unit prices",
+      "requirement_id": "req_05",
+      "schema_evidence": "MainData.QuotationLines.Line.UnitPrice:number",
+      "selected_field_path": "MainData.QuotationLines.Line.UnitPrice",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.QuotationLines.Line.LineAmount",
+        "MainData.Quotation.TotalAmount",
+        "MainData.Quotation.TaxAmount",
+        "MainData.QuotationLines.Line.ItemId"
+      ],
+      "confidence_score": 0.6785714285714286,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "line amounts",
+      "requirement_id": "req_06",
+      "schema_evidence": "MainData.QuotationLines.Line.LineAmount:number",
+      "selected_field_path": "MainData.QuotationLines.Line.LineAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Quotation.TotalAmount",
+        "MainData.Quotation.TaxAmount",
+        "MainData.QuotationLines.Line.LineAmount"
+      ],
+      "confidence_score": 0.5142857142857142,
+      "data_type": "number",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "final amount",
+      "requirement_id": "req_07",
+      "schema_evidence": "MainData.Quotation.TotalAmount:number",
+      "selected_field_path": "MainData.Quotation.TotalAmount",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Quotation.BankDetails.BankName",
+        "MainData.Quotation.BankDetails.Iban",
+        "MainData.Quotation.BankDetails.Swift",
+        "MainData.QuotationLines.Line.ItemId"
+      ],
+      "confidence_score": 0.3388888888888889,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "bank details in the footer",
+      "requirement_id": "req_08",
+      "schema_evidence": "MainData.Quotation.BankDetails.BankName:string",
+      "selected_field_path": "MainData.Quotation.BankDetails.BankName",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "Parameters.ShowVatNotice",
+        "MainData.Quotation.Customer.IsEU",
+        "MainData.Quotation.Customer.VatNumber",
+        "GeneralData.Company.VatNumber"
+      ],
+      "confidence_score": 0.09615384615384617,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "an EU VAT notice when the customer is in the EU",
+      "requirement_id": "req_09",
+      "schema_evidence": "MainData.Quotation.Customer.VatNumber:string",
+      "selected_field_path": "MainData.Quotation.Customer.VatNumber",
+      "status": "resolved"
+    },
+    {
+      "candidate_field_paths": [
+        "GeneralData.Company.VatNumber",
+        "MainData.Quotation.Customer.VatNumber",
+        "Parameters.ShowVatNotice",
+        "MainData.Quotation.CurrencyCode"
+      ],
+      "confidence_score": 0.4666666666666667,
+      "data_type": "string",
+      "explanation": "The plan binds the best matching field for this requirement.",
+      "requirement": "has a VAT number",
+      "requirement_id": "req_10",
+      "schema_evidence": "GeneralData.Company.VatNumber:string",
+      "selected_field_path": "GeneralData.Company.VatNumber",
+      "status": "resolved"
+    }
+  ],
+  "schema_id": "sales_quotation"
+}

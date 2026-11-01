@@ -88,11 +88,16 @@ export function apiUrl(path: string): string {
   return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-async function execute(
+/**
+ * Run a fetch with an abort-based timeout, then consume the body inside the same
+ * guarded scope so slow or stalled responses are covered by the timeout too.
+ */
+async function withResponse<T>(
   path: string,
-  init: ApiRequestInit = {},
-  options: ApiRequestOptions = {},
-): Promise<Response> {
+  init: ApiRequestInit,
+  options: ApiRequestOptions,
+  consume: (response: Response) => Promise<T>,
+): Promise<T> {
   const { timeoutMs: initTimeout, ...requestInit } = init;
   const timeoutMs = options.timeoutMs ?? initTimeout ?? DEFAULT_TIMEOUT_MS;
 
@@ -130,7 +135,7 @@ async function execute(
     if (!response.ok) {
       throw await ApiError.fromResponse(response);
     }
-    return response;
+    return await consume(response);
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
@@ -176,23 +181,24 @@ export async function apiRequest<T>(
   init: ApiRequestInit = {},
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const response = await execute(path, init, options);
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  const text = await response.text();
-  if (!text) {
-    return undefined as T;
-  }
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    throw new ApiError("The API returned a response that was not valid JSON.", {
-      status: response.status,
-      code: "invalid_response",
-      details: { path },
-    });
-  }
+  return withResponse(path, init, options, async (response) => {
+    if (response.status === 204) {
+      return undefined as T;
+    }
+    const text = await response.text();
+    if (!text) {
+      return undefined as T;
+    }
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      throw new ApiError("The API returned a response that was not valid JSON.", {
+        status: response.status,
+        code: "invalid_response",
+        details: { path },
+      });
+    }
+  });
 }
 
 /** Perform a request and return the raw response body as text (HTML preview). */
@@ -201,8 +207,7 @@ export async function apiRequestText(
   init: ApiRequestInit = {},
   options: ApiRequestOptions = {},
 ): Promise<string> {
-  const response = await execute(path, init, options);
-  return response.text();
+  return withResponse(path, init, options, (response) => response.text());
 }
 
 /** POST a JSON body with the conventional headers. */

@@ -167,6 +167,11 @@ def _used_paths(document: Document, schema: NormalizedSchema) -> dict[str, str]:
     return used
 
 
+def absolute_bindings(document: Document, schema: NormalizedSchema) -> list[str]:
+    """Return every binding as an absolute schema path (aliases resolved)."""
+    return sorted(set(_used_paths(document, schema).values()))
+
+
 def build_mapping_report(
     schema: NormalizedSchema,
     document: Document,
@@ -447,6 +452,7 @@ class TemplatePlanner:
         provider: str = "mock",
         model: str | None = None,
         options: PlanOptions | None = None,
+        budget_usd: float | None = None,
     ) -> PlanOutcome:
         resolved_options = options or PlanOptions()
         if not requirement.strip():
@@ -467,6 +473,7 @@ class TemplatePlanner:
             model=model,
             messages=messages,
             attempts=resolved_options.max_repair_attempts + 1,
+            budget_usd=budget_usd,
         )
         try:
             document = Document.model_validate(result.content)
@@ -537,12 +544,17 @@ class TemplatePlanner:
         model: str | None,
         messages: list,
         attempts: int,
+        budget_usd: float | None = None,
     ) -> GenerationResult:
         last_error: ProviderError | None = None
         for attempt in range(1, max(1, attempts) + 1):
             try:
                 return await self._gateway.generate_structured(
-                    provider=provider, model=model, messages=messages, schema=Document
+                    provider=provider,
+                    model=model,
+                    messages=messages,
+                    schema=Document,
+                    budget_usd=budget_usd,
                 )
             except ProviderError as exc:
                 last_error = exc
@@ -578,6 +590,7 @@ __all__ = [
     "PlanOutcome",
     "RemovedBinding",
     "TemplatePlanner",
+    "absolute_bindings",
     "build_mapping_report",
     "extract_requirements",
     "sanitize_blocks",

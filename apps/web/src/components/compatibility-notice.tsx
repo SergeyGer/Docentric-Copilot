@@ -9,7 +9,7 @@ export function CompatibilityNotice() {
     <div
       role="note"
       aria-label="Docentric AX compatibility notice"
-      className="border-b border-amber-300/70 bg-amber-50 text-amber-950"
+      className="sticky top-16 z-30 border-b border-amber-300/70 bg-amber-50 text-amber-950"
     >
       <div className="mx-auto flex w-full max-w-[1440px] items-start gap-2.5 px-4 py-2.5 sm:px-6 lg:px-8">
         <ShieldAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />

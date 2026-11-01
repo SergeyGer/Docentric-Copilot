@@ -109,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
     compiler = GenericDocxCompiler()
 
     per_example: dict[str, dict[str, Stats]] = {}
+    all_samples: dict[str, list[float]] = {}
 
     for name, package, prompt_file in EXAMPLES:
         payload = package.read_bytes()
@@ -118,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
             planner.plan(parsed.schema, prompt, provider=args.provider, model=args.model)
         ).document
 
-        timings = {"parse": [], "plan": [], "validate": [], "compile": []}
+        timings: dict[str, list[float]] = {"parse": [], "plan": [], "validate": [], "compile": []}
         for _ in range(args.runs):
             started = time.perf_counter()
             parsed = parse_ddsp(payload, package.name)
@@ -146,18 +147,16 @@ def main(argv: list[str] | None = None) -> int:
         per_example[name] = {
             key: summarize(f"{name}.{key}", samples) for key, samples in timings.items()
         }
+        for key, samples in timings.items():
+            all_samples.setdefault(key, []).extend(samples)
 
+    # Aggregates are computed over every sample of every fixture, not over the
+    # per-example p95 values.
     aggregate = {
-        "parse": summarize(
-            "parse", [s for e in per_example.values() for s in [e["parse"].p95_ms]], 2000
-        ),
-        "plan": summarize("plan", [s for e in per_example.values() for s in [e["plan"].p95_ms]]),
-        "validate": summarize(
-            "validate", [s for e in per_example.values() for s in [e["validate"].p95_ms]]
-        ),
-        "compile": summarize(
-            "compile", [s for e in per_example.values() for s in [e["compile"].p95_ms]], 5000
-        ),
+        "parse": summarize("parse", all_samples["parse"], 2000),
+        "plan": summarize("plan", all_samples["plan"]),
+        "validate": summarize("validate", all_samples["validate"]),
+        "compile": summarize("compile", all_samples["compile"], 5000),
     }
 
     payload = {

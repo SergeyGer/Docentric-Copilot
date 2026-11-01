@@ -28,7 +28,8 @@ adapters are tested with injected HTTP transports.
 | Edge cases | `tests/unit/test_edge_paths.py` | VAT conditional branch, missing data, malformed inputs, unusual-but-valid documents | Yes |
 | Benchmarks | `benchmarks/run_benchmarks.py` | Latency measurement, not an assertion of correctness | No (informational; budgets displayed only) |
 | Evaluation | `benchmarks/run_evaluation.py` | Planner quality metrics over the example fixtures | No (produces a report) |
-| Browser E2E | — | Would drive the web UI with Playwright | **Not present** |
+| Web static checks | `apps/web` | `npm run lint`, `npm run typecheck`, `npm run build` | Yes (build must succeed) |
+| Browser E2E | — | Manual Playwright/Chromium smoke run only; no committed suite | **Not automated** |
 | Network | marker `network` | Tests that would call real providers | **Always skipped by policy** |
 
 ### 2.1 What each area covers
@@ -92,25 +93,37 @@ Pytest configuration:
 
 ### 3.3 Web app
 
-`apps/web/package.json` exposes `dev`, `build`, `start`, `lint`, `typecheck`; there is **no `test`
-script and no browser E2E suite**. `npm test` is therefore not available. What can be checked today:
+`apps/web/package.json` exposes `dev`, `build`, `start`, `lint` and `typecheck`; there is **no `test`
+script** and no committed browser E2E suite, so `npm test` is not available. The verified checks are:
 
 ```bash
 cd apps/web
 npm ci
-npm run lint
-npm run typecheck
-npm run build
+npm run lint          # no warnings
+npm run typecheck     # TypeScript strict, clean
+npm run build         # static `/` route, ~145 kB first-load JS
+npm start             # serves on port 3000; HTTP 200 checked
 ```
 
-Browser end-to-end testing (Playwright) is configured as a dependency but is not exercised: browser
-binaries are not installed in this environment and no E2E test exists. Treat "E2E" as roadmap.
+A manual real-browser smoke run (Playwright/Chromium against a live API) exercised upload → schema tree
+→ plan → preview → compile/download → revision → version load at 1024 px with zero console errors. The
+scripts, browser binaries and screenshots were temporary and are **not** committed; this is evidence of
+a one-off verification, not a regression test. Browser E2E and responsive checks below 1024 px remain
+open (see §7).
 
 ### 3.4 Docker
 
-`docker compose up --build -d` builds the API image defined in `Dockerfile` (multi-stage,
-non-root, healthcheck on `/health`) and the web image at `apps/web/Dockerfile`. The compose file is
-the deployment smoke test; it is not part of `make ci` and requires a Docker engine.
+Both images build and run:
+
+- `docker build -t docentric-copilot-api:0.1.0 .` → API image (multi-stage, non-root, healthcheck on
+  `/health`); built and run, `/health` returned `{"status":"ok","version":"0.1.0"}`.
+- `docker build -t docentric-copilot-web:0.1.0 apps/web` → frontend image (`node:22-alpine`,
+  non-root uid 10001, healthcheck on port 3000); built and run, `GET /` returned HTTP 200.
+
+`docker-compose.yml` validates and defines an `api` service on 8000 and a `web` service on 3000.
+A full `docker compose up --build` could not be completed inside the development container because its
+Docker/Buildx setup denied a Bake path; the two images and the compose configuration were verified
+separately. Docker is not part of `make ci`; CI builds both images.
 
 ## 4. Coverage
 
@@ -184,13 +197,14 @@ git diff tests/golden_files/expected    # review every change before committing
 | Gap | Risk | Mitigation / plan |
 | --- | --- | --- |
 | Real-world DDSP packages | Parser may not handle unknown layouts | Add fixtures when a permitted package is available; [DDSP_COMPATIBILITY §10](DDSP_COMPATIBILITY.md#10-adding-fixtures-how-to-extend-coverage) |
-| Live OpenAI/Anthropic/Gemini calls | Adapter drift from provider APIs; auth/rate-limit behaviour | Adapters are contract-tested with mocked transports; a manual smoke run is documented as unverified |
+| Live OpenAI/Anthropic/Gemini calls | Adapter drift from provider APIs; auth/rate-limit behaviour | Adapters are contract-tested with mocked transports; no live call has been recorded. Verification needs credentials and the protocol in [EVALUATION §4](EVALUATION.md#4-mock-baseline-vs-llm-comparison) |
 | Microsoft Word rendering | DOCX may look different in Word | Out of scope; V4 is partial and the preview explicitly disclaims layout fidelity |
 | Docentric AX | Compatibility unverified | Gate: [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
-| Browser E2E | Web UI regressions | Playwright config/roadmap; no test exists |
+| Browser E2E and responsive UI | Web regressions, layouts below 1024 px | Add a committed Playwright suite and viewport checks, and run them in CI; a manual smoke run is not regression coverage |
+| Real-LLM UI flows | UI may handle provider errors/usage poorly | Only the mock provider was exercised in the browser; add provider-error state tests when credentials exist |
 | Concurrency and load | Race conditions, SQLite contention, latency under load | Add a load test; see [NFR-08](SRS.md#nfr-08--concurrency-and-scalability) |
 | Fuzzing / property-based testing | Parser edge cases beyond hand-written cases | Add Hypothesis campaigns for XML and path parsing |
-| Security scanning | Dependency and static analysis findings | `pip-audit`, `bandit`, image scanning planned in CI |
+| Security scanning | Dependency and static analysis findings | `pip-audit` and `bandit` run in CI; container image scanning is not configured |
 | IR migration | Migration code paths | Only version 1.0 exists; add migration tests with the first migration |
 | Large documents | Performance cliffs, memory | Add large-fixture benchmarks with explicit budgets |
 | Locale-specific formatting | Non-English expectations | Locale support is out of MVP scope |
@@ -208,17 +222,24 @@ python benchmarks/run_benchmarks.py --runs 20 --provider openai --model gpt-4o-m
 python benchmarks/run_evaluation.py --provider anthropic --model claude-3-5-haiku   # optional, needs key
 ```
 
-The committed `benchmarks/results.json` is a local smoke run with `runs_per_example = 5`; it is not a
-statistically meaningful benchmark. See [BENCHMARKS](BENCHMARKS.md) and [EVALUATION](EVALUATION.md).
+`benchmarks/results.json` now holds a 100-run mock measurement (commit `059b1bb`); the numbers are
+environment-specific and the aggregate is computed over per-example p95 values. See
+[BENCHMARKS](BENCHMARKS.md) and [EVALUATION](EVALUATION.md).
 
 ## 9. CI
 
-`make ci` (`lint`, `typecheck`, `test-cov`) is the authoritative local gate. At this revision the
-repository has no committed `.github/workflows/` file; when CI is added it must run exactly these
-commands on Python 3.12, plus the web checks (`npm ci`, `npm run lint`, `npm run typecheck`,
-`npm run build`) if the web workspace is part of the change, and the Docker build once images exist.
+`make ci` (`lint`, `typecheck`, `test-cov`) is the authoritative local gate.
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs the same Python checks on 3.12 plus:
 
-A change is not ready for review until `make ci` passes locally and the documentation obligations in
+- examples reproducibility (`scripts/build_examples.py --check`);
+- golden-file freshness (`tests.golden_files.update_golden --check`);
+- OpenAPI freshness (regenerate and `git diff --exit-code docs/openapi.json`);
+- web: `npm ci`, `npm run lint`, `npm run typecheck`, `npm run build`;
+- docker: build the API and web images;
+- security: `bandit` (medium+) and `pip-audit`.
+
+All jobs are expected to pass on the committed tree; a Docker engine is required for the docker job. A
+change is not ready for review until `make ci` passes locally and the documentation obligations in
 [CONTRIBUTING](../CONTRIBUTING.md) are met.
 
 ## 10. Adding tests

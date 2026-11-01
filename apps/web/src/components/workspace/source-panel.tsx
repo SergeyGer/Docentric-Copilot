@@ -1,4 +1,4 @@
-import type { ChangeEvent, DragEvent, RefObject } from "react";
+import type { ChangeEvent, DragEvent } from "react";
 import { useRef, useState } from "react";
 import {
   Database,
@@ -127,7 +127,7 @@ export function SourcePanel({
   onDismissUploadError,
   onDismissSchemaError,
 }: SourcePanelProps) {
-  const inputRef = useRef<HTMLInputElement>(null) as RefObject<HTMLInputElement>;
+  const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const acceptFiles = (files: FileList | null) => {
@@ -346,7 +346,7 @@ export function SourcePanel({
             <EmptyState
               icon={Database}
               title="No data source loaded"
-              description="Upload a .ddsp or .xml package to inspect its schema, sample data availability and diagnostics."
+              description="Schema summary, field counts, sample-data availability and parser diagnostics appear here after upload."
               compact
             />
           )}

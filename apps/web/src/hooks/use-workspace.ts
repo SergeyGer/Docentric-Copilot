@@ -894,6 +894,7 @@ export function useWorkspace() {
       setRemovedBindings([]);
       setArtifacts(response.artifacts ?? []);
       setCompileResult(null);
+      setSelectedMappingPath(null);
       setInstruction("");
       notify(`Revision applied. Version ${response.version} is now active.`, "success");
       void fetchVersions(response.template_id);
@@ -947,6 +948,7 @@ export function useWorkspace() {
         setWarnings([]);
         setRemovedBindings([]);
         setCompileResult(null);
+        setSelectedMappingPath(null);
         setPreviewHtml(null);
         setPreviewVersion(null);
         notify(`Loaded version ${version} into the review panes.`, "success");
@@ -1096,7 +1098,6 @@ export function useWorkspace() {
     previewError: errors.preview ?? null,
     refreshPreview,
     // ui
-    errors,
     dismissError,
     toast,
     notify,

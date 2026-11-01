@@ -97,17 +97,17 @@ has not been demonstrated.
 | CLI with stable exit codes | Done |
 | SQLite persistence, job records, TTL artifacts | Done |
 | Local artifact cleanup and expired-artifact behaviour | Done |
-| Dockerfile (multi-stage, non-root, healthcheck) and compose stack | Done; image build not yet verified in this repository |
+| Dockerfiles (multi-stage, non-root, healthcheck) and compose stack | Done: both API and web images build and run (API `/health`, web HTTP 200); `docker compose config` validates; a full compose run was blocked by a Docker Bake permission in the development environment |
 | Makefile developer workflow (`install`, `test`, `test-cov`, `lint`, `typecheck`, `bench`, `eval`, `openapi`, `dev-api`, `dev-web`, `docker-up`, `docker-down`, `ci`) | Done |
 | Benchmark runner | Done — [BENCHMARKS](BENCHMARKS.md) |
 | Static OpenAPI export (`docs/openapi.json`) | Done — `scripts/export_openapi.py` |
 | Documentation set (PRD, SRS, architecture, IR, API, DDSP, AX, threat model, test plan, evaluation, benchmarks, feasibility, ADRs) | Done |
-| Web UI (`apps/web`) | In progress in a separate workstream; this repository's verified surface is the API/CLI |
-| Browser E2E suite | Not present (Playwright dependency only; browser binaries not installed) |
-| CI workflows (`.github/workflows/`) | Not present at this revision; `make ci` is the local gate |
+| Web UI (`apps/web`) | Delivered: Next.js 15 workspace; lint, typecheck and build pass; manual real-browser smoke run passed; no committed browser E2E; layouts below 1024 px untested |
+| Browser E2E suite | Not committed: a manual Playwright/Chromium smoke run passed, but the scripts and artefacts were temporary and no test suite is in the repository |
+| CI workflows (`.github/workflows/`) | Present: `ci.yml` (python, web, docker, security) and `release.yml`; the Docker job builds both images |
 
-**Exit criteria met:** mostly. The Docker path and CI are declared but not evidenced; the UI is a
-separate workstream.
+**Exit criteria met:** yes, with two explicit gaps: no committed browser E2E suite and no responsive
+verification below 1024 px. Both are tracked under M5.
 
 ## M5 — Production hardening and scale (in progress)
 
@@ -122,13 +122,15 @@ separate workstream.
 | Metrics/tracing | Not started | Export request latency, provider spend, validation outcomes; add tracing |
 | Load and soak testing | Not started | Benchmark concurrent plan/compile requests; publish p95 under load |
 | Property-based/fuzz testing of parsers | Not started | Add Hypothesis campaigns; run in CI |
-| Dependency/static security scanning | Not started | `pip-audit`, `bandit`, image scanning in CI |
+| Dependency/static security scanning | Partial: `bandit` and `pip-audit` run in CI | Add container image scanning and pin a Python lockfile |
 | Independent security review | Not started | External review against [THREAT_MODEL](THREAT_MODEL.md) |
-| Accessibility/localisation | Not started | Locale-aware formatting and translated UI are separate product decisions |
+| Accessibility/localisation | Not started | Locale-aware formatting and localised UI are separate product decisions; the UI is English-only |
+| Responsive layouts and committed browser E2E | Not started | Verify < 1024 px viewports, commit a Playwright suite, and run it in CI |
+| Frontend delivery optimisation | Not started | Evaluate Next.js standalone output and a slimmer runtime image (currently the full dependency tree is copied because `next.config.ts` is loaded at runtime) |
 | Docentric AX adapter | **Blocked** | Complete the evidence in [DOCENTRIC_AX_COMPATIBILITY §7](DOCENTRIC_AX_COMPATIBILITY.md#7-evidence-required-to-change-the-status) |
 | Real DDSP compatibility testing | **Blocked** | Obtain a permitted representative package |
 | Live provider verification | **Blocked** | Provide credentials and a repeatable test protocol; record results in [EVALUATION](EVALUATION.md) |
-| 100-run benchmark with published environment | Open | Run `make bench`, fill the skeleton in [BENCHMARKS](BENCHMARKS.md) |
+| 100-run benchmark with published environment | Done for the mock provider; hosted-provider latency still open | Record hosted-provider results in [BENCHMARKS §4.1](BENCHMARKS.md#41-reference-run-100-runs) |
 
 ## Next steps (ordered)
 
@@ -136,11 +138,11 @@ separate workstream.
 
 1. Publish the honest deployment constraint (no auth) in the README and the API docs; enforce it with a
    reverse proxy example. *(Documented; proxy configuration still missing.)*
-2. Add CI that runs `make ci`, the web checks and the Docker build.
-3. Run the 100-run benchmark and record the environment; keep the committed smoke run labelled as
-   such.
-4. Fix the evaluation collector so alias-resolved bindings are counted; re-baseline and update
+2. ~~Fix the evaluation collector so alias-resolved bindings are counted~~ — done (`absolute_bindings`, precision 0.932, recall 0.965). Remaining:
    [EVALUATION §5.1](EVALUATION.md#51-committed-baseline-run-measured).
+3. Provide credentials and a repeatable protocol for the hosted-provider comparison (currently no
+   LLM result is recorded).
+4. Add a committed browser E2E suite and responsive checks (< 1024 px), and wire them into CI.
 
 ### P1 — quality and evidence
 
@@ -163,7 +165,6 @@ separate workstream.
 | Docentric AX adapter and any compatibility claim | No licensed environment, no authoritative specification, no evidence | [DOCENTRIC_AX_COMPATIBILITY §7](DOCENTRIC_AX_COMPATIBILITY.md#7-evidence-required-to-change-the-status) satisfied and reviewed |
 | Real DDSP parser validation | No representative permitted package | A synthetic-or-sanitised package with permission, added per [DDSP_COMPATIBILITY §10](DDSP_COMPATIBILITY.md#10-adding-fixtures-how-to-extend-coverage) |
 | Live provider comparison | No credentials in the project environment; no network test policy | Credentials and a recorded, repeatable protocol; results in EVALUATION |
-| Browser E2E | No browser binaries and no E2E test | Install Playwright browsers and add a committed E2E suite |
 | Independent security review | External dependency | Engagement and published findings |
 
 ## Out of scope (not planned)

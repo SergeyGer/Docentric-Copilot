@@ -8,6 +8,7 @@
 | Traversal | [traversal.py](../packages/template-ir/src/docentric_copilot/template_ir/traversal.py) |
 | JSON Schema | `docentric-copilot ir-schema` |
 
+All IR models derive from `StrictModel`, which sets `extra="forbid"` (unknown keys fail validation).
 The Template IR is the only contract between the AI planning layer and the deterministic execution
 layer. It is deliberately narrow:
 
@@ -206,7 +207,7 @@ time with magic-byte validation and a 5 MiB cap; otherwise a placeholder is rend
 | `path` | string | **yes** | path to a **collection** node | — |
 | `alias` | string | **yes** | `^[a-z][a-z0-9_]{0,31}$`, unique in scope (V3-002) | — |
 | `blocks` | array of `Block` | **yes** | 1–200 items | — |
-| `max_items` | integer \| null | no | 1–1,000; also bounded by `CompileOptions.max_repeat_items` (default 200) | `null` |
+| `max_items` | integer \| null | no | 1–1,000; when omitted the compiler uses `CompileOptions.max_repeat_items` (default 200) | `null` |
 | `empty_message` | string \| null | no | ≤ 200 chars; rendered when the collection is empty in sample mode | `null` |
 
 ### 4.4 `Conditional`
@@ -341,6 +342,13 @@ Resolution rules:
 ## 6. Expressions
 
 `Expression` is a tiny boolean algebra — not XPath, not a scripting language.
+
+| Field | Type | Required | Constraints |
+| --- | --- | --- | --- |
+| `operator` | enum | **yes** | one of the twelve operators below |
+| `field` | string \| null | per operator | dotted path, ≤ 512 chars; forbidden for `and`/`or`/`not` |
+| `value` | bool \| int \| float \| string \| null | per operator | forbidden for logical and null-check operators |
+| `operands` | array of `Expression` \| null | per operator | ≤ 16; logical operators only; total depth ≤ 8 |
 
 ```json
 {
@@ -490,7 +498,7 @@ IR-level bounds (enforced by pydantic; violation is a validation error):
 | Title / template name / section name | 200 / 120 / 80 chars |
 | Expression operands / depth | 16 / 8 |
 | Repeat items (`max_items`) | 1,000 |
-| Compiler repeat cap (`max_repeat_items`) | 1,000 (default 200) |
+| Compiler repeat cap (`max_repeat_items`) | 1,000 (default 200; used when the block sets no `max_items`) |
 
 Platform limits (enforced at ingestion/validation, configurable by environment variable):
 
@@ -503,8 +511,8 @@ Platform limits (enforced at ingestion/validation, configurable by environment v
 | `max_xml_nodes` | 250,000 | `DC_MAX_XML_NODES` |
 | `max_xml_depth` | 64 | `DC_MAX_XML_DEPTH` |
 | `max_schema_nodes` | 5,000 | `DC_MAX_SCHEMA_NODES` |
-| `max_ir_blocks` | 5,000 | `DC_MAX_IR_BLOCKS` |
-| `max_ir_depth` | 24 | `DC_MAX_IR_DEPTH` |
+| `max_ir_blocks` | 5,000 | `DC_MAX_IR_BLOCKS` (API, service and CLI) |
+| `max_ir_depth` | 24 | `DC_MAX_IR_DEPTH` (API, service and CLI) |
 | `max_text_length` | 20,000 | `DC_MAX_TEXT_LENGTH` |
 | `artifact_ttl_seconds` | 3600 | `DC_ARTIFACT_TTL_SECONDS` |
 

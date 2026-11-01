@@ -1,5 +1,4 @@
-import type { NodeKind } from "@/lib/schema";
-import { nodeKind } from "@/lib/schema";
+import { nodeKind, type NodeKind } from "@/lib/schema";
 import type { SchemaNode } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
@@ -43,15 +42,6 @@ export function NodeTypeBadge({ node }: { node: SchemaNode }) {
   const style = KIND_STYLE[kind];
   return (
     <Badge variant="outline" className={style.className} title={`Data type: ${kind}`}>
-      {style.label}
-    </Badge>
-  );
-}
-
-export function TypeBadge({ kind }: { kind: NodeKind }) {
-  const style = KIND_STYLE[kind];
-  return (
-    <Badge variant="outline" className={style.className}>
       {style.label}
     </Badge>
   );

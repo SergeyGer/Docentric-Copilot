@@ -52,10 +52,6 @@ const CHECK_STATUS_STYLE: Record<
   },
 };
 
-export function checkStatusVariant(status: CheckStatus): BadgeVariant {
-  return CHECK_STATUS_STYLE[status].variant;
-}
-
 export interface ValidationStatusBadgeProps {
   status: CheckStatus;
   className?: string;

@@ -43,3 +43,7 @@ benchmark-results/
 .DS_Store
 .idea/
 .vscode/
+
+# Local smoke-test artefacts
+apps/web/.smoke-browsers/
+apps/web/.smoke-artifacts/

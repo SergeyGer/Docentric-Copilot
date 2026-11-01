@@ -9,9 +9,9 @@
 | Fixtures | The three synthetic packages under `examples/` |
 | Related | [EVALUATION](EVALUATION.md), [TEST_PLAN](TEST_PLAN.md), [SRS NFR-07](SRS.md#nfr-07--latency-and-throughput) |
 
-Latency numbers are **environment-specific**. This document therefore states the methodology and a
-skeleton first, and quotes the committed smoke run only as an explicitly labelled, non-normative
-example.
+Latency numbers are **environment-specific**. This document therefore states the methodology, records
+one reproducible 100-run result set with its environment, and keeps a separate template for
+hosted-provider measurements.
 
 ## 1. What the benchmark measures
 
@@ -77,7 +77,9 @@ runner prints the budget column rather than failing on it. Other stages have no 
    therefore exact for the sample, not histogram estimates.
 5. **Per-example statistics** (`per_example.*`) are computed over all runs for that stage and example.
 6. **Aggregate statistics** are computed over the three **per-example p95 values** (one per example),
-   not over all `3 × runs` samples. This is what the current code does; it makes the aggregate a
+   not over all `3 × runs` samples. This described the first version of the runner; it now
+   aggregates over every sample (`all_samples`). The historical note is kept because the numbers in
+   older commits were produced with the old method. The old method made the aggregate a
    summary of worst-case behaviour per fixture, with only three data points. Do not interpret the
    aggregate `runs` field (`3`) as the iteration count; read `runs_per_example` for that.
 7. **Throughput is not computed** by the runner. Derive it manually only if needed:
@@ -98,48 +100,52 @@ Record with any published number:
 
 ### 4.1 Reference run (100 runs)
 
-Not yet produced in this repository. Fill the table from `benchmarks/results.json` after running
-`make bench`, and state the machine and commit.
+Produced with `make bench` (`python benchmarks/run_benchmarks.py --runs 100`), provider `mock`,
+Python 3.12.3, `Linux-6.8.0-147-generic-x86_64-with-glibc2.39`, on a shared 4 vCPU-class container.
+Aggregates are computed over **all** `3 × runs` samples per stage (the runner was fixed after the
+first draft of this document, which aggregated the three per-example p95 values).
 
 | Stage | p50 (ms) | p95 (ms) | max (ms) | Budget (ms) | Within budget |
 | --- | --- | --- | --- | --- | --- |
-| parse | TBD | TBD | TBD | 2000 | TBD |
-| plan (mock) | TBD | TBD | TBD | — | — |
-| validate | TBD | TBD | TBD | — | — |
-| compile | TBD | TBD | TBD | 5000 | TBD |
+| parse | 1.96 | 3.01 | 5.73 | 2000 | yes |
+| plan (mock) | 44.03 | 64.88 | 102.27 | — | — |
+| validate | 2.08 | 3.35 | 4.74 | — | — |
+| compile | 72.92 | 95.08 | 110.87 | 5000 | yes |
 
-Per-example breakdown (fill from `per_example`):
+Per-example breakdown (p95 values, from `per_example`):
 
 | Example | parse p95 | plan p95 | validate p95 | compile p95 |
 | --- | --- | --- | --- | --- |
-| quotation | TBD | TBD | TBD | TBD |
-| invoice | TBD | TBD | TBD | TBD |
-| purchase-order | TBD | TBD | TBD | TBD |
+| quotation | 3.16 | 69.54 | 3.40 | 102.97 |
+| invoice | 2.89 | 64.88 | 3.43 | 94.16 |
+| purchase-order | 2.53 | 57.99 | 2.67 | 91.56 |
 
-Hosted-provider plan latency (separate table because it includes network and provider variance):
+Percentiles use linear interpolation over the sorted samples. `plan` measures the deterministic mock
+planner end to end (prompt assembly, gateway, IR validation, repair pass); a hosted provider adds
+network and model latency and must be measured separately.
+
+Hosted-provider plan latency: not measured in this repository. The table below is the template to
+fill when a key is available; do not infer numbers from the mock baseline.
 
 | Provider / model | Runs | p50 (ms) | p95 (ms) | Error rate | Commit |
 | --- | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | TBD | TBD |
+| — | — | — | — | — | — |
 
-### 4.2 Committed smoke run (non-normative)
+### 4.2 Reproducing and reading the committed run
 
-`benchmarks/results.json` currently contains a short smoke run produced on the development machine:
-`runs_per_example = 5`, `provider = mock`, Python 3.12.3, Linux 6.8 (x86_64). It is useful to confirm
-the runner works and to give an order of magnitude, but it is **not** the 100-run benchmark and its
-aggregate is computed over three p95 values (§3 item 6).
+`benchmarks/results.json` is the source of the §4.1 table (`runs_per_example = 100`, provider `mock`).
+It is regenerated with `make bench`; re-running on another machine will change the milliseconds while
+leaving the methodology unchanged. Treat a regenerated file as a *new* measurement: record its
+environment and commit, and do not splice old and new values into one table.
 
-| Stage | p50 (ms) | p95 (ms) | max (ms) | Budget (ms) |
-| --- | --- | --- | --- | --- |
-| parse | 2.46 | 5.12 | 5.42 | 2000 |
-| plan (mock) | 45.00 | 54.22 | 55.25 | — |
-| validate | 2.46 | 2.73 | 2.76 | — |
-| compile | 76.91 | 94.68 | 96.66 | 5000 |
+Reading the numbers:
 
-Reading it: on that machine the deterministic stages are fast (single-digit milliseconds for parse and
-validation; tens of milliseconds for compilation), and the mock planner spends most of its ~45 ms on
-prompt assembly, heuristic layout and the mapping report. These values say nothing about hosted LLM
-latency or about a different machine.
+- parse and validation are single-digit milliseconds on this fixture set;
+- compilation is tens of milliseconds, dominated by `python-docx` generation and ZIP normalisation;
+- the mock planner costs tens of milliseconds because it assembles a prompt, derives roles, builds the
+  document and produces the mapping report — not because a model is called;
+- none of these values say anything about hosted LLM latency, which is measured separately with
+  `--provider`/`--model` and includes network and provider variance.
 
 ## 5. Interpretation rules
 

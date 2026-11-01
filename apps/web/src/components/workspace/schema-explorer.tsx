@@ -569,7 +569,7 @@ export function SchemaExplorer({
           </p>
         </div>
 
-        <aside className="min-w-0 xl:sticky xl:top-36" aria-live="polite">
+        <aside className="min-w-0 self-start xl:sticky xl:top-36" aria-live="polite">
           {selectedNode ? (
             <SchemaDetail
               node={selectedNode}

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/SergeyGer/Docentric-Copilot/tree/main/docs
+    about: Read the PRD, SRS, architecture, API and compatibility documents before opening an issue.
+  - name: Security vulnerability
+    url: https://github.com/SergeyGer/Docentric-Copilot/security/advisories/new
+    about: Report security issues privately. Never open a public issue for a vulnerability.
+  - name: Docentric AX compatibility policy
+    url: https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/DOCENTRIC_AX_COMPATIBILITY.md
+    about: Compatibility is unverified and gated. Read this before reporting compatibility problems.

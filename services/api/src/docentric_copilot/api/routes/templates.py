@@ -64,6 +64,7 @@ async def plan_template(
             language=request.options.language,
             target=request.target.value,
             max_repair_attempts=request.options.max_repair_attempts,
+            max_generation_cost_usd=request.options.max_generation_cost_usd,
         )
         if request.options.strict_validation and not report.can_compile:
             raise _validation_failure(report)

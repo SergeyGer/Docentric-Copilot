@@ -19,7 +19,12 @@
         "MainData.Quotation.QuotationId",
         "MainData.Quotation.TaxAmount",
         "MainData.Quotation.TotalAmount",
-        "MainData.Quotation.ValidUntil"
+        "MainData.Quotation.ValidUntil",
+        "MainData.QuotationLines.Line",
+        "MainData.QuotationLines.Line.Description",
+        "MainData.QuotationLines.Line.LineAmount",
+        "MainData.QuotationLines.Line.Quantity",
+        "MainData.QuotationLines.Line.UnitPrice"
       ],
       "case_id": "quotation",
       "clarifications": 0,
@@ -75,7 +80,12 @@
         "MainData.Invoice.InvoiceDate",
         "MainData.Invoice.InvoiceId",
         "MainData.Invoice.NetAmount",
-        "MainData.Invoice.TaxAmount"
+        "MainData.Invoice.TaxAmount",
+        "MainData.InvoiceLines.Line",
+        "MainData.InvoiceLines.Line.Description",
+        "MainData.InvoiceLines.Line.LineAmount",
+        "MainData.InvoiceLines.Line.Quantity",
+        "MainData.InvoiceLines.Line.UnitPrice"
       ],
       "case_id": "invoice",
       "clarifications": 0,
@@ -120,7 +130,12 @@
         "MainData.PurchaseOrder.TotalAmount",
         "MainData.PurchaseOrder.Vendor.AccountNum",
         "MainData.PurchaseOrder.Vendor.Address",
-        "MainData.PurchaseOrder.Vendor.Name"
+        "MainData.PurchaseOrder.Vendor.Name",
+        "MainData.PurchaseOrderLines.Line",
+        "MainData.PurchaseOrderLines.Line.Description",
+        "MainData.PurchaseOrderLines.Line.LineAmount",
+        "MainData.PurchaseOrderLines.Line.Quantity",
+        "MainData.PurchaseOrderLines.Line.UnitPrice"
       ],
       "case_id": "purchase-order",
       "clarifications": 0,
@@ -182,17 +197,17 @@
     },
     "field_selection_precision": {
       "definition": "Correct bindings divided by all bindings selected by the planner.",
-      "denominator": 44.0,
+      "denominator": 59.0,
       "name": "field_selection_precision",
-      "numerator": 44.0,
-      "value": 1.0
+      "numerator": 55.0,
+      "value": 0.932203
     },
     "field_selection_recall": {
       "definition": "Required fields correctly bound divided by all required fields.",
       "denominator": 57.0,
       "name": "field_selection_recall",
-      "numerator": 44.0,
-      "value": 0.77193
+      "numerator": 55.0,
+      "value": 0.964912
     },
     "requirement_coverage": {
       "definition": "Share of user requirements represented in the IR.",

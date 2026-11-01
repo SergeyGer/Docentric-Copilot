@@ -1,0 +1,92 @@
+name: Feature request
+description: Propose a capability, extension or documentation improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before proposing a feature, please check [docs/ROADMAP.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/ROADMAP.md)
+        and [docs/SRS.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/SRS.md) to see whether it is
+        already planned, implemented or explicitly out of scope.
+
+        Proposals that require claiming Docentric AX compatibility cannot be accepted without the
+        evidence gate described in [docs/DOCENTRIC_AX_COMPATIBILITY.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/DOCENTRIC_AX_COMPATIBILITY.md).
+
+        Implementation requirements (tests, documentation, no unverified compatibility claims) are in the
+        Definition of Done: [CONTRIBUTING §5](https://github.com/SergeyGer/Docentric-Copilot/blob/main/CONTRIBUTING.md#5-definition-of-done).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - DDSP parsing / schema discovery
+        - Template IR / serialization
+        - Planning / prompt quality
+        - Provider gateway
+        - Validation
+        - DOCX compiler
+        - Preview
+        - HTTP API
+        - CLI
+        - Storage / artifacts
+        - Evaluation / benchmarks
+        - Documentation
+        - Web UI
+        - Developer tooling / packaging
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem does this solve? Describe the situation, not only the desired solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behaviour, inputs/outputs and how it fits the existing architecture.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches, including doing nothing, and why they are worse.
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How will we know it works? Prefer observable behaviour and tests over implementation detail.
+      placeholder: |
+        - A DDSP package with construct X produces diagnostic Y.
+        - The API returns ...
+    validations:
+      required: true
+  - type: dropdown
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      description: Does this require output to be consumed by a third-party product (for example Docentric AX)?
+      options:
+        - "No: generic DOCX / IR / API behaviour only"
+        - "Yes: it would require an unverified compatibility claim (must go through the gate)"
+        - "Unsure"
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have not included customer data, credentials or third-party assets in this request.
+          required: true
+        - label: I understand this request does not imply a release commitment.
+          required: true
+        - label: I checked the roadmap, SRS and compatibility documents.
+          required: true

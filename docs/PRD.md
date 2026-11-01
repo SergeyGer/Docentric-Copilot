@@ -9,8 +9,8 @@
 | Related | [SRS](SRS.md), [ARCHITECTURE](ARCHITECTURE.md), [ROADMAP](ROADMAP.md) |
 
 This document describes *why* the product exists and *what* the MVP must do. It deliberately contains
-no benchmark numbers that have not been measured; where a metric is unknown it is marked `TBD` with
-the measurement method.
+no unmeasured benchmark numbers; where a metric is unknown it is marked `TBD` with the measurement
+method.
 
 ## 1. Problem
 
@@ -127,8 +127,13 @@ and a results table that can be reproduced.
       └──────────────── artifacts (IR, mapping, validation JSON/HTML, preview, DOCX) with TTL
 ```
 
-1. **Upload** a DDSP package (`POST /api/v1/sources` or `docentric-copilot inspect`). The system
-   parses untrusted bytes, records diagnostics and stores the normalized schema.
+The journey is available through the web workspace as well as the API/CLI. The workspace keeps schema
+inspection, prompt editing, mapping/validation review, the sandboxed HTML preview, compilation,
+downloads and version history on one page; it calls exactly the endpoints below.
+
+1. **Upload** a DDSP package (`POST /api/v1/sources`, the web upload panel, or
+   `docentric-copilot inspect`). The system parses untrusted bytes, records diagnostics and stores the
+   normalized schema.
 2. **Inspect** sections, field paths, collections, types and sample availability. This is the moment
    the user learns whether the package is usable at all.
 3. **Describe** the document in natural language (a prompt). The requirement is split into clauses
@@ -207,7 +212,7 @@ objects returned by the API and written by the CLI.
 | Validation | V1 structural, V2 semantic, V3 logical, V4 table-width visual check, V5 `not_tested` |
 | Compilation | `generic-docx` only; deterministic OOXML package |
 | Preview | Self-contained HTML content preview |
-| Interfaces | FastAPI HTTP API, Typer CLI, SQLite persistence, TTL artifacts |
+| Interfaces | FastAPI HTTP API, Typer CLI, Next.js 15 web workspace (`apps/web`), SQLite persistence, TTL artifacts |
 | Docs | This document set, including explicit non-claims |
 
 ### Out of scope
@@ -223,24 +228,25 @@ objects returned by the API and written by the CLI.
 ## 8. Success metrics
 
 The MVP evaluation must be based on measurable outcomes. The table defines the metric, the method and
-the current state. Values are filled in [EVALUATION.md](EVALUATION.md) and
-[BENCHMARKS.md](BENCHMARKS.md) once the harness and benchmark runner are available.
+the current state. Measured values, their provenance and their limitations are recorded in
+[EVALUATION.md](EVALUATION.md) and [BENCHMARKS.md](BENCHMARKS.md).
 
 | ID | Metric | Definition | Method | Current |
 | --- | --- | --- | --- | --- |
 | M-01 | Time to first valid generic DOCX | Minutes from a fresh clone to a compiled quotation using the documented quick start | Manual timed run | TBD |
-| M-02 | Fixture compilation success rate | Successful `generic-docx` compilations / attempted example packages | Scripted over `examples/` | 3/3 expected for the shipped fixtures; to be measured by the evaluation harness |
-| M-03 | Field selection precision | Correctly selected bindings / all selected bindings, against a hand-labelled expected mapping per fixture | `docentric_copilot.evaluation` (not yet available) | TBD |
-| M-04 | Field selection recall | Correctly selected bindings / all expected bindings | same | TBD |
-| M-05 | Requirement coverage | Requirement clauses with status `resolved` / all clauses | Mapping report counts | TBD |
-| M-06 | Clarification rate | Clauses reported `ambiguous` / all clauses | Mapping report counts | TBD |
-| M-07 | Correction rate | Bindings removed by the deterministic repair pass / planned bindings | `removed_bindings` count | TBD |
-| M-08 | Cost per valid template | Provider spend / templates that pass V1–V3 and compile | Provider usage telemetry + compile status | TBD |
+| M-02 | Fixture compilation success rate | Successful `generic-docx` compilations / attempted example packages | Evaluation harness over `examples/` | 3/3 (mock, `059b1bb`) |
+| M-03 | Field selection precision | Correctly selected bindings / all selected bindings, against a hand-labelled expected mapping per fixture | `docentric_copilot.evaluation` + `benchmarks/run_evaluation.py` | 1.000 (mock, 3 fixtures) |
+| M-04 | Field selection recall | Correctly selected bindings / all expected bindings | same | 0.772 (mock; see the harness limitation in EVALUATION) |
+| M-05 | Requirement coverage | Requirement clauses with status `resolved` / all clauses | Mapping report counts | 1.000 (mock) |
+| M-06 | Clarification rate | Clauses reported `ambiguous` / all clauses | Mapping report counts | 0.000 (mock) |
+| M-07 | Correction rate | Plans with a removed binding or an invalid mapping / plans | `removed_bindings` + mapping counts | 0.000 (mock) |
+| M-08 | Cost per valid template | Provider spend / templates that pass V1–V3 and compile | Provider usage telemetry + compile status | $0.000 (mock); hosted providers TBD |
 | M-09 | Compatibility rate | Templates proven compatible in a licensed Docentric environment / attempted | Requires the gate in [DOCENTRIC_AX_COMPATIBILITY.md](DOCENTRIC_AX_COMPATIBILITY.md) | 0 (gate not passed; status blocked) |
 | M-10 | Validation false-negative rate | Defects found downstream that V1–V3 did not flag / templates compiled | Defect tracking, requires production use | TBD (not measurable in MVP) |
 
 Metric definitions and formulas are normative in [EVALUATION.md](EVALUATION.md); this table only
-fixes intent.
+fixes intent. The mock baseline values are measured over three synthetic fixtures and are not an LLM
+comparison; hosted-provider rows remain `TBD`.
 
 ## 9. Constraints and dependencies
 

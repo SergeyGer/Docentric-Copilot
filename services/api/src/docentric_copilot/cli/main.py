@@ -79,6 +79,16 @@ def _service() -> TemplateService:
     return TemplateService()
 
 
+def _validator() -> ValidationEngine:
+    """Build a validator that honours the configured IR limits."""
+    limits = get_settings().limits
+    return ValidationEngine(
+        max_blocks=limits.max_ir_blocks,
+        max_depth=limits.max_ir_depth,
+        max_text_length=limits.max_text_length,
+    )
+
+
 def _planner() -> TemplatePlanner:
     from docentric_copilot.llm import LLMGateway
 
@@ -181,7 +191,7 @@ def plan(
                 parsed.schema, requirement, provider=provider, model=model, options=options
             )
         )
-        report = ValidationEngine().validate(outcome.document, parsed.schema)
+        report = _validator().validate(outcome.document, parsed.schema)
         if not report.can_compile:
             raise CopilotError(
                 "Validation failed; IR was not written",

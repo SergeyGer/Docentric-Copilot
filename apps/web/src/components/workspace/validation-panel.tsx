@@ -6,6 +6,7 @@ import { AlertTriangle, CheckCircle2, FileText, ShieldAlert } from "lucide-react
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { EmptyState } from "@/components/workspace/empty-state";
 import {
   FindingSeverityBadge,
@@ -174,52 +175,59 @@ export function ValidationPanel({
                 <TabsTrigger value="findings">Findings ({findings.length})</TabsTrigger>
               </TabsList>
               <TabsContent value="checks">
-                <ul className="overflow-hidden rounded-lg border">
-                  {report.checks.map((check) => (
-                    <li key={check.id} className="border-b border-border p-3 last:border-b-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <code className="font-mono text-[10px] text-muted-foreground">
-                          {check.id}
-                        </code>
-                        <span className="text-xs font-medium text-foreground">{check.name}</span>
-                        <span className="ml-auto">
-                          <ValidationStatusBadge status={check.status} />
-                        </span>
-                      </div>
-                      {check.summary ? (
-                        <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
-                          {check.summary}
-                        </p>
-                      ) : null}
-                      {check.findings.length > 0 ? (
-                        <ul className="mt-2 space-y-1.5">
-                          {check.findings.map((finding, index) => (
-                            <li
-                              key={`${finding.code}-${index}`}
-                              className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[11px]"
-                            >
-                              <FindingSeverityBadge severity={finding.severity} />
-                              <code className="font-mono text-[10px] text-muted-foreground">
-                                {finding.code}
-                              </code>
-                              <span className="text-foreground">{finding.message}</span>
-                              {finding.location ? (
-                                <code className="break-all font-mono text-[10px] text-muted-foreground">
-                                  {finding.location}
+                <ScrollArea
+                  role="region"
+                  aria-label="Validation checks"
+                  tabIndex={0}
+                  className="max-h-[460px] rounded-lg border"
+                >
+                  <ul>
+                    {report.checks.map((check) => (
+                      <li key={check.id} className="border-b border-border p-3 last:border-b-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <code className="font-mono text-[10px] text-muted-foreground">
+                            {check.id}
+                          </code>
+                          <span className="text-xs font-medium text-foreground">{check.name}</span>
+                          <span className="ml-auto">
+                            <ValidationStatusBadge status={check.status} />
+                          </span>
+                        </div>
+                        {check.summary ? (
+                          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                            {check.summary}
+                          </p>
+                        ) : null}
+                        {check.findings.length > 0 ? (
+                          <ul className="mt-2 space-y-1.5">
+                            {check.findings.map((finding, index) => (
+                              <li
+                                key={`${finding.code}-${index}`}
+                                className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[11px]"
+                              >
+                                <FindingSeverityBadge severity={finding.severity} />
+                                <code className="font-mono text-[10px] text-muted-foreground">
+                                  {finding.code}
                                 </code>
-                              ) : null}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </li>
-                  ))}
-                  {report.checks.length === 0 ? (
-                    <li className="px-3 py-4 text-xs text-muted-foreground">
-                      The validation report contains no checks.
-                    </li>
-                  ) : null}
-                </ul>
+                                <span className="text-foreground">{finding.message}</span>
+                                {finding.location ? (
+                                  <code className="break-all font-mono text-[10px] text-muted-foreground">
+                                    {finding.location}
+                                  </code>
+                                ) : null}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </li>
+                    ))}
+                    {report.checks.length === 0 ? (
+                      <li className="px-3 py-4 text-xs text-muted-foreground">
+                        The validation report contains no checks.
+                      </li>
+                    ) : null}
+                  </ul>
+                </ScrollArea>
               </TabsContent>
               <TabsContent value="findings">
                 {findings.length === 0 ? (
@@ -230,30 +238,39 @@ export function ValidationPanel({
                     compact
                   />
                 ) : (
-                  <ul className="overflow-hidden rounded-lg border">
-                    {findings.map((finding, index) => (
-                      <li
-                        key={`${finding.checkId}-${finding.code}-${index}`}
-                        className="border-b border-border p-3 last:border-b-0"
-                      >
-                        <div className="flex flex-wrap items-center gap-2">
-                          <FindingSeverityBadge severity={finding.severity} />
-                          <code className="font-mono text-[10px] text-muted-foreground">
-                            {finding.code}
-                          </code>
-                          <span className="text-[10px] text-muted-foreground">
-                            {finding.checkId} · {finding.checkName}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs leading-5 text-foreground">{finding.message}</p>
-                        {finding.location ? (
-                          <p className="mt-0.5 break-all font-mono text-[10px] text-muted-foreground">
-                            {finding.location}
+                  <ScrollArea
+                    role="region"
+                    aria-label="Validation findings"
+                    tabIndex={0}
+                    className="max-h-[460px] rounded-lg border"
+                  >
+                    <ul>
+                      {findings.map((finding, index) => (
+                        <li
+                          key={`${finding.checkId}-${finding.code}-${index}`}
+                          className="border-b border-border p-3 last:border-b-0"
+                        >
+                          <div className="flex flex-wrap items-center gap-2">
+                            <FindingSeverityBadge severity={finding.severity} />
+                            <code className="font-mono text-[10px] text-muted-foreground">
+                              {finding.code}
+                            </code>
+                            <span className="text-[10px] text-muted-foreground">
+                              {finding.checkId} · {finding.checkName}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-xs leading-5 text-foreground">
+                            {finding.message}
                           </p>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
+                          {finding.location ? (
+                            <p className="mt-0.5 break-all font-mono text-[10px] text-muted-foreground">
+                              {finding.location}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
                 )}
               </TabsContent>
             </Tabs>

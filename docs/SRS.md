@@ -16,14 +16,16 @@ links to the code (and tests, where they exist).
 
 ### 1.1 In scope
 
-The requirements below cover the Python core: DDSP ingestion, schema discovery, semantic field
+The requirements below cover the Python core (DDSP ingestion, schema discovery, semantic field
 mapping, AI planning, the Template IR, validation, generic DOCX compilation, preview, revisions, the
-HTTP API, the CLI and local persistence.
+HTTP API, the CLI and local persistence) and the Next.js frontend that consumes the HTTP API. The
+frontend is a client of FR-09; it introduces no additional backend fidelity claims.
 
 ### 1.2 Out of scope
 
 Docentric AX output, Word rendering verification, authentication, multi-tenancy, horizontal scaling,
-PDF export, web frontend behaviour. See [PRD §3](PRD.md#3-non-goals-mvp).
+PDF export, pixel-faithful browser rendering of the document preview. See
+[PRD §3](PRD.md#3-non-goals-mvp).
 
 ### 1.3 Status vocabulary
 
@@ -138,8 +140,9 @@ mapping from requirement clauses to candidate fields.
 - Tests: `tests/unit/test_schema_and_ir.py`, `tests/unit/test_planner.py`
 
 **Gaps.** The synonym table is a small, domain-specific hand-written list. Search is lexical, not
-embedding-based; a vocabulary the table does not cover scores zero. Mapping quality is not yet
-quantified (see [EVALUATION.md](EVALUATION.md)).
+embedding-based; a vocabulary the table does not cover scores zero. Mapping quality is quantified
+only for the mock baseline on synthetic fixtures (see [EVALUATION.md](EVALUATION.md)); no hosted-LLM
+comparison has been recorded.
 
 ---
 
@@ -243,7 +246,8 @@ byte-identically for identical inputs, and shall refuse every target it cannot p
    level 9; core properties (`created`, `modified`, `revision`, author, title, subject, comments,
    keywords, category, language) are fixed except for values derived from the IR.
 4. Rendering supports paragraph, heading, image, repeat, conditional and table blocks; repeat and
-   table-repeat expansion is bounded by `max_items` (≤ 1000) and `max_repeat_items` (default 200).
+   table-repeat expansion is bounded by `max_items` when set, otherwise by
+   `CompileOptions.max_repeat_items` (default 200); both are capped at 1,000.
 5. Bindings render sample values when available and explicit `[[path]]` placeholders otherwise; no
    business value is ever invented.
 6. Images are accepted only as base64 or `data:` payloads with PNG/JPEG/GIF/BMP magic bytes and
@@ -571,12 +575,16 @@ static table and can drift from provider pricing. No aggregate cost accounting a
 **Statement.** The system shall have a measured, reproducible latency profile for parsing, planning,
 validation and compilation.
 
-**Target.** `TBD`, to be measured by `benchmarks/run_benchmarks.py` (100 runs, p50/p95). Not yet
-available; see [BENCHMARKS.md](BENCHMARKS.md).
+**Target.** p50/p95 measured by `benchmarks/run_benchmarks.py` (100 runs per example); no
+service-level objective is declared. Results and their environment are recorded in
+[BENCHMARKS.md](BENCHMARKS.md).
 
-**Status: Not verified.** No benchmark numbers are claimed anywhere in this documentation.
+**Status: Partially implemented.** A 100-run benchmark exists for the three synthetic fixtures
+(`benchmarks/run_benchmarks.py`, results in `benchmarks/results.json`), with p50/p95 recorded in
+[BENCHMARKS](BENCHMARKS.md). There is no service-level objective, no load/concurrency measurement and
+no large-document benchmark; the aggregate percentile is computed over three per-example p95 values.
 
-**Evidence.** No benchmark runner exists at this revision.
+**Evidence.** `benchmarks/run_benchmarks.py`, `benchmarks/results.json`, [BENCHMARKS](BENCHMARKS.md).
 
 ---
 
@@ -617,12 +625,17 @@ duration, request and result/error; validation reports as artifacts; startup log
 **Statement.** The system shall install from source on Python 3.12 with a single `pip install -e .`
 and shall not require Word, Dynamics 365 or a Docentric licence.
 
-**Target / verification.** `requires-python = ">=3.12"`; pure-Python dependencies; one distribution
-with multiple package directories; documented quick start.
+**Target / verification.** `requires-python = ">=3.12"`; Python-only dependencies installed from
+wheels (lxml is the only compiled dependency used at runtime; FastAPI is pinned to
+`>=0.162,<0.163` in this build); one distribution with multiple package directories; documented quick
+start.
 
-**Status: Implemented.** Container packaging is **not** available at this revision.
+**Status: Implemented.** Source installation is documented; both container images build and run (API
+`/health`, web HTTP 200). The frontend requires Node 22+ and a build-time
+`NEXT_PUBLIC_API_BASE_URL`.
 
-**Evidence.** `pyproject.toml`, README quick start, `scripts/build_examples.py`.
+**Evidence.** `pyproject.toml`, README quick start, `scripts/build_examples.py`, `Dockerfile`,
+`apps/web/Dockerfile`.
 
 ---
 
@@ -632,14 +645,16 @@ with multiple package directories; documented quick start.
 behaviour traceable to requirements.
 
 **Target / verification.** ruff (line length 100, rule set configured), mypy (`check_untyped_defs`,
-`warn_redundant_casts`), pytest with strict markers, coverage configuration with branch coverage.
-CI enforcement and an 85% coverage gate are planned; see [TEST_PLAN.md](TEST_PLAN.md).
+`warn_redundant_casts`), pytest with strict markers, branch coverage with an 85% gate. All are
+enforced in `.github/workflows/ci.yml`; see [TEST_PLAN.md](TEST_PLAN.md).
 
-**Status: Partially implemented.** Tooling is configured; no CI workflow is committed at this
-revision.
+**Status: Implemented.** Lint, format check, type checking, coverage-gated tests, example/golden
+reproducibility checks, OpenAPI freshness and security scans run in CI; the web workspace has lint,
+typecheck and build jobs; the Docker job builds both images. No browser E2E suite is committed.
 
 **Evidence.** `pyproject.toml` (`[tool.ruff]`, `[tool.mypy]`, `[tool.pytest.ini_options]`,
-`[tool.coverage.*]`), `tests/`.
+`[tool.coverage.*]`), `tests/`, `apps/web/package.json` (lint/typecheck/build scripts), `.github/workflows/ci.yml`,
+`Makefile` (`ci`, `test-cov`).
 
 ---
 

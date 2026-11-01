@@ -27,6 +27,8 @@
 │   FastAPI app (api/)            Typer CLI (cli/)                           │
 │   - transport validation        - argument parsing, exit codes             │
 │   - HTTP status mapping         - text/JSON output                         │
+│   Next.js workspace (apps/web)  - HTTP client of the API, no privileged    │
+│                                   access; UI only                          │
 └───────────────────────────────┬────────────────────────────────────────────┘
                                 │
 ┌───────────────────────────────▼────────────────────────────────────────────┐
@@ -72,9 +74,9 @@ compiler may import `template_ir`. `core` imports nothing from the other layers.
 | `packages/llm-gateway` | `docentric_copilot.llm` | Provider adapters, structured output, retries, pricing, telemetry | core, httpx |
 | `packages/planner` | `docentric_copilot.planner` | Prompt construction, provider invocation, deterministic repair, mapping report, revisions, heuristic baseline | core, ddsp_parser, schema_resolver, template_ir, llm |
 | `packages/renderer` | `docentric_copilot.preview` | Independent HTML preview | core, ddsp_parser, schema_resolver, template_ir, docx_compiler (context/expression/format) |
-| `packages/evaluation` | `docentric_copilot.evaluation` | Placeholder package (no harness implemented) | — |
+| `packages/evaluation` | `docentric_copilot.evaluation` | Planner quality metrics (`evaluate`, `MetricsReport`); the runner lives in `benchmarks/run_evaluation.py` | core (stdlib/pydantic) |
 | `services/api` | `docentric_copilot.app`, `.api`, `.api.routes`, `.cli`, `.storage` | Application service, HTTP routes and schemas, CLI, SQLite + artifacts | everything above |
-| `apps/web` | — | Web frontend workstream (not part of the Python package set) | HTTP API |
+| `apps/web` | — | Next.js 15 single-page workspace; HTTP client of the API, build-time `NEXT_PUBLIC_API_BASE_URL`, sandboxed preview iframe | HTTP API |
 
 The unusual layout — many source roots, one distribution — is deliberate: each directory is an
 independently reviewable work package while the import namespace stays flat for users. The mapping is
@@ -96,13 +98,13 @@ the normative ownership map.
 | SOW-06 LLM gateway | `packages/llm-gateway` | `docentric_copilot.llm` | `LLMGateway.generate_structured`, `MockProvider`, `price_for` |
 | SOW-07 Planning | `packages/planner` | `docentric_copilot.planner` | `TemplatePlanner.plan`, `build_document` (baseline), `sanitize_document`, `diff_documents` |
 | SOW-08 Preview | `packages/renderer` | `docentric_copilot.preview` | `render_preview` |
-| SOW-09 Evaluation | `packages/evaluation` | `docentric_copilot.evaluation` | placeholder only |
+| SOW-09 Evaluation | `packages/evaluation` | `docentric_copilot.evaluation` | `EvaluationCase`, `evaluate`, `MetricsReport`, `MetricValue` |
 | SOW-10 Application service | `services/api/src/docentric_copilot/app` | `docentric_copilot.app` | `TemplateService` |
 | SOW-11 HTTP API | `services/api/src/docentric_copilot/api` | `docentric_copilot.api` | `create_app`, route modules, `schemas` |
 | SOW-12 CLI | `services/api/src/docentric_copilot/cli` | `docentric_copilot.cli` | `app`, commands in `main.py` |
 | SOW-13 Storage | `services/api/src/docentric_copilot/storage` | `docentric_copilot.storage` | `Store`, `SourceRecord`, `VersionRecord`, `ArtifactRecord` |
 | SOW-14 Examples/tooling | `scripts`, `examples` | — | `build_examples.py`, synthetic packages |
-| SOW-15 Web frontend | `apps/web` | — | separate workstream |
+| SOW-15 Web frontend | `apps/web` | — | Delivered: Next.js 15 workspace (`npm run build`), API client, workspace panels |
 
 ## 5. Data flow
 
@@ -296,8 +298,13 @@ Details and residual risks: [THREAT_MODEL.md](THREAT_MODEL.md).
    section; their headers/footers are not rendered and produce a warning.
 5. **Single-process persistence.** SQLite and local files are deliberate MVP shortcuts, not a service
    architecture.
-6. **Placeholder packages.** `docentric_copilot.evaluation` is a placeholder; no metrics code exists
-   yet, and this document does not pretend otherwise.
+6. **Evaluation accounting.** The evaluation harness computes field precision/recall from bindings it
+   can resolve; alias-resolved table bindings are currently not counted, which understates recall on
+   the shipped fixtures. See [EVALUATION](EVALUATION.md).
+7. **The frontend is a plain HTTP client.** `apps/web` has no privileged access: it renders API
+   responses, displays previews in a sandboxed iframe (`sandbox=""`) and downloads artifacts through
+   the API. Its API base URL is baked at build time, so one build targets one API origin; there is no
+   runtime configuration endpoint and no server-side session. No browser E2E suite is committed.
 
 ## 12. ADR index
 

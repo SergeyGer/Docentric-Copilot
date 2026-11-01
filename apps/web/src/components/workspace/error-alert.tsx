@@ -136,7 +136,11 @@ export function ErrorAlert({
             <p className="text-sm leading-5 text-foreground">{error.message}</p>
             <p className="mt-1 font-mono text-[11px] text-muted-foreground">
               {error.code}
-              {error.status > 0 ? ` · HTTP ${error.status}` : " · network/client"}
+              {error.status > 0
+                ? ` · HTTP ${error.status}`
+                : error.code.startsWith("client_")
+                  ? " · client validation"
+                  : " · network"}
             </p>
           </div>
           {onDismiss ? (

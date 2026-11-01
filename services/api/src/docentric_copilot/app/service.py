@@ -65,6 +65,7 @@ class TemplateService:
         language: str = "en",
         target: str = "generic-docx",
         max_repair_attempts: int = 1,
+        max_generation_cost_usd: float | None = None,
     ) -> tuple[PlanOutcome, ValidationReport]:
         options = PlanOptions(
             language=language,
@@ -73,7 +74,12 @@ class TemplateService:
             max_repair_attempts=max_repair_attempts,
         )
         outcome = await self._planner.plan(
-            schema, prompt, provider=provider, model=model, options=options
+            schema,
+            prompt,
+            provider=provider,
+            model=model,
+            options=options,
+            budget_usd=max_generation_cost_usd,
         )
         report = self._validator.validate(outcome.document, schema)
         return outcome, report

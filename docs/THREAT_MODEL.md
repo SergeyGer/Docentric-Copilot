@@ -2,14 +2,15 @@
 
 | Field | Value |
 | --- | --- |
-| System | Docentric Copilot 0.1.0 (API, CLI, SQLite, local artifacts) |
+| System | Docentric Copilot 0.1.0 (API, CLI, Next.js web workspace, SQLite, local artifacts) |
 | Method | Asset/actor inventory, trust boundaries, STRIDE-oriented threat table, residual-risk register |
 | Related | [SECURITY.md](../SECURITY.md), [SRS NFR-02…NFR-06](SRS.md#3-non-functional-requirements), [DDSP_COMPATIBILITY](DDSP_COMPATIBILITY.md) |
 
 ## 1. Scope and assumptions
 
-This model covers the Python service in this repository: DDSP ingestion, planning with hosted
-providers, validation, DOCX compilation, preview, the HTTP API, the CLI and local storage.
+This model covers the Python service and its web client in this repository: DDSP ingestion, planning
+with hosted providers, validation, DOCX compilation, preview, the HTTP API, the CLI, local storage and
+the Next.js workspace in `apps/web`.
 
 Assumptions that materially affect the analysis:
 
@@ -24,6 +25,9 @@ Assumptions that materially affect the analysis:
    malicious operator who can change environment variables or the database.
 5. **No multi-tenancy.** One deployment serves one data directory; cross-tenant isolation is not
    implemented.
+6. **The browser is assumed to run the shipped frontend code**, not an attacker-modified copy. XSS and
+   iframe escape are still considered, because API data reaches the DOM and the preview HTML is
+   rendered in the browser.
 
 ## 2. Assets
 
@@ -37,6 +41,8 @@ Assumptions that materially affect the analysis:
 | Provider API keys | Grant billable access to external models | Environment only; never persisted |
 | Service availability | Denial of service blocks document production | Process, SQLite, disk |
 | Compatibility claim integrity | A false claim causes customer harm | Documentation, capability/validation payloads |
+| Browser-rendered content | Preview HTML and API data are displayed in the user's browser | `apps/web` sandboxed iframe, React-rendered text |
+| Frontend build configuration | `NEXT_PUBLIC_API_BASE_URL` decides where browser data is sent | Build-time environment variable, Docker build arg |
 
 ## 3. Actors
 
@@ -69,7 +75,8 @@ Assumptions that materially affect the analysis:
    validated against the IR.
 3. **Filesystem boundary** — artifacts are written under a generated id; input is never extracted to
    disk.
-4. **Browser boundary** — HTML artifacts are served to a browser; escaping and CSP matter.
+4. **Browser boundary** — the Next.js workspace renders API JSON and embeds the HTML preview in a
+   sandboxed iframe; HTML artifacts are also served directly. Escaping, sandboxing and CSP matter.
 
 ## 5. Threats and mitigations
 
@@ -126,9 +133,20 @@ of service, **E** elevation of privilege.
 | T-29 | D | Concurrent requests exhaust SQLite/CPU | Single connection + lock; CPU work in threadpool | `storage/store.py`, `routes/templates.py` | No rate limiting, no queue, no backpressure |
 | T-30 | D | Disk exhaustion via artifacts | TTL purge; no per-deployment quota | `storage/store.py` | A burst of large compilations can fill the disk before expiry |
 | T-31 | I | Secrets in environment visible to process listing? | Keys are environment variables, standard for containers | — | Host-level access is out of scope |
-| T-32 | E | Supply-chain compromise (dependency) | Constrained version ranges in `pyproject.toml`; no lockfile committed for Python | `pyproject.toml` | `pip-audit`/`bandit` are planned in CI; transitive dependencies are not vendored |
+| T-32 | E | Supply-chain compromise (dependency) | Constrained version ranges in `pyproject.toml`; `bandit` and `pip-audit` run in CI | `pyproject.toml`, `.github/workflows/ci.yml` | No Python lockfile is committed and transitive dependencies are not vendored |
 | T-33 | I | Unencrypted transport | No TLS in the app; must be terminated by a proxy | — | Credentials and documents travel in clear text without a TLS proxy |
 | T-34 | T | Malicious validation-report HTML | Jinja autoescape for `.html`/`.j2`; findings messages contain paths, not raw values | `template_validator/report.py` | Messages may include user-supplied field names; escaping covers markup |
+
+### 5.5 Web client
+
+| ID | STRIDE | Threat | Mitigation | Code | Residual |
+| --- | --- | --- | --- | --- | --- |
+| T-35 | I/X | XSS: API-provided strings (schema paths, mapping text, validation messages, preview HTML) rendered in the workspace | React escapes text by default; no `dangerouslySetInnerHTML` is used in `apps/web/src`; the HTML preview is shown in a sandboxed iframe (`sandbox=""`) instead of the parent DOM | `apps/web/src/components/workspace/preview-panel.tsx`, `apps/web/src/lib/api.ts` | `next.config.ts` sets baseline headers (nosniff, same-origin framing, referrer and permissions policy) but not a Content-Security-Policy; a future unsafe HTML sink would not be contained by CSP |
+| T-36 | X/E | Preview iframe escapes the sandbox or executes script | `sandbox=""` disables scripts, forms, same-origin access, top navigation and downloads inside the frame | preview panel | Relies on browser sandbox correctness; the API's CSP applies when the preview URL is opened directly, not to `srcdoc` content inside the workspace |
+| T-37 | I | Misconfigured `NEXT_PUBLIC_API_BASE_URL` sends DDSP data and prompts to an unintended API | Value is set at build time by the operator; the default is `http://localhost:8000`; compose passes `http://localhost:8000` explicitly | `apps/web/src/lib/api.ts`, `apps/web/Dockerfile` | A malicious or careless build configuration is a deployment risk; the browser cannot detect a hostile API |
+| T-38 | S/T | Cross-site request abuse against the unauthenticated API | The API has no cookies or credentials and CORS allows only configured origins; browser `fetch` responses are unreadable cross-origin | `api/app.py`, `apps/web/src/lib/api.ts` | Requests can still be sent (no CSRF token, no auth); the impact is limited to consuming the unauthenticated service, which lacks quotas |
+| T-39 | T | Downloaded DOCX/report opened by the user contains active content | The compiler emits no macros or embedded objects and the API inspects packages; the frontend only triggers a download | `docx_compiler/package.py`, web download handler | The consumer application (Word/browser) is outside this project's control |
+| T-40 | D | Frontend unavailable when the API or its own build is broken | Static Next.js build; API health is surfaced in the UI; container healthcheck on port 3000 | `apps/web/Dockerfile`, workspace components | No offline mode; no service worker; API outage blocks the workspace |
 
 ## 6. STRIDE summary
 
@@ -137,9 +155,9 @@ of service, **E** elevation of privilege.
 | Spoofing | No authentication | Unguessable ids; CORS | No identity at all |
 | Tampering | Uploaded DDSP/IR, model output | Typed validation, deterministic sanitiser, package inspection | Model output quality |
 | Repudiation | No actor identity | Job records | No authenticated audit trail |
-| Information disclosure | PII in prompts/artifacts; key leakage | Data minimisation, redaction, TTL, `no-store` | Requirement text verbatim to provider; artifact URLs are bearer tokens |
+| Information disclosure | PII in prompts/artifacts; key leakage; browser rendering | Data minimisation, redaction, TTL, `no-store`, sandboxed preview | Requirement text verbatim to provider; artifact URLs are bearer tokens; no CSP on the frontend or the HTML artifact view |
 | Denial of service | Large inputs, expensive generations | Size/depth/node/time limits, budget | No rate limiting/quotas |
-| Elevation of privilege | Prompt injection, parser exploits | Fenced prompts, no code execution, hardened XML | Third-party parser/decoder vulnerabilities |
+| Elevation of privilege | Prompt injection, parser exploits, browser sandbox escape | Fenced prompts, no code execution, hardened XML, `sandbox=""` preview | Third-party parser/decoder vulnerabilities; browser sandbox relies on browser correctness |
 
 ## 7. Residual risk register
 
@@ -152,11 +170,13 @@ of service, **E** elevation of privilege.
 | R-05 | Preview accepts `data:image/svg+xml` without inspection | Low–Medium | Restrict allowed image media types to raster formats and re-validate at render time |
 | R-06 | Artifact URLs are bearer capabilities until TTL | Medium | Shorten TTL, add signed URLs or authenticated download |
 | R-07 | No quotas/rate limits, single-process SQLite | Medium | Add a reverse-proxy limit and a job queue before multi-user use |
-| R-08 | No Python lockfile / dependency audit in CI at this revision | Medium | Add a lockfile and `pip-audit`/`bandit` jobs (see ROADMAP) |
+| R-08 | No committed Python lockfile; audit depends on the resolver at CI time | Medium | Add a lockfile and image/dependency scanning (see ROADMAP) |
 | R-09 | No TLS inside the app | Medium | Terminate TLS at a trusted proxy; document the requirement |
 | R-10 | Image/XML decoder vulnerabilities | Low | Track dependency advisories; keep parsers current |
 | R-11 | Versions and jobs never expire | Low | Add retention policy and deletion API |
 | R-12 | No independent security review | Medium | Commission a review before production use |
+| R-13 | No Content-Security-Policy in the Next.js app | Low-Medium | `next.config.ts` now sets `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy`; a strict CSP needs nonce plumbing through the App Router |
+| R-14 | No committed browser E2E or accessibility tests | Medium | Commit Playwright tests (including sandbox and error states) and an accessibility check |
 
 ## 8. Security-relevant tests
 
@@ -167,6 +187,8 @@ of service, **E** elevation of privilege.
 | Preview escaping, image handling | [tests/unit/test_preview_and_llm.py](../tests/unit/test_preview_and_llm.py) |
 | Macro/OLE/external-relationship detection, package validity | [tests/unit/test_validator_and_compiler.py](../tests/unit/test_validator_and_compiler.py) |
 | Hostile upload over HTTP, artifact view sandboxing, error shapes | [tests/integration/test_api.py](../tests/integration/test_api.py) |
+| UI manual smoke (not committed) | Playwright/Chromium run: upload, plan, preview, compile, revise, version load; zero console errors — no committed file |
+| Frontend static checks | `npm run lint`, `npm run typecheck`, `npm run build` (in `apps/web`) |
 
 These tests demonstrate specific controls. They are not a penetration test and do not cover the
 residual risks above.
@@ -181,3 +203,7 @@ residual risks above.
 - Multi-tenant isolation, regulatory certification (GDPR/SOC 2) and data-residency guarantees.
 - Docentric AX compatibility as a security property: it is unverified (see
   [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md)).
+- Browser, extension and operating-system compromise on the client; a user running attacker-controlled
+  JavaScript outside the shipped frontend is out of scope.
+- Frontend supply-chain compromise beyond the standard dependency review; no SBOM or signature
+  verification is shipped.

@@ -230,3 +230,38 @@ def test_conditional_and_table_present_in_ir(planned) -> None:
         isinstance(block, ImageBinding) for block in planned.document.sections[0].header or []
     )
     assert Scope().aliases == {}
+
+
+def test_absolute_bindings_resolve_table_aliases(planned, schema) -> None:
+    from docentric_copilot.planner import absolute_bindings
+
+    paths = absolute_bindings(planned.document, schema)
+    assert "MainData.QuotationLines.Line.UnitPrice" in paths
+    assert all("." in path for path in paths)
+    assert not any(path.startswith("line.") for path in paths)
+
+
+def test_generation_budget_is_forwarded(schema, quotation_request) -> None:
+    from docentric_copilot.llm import GenerationResult, Usage
+    from docentric_copilot.planner import TemplatePlanner
+    from docentric_copilot.planner.heuristic import build_document
+
+    class RecordingGateway:
+        def __init__(self) -> None:
+            self.kwargs: dict = {}
+            self.mock = None
+
+        async def generate_structured(self, **kwargs):
+            self.kwargs = kwargs
+            document = build_document(schema, quotation_request)
+            return GenerationResult(
+                provider="mock",
+                model="mock-planner-v1",
+                content=document.model_dump(mode="json"),
+                usage=Usage(),
+            )
+
+    gateway = RecordingGateway()
+    planner = TemplatePlanner(gateway)  # type: ignore[arg-type]
+    asyncio.run(planner.plan(schema, quotation_request, provider="openai", budget_usd=0.25))
+    assert gateway.kwargs["budget_usd"] == 0.25

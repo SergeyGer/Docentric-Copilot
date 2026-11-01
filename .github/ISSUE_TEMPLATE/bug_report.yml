@@ -1,0 +1,109 @@
+name: Bug report
+description: Report a defect in the parser, IR, planner, validator, compiler, API, CLI, documentation or web UI.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a defect. Please redact credentials, personal data and customer content.
+
+        **Do not report security vulnerabilities here.** Use the private channel described in
+        [SECURITY.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/SECURITY.md).
+
+        **Docentric AX compatibility is unverified.** A document not being accepted by a Docentric
+        environment is a compatibility observation, not an established regression; see
+        [docs/DOCENTRIC_AX_COMPATIBILITY.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/DOCENTRIC_AX_COMPATIBILITY.md).
+
+        Contribution requirements (tests, documentation, no unverified compatibility claims) are in the
+        Definition of Done: [CONTRIBUTING §5](https://github.com/SergeyGer/Docentric-Copilot/blob/main/CONTRIBUTING.md#5-definition-of-done).
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Release version, git commit or image tag where you observed the issue.
+      placeholder: "0.1.0 (commit 059b1bb)"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which component is affected?
+      options:
+        - DDSP parser / schema discovery
+        - Template IR / serialization / digest
+        - Planner (mock baseline)
+        - Planner (OpenAI / Anthropic / Gemini)
+        - Validation (V1-V5)
+        - DOCX compiler
+        - HTML preview
+        - HTTP API
+        - CLI
+        - Storage / artifacts
+        - Documentation
+        - Web UI
+        - Build / packaging / Docker
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the defect.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands or API calls, in order. Include the DDSP fixture used if it is synthetic.
+      placeholder: |
+        1. docentric-copilot inspect examples/quotation/sales-quotation.ddsp
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect, and which document/requirement defines that expectation?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happened? Include the error code, HTTP status or exit code, not only a message.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence (redacted)
+      description: |
+        Paste relevant output: diagnostic codes, validation statuses, IR digest, stack trace, or a
+        minimal synthetic IR/DDSP excerpt. Do not attach real customer data or API keys.
+      render: text
+    validations:
+      required: false
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, provider/model (if relevant), browser (if web), Docker (yes/no).
+      placeholder: "Ubuntu 24.04, Python 3.12.3, mock provider, Docker no"
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have removed credentials, personal data and customer material from this report.
+          required: true
+        - label: I understand that Docentric AX compatibility is unverified and that this report does not establish it.
+          required: true
+        - label: I searched existing issues for a duplicate.
+          required: true

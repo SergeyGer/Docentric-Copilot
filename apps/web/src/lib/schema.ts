@@ -1,6 +1,6 @@
 /** Normalized-schema traversal used by the explorer and the mapping review. */
 
-import type { DataType, NormalizedSchema, SchemaNode, SchemaSection } from "@/lib/types";
+import type { DataType, NormalizedSchema, SchemaNode } from "@/lib/types";
 
 export type NodeKind = DataType | "object";
 
@@ -50,10 +50,6 @@ export function nodeKind(node: SchemaNode): NodeKind {
     return node.data_type as DataType;
   }
   return "any";
-}
-
-export function isDataType(value: string): value is DataType {
-  return KNOWN_TYPES.includes(value);
 }
 
 export function countSchemaNodes(nodes: SchemaNode[]): number {
@@ -299,8 +295,4 @@ export function allExpandablePaths(schema: NormalizedSchema | null): Set<string>
     }
   }
   return new Set(paths);
-}
-
-export function countSectionNodes(section: SchemaSection): number {
-  return countSchemaNodes(section.nodes);
 }

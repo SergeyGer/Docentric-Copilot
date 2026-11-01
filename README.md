@@ -56,7 +56,7 @@ MVP under active development (version `0.1.0`, Template IR `1.0`). Honest summar
 | DDSP parsing, schema discovery, sample-data extraction | Implemented; exercised only on synthetic packages under `examples/` |
 | Template IR + canonical JSON/digest + JSON Schema export | Implemented |
 | Deterministic baseline planner (`mock`) | Implemented |
-| LLM gateway (OpenAI, Anthropic, Gemini) | Implemented; **no live provider call is verified in this repository** |
+| LLM gateway (OpenAI, Anthropic, Gemini) | Implemented; **no live provider call has been recorded in this repository** |
 | Validation V1–V3 | Implemented |
 | Validation V4 (visual) | Partial: table-width check only, and only when sample data is supplied |
 | Validation V5 (Docentric AX compatibility) | Not implemented; always `not_tested` |
@@ -64,10 +64,12 @@ MVP under active development (version `0.1.0`, Template IR `1.0`). Honest summar
 | Docentric AX compiler | Not implemented; gated and fails closed |
 | HTML preview | Implemented; content preview only, not a Word-faithful layout |
 | HTTP API, CLI, SQLite storage, artifact TTL | Implemented |
-| Evaluation harness (`docentric_copilot.evaluation`) | Not available: the package is a placeholder |
-| Benchmarks | Not available: `benchmarks/` has no runner yet |
-| Web UI (`apps/web`) | In progress in a separate workstream; not part of this revision's verified surface |
-| Docker image, Makefile, CI workflow | Not present in the repository |
+| Evaluation harness (`docentric_copilot.evaluation`) | Implemented: metric definitions plus `benchmarks/run_evaluation.py`; only the mock baseline has been measured |
+| Benchmarks | Implemented runner (`benchmarks/run_benchmarks.py`); numbers are environment-specific and not an SLO |
+| Web UI (`apps/web`) | Implemented and verified: Next.js 15 workspace; `lint`, `typecheck` and `build` pass, and a manual real-browser smoke run passed. No browser E2E suite is committed |
+| Docker image (API) | Builds and passes its `/health` check; multi-stage, non-root |
+| Docker image (web) | Builds and serves HTTP 200 on port 3000 (`node:22-alpine`, non-root, healthcheck) |
+| Makefile and GitHub workflows | Present (`make test`, `make ci`, `make bench`, `make eval`, `make openapi`, …; CI: python, web, docker, security) |
 
 The precise mapping of requirements to code and tests is in [docs/SRS.md](docs/SRS.md).
 
@@ -124,17 +126,70 @@ curl -s http://localhost:8000/api/v1/health
 # {"status":"ok","version":"0.1.0","environment":"development","docentric_ax_adapter_enabled":false}
 ```
 
-Runtime data (SQLite database and artifacts) is written to `DC_DATA_DIR` (`./.data` by default) and
-expires after `DC_ARTIFACT_TTL_SECONDS` (3600 by default).
+Runtime data (SQLite database and artifacts) is written to `DC_DATA_DIR` (`./.data` by default).
+Artifacts expire after `DC_ARTIFACT_TTL_SECONDS` (3600 by default); sources older than the TTL are
+removed at startup; template versions and job records are retained until the database is deleted.
 
-### Docker (not available at this revision)
+### Web UI
 
-There is **no** `Dockerfile`, `docker-compose.yml` or published image in this repository. The
-container path is therefore unsupported: no image is built or tested. If you need an isolated
-environment today, use any Python 3.12 base image and run the same four commands as above
-(`pip install -e .`, `uvicorn docentric_copilot.api.main:app --host 0.0.0.0 --port 8000`); this is
-an equivalent manual recipe, not a maintained artefact. Containerisation is tracked in
-[docs/ROADMAP.md](docs/ROADMAP.md).
+The frontend is a Next.js 15 single-page workspace in `apps/web` (React 19, TypeScript strict,
+Tailwind). It drives the same API: upload a DDSP package, browse and copy schema paths, write the
+requirement, review the mapping and validation report, inspect the sandboxed HTML preview, compile the
+DOCX, and load or revise template versions.
+
+```bash
+cd apps/web
+npm ci
+npm run dev          # http://localhost:3000
+```
+
+Node 22+ is required. The API must be running at `http://localhost:8000`; the browser uses
+`NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:8000`, no trailing slash), which is inlined at
+build time. The API's default CORS origin is `http://localhost:3000`. A production build is
+`npm run build && npm start` (port 3000 by default).
+
+The UI is English-only. The HTML preview is displayed in a sandboxed iframe (`sandbox=""`, scripts
+disabled), and the `not_tested` compatibility status is shown distinctly from `passed`. A manual
+real-browser smoke run covered upload → schema → plan → preview → compile → revision; no browser test
+suite is committed (see [docs/TEST_PLAN.md](docs/TEST_PLAN.md) and
+[apps/web/README.md](apps/web/README.md) for panel-level details).
+
+### Docker
+
+The API image is a multi-stage build on `python:3.12-slim` that runs as an unprivileged user and
+declares a healthcheck on `/health`:
+
+```bash
+docker build -t docentric-copilot-api:0.1.0 .
+docker run --rm -p 8000:8000 \
+  -v docentric-data:/data \
+  docentric-copilot-api:0.1.0
+
+curl -s http://localhost:8000/health
+# {"status":"ok","version":"0.1.0"}
+```
+
+`docker-compose.yml` defines an `api` service (port 8000, `DC_DATA_DIR=/data`, named volume,
+healthcheck) and a `web` service (port 3000, depends on the API being healthy). Both images build:
+the API image above and the frontend image at `apps/web/Dockerfile` (`node:22-alpine`, non-root,
+healthcheck on port 3000). `docker compose config` validates; both images were built and run
+individually during development (API `/health`, web HTTP 200).
+
+```bash
+docker compose up --build -d
+# API:  http://localhost:8000
+# Web:  http://localhost:3000
+```
+
+A full `docker compose up` could not be completed inside the development container because Docker
+Compose's Bake path was denied by that environment; the images and compose configuration were
+verified separately. The frontend bakes `NEXT_PUBLIC_API_BASE_URL` at build time (default
+`http://localhost:8000`); set the build argument if the browser reaches the API at a different URL.
+
+The image sets `DC_DATA_DIR=/data`, which the named volume preserves across container restarts; the
+TTL still applies to artifacts. Provider credentials are passed as environment variables and are never
+baked into the image; see [docs/API_SPEC.md](docs/API_SPEC.md) and
+[docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
 
 ## End-to-end example (quotation)
 
@@ -243,10 +298,15 @@ The same request over HTTP returns `409` with error code `target_unsupported` (s
 | HTTP API | Implemented | `services/api/src/docentric_copilot/api/` |
 | CLI | Implemented | `services/api/src/docentric_copilot/cli/main.py` |
 | SQLite storage + artifact TTL | Implemented | `services/api/src/docentric_copilot/storage/store.py` |
+| Planner evaluation metrics | Implemented (mock baseline measured) | `packages/evaluation/src/docentric_copilot/evaluation/metrics.py` |
+| Latency benchmark runner | Implemented (environment-specific results) | `benchmarks/run_benchmarks.py` |
+| Makefile developer workflow | Implemented | `Makefile` |
+| CI: lint, types, coverage, reproducibility, OpenAPI, security | Implemented, including both Docker images and the web build | `.github/workflows/ci.yml` |
+| Docker image for the API | Implemented; build and `/health` verified | `Dockerfile` |
+| Docker image for the web app | Implemented; build and HTTP 200 verified | `apps/web/Dockerfile` |
 | PDF export | Not implemented | — |
 | Docentric AX compiler | Blocked / not implemented | `packages/docx-compiler/src/docentric_copilot/docx_compiler/generic.py` |
-| Evaluation harness | Not available | `packages/evaluation/src/docentric_copilot/evaluation/__init__.py` (placeholder) |
-| Benchmarks | Not available | `benchmarks/` (empty) |
+| Web UI (Next.js 15 workspace) | Implemented; manual browser smoke verified, no committed E2E suite | `apps/web/` |
 | Authentication / multi-tenancy | Not implemented | — |
 
 ## Compatibility matrix
@@ -277,33 +337,53 @@ packages/
   llm-gateway/      docentric_copilot.llm
   planner/          docentric_copilot.planner
   renderer/         docentric_copilot.preview
-  evaluation/       docentric_copilot.evaluation   (placeholder)
+  evaluation/       docentric_copilot.evaluation   (metrics + evaluation harness)
 services/
   api/              docentric_copilot.app / .api / .cli / .storage
 examples/           synthetic DDSP packages: quotation, invoice, purchase-order
 scripts/            build_examples.py (deterministic example generator)
 tests/              pytest suite (see docs/TEST_PLAN.md)
-apps/web/           web frontend workstream (in progress)
+apps/web/           Next.js 15 frontend workspace (npm; port 3000)
 docs/               product, architecture, API, security and planning documents
 ```
 
-## Testing
-
-There is no `Makefile`, so `make test` is not available. The pytest suite is the source of truth:
+## Testing and measurement
 
 ```bash
-pytest                                   # whole suite
-pytest -q tests/unit                      # fast unit tests
-pytest --cov=docentric_copilot --cov-report=term-missing
-ruff check .
-mypy packages services
+make install-dev        # virtualenv + editable install with dev extras
+make test               # pytest
+make test-cov           # branch coverage with an 85% gate
+make lint               # ruff check + ruff format --check
+make typecheck          # mypy packages services
+make ci                 # lint + typecheck + test-cov (also run by .github/workflows/ci.yml)
+
+make bench              # benchmarks/run_benchmarks.py --runs 100
+make eval               # benchmarks/run_evaluation.py (mock baseline)
 ```
 
-Markers declared in [pyproject.toml](pyproject.toml): `slow`, `e2e`, `network` (network tests are
-expected to be skipped; no test may depend on a real provider). `npm test` is not available at this
-revision because `apps/web` has no committed package manifest.
+Raw commands are equivalent: `pytest`, `pytest --cov=docentric_copilot`, `ruff check .`,
+`mypy packages services`. At the time of writing the suite contains 189 tests and measures 86.23% branch
+coverage on the counted modules; the exact numbers change as tests are added, so run the commands
+rather than quoting this paragraph.
 
-What is and is not covered is listed in [docs/TEST_PLAN.md](docs/TEST_PLAN.md).
+Markers declared in [pyproject.toml](pyproject.toml): `slow`, `e2e`, `network` (network tests are
+expected to be skipped; no test may depend on a real provider).
+
+The web workspace has `lint`, `typecheck` and `build` scripts but **no `test` script**, so `npm test`
+is not available; run the individual scripts:
+
+```bash
+cd apps/web && npm ci && npm run lint && npm run typecheck && npm run build
+```
+
+The frontend was verified with `npm run lint`, `npm run typecheck` and `npm run build`, and a manual
+real-browser smoke run (upload, plan, preview, compile, revise) against the live API. That smoke run is
+not committed and is not reproducible in CI; there is **no committed Playwright suite**. Browser
+end-to-end coverage and layouts below 1024 px remain open (see
+[docs/TEST_PLAN.md](docs/TEST_PLAN.md)).
+
+What is and is not covered is listed in [docs/TEST_PLAN.md](docs/TEST_PLAN.md); benchmark results are
+in [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and planner metrics in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Documentation
 
@@ -318,8 +398,8 @@ What is and is not covered is listed in [docs/TEST_PLAN.md](docs/TEST_PLAN.md).
 | [docs/DOCENTRIC_AX_COMPATIBILITY.md](docs/DOCENTRIC_AX_COMPATIBILITY.md) | The compatibility gate and explicit non-claims |
 | [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) | Assets, actors, threats, mitigations, residual risk |
 | [docs/TEST_PLAN.md](docs/TEST_PLAN.md) | Test matrix, how to run, coverage |
-| [docs/EVALUATION.md](docs/EVALUATION.md) | Metric definitions and the (not yet available) harness |
-| [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Benchmark methodology (runner not yet available) |
+| [docs/EVALUATION.md](docs/EVALUATION.md) | Metric definitions, the harness and the baseline/LLM comparison protocol |
+| [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Benchmark methodology, 100-run results and interpretation rules |
 | [docs/FEASIBILITY.md](docs/FEASIBILITY.md) | M0 findings and the recorded compatibility decision |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | M0–M5 milestones, next steps, blocked items |
 | [docs/adr/](docs/adr/) | Architecture decision records |

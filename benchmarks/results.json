@@ -2,43 +2,43 @@
   "aggregate": {
     "compile": {
       "budget_ms": 5000,
-      "max_ms": 96.66,
-      "mean_ms": 83.3,
-      "min_ms": 76.32,
+      "max_ms": 110.87,
+      "mean_ms": 75.52,
+      "min_ms": 63.07,
       "name": "compile",
-      "p50_ms": 76.91,
-      "p95_ms": 94.68,
-      "runs": 3
+      "p50_ms": 72.92,
+      "p95_ms": 95.08,
+      "runs": 300
     },
     "parse": {
       "budget_ms": 2000,
-      "max_ms": 5.42,
-      "mean_ms": 3.43,
-      "min_ms": 2.42,
+      "max_ms": 5.73,
+      "mean_ms": 2.1,
+      "min_ms": 1.46,
       "name": "parse",
-      "p50_ms": 2.46,
-      "p95_ms": 5.12,
-      "runs": 3
+      "p50_ms": 1.96,
+      "p95_ms": 3.01,
+      "runs": 300
     },
     "plan": {
       "budget_ms": null,
-      "max_ms": 55.25,
-      "mean_ms": 48.33,
-      "min_ms": 44.74,
+      "max_ms": 102.27,
+      "mean_ms": 46.38,
+      "min_ms": 33.54,
       "name": "plan",
-      "p50_ms": 45.0,
-      "p95_ms": 54.22,
-      "runs": 3
+      "p50_ms": 44.03,
+      "p95_ms": 64.88,
+      "runs": 300
     },
     "validate": {
       "budget_ms": null,
-      "max_ms": 2.76,
-      "mean_ms": 2.51,
-      "min_ms": 2.32,
+      "max_ms": 4.74,
+      "mean_ms": 2.18,
+      "min_ms": 1.43,
       "name": "validate",
-      "p50_ms": 2.46,
-      "p95_ms": 2.73,
-      "runs": 3
+      "p50_ms": 2.08,
+      "p95_ms": 3.35,
+      "runs": 300
     }
   },
   "generated_by": "benchmarks/run_benchmarks.py",
@@ -47,132 +47,132 @@
     "invoice": {
       "compile": {
         "budget_ms": null,
-        "max_ms": 78.02,
-        "mean_ms": 69.58,
-        "min_ms": 65.62,
+        "max_ms": 105.32,
+        "mean_ms": 74.9,
+        "min_ms": 64.95,
         "name": "invoice.compile",
-        "p50_ms": 68.77,
-        "p95_ms": 76.32,
-        "runs": 5
+        "p50_ms": 72.03,
+        "p95_ms": 94.16,
+        "runs": 100
       },
       "parse": {
         "budget_ms": null,
-        "max_ms": 2.57,
-        "mean_ms": 2.03,
-        "min_ms": 1.72,
+        "max_ms": 3.49,
+        "mean_ms": 2.11,
+        "min_ms": 1.69,
         "name": "invoice.parse",
-        "p50_ms": 1.99,
-        "p95_ms": 2.46,
-        "runs": 5
+        "p50_ms": 1.96,
+        "p95_ms": 2.89,
+        "runs": 100
       },
       "plan": {
         "budget_ms": null,
-        "max_ms": 45.12,
-        "mean_ms": 41.68,
-        "min_ms": 39.36,
+        "max_ms": 102.27,
+        "mean_ms": 47.12,
+        "min_ms": 39.04,
         "name": "invoice.plan",
-        "p50_ms": 41.29,
-        "p95_ms": 44.74,
-        "runs": 5
+        "p50_ms": 44.43,
+        "p95_ms": 64.88,
+        "runs": 100
       },
       "validate": {
         "budget_ms": null,
-        "max_ms": 2.48,
-        "mean_ms": 2.16,
-        "min_ms": 1.83,
+        "max_ms": 3.79,
+        "mean_ms": 2.34,
+        "min_ms": 1.86,
         "name": "invoice.validate",
         "p50_ms": 2.19,
-        "p95_ms": 2.46,
-        "runs": 5
+        "p95_ms": 3.43,
+        "runs": 100
       }
     },
     "purchase-order": {
       "compile": {
         "budget_ms": null,
-        "max_ms": 99.15,
-        "mean_ms": 81.61,
-        "min_ms": 69.18,
+        "max_ms": 101.3,
+        "mean_ms": 74.56,
+        "min_ms": 63.07,
         "name": "purchase-order.compile",
-        "p50_ms": 77.45,
-        "p95_ms": 96.66,
-        "runs": 5
+        "p50_ms": 72.94,
+        "p95_ms": 91.56,
+        "runs": 100
       },
       "parse": {
         "budget_ms": null,
-        "max_ms": 2.49,
-        "mean_ms": 1.99,
-        "min_ms": 1.61,
+        "max_ms": 2.6,
+        "mean_ms": 1.83,
+        "min_ms": 1.46,
         "name": "purchase-order.parse",
-        "p50_ms": 1.89,
-        "p95_ms": 2.42,
-        "runs": 5
+        "p50_ms": 1.74,
+        "p95_ms": 2.53,
+        "runs": 100
       },
       "plan": {
         "budget_ms": null,
-        "max_ms": 57.79,
-        "mean_ms": 43.44,
-        "min_ms": 34.0,
+        "max_ms": 84.26,
+        "mean_ms": 42.0,
+        "min_ms": 33.54,
         "name": "purchase-order.plan",
-        "p50_ms": 41.46,
-        "p95_ms": 55.25,
-        "runs": 5
+        "p50_ms": 39.77,
+        "p95_ms": 57.99,
+        "runs": 100
       },
       "validate": {
         "budget_ms": null,
-        "max_ms": 2.81,
-        "mean_ms": 2.24,
-        "min_ms": 1.77,
+        "max_ms": 2.86,
+        "mean_ms": 1.86,
+        "min_ms": 1.43,
         "name": "purchase-order.validate",
-        "p50_ms": 2.16,
-        "p95_ms": 2.76,
-        "runs": 5
+        "p50_ms": 1.68,
+        "p95_ms": 2.67,
+        "runs": 100
       }
     },
     "quotation": {
       "compile": {
         "budget_ms": null,
-        "max_ms": 78.04,
-        "mean_ms": 70.16,
-        "min_ms": 63.7,
+        "max_ms": 110.87,
+        "mean_ms": 77.11,
+        "min_ms": 65.32,
         "name": "quotation.compile",
-        "p50_ms": 70.77,
-        "p95_ms": 76.91,
-        "runs": 5
+        "p50_ms": 73.83,
+        "p95_ms": 102.97,
+        "runs": 100
       },
       "parse": {
         "budget_ms": null,
-        "max_ms": 6.14,
-        "mean_ms": 2.9,
-        "min_ms": 1.89,
+        "max_ms": 5.73,
+        "mean_ms": 2.36,
+        "min_ms": 1.8,
         "name": "quotation.parse",
-        "p50_ms": 1.99,
-        "p95_ms": 5.42,
-        "runs": 5
+        "p50_ms": 2.13,
+        "p95_ms": 3.16,
+        "runs": 100
       },
       "plan": {
         "budget_ms": null,
-        "max_ms": 46.01,
-        "mean_ms": 41.02,
-        "min_ms": 37.44,
+        "max_ms": 94.42,
+        "mean_ms": 50.02,
+        "min_ms": 36.13,
         "name": "quotation.plan",
-        "p50_ms": 40.84,
-        "p95_ms": 45.0,
-        "runs": 5
+        "p50_ms": 47.43,
+        "p95_ms": 69.54,
+        "runs": 100
       },
       "validate": {
         "budget_ms": null,
-        "max_ms": 2.34,
-        "mean_ms": 2.09,
-        "min_ms": 1.94,
+        "max_ms": 4.74,
+        "mean_ms": 2.34,
+        "min_ms": 1.86,
         "name": "quotation.validate",
-        "p50_ms": 1.98,
-        "p95_ms": 2.32,
-        "runs": 5
+        "p50_ms": 2.15,
+        "p95_ms": 3.4,
+        "runs": 100
       }
     }
   },
   "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
   "provider": "mock",
   "python": "3.12.3",
-  "runs_per_example": 5
+  "runs_per_example": 100
 }

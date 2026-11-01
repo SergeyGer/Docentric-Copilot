@@ -25,25 +25,10 @@ from docentric_copilot.docx_compiler import CompileOptions, GenericDocxCompiler 
 from docentric_copilot.evaluation import EvaluationCase, evaluate  # noqa: E402
 from docentric_copilot.llm import LLMGateway  # noqa: E402
 from docentric_copilot.planner import PlanOptions, TemplatePlanner  # noqa: E402
-from docentric_copilot.schema_resolver import Scope, resolve_value  # noqa: E402
-from docentric_copilot.template_ir import iter_document_blocks, iter_inline  # noqa: E402
+from docentric_copilot.planner.service import absolute_bindings  # noqa: E402
 from docentric_copilot.template_validator import ValidationEngine  # noqa: E402
 
 CASES_FILE = ROOT / "benchmarks" / "evaluation_cases.json"
-
-
-def absolute_bindings(document, schema) -> list[str]:
-    """Collect every binding as an absolute schema path (aliases resolved)."""
-    from docentric_copilot.schema_resolver import PathResolutionError
-
-    paths: list[str] = []
-    for block, _depth in iter_document_blocks(document):
-        for binding in iter_inline(block):
-            try:
-                paths.append(resolve_value(schema, binding.path, Scope()).absolute)
-            except PathResolutionError:
-                continue
-    return sorted(set(paths))
 
 
 def main(argv: list[str] | None = None) -> int:

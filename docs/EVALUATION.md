@@ -83,10 +83,10 @@ replaced by the mock.
 These are properties of the current harness, not of the product. They must be fixed before recall
 numbers are used for decisions.
 
-1. **Alias bindings are not resolved when collecting `actual_paths`.** The collector calls
-   `resolve_value(schema, binding.path, Scope())` with a root scope, so bindings such as
-   `line.ItemId` inside a table repeat fail to resolve and are omitted. Table-item fields therefore
-   appear in the ground truth but not in the actual set.
+1. **Alias bindings are resolved through the planner's scope walker.** The collector uses
+   `docentric_copilot.planner.service.absolute_bindings`, which walks the IR with the alias scope in
+   force, so `line.ItemId` inside a table repeat is counted as its absolute schema path. Earlier
+   drafts used a root-scope collector and understated recall; the numbers in §4 are post-fix.
 2. **Ground truth includes collection paths** (e.g. `MainData.QuotationLines.Line`) and condition-only
    fields (e.g. `Customer.IsEU`). The IR uses collection paths in `repeat`/`table.repeat` rather than as
    scalar bindings, and condition fields are not "bindings", so a correct plan can still miss them.
@@ -162,8 +162,8 @@ running `make eval` on the same fixtures, although exact timings are not part of
 
 | Metric | Value | Numerator / denominator |
 | --- | --- | --- |
-| Field selection precision | 1.000 | 44 / 44 |
-| Field selection recall | 0.772 | 44 / 57 |
+| Field selection precision | 0.932 | 55 / 59 |
+| Field selection recall | 0.965 | 55 / 57 |
 | Requirement coverage | 1.000 | 27 / 27 |
 | Compilation success rate | 1.000 | 3 / 3 |
 | Clarification rate | 0.000 | 0 / 27 |
@@ -173,11 +173,12 @@ running `make eval` on the same fixtures, although exact timings are not part of
 
 Interpretation with the limitations in §2.3:
 
-- **Precision 1.0** means every path the baseline bound was in the ground truth. It does *not* mean the
-  documents are complete: recall is 0.772.
-- **Recall 0.772** is dominated by collection/table paths and condition-only fields that the current
-  collector does not count (see §2.3). It should be re-measured after the harness resolves aliases; the
-  number is reported as-is rather than adjusted by hand.
+- **Precision 0.932** means almost every path the baseline bound was in the ground truth; the extra
+  bindings are legitimate fields (for example bank `Swift` and payment terms) that the ground-truth
+  list does not require.
+- **Recall 0.965** is measured after the collector was switched to the scope-aware walker (§2.3), so
+  table and nested-repeat bindings are counted. The remaining misses are condition-only fields
+  (`Customer.IsEU`, `ReverseCharge`), which are used in expressions rather than as scalar bindings.
 - **Requirement coverage 1.0** means every extracted clause got a `resolved` mapping. The mapping
   report is lenient in two documented ways: a clause matched by the document title is `resolved`, and a
   clause whose best field is bound is `resolved` even if other clauses reuse the same field.
@@ -187,14 +188,16 @@ Interpretation with the limitations in §2.3:
 - **Compilation 1.0** means the three fixtures compile. Golden and integration tests assert the same.
 - **Compatibility 0.0** is the gate, not a failure of the compiler. No compatibility is claimed.
 
-### 5.2 LLM comparison (to be filled)
+### 5.2 Hosted-provider comparison (pending)
 
-No hosted-provider evaluation has been run in this repository. The table is a skeleton; every cell is
-`TBD` until a run is recorded with its command, model and commit.
+The mock baseline row is measured. No hosted-provider evaluation has been run in this repository, so
+the OpenAI/Anthropic/Gemini rows are `TBD` until a run is recorded with its command, model and commit.
+Latency is deliberately not part of this table: measure it separately with
+[`benchmarks/run_benchmarks.py`](BENCHMARKS.md).
 
-| Provider / model | Cases | Precision | Recall | Coverage | Compilation | Clarification | Correction | Cost / valid template | p95 latency | Commit |
+| Provider / model | Cases | Precision | Recall | Coverage | Compilation | Clarification | Correction | Cost / valid template | Evidence | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| mock (baseline) | 3 | 1.000 | 0.772 | 1.000 | 1.000 | 0.000 | 0.000 | $0.000 | TBD | TBD |
+| mock (baseline) | 3 | 0.932 | 0.965 | 1.000 | 1.000 | 0.000 | 0.000 | $0.000 | `benchmarks/evaluation.json` | V1-V3 autonomous; no LLM cost |
 | openai / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
 | anthropic / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
 | gemini / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
@@ -205,8 +208,8 @@ How each `TBD` will be measured:
   median and range.
 - **Cost / valid template**: `cost_usd` from `GenerationResult.usage.estimated_cost_usd`, divided by
   compiled cases. Verify the model is in `llm/pricing.py`; otherwise record `unpriced`.
-- **p95 latency**: the `plan` stage from `benchmarks/run_benchmarks.py --provider ...` (see
-  [BENCHMARKS](BENCHMARKS.md)); the evaluation harness does not measure timings.
+- **Latency**: not measured by this harness; use `benchmarks/run_benchmarks.py --provider ...` and
+  record the result in [BENCHMARKS](BENCHMARKS.md).
 - **Commit**: the git commit of the run, so results are attributable.
 
 ## 6. Reproducibility checklist
@@ -229,7 +232,7 @@ Results without these are anecdotes and must not be presented as metrics.
 | --- | --- | --- |
 | Tiny, synthetic case set | Overstates generalisation | Add permitted real fixtures; report per-case results |
 | Ground truth authored by the same team | Confirmation bias | Independent review of `expected_paths`; publish the cases |
-| Alias/collection accounting (§2.3) | Recall understated | Fix the collector and re-baseline; version the change |
+| Alias/collection accounting (§2.3) | Recall understated | **Resolved**: scope-aware collector; re-baselined in the 0.1.0 tree |
 | Single run, temperature 0 | Cannot show variance | Repeat runs; report range |
 | Cost table drift | Cost metric wrong | Record actual provider billing when available; mark unpriced models |
 | Compiled ≠ correct | Compilation metric is necessary, not sufficient | Pair with precision/recall and human review |

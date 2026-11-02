@@ -25,6 +25,32 @@ export function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-GB").format(value);
 }
 
+/** Format a USD amount; budget figures use two decimals, tiny costs keep detail. */
+export function formatUsd(value: number | null | undefined, fractionDigits = 2): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "—";
+  }
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  }).format(value);
+}
+
+/** Format a measured provider cost without hiding sub-cent amounts. */
+export function formatCostUsd(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "—";
+  }
+  if (value === 0) {
+    return "$0.00";
+  }
+  const fractionDigits = value < 0.01 ? 4 : value < 1 ? 3 : 2;
+  return formatUsd(value, fractionDigits);
+}
+
 export function formatDateTime(unixSeconds: number): string {
   if (!Number.isFinite(unixSeconds) || unixSeconds <= 0) {
     return "—";

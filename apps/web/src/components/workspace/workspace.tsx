@@ -10,12 +10,14 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArtifactsPanel } from "@/components/workspace/artifacts-panel";
 import { DemoTour } from "@/components/workspace/demo-tour";
 import { ErrorAlert } from "@/components/workspace/error-alert";
 import { MappingPanel } from "@/components/workspace/mapping-panel";
 import { PreviewPanel } from "@/components/workspace/preview-panel";
 import { PromptPanel } from "@/components/workspace/prompt-panel";
+import { QualityPanel } from "@/components/workspace/quality-panel";
 import { RevisionPanel } from "@/components/workspace/revision-panel";
 import { SchemaExplorer } from "@/components/workspace/schema-explorer";
 import { SourcePanel } from "@/components/workspace/source-panel";
@@ -224,6 +226,9 @@ export function Workspace() {
           planError={workspace.planError}
           plan={workspace.plan}
           generation={workspace.generation}
+          routing={workspace.routing}
+          routingPending={workspace.routingPending}
+          routingUnavailable={workspace.routingUnavailable}
           onPlan={workspace.planTemplate}
           onUseExample={workspace.useExamplePrompt}
           onReloadProviders={workspace.reloadProviders}
@@ -248,14 +253,50 @@ export function Workspace() {
           onDismissReviewError={() => workspace.dismissError("review")}
         />
 
-        <ValidationPanel
-          validation={workspace.validation}
-          overall={workspace.overall}
-          report={workspace.report}
-          warnings={workspace.warnings}
-          templateId={workspace.templateId}
-          activeVersion={workspace.activeVersion}
-        />
+        <Tabs defaultValue="validation">
+          <TabsList aria-label="Validation and quality results">
+            <TabsTrigger value="validation">Validation</TabsTrigger>
+            <TabsTrigger value="quality">Quality</TabsTrigger>
+          </TabsList>
+          <TabsContent value="validation">
+            <ValidationPanel
+              validation={workspace.validation}
+              overall={workspace.overall}
+              report={workspace.report}
+              warnings={workspace.warnings}
+              templateId={workspace.templateId}
+              activeVersion={workspace.activeVersion}
+            />
+          </TabsContent>
+          <TabsContent value="quality">
+            <QualityPanel
+              quality={workspace.quality}
+              qualityPending={workspace.qualityPending}
+              qualityError={workspace.qualityError}
+              qualityOptimization={workspace.qualityOptimization}
+              qualityNotice={workspace.qualityNotice}
+              optimizing={workspace.optimizing}
+              templateId={workspace.templateId}
+              activeVersion={workspace.activeVersion}
+              canAnalyse={
+                workspace.source !== null &&
+                workspace.templateId !== null &&
+                workspace.activeVersion !== null
+              }
+              canOptimize={
+                workspace.source !== null &&
+                workspace.templateId !== null &&
+                workspace.activeVersion !== null &&
+                workspace.quality !== null
+              }
+              onRefresh={workspace.refreshQuality}
+              onOptimize={() => {
+                void workspace.optimizeLayout();
+              }}
+              onDismissError={workspace.dismissQualityError}
+            />
+          </TabsContent>
+        </Tabs>
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
           <PreviewPanel

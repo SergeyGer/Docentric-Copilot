@@ -75,6 +75,17 @@ export class ApiError extends Error {
   }
 }
 
+/** Normalise an arbitrary thrown value to an {@link ApiError} for display. */
+export function toApiError(error: unknown): ApiError {
+  if (error instanceof ApiError) {
+    return error;
+  }
+  return new ApiError("An unexpected client error occurred.", {
+    code: "client_error",
+    details: { reason: error instanceof Error ? error.message : String(error) },
+  });
+}
+
 export interface ApiRequestOptions {
   timeoutMs?: number;
 }

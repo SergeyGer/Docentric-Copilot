@@ -13,6 +13,7 @@ export const PANEL_IDS = {
   prompt: "prompt-panel",
   mapping: "mapping-panel",
   validation: "validation-panel",
+  quality: "quality-panel",
   preview: "preview-panel",
   artifacts: "artifacts-panel",
   revision: "revision-panel",

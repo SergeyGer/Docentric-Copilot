@@ -177,6 +177,57 @@ export type OverallStatus =
   | "passed_unverified_compatibility"
   | "failed";
 
+/* --------------------------------------------------------------- quality */
+
+export type QualityStatus = "passed" | "warning" | "failed";
+
+export interface QualityCheck {
+  id: string;
+  label: string;
+  status: QualityStatus;
+  message: string;
+  path?: string | null;
+}
+
+export interface QualityMetrics {
+  page: string;
+  text_width_mm: number;
+  tables: number;
+  images: number;
+  blocks: number;
+}
+
+export interface QualityReport {
+  overall: QualityStatus;
+  checks: QualityCheck[];
+  metrics: QualityMetrics;
+}
+
+/* -------------------------------------------------------------- routing */
+
+export type Complexity = "simple" | "standard" | "complex" | "ambiguous";
+
+export type RoutingTier = "fast" | "balanced" | "advanced";
+
+export interface RoutingPolicyEntry {
+  tier: RoutingTier;
+  providers: string[];
+  budget_usd: number;
+  strategy: string;
+}
+
+export type RoutingPolicy = Record<Complexity, RoutingPolicyEntry>;
+
+export interface RouteDecision {
+  complexity: Complexity;
+  provider: string;
+  model: string | null;
+  reason: string[];
+  budget_usd: number;
+  requires_review: boolean;
+  fallback_used: boolean;
+}
+
 /* ------------------------------------------------------------------ IR */
 
 export interface TemplateIrBlock {
@@ -334,6 +385,36 @@ export interface PreviewRequest {
   ir?: TemplateIr | null;
 }
 
+export interface RouteRequest {
+  source_id: string;
+  prompt: string;
+}
+
+export interface QualityRequest {
+  source_id: string;
+  template_id?: string | null;
+  version?: number | null;
+  /** Analyse an inline IR instead of loading a stored version. */
+  ir?: TemplateIr | null;
+}
+
+export interface OptimizeRequest {
+  source_id: string;
+  template_id: string;
+  version: number;
+}
+
+export interface CompareTarget {
+  provider: string;
+  model: string | null;
+}
+
+export interface CompareRequest {
+  source_id: string;
+  prompt: string;
+  targets: CompareTarget[];
+}
+
 export interface ConfirmMappingRequest {
   selected_field_path: string | null;
   note: string | null;
@@ -388,6 +469,8 @@ export interface DemoSessionResponse {
   report: ValidationReport;
   validation: ValidationStatuses;
   preview_html: string;
+  /** Present on every demo case; seeded into the quality dashboard. */
+  quality?: QualityReport | null;
   docx_artifact_id: string;
   artifacts: ArtifactView[];
   tour: DemoTourStep[];
@@ -449,6 +532,55 @@ export interface ValidateResponse {
   validation: ValidationStatuses;
   overall: string;
   report: ValidationReport;
+}
+
+export interface RouteResponse {
+  decision: RouteDecision;
+  policy: RoutingPolicy;
+  requirements: number;
+}
+
+export interface QualityResponse {
+  report: QualityReport;
+  ir_digest: string;
+}
+
+export interface OptimizeFix {
+  id: string;
+  message: string;
+  path?: string | null;
+}
+
+export interface OptimizeResponse {
+  template_id: string;
+  /** The new immutable version created by the optimisation. */
+  version: number;
+  fixes: OptimizeFix[];
+  before: QualityReport;
+  after: QualityReport;
+  ir: TemplateIr;
+  ir_digest: string;
+  validation: Record<string, string>;
+}
+
+export interface CompareRun {
+  provider: string;
+  model: string | null;
+  ok: boolean;
+  error?: string | null;
+  latency_ms: number;
+  tokens: number;
+  cost_usd?: number | null;
+  counts: Partial<Record<MappingStatus, number>>;
+  validation: Record<string, string>;
+  ir_digest?: string | null;
+  requirements: number;
+}
+
+export interface CompareResponse {
+  runs: CompareRun[];
+  recommended: string | null;
+  note: string;
 }
 
 export interface RevisionChange {

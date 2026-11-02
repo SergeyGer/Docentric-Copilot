@@ -7,6 +7,7 @@ import {
   apiRequest,
   apiRequestText,
   postJson,
+  toApiError,
   triggerDownload,
 } from "@/lib/api";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -23,7 +24,6 @@ import { isRecord } from "@/lib/guards";
 import type {
   ArtifactView,
   CapabilitiesView,
-  CheckStatus,
   CompileRequest,
   CompileResponse,
   ConfirmMappingRequest,
@@ -36,14 +36,21 @@ import type {
   Diagnostic,
   GenerationInfo,
   MappingReport,
+  OptimizeFix,
+  OptimizeRequest,
+  OptimizeResponse,
   PlanRequest,
   PlanResponse,
   PreviewRequest,
   ProviderView,
+  QualityReport,
+  QualityRequest,
+  QualityResponse,
   RemovedBinding,
   RenderMode,
   RevisionRequest,
   RevisionResponse,
+  RouteResponse,
   SchemaView,
   SourceView,
   TemplateIr,
@@ -53,7 +60,7 @@ import type {
   VersionSummary,
   VersionsResponse,
 } from "@/lib/types";
-import { deriveStatuses, overallFromStatuses } from "@/lib/validation";
+import { deriveStatuses, isCheckStatus, overallFromStatuses } from "@/lib/validation";
 
 export type ErrorScope =
   | "providers"
@@ -98,31 +105,16 @@ export interface MappingFocusRequest {
   token: number;
 }
 
+export interface QualityOptimizationResult {
+  version: number;
+  fixes: OptimizeFix[];
+  before: QualityReport;
+  after: QualityReport;
+}
+
 interface ValidationFailure {
   statuses: ValidationStatuses;
   report: ValidationReport | null;
-}
-
-const CHECK_STATUSES: readonly CheckStatus[] = [
-  "passed",
-  "failed",
-  "warning",
-  "skipped",
-  "not_tested",
-];
-
-function toApiError(error: unknown): ApiError {
-  if (error instanceof ApiError) {
-    return error;
-  }
-  return new ApiError("An unexpected client error occurred.", {
-    code: "client_error",
-    details: { reason: error instanceof Error ? error.message : String(error) },
-  });
-}
-
-function isCheckStatus(value: unknown): value is CheckStatus {
-  return typeof value === "string" && (CHECK_STATUSES as readonly string[]).includes(value);
 }
 
 function coerceStatuses(value: unknown): ValidationStatuses | null {
@@ -183,6 +175,9 @@ function extensionList(): string {
   return ACCEPTED_SOURCE_EXTENSIONS.join(", ");
 }
 
+/** Prompt edits settle before the informational routing call is made. */
+const ROUTING_DEBOUNCE_MS = 600;
+
 export function useWorkspace() {
   /* -------------------------------------------------------------- system */
 
@@ -216,6 +211,14 @@ export function useWorkspace() {
   const [maxCost, setMaxCost] = useState("0.50");
   const [maxRepairAttempts, setMaxRepairAttempts] = useState(1);
 
+  /* ------------------------------------------------------------- routing */
+
+  const [routing, setRouting] = useState<RouteResponse | null>(null);
+  const [routingPending, setRoutingPending] = useState(false);
+  const [routingUnavailable, setRoutingUnavailable] = useState(false);
+  const routingRequestId = useRef(0);
+  const sourceId = source?.source_id ?? null;
+
   /* ------------------------------------------------------------ template */
 
   const [plan, setPlan] = useState<PlanResponse | null>(null);
@@ -234,6 +237,19 @@ export function useWorkspace() {
   const [activePreviewPath, setActivePreviewPath] = useState<string | null>(null);
   const [mappingFocus, setMappingFocus] = useState<MappingFocusRequest | null>(null);
   const [confirmPending, setConfirmPending] = useState<ConfirmPending | null>(null);
+
+  /* -------------------------------------------------------------- quality */
+
+  const [quality, setQuality] = useState<QualityReport | null>(null);
+  const [qualityDigest, setQualityDigest] = useState<string | null>(null);
+  const [qualityPending, setQualityPending] = useState(false);
+  const [qualityError, setQualityError] = useState<ApiError | null>(null);
+  const [qualityOptimization, setQualityOptimization] =
+    useState<QualityOptimizationResult | null>(null);
+  const [qualityNotice, setQualityNotice] = useState<string | null>(null);
+  const [optimizing, setOptimizing] = useState(false);
+  const qualityRequestId = useRef(0);
+  const qualityDigestRef = useRef<string | null>(null);
 
   /* ------------------------------------------------------------- compile */
 
@@ -320,6 +336,58 @@ export function useWorkspace() {
     [],
   );
 
+  /* ------------------------------------------------------------- routing */
+
+  // Purely informational: routing never gates planning, and a failure only
+  // swaps the card for a quiet "routing unavailable" label.
+  useEffect(() => {
+    const trimmedPrompt = prompt.trim();
+    if (!sourceId || trimmedPrompt.length === 0) {
+      routingRequestId.current += 1;
+      setRouting(null);
+      setRoutingPending(false);
+      setRoutingUnavailable(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      const requestId = routingRequestId.current + 1;
+      routingRequestId.current = requestId;
+      setRoutingPending(true);
+      void (async () => {
+        try {
+          const body = { source_id: sourceId, prompt: trimmedPrompt };
+          const response = await postJson<RouteResponse>(
+            "/api/v1/templates/route",
+            body,
+            { timeoutMs: 20_000 },
+          );
+          if (cancelled || requestId !== routingRequestId.current) {
+            return;
+          }
+          setRouting(response);
+          setRoutingUnavailable(false);
+        } catch {
+          if (cancelled || requestId !== routingRequestId.current) {
+            return;
+          }
+          setRouting(null);
+          setRoutingUnavailable(true);
+        } finally {
+          if (!cancelled && requestId === routingRequestId.current) {
+            setRoutingPending(false);
+          }
+        }
+      })();
+    }, ROUTING_DEBOUNCE_MS);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [prompt, sourceId]);
+
   const copyPath = useCallback(
     async (path: string) => {
       const copied = await copyToClipboard(path);
@@ -404,9 +472,89 @@ export function useWorkspace() {
     [provider, providers],
   );
 
+  /* --------------------------------------------------------------- quality */
+
+  const resetQualityState = useCallback(() => {
+    qualityRequestId.current += 1;
+    qualityDigestRef.current = null;
+    setQuality(null);
+    setQualityDigest(null);
+    setQualityPending(false);
+    setQualityError(null);
+    setQualityOptimization(null);
+    setQualityNotice(null);
+  }, []);
+
+  const requestQuality = useCallback(
+    async (sourceIdValue: string, templateIdValue: string, versionValue: number) => {
+      const requestId = qualityRequestId.current + 1;
+      qualityRequestId.current = requestId;
+      setQualityPending(true);
+      setQualityError(null);
+      setQualityOptimization(null);
+      setQualityNotice(null);
+      try {
+        const body: QualityRequest = {
+          source_id: sourceIdValue,
+          template_id: templateIdValue,
+          version: versionValue,
+        };
+        const response = await postJson<QualityResponse>("/api/v1/templates/quality", body, {
+          timeoutMs: 60_000,
+        });
+        if (requestId !== qualityRequestId.current) {
+          return;
+        }
+        qualityDigestRef.current = response.ir_digest;
+        setQuality(response.report);
+        setQualityDigest(response.ir_digest);
+      } catch (error) {
+        if (requestId !== qualityRequestId.current) {
+          return;
+        }
+        setQualityError(toApiError(error));
+      } finally {
+        if (requestId === qualityRequestId.current) {
+          setQualityPending(false);
+        }
+      }
+    },
+    [],
+  );
+
+  // A plan, revision, review or loaded version changes the IR digest. Analyse
+  // once per digest, unless the demo session already seeded the report.
+  useEffect(() => {
+    if (!sourceId || !templateId || activeVersion === null || !irDigest) {
+      return;
+    }
+    if (qualityDigestRef.current === irDigest) {
+      return;
+    }
+    qualityDigestRef.current = irDigest;
+    void requestQuality(sourceId, templateId, activeVersion);
+  }, [activeVersion, irDigest, requestQuality, sourceId, templateId]);
+
+  const refreshQuality = useCallback(() => {
+    if (!sourceId || !templateId || activeVersion === null) {
+      setQualityError(
+        new ApiError("Plan or load a template version before analysing quality.", {
+          code: "client_template_required",
+        }),
+      );
+      return;
+    }
+    void requestQuality(sourceId, templateId, activeVersion);
+  }, [activeVersion, requestQuality, sourceId, templateId]);
+
+  const dismissQualityError = useCallback(() => {
+    setQualityError(null);
+  }, []);
+
   /* --------------------------------------------------------------- source */
 
   const resetTemplateState = useCallback(() => {
+    resetQualityState();
     setPlan(null);
     setTemplateId(null);
     setActiveVersion(null);
@@ -453,7 +601,7 @@ export function useWorkspace() {
       }
       return next;
     });
-  }, []);
+  }, [resetQualityState]);
 
   const loadSchemaFor = useCallback(
     async (sourceId: string) => {
@@ -1001,6 +1149,7 @@ export function useWorkspace() {
       const response = await postJson<RevisionResponse>("/api/v1/templates/revise", body, {
         timeoutMs: 180_000,
       });
+      resetQualityState();
       setRevision(response);
       setTemplateId(response.template_id);
       setActiveVersion(response.version);
@@ -1060,11 +1209,43 @@ export function useWorkspace() {
     model,
     notify,
     provider,
+    resetQualityState,
     revisionPending,
     setScopeError,
     source,
     templateId,
   ]);
+
+  const adoptVersionDetail = useCallback((detail: TemplateVersionDetail) => {
+    const statuses = deriveStatuses(detail.validation);
+    setActiveVersion(detail.version);
+    setIr(detail.ir);
+    setIrDigest(detail.ir_digest);
+    setMapping(detail.mapping);
+    setReport(detail.validation);
+    setValidation(statuses);
+    setWarnings([]);
+    setRemovedBindings([]);
+    setCompileResult(null);
+    setSelectedMappingPath(null);
+    setActivePreviewPath(null);
+    setMappingFocus(null);
+    setPreviewHtml(null);
+    setPreviewVersion(null);
+    setPlan((previous) =>
+      previous
+        ? {
+            ...previous,
+            version: detail.version,
+            ir_digest: detail.ir_digest,
+            ir: detail.ir,
+            mapping: detail.mapping,
+            report: detail.validation,
+            validation: statuses,
+          }
+        : previous,
+    );
+  }, []);
 
   const loadVersion = useCallback(
     async (version: number) => {
@@ -1079,34 +1260,8 @@ export function useWorkspace() {
           {},
           { timeoutMs: 30_000 },
         );
-        const statuses = deriveStatuses(detail.validation);
-        setActiveVersion(detail.version);
-        setIr(detail.ir);
-        setIrDigest(detail.ir_digest);
-        setMapping(detail.mapping);
-        setReport(detail.validation);
-        setValidation(statuses);
-        setWarnings([]);
-        setRemovedBindings([]);
-        setCompileResult(null);
-        setSelectedMappingPath(null);
-        setActivePreviewPath(null);
-        setMappingFocus(null);
-        setPreviewHtml(null);
-        setPreviewVersion(null);
-        setPlan((previous) =>
-          previous
-            ? {
-                ...previous,
-                version: detail.version,
-                ir_digest: detail.ir_digest,
-                ir: detail.ir,
-                mapping: detail.mapping,
-                report: detail.validation,
-                validation: statuses,
-              }
-            : previous,
-        );
+        resetQualityState();
+        adoptVersionDetail(detail);
         notify(`Restored version ${version} into the workspace.`, "success");
         void fetchPreviewFor(templateId, version);
       } catch (error) {
@@ -1115,8 +1270,129 @@ export function useWorkspace() {
         setLoadingVersion(null);
       }
     },
-    [dismissError, fetchPreviewFor, loadingVersion, notify, setScopeError, templateId],
+    [
+      adoptVersionDetail,
+      dismissError,
+      fetchPreviewFor,
+      loadingVersion,
+      notify,
+      resetQualityState,
+      setScopeError,
+      templateId,
+    ],
   );
+
+  const optimizeLayout = useCallback(async () => {
+    if (optimizing) {
+      return;
+    }
+    if (!sourceId || !templateId || activeVersion === null) {
+      setQualityError(
+        new ApiError("Plan or load a template version before optimising the layout.", {
+          code: "client_template_required",
+        }),
+      );
+      return;
+    }
+
+    setOptimizing(true);
+    setQualityError(null);
+    setQualityNotice(null);
+    setQualityOptimization(null);
+    try {
+      const body: OptimizeRequest = {
+        source_id: sourceId,
+        template_id: templateId,
+        version: activeVersion,
+      };
+      const response = await postJson<OptimizeResponse>("/api/v1/templates/optimize", body, {
+        timeoutMs: 120_000,
+      });
+
+      // The optimisation report is authoritative for the new version, so the
+      // dashboard never flashes a stale warning before the refresh.
+      qualityRequestId.current += 1;
+      qualityDigestRef.current = response.ir_digest;
+      setQualityPending(false);
+      setQuality(response.after);
+      setQualityDigest(response.ir_digest);
+      setQualityOptimization({
+        version: response.version,
+        fixes: response.fixes,
+        before: response.before,
+        after: response.after,
+      });
+
+      setTemplateId(response.template_id);
+      setActiveVersion(response.version);
+      setIr(response.ir);
+      setIrDigest(response.ir_digest);
+      const statuses = coerceStatuses(response.validation);
+      if (statuses) {
+        setValidation(statuses);
+      }
+      setCompileResult(null);
+      setSelectedMappingPath(null);
+      setActivePreviewPath(null);
+      setMappingFocus(null);
+      setPreviewHtml(null);
+      setPreviewVersion(null);
+      setPlan((previous) =>
+        previous
+          ? {
+              ...previous,
+              version: response.version,
+              ir_digest: response.ir_digest,
+              ir: response.ir,
+              validation: statuses ?? previous.validation,
+            }
+          : previous,
+      );
+
+      const fixCount = response.fixes.length;
+      notify(
+        `Layout optimised with ${fixCount === 1 ? "1 layout fix" : `${fixCount} layout fixes`} in version ${response.version}.`,
+        "success",
+      );
+      void fetchVersions(response.template_id);
+
+      // Load the new immutable version exactly like a version restore so the
+      // mapping, full report and validation statuses all come from storage.
+      try {
+        const detail = await apiRequest<TemplateVersionDetail>(
+          `/api/v1/templates/${encodeURIComponent(response.template_id)}/export/${response.version}`,
+          {},
+          { timeoutMs: 30_000 },
+        );
+        adoptVersionDetail(detail);
+      } catch (detailError) {
+        notify(
+          `Version ${response.version} was created, but its details could not be reloaded: ${toApiError(detailError).message}`,
+          "error",
+        );
+      }
+      void fetchPreviewFor(response.template_id, response.version);
+    } catch (error) {
+      const apiError = toApiError(error);
+      if (apiError.status === 400) {
+        // "Nothing to optimise" is a normal outcome, not an error toast.
+        setQualityNotice(apiError.message);
+      } else {
+        setQualityError(apiError);
+      }
+    } finally {
+      setOptimizing(false);
+    }
+  }, [
+    activeVersion,
+    adoptVersionDetail,
+    fetchPreviewFor,
+    fetchVersions,
+    notify,
+    optimizing,
+    sourceId,
+    templateId,
+  ]);
 
   const refreshVersions = useCallback(() => {
     if (!templateId) {
@@ -1157,6 +1433,7 @@ export function useWorkspace() {
           body,
           { timeoutMs: 120_000 },
         );
+        resetQualityState();
         setTemplateId(response.template_id);
         setActiveVersion(response.version);
         setIr(response.ir);
@@ -1202,6 +1479,7 @@ export function useWorkspace() {
       fetchPreviewFromIr,
       fetchVersions,
       notify,
+      resetQualityState,
       setScopeError,
       templateId,
     ],
@@ -1365,6 +1643,22 @@ export function useWorkspace() {
         setMapping(response.mapping);
         setValidation(response.validation);
         setReport(response.report);
+        qualityRequestId.current += 1;
+        if (response.quality) {
+          // The demo already analysed this exact IR: seed the dashboard instead
+          // of paying for a second analysis on the same version.
+          qualityDigestRef.current = response.ir_digest;
+          setQuality(response.quality);
+          setQualityDigest(response.ir_digest);
+        } else {
+          qualityDigestRef.current = null;
+          setQuality(null);
+          setQualityDigest(null);
+        }
+        setQualityPending(false);
+        setQualityError(null);
+        setQualityOptimization(null);
+        setQualityNotice(null);
         setWarnings([]);
         setRemovedBindings([]);
         setGeneration(null);
@@ -1500,6 +1794,21 @@ export function useWorkspace() {
     planTemplate,
     useExamplePrompt,
     insertPathIntoPrompt,
+    // routing
+    routing,
+    routingPending,
+    routingUnavailable,
+    // quality
+    quality,
+    qualityDigest,
+    qualityPending,
+    qualityError,
+    qualityOptimization,
+    qualityNotice,
+    optimizing,
+    refreshQuality,
+    optimizeLayout,
+    dismissQualityError,
     // template
     plan,
     templateId,

@@ -24,6 +24,7 @@ import { CheckboxRow } from "@/components/workspace/checkbox-row";
 import { CopyButton } from "@/components/workspace/copy-button";
 import { ErrorAlert } from "@/components/workspace/error-alert";
 import { Panel } from "@/components/workspace/panel";
+import { RoutingPanel } from "@/components/workspace/routing-panel";
 import type { ApiError } from "@/lib/api";
 import {
   PANEL_IDS,
@@ -38,6 +39,7 @@ import type {
   GenerationInfo,
   PlanResponse,
   ProviderView,
+  RouteResponse,
   SourceView,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -76,6 +78,9 @@ export interface PromptPanelProps {
   planError: ApiError | null;
   plan: PlanResponse | null;
   generation: GenerationInfo | null;
+  routing: RouteResponse | null;
+  routingPending: boolean;
+  routingUnavailable: boolean;
   onPlan: () => void;
   onUseExample: () => void;
   onReloadProviders: () => void;
@@ -109,6 +114,9 @@ export function PromptPanel({
   planError,
   plan,
   generation,
+  routing,
+  routingPending,
+  routingUnavailable,
   onPlan,
   onUseExample,
   onReloadProviders,
@@ -170,6 +178,13 @@ export function PromptPanel({
             Describe content, layout and required fields. Paths inserted from the schema explorer
             are appended to this brief.
           </p>
+
+          <RoutingPanel
+            routing={routing}
+            pending={routingPending}
+            unavailable={routingUnavailable}
+            enabled={source !== null && prompt.trim().length > 0}
+          />
 
           {planError ? (
             <ErrorAlert error={planError} title="Planning failed" onDismiss={onDismissPlanError} />

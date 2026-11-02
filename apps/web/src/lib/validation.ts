@@ -63,6 +63,19 @@ export const VALIDATION_LEVELS: readonly ValidationLevelMeta[] = [
   },
 ];
 
+const CHECK_STATUSES: readonly CheckStatus[] = [
+  "passed",
+  "failed",
+  "warning",
+  "skipped",
+  "not_tested",
+];
+
+/** Narrow an API string (for example a compare-run status) to a check status. */
+export function isCheckStatus(value: unknown): value is CheckStatus {
+  return typeof value === "string" && (CHECK_STATUSES as readonly string[]).includes(value);
+}
+
 export function statusLabel(status: CheckStatus): string {
   switch (status) {
     case "passed":

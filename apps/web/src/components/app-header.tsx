@@ -1,11 +1,13 @@
 "use client";
 
-import { ExternalLink, FileText, FileType2, Loader2, Play } from "lucide-react";
+import { useCallback, useState } from "react";
+import { ExternalLink, FileText, FileType2, GitCompare, Loader2, Play } from "lucide-react";
 
 import { ApiStatusBadge } from "@/components/api-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { CompareModelsDialog } from "@/components/workspace/compare-models-dialog";
 import { useWorkspaceContext } from "@/hooks/workspace-context";
 import { API_BASE_URL } from "@/lib/api";
 import { DEFAULT_DEMO_CASE_ID } from "@/lib/constants";
@@ -21,6 +23,8 @@ const FALLBACK_DEMO_CASE: DemoCase = {
 
 export function AppHeader() {
   const workspace = useWorkspaceContext();
+  const [compareOpen, setCompareOpen] = useState(false);
+  const closeCompare = useCallback(() => setCompareOpen(false), []);
   const demoCases =
     workspace.demoCases.length > 0 ? workspace.demoCases : [FALLBACK_DEMO_CASE];
   const selectedCaseId = demoCases.some((item) => item.id === workspace.demoCaseId)
@@ -110,6 +114,19 @@ export function AppHeader() {
             {demoBusy ? "Running demo…" : "Run demo"}
           </Button>
 
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => setCompareOpen(true)}
+            disabled={workspace.demoPending || workspace.providersPending}
+            aria-label="Compare models"
+            title="Run the same brief through two configured providers"
+          >
+            <GitCompare aria-hidden="true" />
+            <span className="hidden sm:inline">Compare models</span>
+          </Button>
+
           <a
             href={`${API_BASE_URL}/docs`}
             target="_blank"
@@ -123,6 +140,15 @@ export function AppHeader() {
           <ApiStatusBadge />
         </div>
       </div>
+
+      {compareOpen ? (
+        <CompareModelsDialog
+          source={workspace.source}
+          prompt={workspace.prompt}
+          providers={workspace.providers}
+          onClose={closeCompare}
+        />
+      ) : null}
     </header>
   );
 }

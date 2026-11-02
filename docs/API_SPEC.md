@@ -684,13 +684,13 @@ Body: a self-contained document whose toolbar states
 ```json
 {
   "status": "ok",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "environment": "development",
   "docentric_ax_adapter_enabled": false
 }
 ```
 
-`GET /health` is an unversioned alias that returns `{"status": "ok", "version": "0.1.0"}`.
+`GET /health` is an unversioned alias that returns `{"status": "ok", "version": "0.2.0"}`.
 `GET /` returns the service name, version, docs paths, API prefix and
 `"docentric_ax_compatibility": "not_tested"`.
 

@@ -232,7 +232,7 @@ Results without these are anecdotes and must not be presented as metrics.
 | --- | --- | --- |
 | Tiny, synthetic case set | Overstates generalisation | Add permitted real fixtures; report per-case results |
 | Ground truth authored by the same team | Confirmation bias | Independent review of `expected_paths`; publish the cases |
-| Alias/collection accounting (§2.3) | Recall understated | **Resolved**: scope-aware collector; re-baselined in the 0.1.0 tree |
+| Alias/collection accounting (§2.3) | Recall understated | **Resolved**: scope-aware collector; re-baselined in the 0.2.0 tree |
 | Single run, temperature 0 | Cannot show variance | Repeat runs; report range |
 | Cost table drift | Cost metric wrong | Record actual provider billing when available; mark unpriced models |
 | Compiled ≠ correct | Compilation metric is necessary, not sufficient | Pair with precision/recall and human review |

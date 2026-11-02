@@ -8,8 +8,42 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
-No changes yet after the 0.1.0 milestone. Planned work is tracked in [docs/ROADMAP.md](docs/ROADMAP.md);
+No changes yet after the 0.2.0 release. Planned work is tracked in [docs/ROADMAP.md](docs/ROADMAP.md);
 plans are not changelog entries.
+
+## [0.2.0] - documentation and hardening release
+
+A presentation and hardening release. The engine behaviour is unchanged from 0.1.0; the product is
+easier to evaluate, and the dependency tree is clean.
+
+### Added
+
+- Full project Wiki with a navigation sidebar, interface screenshots and 22 pages covering the product,
+  the architecture, the API, the CLI, validation, security, benchmarks and the roadmap.
+- Interface screenshots captured from a real browser run (`docs/assets/`).
+- Social preview image and curated repository topics.
+- Dependabot configuration with grouped weekly updates for npm, pip and GitHub Actions.
+- Baseline security headers for the web workspace (`X-Content-Type-Options`, `X-Frame-Options`,
+  `Referrer-Policy`, `Permissions-Policy`).
+
+### Changed
+
+- `README.md` rewritten for a non-technical audience; engineering detail moved to the Wiki.
+- Per-request `max_generation_cost_usd` now reaches the gateway as a pre-flight budget.
+- Evaluation harness resolves repeat aliases through the planner's scope walker, re-baselining recall
+  from 0.772 to 0.965 (the earlier value understated table bindings).
+- Benchmark aggregates are computed over every sample rather than over per-fixture p95 values.
+- CLI `plan` and `validate` honour the configured IR limits.
+
+### Fixed
+
+- `postcss` and `minimatch` advisories in the web dependency tree via npm overrides
+  (`npm audit` reports 0 vulnerabilities).
+- Artifact digests and the `X-Artifact-Digest` header are the SHA-256 of the served bytes.
+
+### Compatibility
+
+Unchanged: generic DOCX only. Docentric AX remains gated and reported as `not_tested`.
 
 ## [0.1.0] - unreleased
 

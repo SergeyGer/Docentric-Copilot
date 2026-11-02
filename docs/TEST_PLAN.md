@@ -115,9 +115,9 @@ open (see §7).
 
 Both images build and run:
 
-- `docker build -t docentric-copilot-api:0.1.0 .` → API image (multi-stage, non-root, healthcheck on
-  `/health`); built and run, `/health` returned `{"status":"ok","version":"0.1.0"}`.
-- `docker build -t docentric-copilot-web:0.1.0 apps/web` → frontend image (`node:22-alpine`,
+- `docker build -t docentric-copilot-api:0.2.0 .` → API image (multi-stage, non-root, healthcheck on
+  `/health`); built and run, `/health` returned `{"status":"ok","version":"0.2.0"}`.
+- `docker build -t docentric-copilot-web:0.2.0 apps/web` → frontend image (`node:22-alpine`,
   non-root uid 10001, healthcheck on port 3000); built and run, `GET /` returned HTTP 200.
 
 `docker-compose.yml` validates and defines an `api` service on 8000 and a `web` service on 3000.

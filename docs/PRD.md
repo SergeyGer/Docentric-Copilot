@@ -3,7 +3,7 @@
 | Field | Value |
 | --- | --- |
 | Product | Docentric Copilot |
-| Version | 0.1.0 (MVP) |
+| Version | 0.2.0 (MVP) |
 | Status | Living document; reflects the implementation in this repository |
 | Audience | Product, engineering, QA, security review |
 | Related | [SRS](SRS.md), [ARCHITECTURE](ARCHITECTURE.md), [ROADMAP](ROADMAP.md) |

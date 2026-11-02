@@ -218,3 +218,4 @@ compatibility observation.
 | Date/version | Change |
 | --- | --- |
 | 0.1.0 | Gate established; path B recorded; adapter unavailable; V5 `not_tested` |
+| 0.2.0 | Gate unchanged; documentation and dependency hardening only |

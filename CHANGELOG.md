@@ -11,6 +11,23 @@ version (`1.0`) independent of the distribution version.
 No changes yet after the 0.2.0 release. Planned work is tracked in [docs/ROADMAP.md](docs/ROADMAP.md);
 plans are not changelog entries.
 
+## [0.2.1] - toolchain update
+
+Patch release with dependency updates only. No engine behaviour changed.
+
+### Changed
+
+- GitHub Actions updated to `checkout@v5`, `setup-python@v6`, `setup-node@v7`,
+  `upload-artifact@v7`, `setup-buildx@v4`, `build-push@v7` and `action-gh-release@v3`.
+- React and React DOM updated to 19.3.1, with matching type packages.
+- Allowed `uvicorn <0.55` and `typer <0.28`; verified against Uvicorn 0.54.0 and Typer 0.27.3.
+
+### Notes
+
+- Major web upgrades (Next.js 16, ESLint 10, Tailwind 4, TypeScript 7) are deferred to a dedicated
+  migration and declined as blind bumps; the reason is recorded on each Dependabot pull request and in
+  the roadmap.
+
 ## [0.2.0] - documentation and hardening release
 
 A presentation and hardening release. The engine behaviour is unchanged from 0.1.0; the product is

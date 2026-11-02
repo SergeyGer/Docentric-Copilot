@@ -38,3 +38,18 @@ number. Until then, no table in this repository claims a provider comparison.
 Each plan records provider, model, token usage and cost in the generation metadata (the mock
 provider reports zero cost). A dashboard over that data is future work; numbers shown in the UI come
 from stored runs, never from illustrative constants.
+
+## Verified live calls
+
+Measured on 2026-11-02 with the bundled quotation package and the same brief:
+
+| Provider | Model | Result | Latency |
+| --- | --- | --- | --- |
+| Anthropic | `claude-haiku-5-5` | valid IR, 5 confirmed mappings | ~10 s |
+| Anthropic | `claude-sonnet-5-5` | valid IR, 5 confirmed mappings | ~17 s |
+| OpenAI | `gpt-4.1` | valid IR, 5 confirmed mappings | ~42 s |
+| OpenAI | `gpt-4.1-mini` | rejected: invalid date pattern and a malformed table row | — |
+
+The default model in `.env.example` is therefore `gpt-4.1`, not the cheaper mini variant: quality,
+not price, decides the default until the repair loop handles those two failure modes reliably. These
+numbers are single observations, not a benchmark; the reproducible harness is tracked separately.

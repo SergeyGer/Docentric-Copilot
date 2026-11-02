@@ -8,7 +8,10 @@
 
 import { isRecord } from "@/lib/guards";
 
-const DEFAULT_API_BASE_URL = "http://localhost:8000";
+// Same origin by default: Next.js proxies /api/v1/* to the backend, so the
+// browser only needs the web port. Set NEXT_PUBLIC_API_BASE_URL to call a
+// different origin directly (for example a hosted API).
+const DEFAULT_API_BASE_URL = "";
 const DEFAULT_TIMEOUT_MS = 30_000;
 
 function resolveBaseUrl(): string {

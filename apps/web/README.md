@@ -12,7 +12,7 @@ V5 compatibility is shown as `not tested` and is never styled as a pass.
 ## Requirements
 
 - Node.js 22 and npm 10
-- The API running (default `http://localhost:8000`)
+- The API running (default `http://127.0.0.1:8000`); the web server proxies `/api/v1/*` to it
 
 ## Configuration
 
@@ -22,7 +22,8 @@ cp .env.example .env.local
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000` | Base URL of the FastAPI backend, without a trailing slash |
+| `NEXT_PUBLIC_API_BASE_URL` | *(empty — same origin)* | Call the API at another origin directly instead of through the proxy |
+| `API_PROXY_TARGET` | `http://127.0.0.1:8000` | Server-side proxy target for `/api/v1/*` (set to `http://api:8000` in Docker) |
 
 `NEXT_PUBLIC_*` variables are inlined at build time, so rebuild (`npm run build`) after changing the
 value for a production build.

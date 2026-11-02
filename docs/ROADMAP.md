@@ -1,5 +1,9 @@
 # Roadmap
 
+> The same roadmap is published in the [Wiki](https://github.com/SergeyGer/Docentric-Copilot/wiki/Roadmap).
+> Open work is tracked in [GitHub issues](https://github.com/SergeyGer/Docentric-Copilot/issues?q=is%3Aissue+is%3Aopen);
+> each roadmap item links to its issue.
+
 | Field | Value |
 | --- | --- |
 | Current release | 0.4.1 (Template IR 1.0) |

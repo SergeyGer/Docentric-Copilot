@@ -5,6 +5,7 @@
 [![CI](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/SergeyGer/Docentric-Copilot?color=2563eb)](https://github.com/SergeyGer/Docentric-Copilot/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-2563eb)](LICENSE)
+[![Demo video](https://img.shields.io/badge/demo%20video-2%3A27-0f2a54)](docs/media/demo.mp4)
 [![Live demo](https://img.shields.io/badge/live%20demo-Streamlit-ff4b4b)](https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app)
 [![Docs](https://img.shields.io/badge/documentation-wiki-0f172a)](https://github.com/SergeyGer/Docentric-Copilot/wiki)
 [![Compatibility](https://img.shields.io/badge/Docentric%20AX%20compatibility-unverified-d97706)](https://github.com/SergeyGer/Docentric-Copilot/wiki/Docentric-AX-Compatibility)
@@ -48,6 +49,9 @@ compilation and revision — on the deterministic provider. No API key, no model
 | Download the document | A real `.docx`, compiled from the validated template |
 | Change it in plain language | A targeted revision with a before/after preview |
 | Check the evidence | Validation statuses and the honest `not tested` compatibility note |
+
+Prefer to watch first? **[Watch the 2:27 demo video](docs/media/demo.mp4)** — routing, a live
+OpenAI vs Anthropic comparison on the same brief, the quality dashboard, preview and revision.
 
 Prefer to run it yourself? `streamlit run streamlit_app.py` serves the same demo locally.
 

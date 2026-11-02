@@ -11,7 +11,24 @@
 | **M2 AI planning** | Template IR, gateway, mapping, expressions, validators | Done |
 | **M3 Compilation** | Generic DOCX, preview, golden files | Done |
 | **M4 Web + CLI** | API, workspace, jobs, artifacts, Docker | Done |
-| **M5 Release** | CI, security scans, docs, benchmarks, release | Done for 0.2.0 |
+| **M5 Release** | CI, security scans, docs, benchmarks, release | Done — latest v0.4.1 |
+
+## Open work — tracked in issues
+
+Every item below has an issue; the issue is the source of truth for status and acceptance criteria.
+
+| Issue | Item | Area |
+| --- | --- | --- |
+| [#12](https://github.com/SergeyGer/Docentric-Copilot/issues/12) | Compound revision: one instruction, several targeted edits | Revision |
+| [#13](https://github.com/SergeyGer/Docentric-Copilot/issues/13) | Mapping and validation diffs between versions | Revision |
+| [#14](https://github.com/SergeyGer/Docentric-Copilot/issues/14) | Optional LibreOffice DOCX → PDF renderer | Quality |
+| [#15](https://github.com/SergeyGer/Docentric-Copilot/issues/15) | Line-item product images | Quality |
+| [#16](https://github.com/SergeyGer/Docentric-Copilot/issues/16) | Docs link checks, ADR index and wiki mirror in CI | Docs — delivered, kept for the audit trail |
+| [#17](https://github.com/SergeyGer/Docentric-Copilot/issues/17) | Streamlit demo: upload your own DDSP | Demo |
+| [#18](https://github.com/SergeyGer/Docentric-Copilot/issues/18) | Refresh screenshots and demo video | Demo — delivered in v0.4.1 |
+
+Closed issues stay visible as evidence that the roadmap item shipped; nothing is deleted from the
+list. Proposals that are not yet accepted do not get an issue.
 
 ## Now — hardening the MVP
 

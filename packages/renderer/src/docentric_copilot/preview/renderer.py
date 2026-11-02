@@ -65,6 +65,10 @@ _TEMPLATE = Template(
   .page-footer { display: flex; justify-content: space-between; border-top: 1px solid #cbd5e1;
                  margin-top: 22px; padding-top: 7px; font-size: 8pt; color: #64748b; }
   .page-break { break-before: page; }
+  table.plain { border-collapse: collapse; width: auto; }
+  table.plain td { border: none !important; padding: 2px 10px; }
+  table.plain tr:last-child td { border-top: 1.5px solid #0f2a54 !important; font-weight: 700; }
+  table.parties tr:last-child td { border-top: none !important; font-weight: 400; }
   .doc-value { border-bottom: 1px dashed transparent; border-radius: 2px; cursor: help; }
   .doc-value:hover, .doc-value.is-active { border-bottom-color: #2563eb; background: #eff6ff; }
   @media print {
@@ -354,7 +358,15 @@ class _PreviewRenderer:
                     self._stats["repeats"] += 1
                     child = context.child(block.repeat.alias, collection.absolute, item)
                     body_rows.append(self._row(block.row_template, child))
-        return f"<table>{''.join(rows)}<tbody>{''.join(body_rows)}</tbody></table>"
+        plain = " plain" if (block.style is not None and not block.style.borders) else ""
+        if (
+            plain
+            and block.columns
+            and block.columns[0].width_mm
+            and block.columns[0].width_mm >= 80
+        ):
+            plain += " parties"
+        return f'<table class="doc-table{plain}">{"".join(rows)}<tbody>{"".join(body_rows)}</tbody></table>'
 
     def _row(self, cells: list[Cell], context: SampleContext) -> str:
         rendered = []

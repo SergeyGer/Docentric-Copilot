@@ -8,6 +8,7 @@ Usage::
 
     PLAYWRIGHT_BROWSERS_PATH=.tools/pw-browsers python scripts/build_demo_video.py
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -85,7 +86,7 @@ for item in mapping[:10]:
     rows += (
         f'<tr><td class="req">{item["requirement"][:56]}</td>'
         f'<td><span class="pill" style="background:{bg};color:{fg}">'
-        f'{item["status"].replace("_", " ")}</span></td>'
+        f"{item['status'].replace('_', ' ')}</span></td>"
         f'<td class="path">{item.get("selected_field_path") or "—"}</td>'
         f'<td class="conf">{conf}%</td></tr>'
     )
@@ -104,10 +105,10 @@ td.req{{font-weight:600;width:37%}}td.path{{font-family:monospace;font-size:16px
 b{{color:{NAVY}}}</style></head><body>
 <header><h1>Mapping review</h1><span class="sub">every requirement, its evidence and its confidence</span></header>
 <main><table><tr><th>Requirement</th><th>Status</th><th>Schema field</th><th>Confidence</th></tr>{rows}</table>
-<div class="bar"><div class="kpi"><b>{counts.get('confirmed',0)}</b> confirmed</div>
-<div class="kpi"><b>{counts.get('schema_valid',0)}</b> schema-valid</div>
-<div class="kpi"><b>{counts.get('needs_review',0)}</b> needs review</div>
-<div class="kpi"><b>{counts.get('conflict',0)}</b> conflict</div></div></main></body></html>"""
+<div class="bar"><div class="kpi"><b>{counts.get("confirmed", 0)}</b> confirmed</div>
+<div class="kpi"><b>{counts.get("schema_valid", 0)}</b> schema-valid</div>
+<div class="kpi"><b>{counts.get("needs_review", 0)}</b> needs review</div>
+<div class="kpi"><b>{counts.get("conflict", 0)}</b> conflict</div></div></main></body></html>"""
 
 
 def preview_slides() -> list[Path]:
@@ -154,8 +155,8 @@ code{{font-family:monospace;font-size:17px}}</style></head><body>
 <div class="row"><span>Docentric AX compatibility</span><span class="warn">not tested</span></div>
 <p style="font-size:18px;color:{MUTED};margin-top:16px">Generic DOCX only. Compatibility with Docentric AX is not verified.</p></div>
 <div class="card"><h2>Artifacts</h2>
-<div class="row"><span>DOCX document</span><span>{demo['docx_artifact_id'][:10]}…</span></div>
-<div class="row"><span>Template IR digest</span><span><code>{demo['ir_digest'][:16]}…</code></span></div>
+<div class="row"><span>DOCX document</span><span>{demo["docx_artifact_id"][:10]}…</span></div>
+<div class="row"><span>Template IR digest</span><span><code>{demo["ir_digest"][:16]}…</code></span></div>
 <div class="row"><span>Mapping report</span><span>JSON</span></div>
 <div class="row"><span>Validation report</span><span>JSON + HTML</span></div>
 <div class="row"><span>Preview</span><span>HTML</span></div>
@@ -167,29 +168,76 @@ code{{font-family:monospace;font-size:17px}}</style></head><body>
 
 
 slides: list[tuple[Path, str]] = []
-card(WORK / "s1.png", "Docentric Copilot", "From business brief\nto validated document",
-     "Schema-aware templates for Docentric AX report\npackages — generated offline and deterministically.",
-     "GitHub · SergeyGer/Docentric-Copilot")
-slides.append((WORK / "s1.png", "Docentric Copilot turns a plain-language brief into a Word document, with evidence for every field it uses. The deterministic baseline needs no cloud call."))
+card(
+    WORK / "s1.png",
+    "Docentric Copilot",
+    "From business brief\nto validated document",
+    "Schema-aware templates for Docentric AX report\npackages — generated offline and deterministically.",
+    "GitHub · SergeyGer/Docentric-Copilot",
+)
+slides.append(
+    (
+        WORK / "s1.png",
+        "Docentric Copilot turns a plain-language brief into a Word document, with evidence for every field it uses. The deterministic baseline needs no cloud call.",
+    )
+)
 
 render(mapping_html, WORK / "s2.png")
-slides.append((WORK / "s2.png", "Every requirement is mapped to a real schema field. Nine bindings are confirmed, two are schema-valid, and one is left for review: the VAT number exists both on the customer and on the company, and the brief does not say which one it means."))
+slides.append(
+    (
+        WORK / "s2.png",
+        "Every requirement is mapped to a real schema field. Nine bindings are confirmed, two are schema-valid, and one is left for review: the VAT number exists both on the customer and on the company, and the brief does not say which one it means.",
+    )
+)
 
 preview_cards = preview_slides()
-slides.append((preview_cards[0], "The preview mirrors the document: company branding, customer block, a product table with SKU, quantity, unit price and amount, and a totals block. Every value comes from the source package, never from a model calculation."))
-slides.append((preview_cards[1], "Page two carries the commercial terms, the conditional VAT notice and the payment details, with real page numbers in the footer. Hovering any value reveals the exact field behind it."))
+slides.append(
+    (
+        preview_cards[0],
+        "The preview mirrors the document: company branding, customer block, a product table with SKU, quantity, unit price and amount, and a totals block. Every value comes from the source package, never from a model calculation.",
+    )
+)
+slides.append(
+    (
+        preview_cards[1],
+        "Page two carries the commercial terms, the conditional VAT notice and the payment details, with real page numbers in the footer. Hovering any value reveals the exact field behind it.",
+    )
+)
 
-slides.append((validation_slide(), "Compilation is gated: while a mapping still needs review, the DOCX button stays locked. After the reviewer confirms the field, the document compiles and validates structurally, semantically and logically. Docentric AX compatibility remains explicitly not tested."))
+slides.append(
+    (
+        validation_slide(),
+        "Compilation is gated: while a mapping still needs review, the DOCX button stays locked. After the reviewer confirms the field, the document compiles and validates structurally, semantically and logically. Docentric AX compatibility remains explicitly not tested.",
+    )
+)
 
-card(WORK / "s6.png", "Revision", "Change the document\nin plain language",
-     "Add a SKU column, move bank details to the footer,\nand make the product table more compact.\n\nA targeted edit produces V2 with a small, reviewable diff —\nV1 is never overwritten and can be restored.",
-     "192 tests · deterministic DOCX · CI on every commit")
-slides.append((WORK / "s6.png", "Revision is controlled: the instruction becomes a new immutable version with a structural diff, mapping and validation are re-run, and the previous version can be restored at any time."))
+card(
+    WORK / "s6.png",
+    "Revision",
+    "Change the document\nin plain language",
+    "Add a SKU column, move bank details to the footer,\nand make the product table more compact.\n\nA targeted edit produces V2 with a small, reviewable diff —\nV1 is never overwritten and can be restored.",
+    "192 tests · deterministic DOCX · CI on every commit",
+)
+slides.append(
+    (
+        WORK / "s6.png",
+        "Revision is controlled: the instruction becomes a new immutable version with a structural diff, mapping and validation are re-run, and the previous version can be restored at any time.",
+    )
+)
 
-card(WORK / "s7.png", "Open source", "Try it yourself",
-     "github.com/SergeyGer/Docentric-Copilot\n\nDocs, architecture decisions, an evaluation harness\nand a one-click demo are part of the repository.",
-     "Generic DOCX · Docentric AX compatibility not verified")
-slides.append((WORK / "s7.png", "The project is open source, with documentation, architecture decisions and a reproducible evaluation harness. Compatibility with Docentric AX is deliberately reported as not tested."))
+card(
+    WORK / "s7.png",
+    "Open source",
+    "Try it yourself",
+    "github.com/SergeyGer/Docentric-Copilot\n\nDocs, architecture decisions, an evaluation harness\nand a one-click demo are part of the repository.",
+    "Generic DOCX · Docentric AX compatibility not verified",
+)
+slides.append(
+    (
+        WORK / "s7.png",
+        "The project is open source, with documentation, architecture decisions and a reproducible evaluation harness. Compatibility with Docentric AX is deliberately reported as not tested.",
+    )
+)
 
 seg_dir = WORK / "seg"
 seg_dir.mkdir(exist_ok=True)
@@ -205,10 +253,34 @@ for index, (image, line) in enumerate(slides, start=1):
     asyncio.run(speak(line, audio))
     segment = seg_dir / f"seg{index}.mp4"
     subprocess.run(
-        [FFMPEG, "-y", "-loop", "1", "-i", str(image), "-i", str(audio),
-         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-         "-r", "30", "-c:a", "aac", "-b:a", "160k", "-shortest", str(segment)],
-        check=True, capture_output=True,
+        [
+            FFMPEG,
+            "-y",
+            "-loop",
+            "1",
+            "-i",
+            str(image),
+            "-i",
+            str(audio),
+            "-c:v",
+            "libx264",
+            "-preset",
+            "medium",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            "-r",
+            "30",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "160k",
+            "-shortest",
+            str(segment),
+        ],
+        check=True,
+        capture_output=True,
     )
     segments.append(segment)
     print(f"segment {index}: {segment.stat().st_size // 1024} KB")
@@ -217,9 +289,34 @@ listing = seg_dir / "list.txt"
 listing.write_text("".join(f"file '{segment}'\n" for segment in segments))
 OUT.parent.mkdir(parents=True, exist_ok=True)
 subprocess.run(
-    [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", str(listing),
-     "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-     "-r", "30", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(OUT)],
-    check=True, capture_output=True,
+    [
+        FFMPEG,
+        "-y",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        str(listing),
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "20",
+        "-pix_fmt",
+        "yuv420p",
+        "-r",
+        "30",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "160k",
+        "-movflags",
+        "+faststart",
+        str(OUT),
+    ],
+    check=True,
+    capture_output=True,
 )
 print("video:", OUT, OUT.stat().st_size // 1024, "KB")

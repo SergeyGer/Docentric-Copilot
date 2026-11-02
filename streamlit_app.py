@@ -14,14 +14,12 @@ import json
 from pathlib import Path
 
 import streamlit as st
-
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.ddsp_parser import parse_ddsp
 from docentric_copilot.docx_compiler import CompileOptions
-from docentric_copilot.planner import diff_documents, summarize_changes
+from docentric_copilot.planner import summarize_changes
 from docentric_copilot.planner.rebind import rebind_paths
 from docentric_copilot.planner.service import build_mapping_report
-from docentric_copilot.schema_resolver import MappingStatus
 from docentric_copilot.template_ir import ir_digest
 
 st.set_page_config(page_title="Docentric Copilot — live demo", page_icon="📄", layout="wide")
@@ -69,7 +67,9 @@ st.sidebar.title("Docentric Copilot")
 st.sidebar.caption("Schema-aware brief → validated Word document")
 case_ids = [item["id"] for item in CASES]
 case_id = st.sidebar.selectbox(
-    "Demo package", case_ids, format_func=lambda cid: next(c["title"] for c in CASES if c["id"] == cid)
+    "Demo package",
+    case_ids,
+    format_func=lambda cid: next(c["title"] for c in CASES if c["id"] == cid),
 )
 case, _payload, parsed = load_case(case_id)
 
@@ -111,7 +111,9 @@ tab_plan, tab_review, tab_preview, tab_revision, tab_evidence = st.tabs(
 # --------------------------------------------------------------------- plan
 with tab_plan:
     st.subheader("Typed requirements")
-    st.write("The brief is split into clauses and each clause is interpreted as a document requirement.")
+    st.write(
+        "The brief is split into clauses and each clause is interpreted as a document requirement."
+    )
     rows = [
         {
             "Requirement": item.requirement,
@@ -124,7 +126,11 @@ with tab_plan:
     st.subheader("Schema excerpt")
     st.dataframe(
         [
-            {"Path": node.path, "Type": node.data_type, "Sample": str(node.sample_value)[:40] if node.sample_value is not None else "—"}
+            {
+                "Path": node.path,
+                "Type": node.data_type,
+                "Sample": str(node.sample_value)[:40] if node.sample_value is not None else "—",
+            }
             for node in schema.scalars()
         ][:18],
         use_container_width=True,
@@ -136,7 +142,9 @@ with tab_review:
     mapping = build_mapping_report(schema, document, prompt)
     counts = mapping.counts()
     cols = st.columns(5)
-    for column, status in zip(cols, ["confirmed", "schema_valid", "needs_review", "conflict", "missing"]):
+    for column, status in zip(
+        cols, ["confirmed", "schema_valid", "needs_review", "conflict", "missing"]
+    ):
         column.metric(STATUS_STYLE[status][1], counts[status])
 
     st.dataframe(
@@ -163,23 +171,38 @@ with tab_review:
         for item in pending:
             with st.expander(f"{badged(item.status.value)} · {item.requirement}", expanded=True):
                 st.write(item.explanation or "")
-                options = list(dict.fromkeys(
-                    ([item.selected_field_path] if item.selected_field_path else []) + item.candidate_field_paths
-                ))
+                options = list(
+                    dict.fromkeys(
+                        ([item.selected_field_path] if item.selected_field_path else [])
+                        + item.candidate_field_paths
+                    )
+                )
                 chosen = st.radio(
                     "Schema field",
                     options,
                     index=0,
                     key=f"choice-{item.requirement_id}",
-                    format_func=lambda path: f"{path}  ·  {schema.node(path).data_type if schema.node(path) else '?'}",
+                    format_func=lambda path: (
+                        f"{path}  ·  {schema.node(path).data_type if schema.node(path) else '?'}"
+                    ),
                 )
-                note = st.text_input("Reviewer note", key=f"note-{item.requirement_id}", placeholder="Why this field is correct")
-                if st.button("Confirm this binding", key=f"confirm-{item.requirement_id}", type="primary"):
+                note = st.text_input(
+                    "Reviewer note",
+                    key=f"note-{item.requirement_id}",
+                    placeholder="Why this field is correct",
+                )
+                if st.button(
+                    "Confirm this binding", key=f"confirm-{item.requirement_id}", type="primary"
+                ):
                     updated = document
                     if item.selected_field_path and item.selected_field_path != chosen:
-                        updated, _ = rebind_paths(document, schema, item.selected_field_path, chosen)
+                        updated, _ = rebind_paths(
+                            document, schema, item.selected_field_path, chosen
+                        )
                     st.session_state["document"] = updated
-                    st.session_state["confirmations"][item.requirement_id] = note or "Confirmed by a reviewer."
+                    st.session_state["confirmations"][item.requirement_id] = (
+                        note or "Confirmed by a reviewer."
+                    )
                     st.rerun()
     else:
         st.success("All requirements are resolved. The document can be compiled.")
@@ -191,7 +214,10 @@ with tab_preview:
     compiled = None
     if compile_ready:
         compiled = get_service().compile(
-            document, schema, sample_data=sample_data, options=CompileOptions(document_name=f"{case_id}.docx")
+            document,
+            schema,
+            sample_data=sample_data,
+            options=CompileOptions(document_name=f"{case_id}.docx"),
         )
         st.download_button(
             "⬇ Download DOCX",
@@ -208,7 +234,9 @@ with tab_preview:
 # --------------------------------------------------------------- revision
 with tab_revision:
     st.subheader("Change the document in plain language")
-    st.caption("Structural requests are applied as targeted edits — no model call, a small diff, and a new immutable version.")
+    st.caption(
+        "Structural requests are applied as targeted edits — no model call, a small diff, and a new immutable version."
+    )
     instruction = st.text_input(
         "Revision instruction",
         value="Make the product table more compact",
@@ -223,17 +251,30 @@ with tab_revision:
     if revised:
         st.write(summarize_changes(revised.changes))
         st.dataframe(
-            [{"Change": c.kind, "Path": c.path, "Detail": str(c.before) + " → " + str(c.after)} for c in revised.changes],
+            [
+                {"Change": c.kind, "Path": c.path, "Detail": str(c.before) + " → " + str(c.after)}
+                for c in revised.changes
+            ],
             use_container_width=True,
             hide_index=True,
         )
         left, right = st.columns(2)
         with left:
             st.caption("Before")
-            st.components.v1.html(get_service().preview(outcome.document, schema, sample_data=sample_data).html, height=520, scrolling=True)
+            st.components.v1.html(
+                get_service().preview(outcome.document, schema, sample_data=sample_data).html,
+                height=520,
+                scrolling=True,
+            )
         with right:
             st.caption("After")
-            st.components.v1.html(get_service().preview(revised.outcome.document, schema, sample_data=sample_data).html, height=520, scrolling=True)
+            st.components.v1.html(
+                get_service()
+                .preview(revised.outcome.document, schema, sample_data=sample_data)
+                .html,
+                height=520,
+                scrolling=True,
+            )
         if st.button("Restore the original version"):
             st.session_state["document"] = outcome.document
             st.session_state.pop("revised", None)
@@ -244,7 +285,9 @@ with tab_evidence:
     st.subheader("Validation")
     for name, status in report.statuses().items():
         st.write(f"**{name.replace('_', ' ').title()}**: `{status}`")
-    st.caption("Docentric AX compatibility is deliberately reported as not tested: the output is generic DOCX.")
+    st.caption(
+        "Docentric AX compatibility is deliberately reported as not tested: the output is generic DOCX."
+    )
     st.subheader("Mappings with evidence")
     st.json(
         [

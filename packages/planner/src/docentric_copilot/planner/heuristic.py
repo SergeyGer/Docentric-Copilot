@@ -144,6 +144,7 @@ def _best(
     types: set[str] | None = None,
     collection: bool | None = False,
     prefix: str | None = None,
+    require_in_name: tuple[str, ...] = (),
 ) -> str | None:
     best_path: str | None = None
     best_score = 0
@@ -162,6 +163,10 @@ def _best(
             continue
         if prefix is not None and not path.startswith(f"{prefix}."):
             continue
+        if require_in_name:
+            leaf = set(tokenize(path.rsplit(".", 1)[-1]))
+            if not leaf.intersection(require_in_name):
+                continue
         score = _score(path, include, exclude)
         if score <= 0:
             continue
@@ -287,9 +292,20 @@ def discover_roles(schema: NormalizedSchema, requirement: str) -> Roles:
     leaves = _text_nodes(schema)
     logolf = _best(schema, ("logo", "image", "picture"), types={"image"})
 
-    company_name = _best(schema, ("company", "name"), exclude=("customer", "vendor", "client"))
-    company_address = _best(schema, ("company", "address"), exclude=("customer", "vendor"))
-    company_vat = _best(schema, ("company", "vat"), exclude=("customer", "vendor"))
+    # The descriptive token must appear in the field name itself: a plain
+    # ancestor match made "company logo" satisfy "company vat".
+    company_name = _best(
+        schema,
+        ("company", "name"),
+        exclude=("customer", "vendor", "client"),
+        require_in_name=("name",),
+    )
+    company_address = _best(
+        schema, ("company", "address"), exclude=("customer", "vendor"), require_in_name=("address",)
+    )
+    company_vat = _best(
+        schema, ("company", "vat"), exclude=("customer", "vendor"), require_in_name=("vat",)
+    )
 
     party_tokens: tuple[str, ...] = (
         ("vendor", "supplier") if kind == "purchase_order" else ("customer", "client", "buyer")

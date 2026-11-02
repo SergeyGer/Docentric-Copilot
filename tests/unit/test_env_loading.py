@@ -10,6 +10,7 @@ from docentric_copilot.config import _load_local_env
 def test_dotenv_is_loaded_from_the_working_directory(tmp_path, monkeypatch) -> None:
     (tmp_path / ".env").write_text("DC_TEST_MARKER=from-dotenv\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("DC_ENV", raising=False)
     monkeypatch.delenv("DC_TEST_MARKER", raising=False)
     _load_local_env()
     assert os.environ["DC_TEST_MARKER"] == "from-dotenv"
@@ -19,6 +20,7 @@ def test_dotenv_is_loaded_from_the_working_directory(tmp_path, monkeypatch) -> N
 def test_real_environment_wins_over_dotenv(tmp_path, monkeypatch) -> None:
     (tmp_path / ".env").write_text("DC_TEST_MARKER=from-dotenv\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("DC_ENV", raising=False)
     monkeypatch.setenv("DC_TEST_MARKER", "from-shell")
     _load_local_env()
     assert os.environ["DC_TEST_MARKER"] == "from-shell"

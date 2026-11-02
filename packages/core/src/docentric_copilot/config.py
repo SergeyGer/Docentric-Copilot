@@ -18,6 +18,9 @@ _FALSE = {"0", "false", "no", "off"}
 
 def _load_local_env() -> None:
     """Load a local ``.env`` from the working directory, without overriding the real env."""
+    if os.environ.get("DC_ENV") == "test":
+        # Tests must never pick up a developer's real keys from .env.
+        return
     try:
         from dotenv import find_dotenv, load_dotenv
     except ImportError:  # pragma: no cover - optional convenience

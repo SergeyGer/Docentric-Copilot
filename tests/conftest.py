@@ -7,6 +7,10 @@ in CI and locally.
 
 from __future__ import annotations
 
+import os
+
+os.environ.setdefault("DC_ENV", "test")
+
 import io
 import zipfile
 from collections.abc import Iterator

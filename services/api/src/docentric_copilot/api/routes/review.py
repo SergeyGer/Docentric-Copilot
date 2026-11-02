@@ -98,6 +98,11 @@ async def confirm_mapping(
                 document, schema, mapping.selected_field_path, target
             )
 
+    previous_confirmed = {
+        item.get("requirement_id")
+        for item in record.mapping().get("mappings", [])
+        if item.get("status") == "confirmed"
+    }
     report = build_mapping_report(schema, document, intent)
     report = report.model_copy(
         update={
@@ -118,7 +123,20 @@ async def confirm_mapping(
                     }
                 )
                 if item.requirement_id == requirement_id
-                else item
+                else (
+                    item.model_copy(
+                        update={
+                            "status": MappingStatus.CONFIRMED,
+                            "confidence_score": 1.0,
+                            "evidence_score": 1.0,
+                            "conflict": False,
+                            "conflicts_with": [],
+                            "explanation": "Confirmed earlier by a reviewer.",
+                        }
+                    )
+                    if item.requirement_id in previous_confirmed
+                    else item
+                )
                 for item in report.mappings
             ]
         }

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { AppFooter } from "@/components/app-footer";
 import { AppHeader } from "@/components/app-header";
 import { CompatibilityNotice } from "@/components/compatibility-notice";
+import { WorkspaceProvider } from "@/hooks/workspace-context";
 
 import "./globals.css";
 
@@ -35,12 +36,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to workspace
         </a>
         <div className="flex min-h-screen flex-col">
-          <AppHeader />
-          <CompatibilityNotice />
-          <main id="workspace" className="flex-1">
-            {children}
-          </main>
-          <AppFooter />
+          <WorkspaceProvider>
+            <AppHeader />
+            <CompatibilityNotice />
+            <main id="workspace" className="flex-1">
+              {children}
+            </main>
+            <AppFooter />
+          </WorkspaceProvider>
         </div>
       </body>
     </html>

@@ -25,6 +25,7 @@ class MappingStatus(str, Enum):
     CONFIRMED = "confirmed"
     SCHEMA_VALID = "schema_valid"
     NEEDS_REVIEW = "needs_review"
+    CONFLICT = "conflict"
     MISSING = "missing"
     INVALID = "invalid"
 
@@ -97,14 +98,29 @@ class MappingReport(BaseModel):
     def attention(self) -> list[FieldMapping]:
         return [mapping for mapping in self.mappings if mapping.needs_attention]
 
-    def blocking(self) -> list[FieldMapping]:
+    def semantic_blocking(self) -> list[FieldMapping]:
         return [mapping for mapping in self.mappings if mapping.is_blocking]
 
     def unresolved(self) -> list[FieldMapping]:
         return [
             mapping
             for mapping in self.mappings
-            if mapping.status in {MappingStatus.NEEDS_REVIEW, MappingStatus.MISSING}
+            if mapping.status
+            in {MappingStatus.NEEDS_REVIEW, MappingStatus.CONFLICT, MappingStatus.MISSING}
+        ]
+
+    def blocking(self) -> list[FieldMapping]:
+        """Mappings that must be resolved before a document is compiled."""
+        return [
+            mapping
+            for mapping in self.mappings
+            if mapping.status
+            in {
+                MappingStatus.NEEDS_REVIEW,
+                MappingStatus.CONFLICT,
+                MappingStatus.MISSING,
+                MappingStatus.INVALID,
+            }
         ]
 
     def by_requirement(self) -> dict[str, FieldMapping]:

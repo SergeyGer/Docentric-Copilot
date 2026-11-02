@@ -19,3 +19,8 @@ export const PANEL_IDS = {
 } as const;
 
 export const DEFAULT_DOCUMENT_NAME = "document.docx";
+
+export const DEFAULT_DEMO_CASE_ID = "quotation";
+
+/** Reviewer note limit enforced by the confirm endpoint. */
+export const REVIEW_NOTE_MAX_LENGTH = 500;

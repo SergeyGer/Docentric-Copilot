@@ -121,11 +121,27 @@ def test_full_flow(client: TestClient, source: dict) -> None:
     assert validate.status_code == 200
     assert validate.json()["overall"] == "passed_unverified_compatibility"
 
+    # One requirement is genuinely ambiguous (customer vs company VAT); a reviewer
+    # confirms it before compilation is allowed.
+    pending = [
+        item for item in plan_body["mapping"]["mappings"] if item["status"] != "confirmed"
+    ]
+    version = plan_body["version"]
+    for item in pending:
+        target = item.get("selected_field_path") or item["candidate_field_paths"][0]
+        confirmed = client.post(
+            f"/api/v1/templates/{plan_body['template_id']}/versions/{version}/mappings/{item['requirement_id']}/confirm",
+            json={"selected_field_path": target, "note": "Confirmed in the integration test."},
+        )
+        assert confirmed.status_code == 200, confirmed.text
+        version = confirmed.json()["version"]
+
     compile_response = client.post(
         "/api/v1/templates/compile",
         json={
             "source_id": source_id,
             "template_id": plan_body["template_id"],
+            "version": version,
             "options": {"document_name": "quotation.docx"},
         },
     )
@@ -180,6 +196,12 @@ def test_compile_rejects_ax_target(client: TestClient, source: dict) -> None:
         "/api/v1/templates/plan",
         json={"source_id": source_id, "prompt": PROMPT, "provider": "mock"},
     ).json()
+    for item in [m for m in plan["mapping"]["mappings"] if m["status"] != "confirmed"]:
+        target = item.get("selected_field_path") or item["candidate_field_paths"][0]
+        plan = client.post(
+            f"/api/v1/templates/{plan['template_id']}/versions/{plan['version']}/mappings/{item['requirement_id']}/confirm",
+            json={"selected_field_path": target},
+        ).json()
     response = client.post(
         "/api/v1/templates/compile",
         json={

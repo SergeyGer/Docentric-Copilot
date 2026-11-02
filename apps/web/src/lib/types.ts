@@ -89,13 +89,26 @@ export interface SchemaView {
 
 /* --------------------------------------------------------------- mappings */
 
-export type MappingStatus = "resolved" | "ambiguous" | "missing" | "invalid";
+export type MappingStatus =
+  | "confirmed"
+  | "schema_valid"
+  | "needs_review"
+  | "missing"
+  | "invalid";
+
+export type MappingPlacement = "header" | "footer" | "body" | "table" | "totals";
 
 export interface FieldMapping {
   requirement_id: string;
   requirement: string;
+  concept: string | null;
+  placement: MappingPlacement | null;
   candidate_field_paths: string[];
   selected_field_path: string | null;
+  supporting_field_paths: string[];
+  conflict: boolean;
+  conflicts_with: string[];
+  evidence_score: number | null;
   data_type: string | null;
   schema_evidence: string | null;
   confidence_score: number | null;
@@ -314,8 +327,70 @@ export interface ValidateRequest {
 
 export interface PreviewRequest {
   source_id: string;
-  template_id: string | null;
-  version: number | null;
+  template_id?: string | null;
+  version?: number | null;
+  /** Render an inline IR instead of loading a stored version. */
+  ir?: TemplateIr | null;
+}
+
+export interface ConfirmMappingRequest {
+  selected_field_path: string | null;
+  note: string | null;
+}
+
+export interface ConfirmMappingResponse {
+  template_id: string;
+  /** The new immutable version created by the review action. */
+  version: number;
+  requirement_id: string;
+  selected_field_path: string | null;
+  mapping: MappingReport;
+  report: ValidationReport;
+  validation: ValidationStatuses;
+  ir: TemplateIr;
+  ir_digest: string;
+  rebind_count: number;
+}
+
+/* ------------------------------------------------------------------ demo */
+
+export interface DemoCase {
+  id: string;
+  title: string;
+  description: string;
+  prompt: string;
+}
+
+export interface DemoTourStep {
+  target: string;
+  title: string;
+  body: string;
+}
+
+export interface DemoSessionRequest {
+  case_id: string;
+}
+
+/** Shape of `POST /api/v1/demo/sessions`. */
+export interface DemoSessionResponse {
+  case: DemoCase;
+  source_id: string;
+  schema_id: string;
+  sections: string[];
+  stats: SchemaStats;
+  diagnostics: Diagnostic[];
+  template_id: string;
+  version: number;
+  ir: TemplateIr;
+  ir_digest: string;
+  mapping: MappingReport;
+  report: ValidationReport;
+  validation: ValidationStatuses;
+  preview_html: string;
+  docx_artifact_id: string;
+  artifacts: ArtifactView[];
+  tour: DemoTourStep[];
+  elapsed_ms: number;
 }
 
 /* -------------------------------------------------------------- responses */

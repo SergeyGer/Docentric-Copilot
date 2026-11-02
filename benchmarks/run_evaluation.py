@@ -79,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
                 requirements=len(outcome.mapping.mappings),
                 covered_requirements=counts.get("confirmed", 0) + counts.get("schema_valid", 0),
                 compiled=compiled,
-                clarifications=counts.get("needs_review", 0),
+                clarifications=counts.get("needs_review", 0) + counts.get("conflict", 0),
                 corrections=1
                 if outcome.removed_bindings
                 or counts.get("invalid", 0)

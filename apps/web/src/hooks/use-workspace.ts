@@ -12,6 +12,7 @@ import {
 import { copyToClipboard } from "@/lib/clipboard";
 import {
   ACCEPTED_SOURCE_EXTENSIONS,
+  DEFAULT_DEMO_CASE_ID,
   DEFAULT_DOCUMENT_NAME,
   EXAMPLE_PROMPT,
   FALLBACK_MAX_UPLOAD_BYTES,
@@ -25,6 +26,11 @@ import type {
   CheckStatus,
   CompileRequest,
   CompileResponse,
+  ConfirmMappingRequest,
+  ConfirmMappingResponse,
+  DemoCase,
+  DemoSessionResponse,
+  DemoTourStep,
   DesignStyle,
   Diagnostic,
   GenerationInfo,
@@ -55,9 +61,12 @@ export type ErrorScope =
   | "plan"
   | "compile"
   | "revise"
+  | "review"
   | "preview"
   | "versions"
-  | "load-version";
+  | "load-version"
+  | "demo"
+  | "demo-examples";
 
 export type ToastTone = "info" | "success" | "error";
 
@@ -65,6 +74,27 @@ export interface ToastState {
   id: number;
   message: string;
   tone: ToastTone;
+}
+
+export interface ConfirmPending {
+  requirementId: string;
+  mode: "selected" | "confirm";
+}
+
+export interface CompareVersions {
+  left: number;
+  right: number;
+}
+
+export interface ComparePreviewState {
+  html: string | null;
+  pending: boolean;
+  error: ApiError | null;
+}
+
+export interface MappingFocusRequest {
+  path: string;
+  token: number;
 }
 
 interface ValidationFailure {
@@ -159,6 +189,14 @@ export function useWorkspace() {
   const [providersPending, setProvidersPending] = useState(false);
   const [capabilities, setCapabilities] = useState<CapabilitiesView | null>(null);
 
+  /* ---------------------------------------------------------------- demo */
+
+  const [demoCases, setDemoCases] = useState<DemoCase[]>([]);
+  const [demoCasesPending, setDemoCasesPending] = useState(false);
+  const [demoCaseId, setDemoCaseId] = useState(DEFAULT_DEMO_CASE_ID);
+  const [demoPending, setDemoPending] = useState(false);
+  const [tourSteps, setTourSteps] = useState<DemoTourStep[] | null>(null);
+
   /* -------------------------------------------------------------- source */
 
   const [source, setSource] = useState<SourceView | null>(null);
@@ -192,6 +230,9 @@ export function useWorkspace() {
   const [generation, setGeneration] = useState<GenerationInfo | null>(null);
   const [artifacts, setArtifacts] = useState<ArtifactView[]>([]);
   const [selectedMappingPath, setSelectedMappingPath] = useState<string | null>(null);
+  const [activePreviewPath, setActivePreviewPath] = useState<string | null>(null);
+  const [mappingFocus, setMappingFocus] = useState<MappingFocusRequest | null>(null);
+  const [confirmPending, setConfirmPending] = useState<ConfirmPending | null>(null);
 
   /* ------------------------------------------------------------- compile */
 
@@ -211,6 +252,11 @@ export function useWorkspace() {
   const [versions, setVersions] = useState<VersionSummary[]>([]);
   const [versionsPending, setVersionsPending] = useState(false);
   const [loadingVersion, setLoadingVersion] = useState<number | null>(null);
+  const [compareVersions, setCompareVersions] = useState<CompareVersions | null>(null);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const [comparePreviews, setComparePreviews] = useState<Record<number, ComparePreviewState>>(
+    {},
+  );
 
   /* ------------------------------------------------------------- preview */
 
@@ -224,6 +270,7 @@ export function useWorkspace() {
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewRequestId = useRef(0);
+  const mappingFocusToken = useRef(0);
 
   const setScopeError = useCallback((scope: ErrorScope, error: ApiError) => {
     setErrors((previous) => ({ ...previous, [scope]: error }));
@@ -375,6 +422,13 @@ export function useWorkspace() {
     setPreviewPending(false);
     previewRequestId.current += 1;
     setSelectedMappingPath(null);
+    setActivePreviewPath(null);
+    setMappingFocus(null);
+    setConfirmPending(null);
+    setCompareVersions(null);
+    setCompareOpen(false);
+    setComparePreviews({});
+    setTourSteps(null);
     setLoadingVersion(null);
     setErrors((previous) => {
       const next = { ...previous };
@@ -382,6 +436,7 @@ export function useWorkspace() {
         "plan",
         "compile",
         "revise",
+        "review",
         "preview",
         "versions",
         "load-version",
@@ -507,27 +562,14 @@ export function useWorkspace() {
     [dismissError, setScopeError],
   );
 
-  const fetchPreviewFor = useCallback(
-    async (templateIdValue: string, versionValue: number) => {
-      if (!source) {
-        setScopeError(
-          "preview",
-          new ApiError("Upload a data source before rendering a preview.", {
-            code: "client_source_required",
-          }),
-        );
-        return;
-      }
+  /** Render a preview request and keep only the latest response. */
+  const requestPreview = useCallback(
+    async (body: PreviewRequest, versionValue: number) => {
       const requestId = previewRequestId.current + 1;
       previewRequestId.current = requestId;
       setPreviewPending(true);
       dismissError("preview");
       try {
-        const body: PreviewRequest = {
-          source_id: source.source_id,
-          template_id: templateIdValue,
-          version: versionValue,
-        };
         const html = await apiRequestText(
           "/api/v1/templates/preview",
           {
@@ -542,6 +584,7 @@ export function useWorkspace() {
         }
         setPreviewHtml(html);
         setPreviewVersion(versionValue);
+        setActivePreviewPath(null);
       } catch (error) {
         if (requestId !== previewRequestId.current) {
           return;
@@ -553,7 +596,55 @@ export function useWorkspace() {
         }
       }
     },
-    [dismissError, setScopeError, source],
+    [dismissError, setScopeError],
+  );
+
+  const fetchPreviewFor = useCallback(
+    async (templateIdValue: string, versionValue: number) => {
+      if (!source) {
+        setScopeError(
+          "preview",
+          new ApiError("Upload a data source before rendering a preview.", {
+            code: "client_source_required",
+          }),
+        );
+        return;
+      }
+      await requestPreview(
+        {
+          source_id: source.source_id,
+          template_id: templateIdValue,
+          version: versionValue,
+        },
+        versionValue,
+      );
+    },
+    [requestPreview, setScopeError, source],
+  );
+
+  /** Re-render the preview from an inline IR (review confirmations). */
+  const fetchPreviewFromIr = useCallback(
+    async (irValue: TemplateIr, versionValue: number) => {
+      if (!source) {
+        setScopeError(
+          "preview",
+          new ApiError("Upload a data source before rendering a preview.", {
+            code: "client_source_required",
+          }),
+        );
+        return;
+      }
+      await requestPreview(
+        {
+          source_id: source.source_id,
+          template_id: null,
+          version: null,
+          ir: irValue,
+        },
+        versionValue,
+      );
+    },
+    [requestPreview, setScopeError, source],
   );
 
   const planTemplate = useCallback(async () => {
@@ -870,6 +961,7 @@ export function useWorkspace() {
 
     setRevisionPending(true);
     dismissError("revise");
+    const previousVersion = activeVersion;
     try {
       const body: RevisionRequest = {
         source_id: source.source_id,
@@ -895,7 +987,29 @@ export function useWorkspace() {
       setArtifacts(response.artifacts ?? []);
       setCompileResult(null);
       setSelectedMappingPath(null);
+      setActivePreviewPath(null);
+      setMappingFocus(null);
       setInstruction("");
+      setPlan((previous) =>
+        previous
+          ? {
+              ...previous,
+              version: response.version,
+              ir_digest: response.ir_digest,
+              ir: response.ir,
+              mapping: response.mapping,
+              report: response.report,
+              validation: response.validation,
+            }
+          : previous,
+      );
+      if (previousVersion !== null && previousVersion !== response.version) {
+        setCompareVersions({ left: previousVersion, right: response.version });
+      } else {
+        setCompareVersions(null);
+      }
+      setCompareOpen(false);
+      setComparePreviews({});
       notify(`Revision applied. Version ${response.version} is now active.`, "success");
       void fetchVersions(response.template_id);
       void fetchPreviewFor(response.template_id, response.version);
@@ -949,8 +1063,23 @@ export function useWorkspace() {
         setRemovedBindings([]);
         setCompileResult(null);
         setSelectedMappingPath(null);
+        setActivePreviewPath(null);
+        setMappingFocus(null);
         setPreviewHtml(null);
         setPreviewVersion(null);
+        setPlan((previous) =>
+          previous
+            ? {
+                ...previous,
+                version: detail.version,
+                ir_digest: detail.ir_digest,
+                ir: detail.ir,
+                mapping: detail.mapping,
+                report: detail.validation,
+                validation: statuses,
+              }
+            : previous,
+        );
         notify(`Loaded version ${version} into the review panes.`, "success");
         void fetchPreviewFor(templateId, version);
       } catch (error) {
@@ -968,6 +1097,277 @@ export function useWorkspace() {
     }
     void fetchVersions(templateId);
   }, [fetchVersions, templateId]);
+
+  /* --------------------------------------------------------------- review */
+
+  const confirmMapping = useCallback(
+    async (requirementId: string, selectedFieldPath: string | null, note: string | null) => {
+      if (confirmPending) {
+        return;
+      }
+      if (!templateId || activeVersion === null) {
+        setScopeError(
+          "review",
+          new ApiError("Plan a template before confirming a mapping.", {
+            code: "client_template_required",
+          }),
+        );
+        return;
+      }
+      setConfirmPending({
+        requirementId,
+        mode: selectedFieldPath === null ? "confirm" : "selected",
+      });
+      dismissError("review");
+      try {
+        const body: ConfirmMappingRequest = {
+          selected_field_path: selectedFieldPath,
+          note,
+        };
+        const response = await postJson<ConfirmMappingResponse>(
+          `/api/v1/templates/${encodeURIComponent(templateId)}/versions/${activeVersion}/mappings/${encodeURIComponent(requirementId)}/confirm`,
+          body,
+          { timeoutMs: 120_000 },
+        );
+        setTemplateId(response.template_id);
+        setActiveVersion(response.version);
+        setIr(response.ir);
+        setIrDigest(response.ir_digest);
+        setMapping(response.mapping);
+        setReport(response.report);
+        setValidation(response.validation);
+        setWarnings([]);
+        setRemovedBindings([]);
+        setCompileResult(null);
+        setSelectedMappingPath(null);
+        setActivePreviewPath(null);
+        setMappingFocus(null);
+        setPreviewHtml(null);
+        setPreviewVersion(null);
+        setPlan((previous) =>
+          previous
+            ? {
+                ...previous,
+                version: response.version,
+                ir_digest: response.ir_digest,
+                ir: response.ir,
+                mapping: response.mapping,
+                report: response.report,
+                validation: response.validation,
+              }
+            : previous,
+        );
+        notify(`Review recorded — version ${response.version}`, "success");
+        void fetchVersions(response.template_id);
+        void fetchPreviewFromIr(response.ir, response.version);
+      } catch (error) {
+        setScopeError("review", toApiError(error));
+      } finally {
+        setConfirmPending(null);
+      }
+    },
+    [
+      activeVersion,
+      confirmPending,
+      dismissError,
+      fetchPreviewFromIr,
+      fetchVersions,
+      notify,
+      setScopeError,
+      templateId,
+    ],
+  );
+
+  /* -------------------------------------------------------------- compare */
+
+  const loadComparePreview = useCallback(
+    async (version: number) => {
+      if (!source || !templateId) {
+        return;
+      }
+      setComparePreviews((previous) => ({
+        ...previous,
+        [version]: {
+          html: previous[version]?.html ?? null,
+          pending: true,
+          error: null,
+        },
+      }));
+      try {
+        const html = await apiRequestText(
+          "/api/v1/templates/preview",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              source_id: source.source_id,
+              template_id: templateId,
+              version,
+            }),
+            headers: { "Content-Type": "application/json" },
+          },
+          { timeoutMs: 60_000 },
+        );
+        setComparePreviews((previous) => ({
+          ...previous,
+          [version]: { html, pending: false, error: null },
+        }));
+      } catch (error) {
+        setComparePreviews((previous) => ({
+          ...previous,
+          [version]: { html: null, pending: false, error: toApiError(error) },
+        }));
+      }
+    },
+    [source, templateId],
+  );
+
+  const openCompare = useCallback(() => {
+    if (!compareVersions || !templateId) {
+      return;
+    }
+    setCompareOpen(true);
+    void loadComparePreview(compareVersions.left);
+    void loadComparePreview(compareVersions.right);
+  }, [compareVersions, loadComparePreview, templateId]);
+
+  const closeCompare = useCallback(() => {
+    setCompareOpen(false);
+  }, []);
+
+  const toggleCompare = useCallback(() => {
+    if (compareOpen) {
+      setCompareOpen(false);
+      return;
+    }
+    openCompare();
+  }, [compareOpen, openCompare]);
+
+  /* --------------------------------------------------------------- reveal */
+
+  const selectPreviewPath = useCallback((path: string) => {
+    setSelectedMappingPath(path);
+    mappingFocusToken.current += 1;
+    setMappingFocus({ path, token: mappingFocusToken.current });
+  }, []);
+
+  /* ----------------------------------------------------------------- demo */
+
+  const loadDemoCases = useCallback(async () => {
+    setDemoCasesPending(true);
+    dismissError("demo-examples");
+    try {
+      const list = await apiRequest<DemoCase[]>(
+        "/api/v1/demo/examples",
+        {},
+        { timeoutMs: 15_000 },
+      );
+      setDemoCases(list);
+      setDemoCaseId((current) =>
+        list.some((item) => item.id === current)
+          ? current
+          : (list[0]?.id ?? DEFAULT_DEMO_CASE_ID),
+      );
+    } catch (error) {
+      setScopeError("demo-examples", toApiError(error));
+    } finally {
+      setDemoCasesPending(false);
+    }
+  }, [dismissError, setScopeError]);
+
+  useEffect(() => {
+    void loadDemoCases();
+  }, [loadDemoCases]);
+
+  const runDemo = useCallback(
+    async (caseIdValue?: string) => {
+      if (demoPending) {
+        return;
+      }
+      const requested = (caseIdValue ?? demoCaseId).trim() || DEFAULT_DEMO_CASE_ID;
+      setDemoPending(true);
+      dismissError("demo");
+      try {
+        const response = await postJson<DemoSessionResponse>(
+          "/api/v1/demo/sessions",
+          { case_id: requested },
+          { timeoutMs: 180_000 },
+        );
+        resetTemplateState();
+        const sourceSummary: SourceView = {
+          source_id: response.source_id,
+          filename: `${response.case.id}.ddsp`,
+          schema_id: response.schema_id,
+          sections: response.sections,
+          stats: response.stats,
+          // The demo pipeline always renders the packaged sample data.
+          sample_data_available: true,
+          diagnostics: response.diagnostics,
+          // The demo response does not enumerate package entries.
+          entry_names: [],
+        };
+        const demoPlan: PlanResponse = {
+          job_id: "",
+          status: "completed",
+          template_id: response.template_id,
+          version: response.version,
+          ir_digest: response.ir_digest,
+          ir: response.ir,
+          mapping: response.mapping,
+          report: response.report,
+          validation: response.validation,
+          warnings: [],
+          removed_bindings: [],
+          generation: null,
+          artifacts: response.artifacts,
+        };
+        setSource(sourceSummary);
+        setSchemaView(null);
+        setDemoCaseId(response.case.id);
+        setPrompt(response.case.prompt);
+        setDocumentName(`${response.case.id}.docx`);
+        setPlan(demoPlan);
+        setTemplateId(response.template_id);
+        setActiveVersion(response.version);
+        setIr(response.ir);
+        setIrDigest(response.ir_digest);
+        setMapping(response.mapping);
+        setValidation(response.validation);
+        setReport(response.report);
+        setWarnings([]);
+        setRemovedBindings([]);
+        setGeneration(null);
+        setArtifacts(response.artifacts);
+        setSelectedMappingPath(null);
+        setActivePreviewPath(null);
+        setMappingFocus(null);
+        setPreviewHtml(response.preview_html);
+        setPreviewVersion(response.version);
+        setPreviewPending(false);
+        setTourSteps(response.tour.length > 0 ? response.tour : null);
+        notify(`Demo ready in ${response.elapsed_ms} ms`, "success");
+        void fetchVersions(response.template_id);
+        void loadSchemaFor(response.source_id);
+      } catch (error) {
+        setScopeError("demo", toApiError(error));
+      } finally {
+        setDemoPending(false);
+      }
+    },
+    [
+      demoCaseId,
+      demoPending,
+      dismissError,
+      fetchVersions,
+      loadSchemaFor,
+      notify,
+      resetTemplateState,
+      setScopeError,
+    ],
+  );
+
+  const closeTour = useCallback(() => {
+    setTourSteps(null);
+  }, []);
 
   /* -------------------------------------------------------------- preview */
 
@@ -1012,6 +1412,18 @@ export function useWorkspace() {
     maxUploadBytes,
     reloadProviders: loadProviders,
     providerError: errors.providers ?? null,
+    // demo
+    demoCases,
+    demoCasesPending,
+    demoCaseId,
+    setDemoCaseId,
+    demoPending,
+    demoError: errors.demo ?? null,
+    demoExamplesError: errors["demo-examples"] ?? null,
+    runDemo,
+    reloadDemoCases: loadDemoCases,
+    tourSteps,
+    closeTour,
     // source
     source,
     schemaView,
@@ -1062,6 +1474,13 @@ export function useWorkspace() {
     selectedMappingPath,
     setSelectedMappingCandidate,
     clearSelectedMappingCandidate,
+    activePreviewPath,
+    setActivePreviewPath,
+    selectPreviewPath,
+    mappingFocus,
+    confirmPending,
+    confirmMapping,
+    reviewError: errors.review ?? null,
     // compile
     compilePending,
     compileError: errors.compile ?? null,
@@ -1091,6 +1510,12 @@ export function useWorkspace() {
     loadVersion,
     refreshVersions,
     loadVersionError: errors["load-version"] ?? null,
+    compareVersions,
+    compareOpen,
+    comparePreviews,
+    openCompare,
+    closeCompare,
+    toggleCompare,
     // preview
     previewHtml,
     previewVersion,

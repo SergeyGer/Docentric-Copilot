@@ -154,6 +154,29 @@ async def compile_template(
     record, schema = load_source(store, request.source_id)
     job_id = store.create_job("compile", request.model_dump(mode="json"))
     try:
+        if request.template_id and request.ir is None:
+            stored = store.get_version(request.template_id, request.version)
+            pending = [
+                item
+                for item in stored.mapping().get("mappings", [])
+                if item.get("status") in {"needs_review", "conflict", "missing", "invalid"}
+            ]
+            if pending:
+                raise ValidationFailedError(
+                    "Review the unresolved mappings before compiling",
+                    details={
+                        "pending": [
+                            {
+                                "requirement_id": item.get("requirement_id"),
+                                "status": item.get("status"),
+                                "requirement": item.get("requirement"),
+                                "selected_field_path": item.get("selected_field_path"),
+                            }
+                            for item in pending[:10]
+                        ],
+                        "action": "POST /api/v1/templates/{id}/versions/{version}/mappings/{requirement_id}/confirm",
+                    },
+                )
         document = resolve_document(
             store,
             template_id=request.template_id,

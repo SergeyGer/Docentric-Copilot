@@ -104,6 +104,42 @@ export function findSchemaNode(
   return null;
 }
 
+/**
+ * Paths of every container that must be expanded for `path` to be visible.
+ *
+ * The walk follows the actual parent links rather than splitting the dotted
+ * path, so schemas with unusual separators still resolve correctly.
+ */
+export function schemaAncestorPaths(
+  schema: NormalizedSchema | null,
+  path: string | null,
+): string[] {
+  if (!schema || !path) {
+    return [];
+  }
+  const visit = (nodes: SchemaNode[], ancestors: string[]): string[] | null => {
+    for (const node of nodes) {
+      if (node.path === path) {
+        return ancestors;
+      }
+      if (node.children.length > 0) {
+        const found = visit(node.children, [...ancestors, node.path]);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+  for (const section of schema.sections) {
+    const found = visit(section.nodes, []);
+    if (found) {
+      return found;
+    }
+  }
+  return [];
+}
+
 function normalizeQuery(query: string): string {
   return query.trim().toLowerCase();
 }

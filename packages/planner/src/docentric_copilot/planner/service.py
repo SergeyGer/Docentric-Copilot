@@ -295,7 +295,7 @@ def _conflict_for(
 
 def _status_for(score: float, *, conflict: bool) -> MappingStatus:
     if conflict:
-        return MappingStatus.NEEDS_REVIEW
+        return MappingStatus.CONFLICT
     if score >= 0.9:
         return MappingStatus.CONFIRMED
     if score >= 0.8:
@@ -410,9 +410,7 @@ def build_mapping_report(
             if conflict_with is not None:
                 score = max(0.0, score - 0.35)
                 reasons.append(f"field already used by {conflict_with}")
-            status = _status_for(
-                score, conflict=conflict_with is not None or ambiguous or bool(counterparts)
-            )
+            status = _status_for(score, conflict=conflict_with is not None)
             explanation = _explain(status, item, bound, reasons)
             mappings.append(
                 FieldMapping(

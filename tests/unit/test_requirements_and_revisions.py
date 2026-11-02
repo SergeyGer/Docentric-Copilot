@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-
 from docentric_copilot.ddsp_parser import parse_ddsp
 from docentric_copilot.llm import LLMGateway
 from docentric_copilot.planner import TemplatePlanner

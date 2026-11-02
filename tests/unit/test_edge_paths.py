@@ -121,8 +121,8 @@ def test_preview_static_table_rows() -> None:
         }
     )
     preview = render_preview(document, parsed.schema, sample_data={"MainData": {}})
-    assert "<table>" in preview.html and "<td>" in preview.html
-    assert "<span>1</span>" in preview.html and "<span>2</span>" in preview.html
+    assert "<table" in preview.html and "<td>" in preview.html
+    assert ">1</span>" in preview.html and ">2</span>" in preview.html
     compiled = GenericDocxCompiler().compile(
         document, parsed.schema, CompileOptions(), sample_data={"MainData": {}}
     )

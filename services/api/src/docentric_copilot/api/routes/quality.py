@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from docentric_copilot.api.deps import get_service, get_store
@@ -50,6 +51,41 @@ class OptimizeResponse(BaseModel):
     ir: dict[str, Any]
     ir_digest: str
     validation: dict[str, str]
+
+
+class CompareTarget(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    provider: str = Field(max_length=40)
+    model: str | None = Field(default=None, max_length=120)
+
+
+class CompareRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str
+    prompt: str = Field(min_length=1, max_length=20_000)
+    targets: list[CompareTarget] = Field(min_length=2, max_length=4)
+
+
+class CompareRun(BaseModel):
+    provider: str
+    model: str | None
+    ok: bool
+    error: str | None = None
+    latency_ms: int = 0
+    tokens: int = 0
+    cost_usd: float | None = None
+    counts: dict[str, int] = Field(default_factory=dict)
+    validation: dict[str, str] = Field(default_factory=dict)
+    ir_digest: str | None = None
+    requirements: int = 0
+
+
+class CompareResponse(BaseModel):
+    runs: list[CompareRun]
+    recommended: str | None
+    note: str
 
 
 class RouteRequest(BaseModel):
@@ -121,6 +157,71 @@ async def optimize(
         ir=outcome.document.model_dump(mode="json"),
         ir_digest=ir_digest(outcome.document),
         validation=validation.statuses(),
+    )
+
+
+@router.post("/compare", response_model=CompareResponse)
+async def compare(
+    request: CompareRequest,
+    store: Store = Depends(get_store),
+    service: TemplateService = Depends(get_service),
+) -> CompareResponse:
+    """Run the same brief through several providers and report measured results."""
+    source = store.get_source(request.source_id)
+    schema = NormalizedSchema.model_validate(source.schema_dict())
+    runs: list[CompareRun] = []
+    for target in request.targets:
+        started = time.perf_counter()
+        try:
+            outcome, report = await service.plan(
+                schema, request.prompt, provider=target.provider, model=target.model
+            )
+            generation = outcome.generation
+            runs.append(
+                CompareRun(
+                    provider=target.provider,
+                    model=target.model or getattr(generation, "model", None),
+                    ok=True,
+                    latency_ms=int((time.perf_counter() - started) * 1000),
+                    tokens=int(
+                        getattr(generation, "prompt_tokens", 0)
+                        + getattr(generation, "completion_tokens", 0)
+                    ),
+                    cost_usd=getattr(generation, "cost_usd", None),
+                    counts=outcome.mapping.counts(),
+                    validation=report.statuses(),
+                    ir_digest=ir_digest(outcome.document),
+                    requirements=len(outcome.mapping.mappings),
+                )
+            )
+        except ProviderError as exc:
+            runs.append(
+                CompareRun(
+                    provider=target.provider,
+                    model=target.model,
+                    ok=False,
+                    error=exc.message,
+                    latency_ms=int((time.perf_counter() - started) * 1000),
+                )
+            )
+    valid = [run for run in runs if run.ok]
+    recommended = None
+    if valid:
+        recommended = min(
+            valid,
+            key=lambda run: (
+                -(run.counts.get("confirmed", 0) + run.counts.get("schema_valid", 0)),
+                run.cost_usd if run.cost_usd is not None else 0.0,
+                run.latency_ms,
+            ),
+        ).provider
+    return CompareResponse(
+        runs=runs,
+        recommended=recommended,
+        note=(
+            "Measured on this exact brief and schema. Cost is reported only when the provider "
+            "returned usage and a known price; zero for the deterministic baseline."
+        ),
     )
 
 

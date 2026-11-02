@@ -38,7 +38,10 @@ Hard rules:
 8. Bind monetary amounts with format "number" and decimals 2. Do not use the
    "currency" format: it needs a literal ISO code, while the document currency
    comes from the schema and is shown separately.
-9. Return JSON only. No prose, no markdown fences.
+9. Table shapes are strict: "table.row_template" is an array of CELL objects
+   ({"blocks": [...]}); "table.rows" is an array of ROW objects ({"cells": [...]}).
+   Never put "cells" inside a row_template item.
+10. Return JSON only. No prose, no markdown fences.
 
 The response object shape is: document -> sections -> body blocks, exactly as defined
 by the JSON schema attached to this request.

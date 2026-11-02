@@ -35,6 +35,13 @@ CASES = {
         "title": "Tax invoice",
         "description": "Net, tax and gross totals, due date and a reverse-charge notice.",
     },
+    "quotation-defect": {
+        "package": "quotation/sales-quotation.ddsp",
+        "prompt": "quotation/prompt.txt",
+        "title": "Quotation with a layout defect",
+        "description": "Same brief, but the item table is wider than the page: use it to demo the quality dashboard and Optimize layout.",
+        "defect": True,
+    },
     "purchase-order": {
         "package": "purchase-order/purchase-order.ddsp",
         "prompt": "purchase-order/prompt.txt",
@@ -59,6 +66,7 @@ def build() -> dict[str, bytes]:
                 "description": spec["description"],
                 "package": filename,
                 "prompt": prompt,
+                **({"defect": True} if spec.get("defect") else {}),
             }
         )
     files["manifest.json"] = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()

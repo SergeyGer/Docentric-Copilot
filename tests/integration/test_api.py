@@ -240,3 +240,30 @@ def test_plan_with_unknown_provider(client: TestClient, source: dict) -> None:
     )
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "provider_not_configured"
+
+
+def test_quality_optimize_and_compare_link(client: TestClient) -> None:
+    demo = client.post("/api/v1/demo/sessions", json={"case_id": "quotation-defect"}).json()
+    assert demo["quality"]["overall"] == "warning"
+    reference = {
+        "source_id": demo["source_id"],
+        "template_id": demo["template_id"],
+        "version": demo["version"],
+    }
+    quality = client.post("/api/v1/templates/quality", json=reference).json()
+    layout = next(c for c in quality["report"]["checks"] if c["id"] == "table_layout")
+    assert layout["status"] == "warning"
+    optimised = client.post("/api/v1/templates/optimize", json=reference)
+    assert optimised.status_code == 200, optimised.text
+    assert optimised.json()["after"]["overall"] != "warning"
+    compare = client.post(
+        "/api/v1/templates/compare",
+        json={
+            "source_id": demo["source_id"],
+            "prompt": demo["case"]["prompt"],
+            "targets": [{"provider": "mock"}, {"provider": "mock"}],
+        },
+    )
+    assert compare.status_code == 200
+    assert all(run["ok"] for run in compare.json()["runs"])
+    assert compare.json()["recommended"] == "mock"

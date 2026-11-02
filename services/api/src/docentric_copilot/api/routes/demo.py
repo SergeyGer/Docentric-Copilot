@@ -39,6 +39,7 @@ class DemoCase(BaseModel):
     title: str
     description: str
     prompt: str
+    defect: bool = False
 
 
 class DemoRequest(BaseModel):
@@ -70,6 +71,7 @@ class DemoResponse(BaseModel):
     report: dict[str, Any]
     validation: dict[str, str]
     preview_html: str
+    quality: dict[str, Any] | None = None
     docx_artifact_id: str
     artifacts: list[ArtifactView]
     tour: list[DemoTourStep]
@@ -163,6 +165,9 @@ async def create_session(
         design_style="modern",
         language="en",
     )
+    if case.get("defect"):
+        outcome = outcome.model_copy(update={"document": _inject_layout_defect(outcome.document)})
+
     template_id, _ = store.create_template(source.id)
     version = store.add_version(
         template_id,
@@ -173,6 +178,9 @@ async def create_session(
         model="mock-planner-v1",
     )
 
+    from docentric_copilot.planner import analyze_quality
+
+    quality = analyze_quality(outcome.document, schema, sample_data=parsed.sample_data)
     preview = await run_in_threadpool(
         service.preview, outcome.document, schema, sample_data=parsed.sample_data
     )
@@ -239,8 +247,41 @@ async def create_session(
         report=package_report.model_dump(mode="json"),
         validation=package_report.statuses(),
         preview_html=preview.html,
+        quality=quality.model_dump(mode="json"),
         docx_artifact_id=docx_artifact.id,
         artifacts=artifacts,
         tour=DEMO_TOUR,
         elapsed_ms=elapsed_ms,
     )
+
+
+def _inject_layout_defect(document):
+    """Widen the item table so the quality dashboard has something to report."""
+    from docentric_copilot.template_ir import Table
+
+    def widen(blocks):
+        result = []
+        for block in blocks:
+            if isinstance(block, Table) and block.columns:
+                block = block.model_copy(
+                    update={
+                        "columns": [
+                            column.model_copy(
+                                update={
+                                    "width_mm": min(
+                                        200.0, round((column.width_mm or 30.0) * 2.2, 1)
+                                    )
+                                }
+                            )
+                            for column in block.columns
+                        ]
+                    }
+                )
+            result.append(block)
+        return result
+
+    sections = [
+        section.model_copy(update={"body": widen(list(section.body))})
+        for section in document.sections
+    ]
+    return document.model_copy(update={"sections": sections})

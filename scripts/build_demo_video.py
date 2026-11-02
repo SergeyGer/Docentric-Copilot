@@ -21,7 +21,7 @@ import imageio_ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 from playwright.sync_api import sync_playwright
 
-ROOT = Path("/root/projects/Docentric-Copilot")
+ROOT = Path(__file__).resolve().parent.parent
 WORK = ROOT / ".tools" / "video"
 WORK.mkdir(parents=True, exist_ok=True)
 OUT = ROOT / "docs" / "media" / "demo.mp4"
@@ -216,7 +216,7 @@ card(
     "Revision",
     "Change the document\nin plain language",
     "Add a SKU column, move bank details to the footer,\nand make the product table more compact.\n\nA targeted edit produces V2 with a small, reviewable diff —\nV1 is never overwritten and can be restored.",
-    "192 tests · deterministic DOCX · CI on every commit",
+    "Deterministic DOCX · validation on every run · open source",
 )
 slides.append(
     (

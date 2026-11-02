@@ -15,6 +15,14 @@
       "title": "Tax invoice"
     },
     {
+      "defect": true,
+      "description": "Same brief, but the item table is wider than the page: use it to demo the quality dashboard and Optimize layout.",
+      "id": "quotation-defect",
+      "package": "quotation-defect.ddsp",
+      "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+      "title": "Quotation with a layout defect"
+    },
+    {
       "description": "Vendor block, ordered items with quantities and prices, delivery terms.",
       "id": "purchase-order",
       "package": "purchase-order.ddsp",

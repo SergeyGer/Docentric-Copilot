@@ -5,6 +5,7 @@
 [![CI](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/SergeyGer/Docentric-Copilot?color=2563eb)](https://github.com/SergeyGer/Docentric-Copilot/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-2563eb)](LICENSE)
+[![Live demo](https://img.shields.io/badge/live%20demo-Streamlit-ff4b4b)](https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app)
 [![Docs](https://img.shields.io/badge/documentation-wiki-0f172a)](https://github.com/SergeyGer/Docentric-Copilot/wiki)
 [![Compatibility](https://img.shields.io/badge/Docentric%20AX%20compatibility-unverified-d97706)](https://github.com/SergeyGer/Docentric-Copilot/wiki/Docentric-AX-Compatibility)
 
@@ -16,6 +17,26 @@ reviewable plan of every decision it made, and a validation report that tells yo
 and what wasn't.
 
 No designer sessions. No manual field hunting. No surprises in front of a customer.
+
+---
+
+## Try it now
+
+**[Open the live demo →](https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app)**
+
+The Streamlit demo runs the real pipeline — schema parsing, requirement mapping, validation, DOCX
+compilation and revision — on the deterministic provider. No API key, no model calls, nothing to install.
+
+| You can | What you see |
+| --- | --- |
+| Pick a bundled package | Sales quotation, tax invoice or purchase order with sample data |
+| Inspect the plan | Every requirement, its concept, placement and confidence |
+| Review a mapping | Nine confirmed bindings and one genuine ambiguity, resolved by you |
+| Download the document | A real `.docx`, compiled from the validated template |
+| Change it in plain language | A targeted revision with a before/after preview |
+| Check the evidence | Validation statuses and the honest `not tested` compatibility note |
+
+Prefer to run it yourself? `streamlit run streamlit_app.py` serves the same demo locally.
 
 ---
 

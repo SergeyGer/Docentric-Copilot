@@ -153,6 +153,189 @@
         "title": "CheckStatus",
         "type": "string"
       },
+      "CompareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/CompareTarget"
+            },
+            "maxItems": 4,
+            "minItems": 2,
+            "title": "Targets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "source_id",
+          "prompt",
+          "targets"
+        ],
+        "title": "CompareRequest",
+        "type": "object"
+      },
+      "CompareResponse": {
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "recommended": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/CompareRun"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "runs",
+          "recommended",
+          "note"
+        ],
+        "title": "CompareResponse",
+        "type": "object"
+      },
+      "CompareRun": {
+        "properties": {
+          "cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counts",
+            "type": "object"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "ir_digest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir Digest"
+          },
+          "latency_ms": {
+            "default": 0,
+            "title": "Latency Ms",
+            "type": "integer"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "requirements": {
+            "default": 0,
+            "title": "Requirements",
+            "type": "integer"
+          },
+          "tokens": {
+            "default": 0,
+            "title": "Tokens",
+            "type": "integer"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "provider",
+          "model",
+          "ok"
+        ],
+        "title": "CompareRun",
+        "type": "object"
+      },
+      "CompareTarget": {
+        "additionalProperties": false,
+        "properties": {
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "provider": {
+            "maxLength": 40,
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider"
+        ],
+        "title": "CompareTarget",
+        "type": "object"
+      },
       "CompileOptionsRequest": {
         "additionalProperties": false,
         "properties": {
@@ -420,6 +603,11 @@
       },
       "DemoCase": {
         "properties": {
+          "defect": {
+            "default": false,
+            "title": "Defect",
+            "type": "boolean"
+          },
           "description": {
             "title": "Description",
             "type": "string"
@@ -505,6 +693,18 @@
           "preview_html": {
             "title": "Preview Html",
             "type": "string"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
           },
           "report": {
             "additionalProperties": true,
@@ -1992,6 +2192,48 @@
         "summary": "Get Schema",
         "tags": [
           "sources"
+        ]
+      }
+    },
+    "/api/v1/templates/compare": {
+      "post": {
+        "description": "Run the same brief through several providers and report measured results.",
+        "operationId": "compare_api_v1_templates_compare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare",
+        "tags": [
+          "quality"
         ]
       }
     },

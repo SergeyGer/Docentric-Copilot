@@ -100,7 +100,7 @@ class ProviderSettings:
             "name": self.name,
             "configured": self.configured,
             "default_model": self.default_model,
-            "models": list(self.models),
+            "models": list(self.models) or ([self.default_model] if self.default_model else []),
         }
 
 

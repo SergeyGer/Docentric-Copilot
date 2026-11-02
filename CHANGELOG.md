@@ -8,6 +8,20 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-02
+
+### Added
+- Routing panel: complexity, provider, budget, fallback and review state in the workspace.
+- Quality dashboard with explainable checks, IR paths and a one-click **Optimize layout** that
+  creates a new version and re-validates it.
+- **Compare models**: the same brief through two providers, with measured latency, tokens, cost,
+  mapping counts, validation and a recommendation.
+- `POST /api/v1/templates/compare` and a `quotation-defect` demo case with an overflowing table.
+- Demo sessions return the quality report; the providers endpoint always exposes the default model.
+
+### Changed
+- `scripts/build_demo_video.py` resolves the repository root from its own location.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added

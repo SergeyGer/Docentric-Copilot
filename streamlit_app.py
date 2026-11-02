@@ -53,7 +53,7 @@ def load_case(case_id: str):
 
 @st.cache_data(show_spinner=False)
 def plan(case_id: str, prompt: str):
-    case, _payload, parsed = load_case(case_id)
+    _case, _payload, parsed = load_case(case_id)
     outcome, report = asyncio.run(get_service().plan(parsed.schema, prompt, provider="mock"))
     return outcome, report, parsed.schema, parsed.sample_data
 
@@ -143,7 +143,7 @@ with tab_review:
     counts = mapping.counts()
     cols = st.columns(5)
     for column, status in zip(
-        cols, ["confirmed", "schema_valid", "needs_review", "conflict", "missing"]
+        cols, ["confirmed", "schema_valid", "needs_review", "conflict", "missing"], strict=False
     ):
         column.metric(STATUS_STYLE[status][1], counts[status])
 

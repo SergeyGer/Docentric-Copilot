@@ -5,9 +5,9 @@
       "model": "gpt-4.1-2025-04-14",
       "ok": true,
       "error": null,
-      "latency_ms": 21001,
-      "tokens": 0,
-      "cost_usd": null,
+      "latency_ms": 44843,
+      "tokens": 8993,
+      "cost_usd": 0.040948,
       "counts": {
         "confirmed": 9,
         "schema_valid": 2,
@@ -23,7 +23,7 @@
         "visual": "skipped",
         "docentric_compatibility": "not_tested"
       },
-      "ir_digest": "3ee6835a6bf1d6378d09ee86d658582b0b8fe44e7f9686afc918f0ed7212cb4d",
+      "ir_digest": "e367422b4d855a593099de1012a04d55a6da25f6e947f0dae581c66c2f3aa5a1",
       "requirements": 12
     },
     {
@@ -31,9 +31,9 @@
       "model": "claude-sonnet-5-5",
       "ok": true,
       "error": null,
-      "latency_ms": 17671,
-      "tokens": 0,
-      "cost_usd": null,
+      "latency_ms": 17490,
+      "tokens": 13934,
+      "cost_usd": 0.0,
       "counts": {
         "confirmed": 9,
         "schema_valid": 2,
@@ -49,7 +49,7 @@
         "visual": "skipped",
         "docentric_compatibility": "not_tested"
       },
-      "ir_digest": "04eb5648b1b0defeb029964e0cb8be68023cfdd514d67c93df5f235276a9d71b",
+      "ir_digest": "f196977d80e24f39012c8400574e6805ed9d45a697999a5f22d7d49215141537",
       "requirements": 12
     }
   ],

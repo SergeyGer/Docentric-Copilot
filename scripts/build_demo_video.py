@@ -46,6 +46,10 @@ compare = json.loads(
 runs = {run["provider"]: run for run in compare["runs"]}
 openai_latency = runs["openai"]["latency_ms"] / 1000
 anthropic_latency = runs["anthropic"]["latency_ms"] / 1000
+openai_tokens = runs["openai"]["tokens"]
+anthropic_tokens = runs["anthropic"]["tokens"]
+openai_cost = runs["openai"]["cost_usd"] or 0.0
+anthropic_cost = runs["anthropic"]["cost_usd"] or 0.0
 quality = demo["quality"]
 quality_counts = dict.fromkeys(("passed", "warning", "failed"), 0)
 for check in quality["checks"]:
@@ -288,9 +292,9 @@ slides.append(
     (
         "intro",
         intro_slide(),
-        "Every business document starts as a paragraph and ends as a template nobody wants to touch. "
-        "Docentric Copilot turns the paragraph into a schema-aware template, with evidence for every field, "
-        "validation on every run, and a deterministic Word document.",
+        "Most business documents begin as a paragraph and end as a template nobody wants to touch. "
+        "Docentric Copilot turns the paragraph into a schema-aware template with evidence, validation and "
+        "a deterministic Word document.",
     )
 )
 slides.append(
@@ -306,9 +310,8 @@ slides.append(
             footer="Bundled DDSP package · parser diagnostics · sample data loaded",
             max_width=1860,
         ),
-        "The source is a DDSP package: thirty-four fields, twenty-eight scalars, one repeating collection, "
-        "a maximum depth of three, and three sections. The parser normalises it into a schema the planner "
-        "can bind against, with sample data for preview and validation.",
+        "The source is a DDSP package: thirty-four fields, one repeating collection, three sections. The "
+        "parser normalises it into a schema the planner can bind against.",
     )
 )
 slides.append(
@@ -319,12 +322,11 @@ slides.append(
             "Routing decides the tier",
             "Ambiguous · anthropic · budget $0.30 · human review",
             ASSETS / "routing-panel.png",
-            crop=(0, 100, 1600, 1000),
+            crop=(0, 112, 1600, 1000),
             footer="Routing is advisory; it never gates planning",
         ),
-        "Before planning, the router classifies the brief. This one is ambiguous: one party-scoped VAT "
-        "requirement, so it recommends Anthropic with a thirty-cent budget and asks for human review. "
-        "Routing is advisory. The deterministic baseline can still run the plan offline.",
+        "Before planning, the router classifies the brief. This one is ambiguous: a party-scoped VAT "
+        "requirement. It recommends Anthropic with a thirty-cent budget and human review.",
     )
 )
 slides.append(
@@ -333,18 +335,27 @@ slides.append(
         shot_slide(
             4,
             "Compare models on the same brief",
-            f"openai {openai_latency:.1f} s · anthropic {anthropic_latency:.1f} s · "
-            f"recommendation: {compare['recommended']}",
+            f"openai {openai_latency:.1f} s · {openai_tokens:,} tokens · ${openai_cost:.3f} · "
+            f"anthropic {anthropic_latency:.1f} s · {anthropic_tokens:,} tokens · ${anthropic_cost:.2f} · "
+            f"recommended: {compare['recommended']}",
             ASSETS / "compare-models.png",
             crop=(0, 10, 1600, 910),
-            footer="Live call · may incur provider cost · results measured on this brief and schema",
+            footer="Live call · may incur provider cost · usage and cost as reported by the API",
         ),
-        "Compare models sends the same brief to live providers. OpenAI returned in twenty-one seconds, "
-        "Anthropic in seventeen point seven, with identical mapping profiles: nine confirmed, two schema-valid, "
-        "one needs review. Anthropic is recommended. This is a live call, and it may incur provider cost.",
+        "Compare models runs the same brief through live providers. OpenAI: forty-four point eight seconds, "
+        "eight thousand nine hundred ninety-three tokens, four cents. Anthropic: seventeen point five "
+        "seconds, thirteen thousand nine hundred thirty-four tokens, zero reported cost. Anthropic is "
+        "recommended. This is a live call and may incur cost.",
     )
 )
-slides.append(("mapping", mapping_slide(), ""))  # narration filled below
+slides.append(
+    (
+        "mapping",
+        mapping_slide(),
+        "Mapping review is where trust is earned. Nine requirements are confirmed, two schema-valid, and one "
+        "stays open for a human: the VAT number could come from the customer or the company.",
+    )
+)
 slides.append(
     (
         "quality",
@@ -354,11 +365,11 @@ slides.append(
             f"table_layout warning · {quality['checks'][0]['message']} · "
             f"{quality_counts['passed']} passed / {quality_counts['warning']} warning / {quality_counts['failed']} failed",
             ASSETS / "quality-defect.png",
-            crop=(0, 100, 1600, 1000),
+            crop=(0, 112, 1600, 1000),
             footer="Deterministic IR checks · every finding names its IR path",
         ),
-        "Quality analysis is deterministic and explainable. In the defect case, three tables are wider than "
-        "the one-hundred-and-seventy-millimetre text area, so table layout is a warning, not a pass.",
+        "Quality analysis is deterministic and explainable. Three tables are wider than the text area, so "
+        "table layout is a warning, not a pass.",
     )
 )
 slides.append(
@@ -369,12 +380,11 @@ slides.append(
             "Optimize layout writes a new version",
             f"v2 · {OPTIMIZED_PASSED} passed / 0 warning / 0 failed · {OPTIMIZE_FIXES} tables scaled to 170 mm",
             ASSETS / "quality-optimized.png",
-            crop=(0, 100, 1600, 1000),
+            crop=(0, 112, 1600, 1000),
             footer="Typed fixes · immutable version · before-and-after counts stay visible",
         ),
-        "Optimize layout applies typed fixes and writes a new immutable version. All three tables are scaled "
-        "to a hundred and seventy millimetres. Eight checks pass, zero warnings, and the before-and-after "
-        "counts remain visible.",
+        "Optimize layout applies typed fixes and writes an immutable version. All three tables are scaled "
+        "to a hundred and seventy millimetres. Eight checks pass, zero warnings.",
     )
 )
 slides.append(
@@ -387,8 +397,8 @@ slides.append(
             ASSETS / "preview-pages.png",
             footer="Preview is HTML and never claims Word pagination",
         ),
-        "The same IR renders two A4 pages: quotation, items, totals, terms, and bank details. The preview is "
-        "HTML and never claims Word pagination. The compiled artifact is a generic DOCX, ready to download.",
+        "The same IR renders two A4 pages: quotation, items, totals, terms, and bank details. The preview "
+        "is HTML; the compiled artifact is a generic DOCX.",
     )
 )
 slides.append(
@@ -402,29 +412,18 @@ slides.append(
             crop=(0, 10, 1600, 910),
             footer="Plain-language instruction · structural diff · immutable versions",
         ),
-        "Revision is controlled. A plain-language instruction creates version two with a small structural diff: "
-        "five changed paths, nothing silently overwritten, and version one can be restored.",
+        "Revision is controlled. A plain-language instruction creates version two with a five-path structural "
+        "diff. Version one can be restored.",
     )
 )
 slides.append(
     (
         "closing",
         closing_slide(),
-        "The project is open source at github dot com slash SergeyGer slash Docentric-Copilot, release v0.4.0. "
-        "Compatibility with Docentric AX remains not tested. The output is generic DOCX, and no part of this "
-        "demo is a compatibility claim.",
+        "Open source at github dot com slash SergeyGer slash Docentric-Copilot, release v0.4.0. Docentric AX "
+        "compatibility remains not tested. Output is generic DOCX; no compatibility claim.",
     )
 )
-
-# The mapping narration is inserted at index 4 after the list above is built so
-# the scene numbers stay 01-10 without duplicating the HTML.
-mapping_narration = (
-    "Mapping review is where trust is earned. Nine requirements are confirmed against schema evidence, "
-    "two are schema-valid, and one stays open for a human: the VAT number could come from the customer or "
-    "from the company."
-)
-slides[4] = ("mapping", slides[4][1], mapping_narration)
-
 
 def render_slides(items: list[tuple[str, str]]) -> list[Path]:
     out_dir = WORK / "slides"

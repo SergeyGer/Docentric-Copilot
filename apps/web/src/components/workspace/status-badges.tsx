@@ -102,25 +102,46 @@ export function OverallStatusBadge({ overall, className }: OverallStatusBadgePro
   );
 }
 
-const MAPPING_STYLE: Record<MappingStatus, { variant: BadgeVariant; label: string }> = {
-  resolved: { variant: "success", label: "Resolved" },
-  ambiguous: { variant: "warning", label: "Ambiguous" },
-  missing: { variant: "destructive", label: "Missing" },
-  invalid: { variant: "destructive", label: "Invalid" },
+const MAPPING_STYLE: Record<
+  MappingStatus,
+  { variant: BadgeVariant; label: string; title: string }
+> = {
+  confirmed: {
+    variant: "success",
+    label: "Confirmed",
+    title: "A reviewer confirmed this binding",
+  },
+  schema_valid: {
+    variant: "info",
+    label: "Schema valid",
+    title: "The selected field exists and its type is compatible",
+  },
+  needs_review: {
+    variant: "warning",
+    label: "Needs review",
+    title: "A human must resolve the ambiguity before the document is trusted",
+  },
+  conflict: {
+    variant: "destructive",
+    label: "Conflict",
+    title: "The same field was proposed for another requirement with a different concept",
+  },
+  missing: {
+    variant: "muted",
+    label: "Missing",
+    title: "No field was selected for this requirement",
+  },
+  invalid: {
+    variant: "destructive",
+    label: "Invalid",
+    title: "The proposed field was rejected by schema validation",
+  },
 };
 
 export function MappingStatusBadge({ status }: { status: MappingStatus }) {
   const style = MAPPING_STYLE[status];
   return (
-    <Badge
-      variant={style.variant}
-      className={cn(status === "invalid" && "border-dashed")}
-      title={
-        status === "invalid"
-          ? "The proposed field was rejected by schema validation"
-          : undefined
-      }
-    >
+    <Badge variant={style.variant} title={style.title}>
       {style.label}
     </Badge>
   );

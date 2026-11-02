@@ -35,6 +35,7 @@ import {
   defaultExpandedPaths,
   findSchemaNode,
   nodeKind,
+  schemaAncestorPaths,
   type SchemaTreeRow,
 } from "@/lib/schema";
 import type { SchemaNode, SchemaView } from "@/lib/types";
@@ -161,6 +162,8 @@ export interface SchemaExplorerProps {
   hasSource: boolean;
   schemaPending: boolean;
   schemaError: ApiError | null;
+  /** Absolute schema path currently hovered in the preview. */
+  activePreviewPath: string | null;
   onReloadSchema: () => void;
   onDismissSchemaError: () => void;
   onCopyPath: (path: string) => void;
@@ -172,6 +175,7 @@ export function SchemaExplorer({
   hasSource,
   schemaPending,
   schemaError,
+  activePreviewPath,
   onReloadSchema,
   onDismissSchemaError,
   onCopyPath,
@@ -182,6 +186,7 @@ export function SchemaExplorer({
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [focusedPath, setFocusedPath] = useState<string | null>(null);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [pendingScrollPath, setPendingScrollPath] = useState<string | null>(null);
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   useEffect(() => {
@@ -189,8 +194,30 @@ export function SchemaExplorer({
     setFilter("");
     setFocusedPath(null);
     setSelectedPath(null);
+    setPendingScrollPath(null);
     rowRefs.current.clear();
   }, [schema]);
+
+  // Hovering a preview value reveals the matching field in the tree.
+  useEffect(() => {
+    if (!activePreviewPath || !schema) {
+      return;
+    }
+    if (!findSchemaNode(schema, activePreviewPath)) {
+      return;
+    }
+    const ancestors = schemaAncestorPaths(schema, activePreviewPath);
+    setExpanded((previous) => {
+      const next = new Set(previous);
+      for (const ancestor of ancestors) {
+        next.add(ancestor);
+      }
+      return next;
+    });
+    setFocusedPath(activePreviewPath);
+    setSelectedPath(activePreviewPath);
+    setPendingScrollPath(activePreviewPath);
+  }, [activePreviewPath, schema]);
 
   const tree = useMemo(
     () => buildSchemaTree(schema, expanded, filter),
@@ -213,6 +240,27 @@ export function SchemaExplorer({
     [schema, selectedPath],
   );
   const filtering = filter.trim().length > 0;
+
+  useEffect(() => {
+    if (!pendingScrollPath) {
+      return;
+    }
+    const element = rowRefs.current.get(pendingScrollPath);
+    if (!element) {
+      return;
+    }
+    const scroller = element.closest<HTMLElement>(".scroll-area");
+    if (scroller) {
+      const elementRect = element.getBoundingClientRect();
+      const scrollerRect = scroller.getBoundingClientRect();
+      if (elementRect.top < scrollerRect.top) {
+        scroller.scrollTop += elementRect.top - scrollerRect.top - 6;
+      } else if (elementRect.bottom > scrollerRect.bottom) {
+        scroller.scrollTop += elementRect.bottom - scrollerRect.bottom + 6;
+      }
+    }
+    setPendingScrollPath(null);
+  }, [pendingScrollPath, rows]);
 
   const registerRow = useCallback((path: string, element: HTMLDivElement | null) => {
     if (element) {
@@ -462,6 +510,7 @@ export function SchemaExplorer({
                       const index = rowIndexByPath.get(row.node.path) ?? 0;
                       const isSelected = selectedPath === row.node.path;
                       const isFocused = activePath === row.node.path;
+                      const isPreviewActive = activePreviewPath === row.node.path;
                       return (
                         <div
                           key={row.node.path}
@@ -470,6 +519,7 @@ export function SchemaExplorer({
                           aria-level={row.depth + 1}
                           aria-expanded={row.hasChildren ? row.expanded : undefined}
                           aria-selected={isSelected}
+                          data-preview-active={isPreviewActive ? "true" : undefined}
                           tabIndex={isFocused ? 0 : -1}
                           title={row.node.path}
                           style={{ paddingLeft: `${8 + row.depth * 16}px` }}
@@ -485,7 +535,11 @@ export function SchemaExplorer({
                           onKeyDown={(event) => handleKeyDown(event, row, index)}
                           className={cn(
                             "group flex cursor-pointer items-center gap-1 rounded-md py-1 pr-1 outline-none transition-colors",
-                            isSelected ? "bg-primary/10" : "hover:bg-muted/60",
+                            isPreviewActive
+                              ? "bg-info/10 ring-2 ring-inset ring-info/50"
+                              : isSelected
+                                ? "bg-primary/10"
+                                : "hover:bg-muted/60",
                             "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                           )}
                         >
@@ -565,7 +619,8 @@ export function SchemaExplorer({
             </ScrollArea>
           </div>
           <p className="mt-1.5 px-0.5 text-[10px] text-muted-foreground">
-            Arrow keys navigate · Enter toggles · C copies · I inserts into the prompt
+            Arrow keys navigate · Enter toggles · C copies · I inserts into the prompt · Hover a
+            preview value to reveal its field
           </p>
         </div>
 

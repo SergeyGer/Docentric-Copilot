@@ -29,6 +29,7 @@ import type {
   ConfirmMappingRequest,
   ConfirmMappingResponse,
   DemoCase,
+  DemoSessionRequest,
   DemoSessionResponse,
   DemoTourStep,
   DesignStyle,
@@ -270,7 +271,11 @@ export function useWorkspace() {
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewRequestId = useRef(0);
+  const schemaRequestId = useRef(0);
+  const versionsRequestId = useRef(0);
   const mappingFocusToken = useRef(0);
+  const confirmLock = useRef(false);
+  const demoLock = useRef(false);
 
   const setScopeError = useCallback((scope: ErrorScope, error: ApiError) => {
     setErrors((previous) => ({ ...previous, [scope]: error }));
@@ -417,10 +422,12 @@ export function useWorkspace() {
     setCompileResult(null);
     setRevision(null);
     setVersions([]);
+    setVersionsPending(false);
     setPreviewHtml(null);
     setPreviewVersion(null);
     setPreviewPending(false);
     previewRequestId.current += 1;
+    versionsRequestId.current += 1;
     setSelectedMappingPath(null);
     setActivePreviewPath(null);
     setMappingFocus(null);
@@ -450,6 +457,8 @@ export function useWorkspace() {
 
   const loadSchemaFor = useCallback(
     async (sourceId: string) => {
+      const requestId = schemaRequestId.current + 1;
+      schemaRequestId.current = requestId;
       setSchemaPending(true);
       dismissError("schema");
       try {
@@ -458,11 +467,19 @@ export function useWorkspace() {
           {},
           { timeoutMs: 30_000 },
         );
+        if (requestId !== schemaRequestId.current) {
+          return;
+        }
         setSchemaView(data);
       } catch (error) {
+        if (requestId !== schemaRequestId.current) {
+          return;
+        }
         setScopeError("schema", toApiError(error));
       } finally {
-        setSchemaPending(false);
+        if (requestId === schemaRequestId.current) {
+          setSchemaPending(false);
+        }
       }
     },
     [dismissError, setScopeError],
@@ -544,6 +561,8 @@ export function useWorkspace() {
 
   const fetchVersions = useCallback(
     async (templateIdValue: string) => {
+      const requestId = versionsRequestId.current + 1;
+      versionsRequestId.current = requestId;
       setVersionsPending(true);
       dismissError("versions");
       try {
@@ -552,11 +571,19 @@ export function useWorkspace() {
           {},
           { timeoutMs: 15_000 },
         );
+        if (requestId !== versionsRequestId.current) {
+          return;
+        }
         setVersions([...data.versions].sort((left, right) => left.version - right.version));
       } catch (error) {
+        if (requestId !== versionsRequestId.current) {
+          return;
+        }
         setScopeError("versions", toApiError(error));
       } finally {
-        setVersionsPending(false);
+        if (requestId === versionsRequestId.current) {
+          setVersionsPending(false);
+        }
       }
     },
     [dismissError, setScopeError],
@@ -1080,7 +1107,7 @@ export function useWorkspace() {
               }
             : previous,
         );
-        notify(`Loaded version ${version} into the review panes.`, "success");
+        notify(`Restored version ${version} into the workspace.`, "success");
         void fetchPreviewFor(templateId, version);
       } catch (error) {
         setScopeError("load-version", toApiError(error));
@@ -1102,7 +1129,7 @@ export function useWorkspace() {
 
   const confirmMapping = useCallback(
     async (requirementId: string, selectedFieldPath: string | null, note: string | null) => {
-      if (confirmPending) {
+      if (confirmPending || confirmLock.current) {
         return;
       }
       if (!templateId || activeVersion === null) {
@@ -1114,6 +1141,7 @@ export function useWorkspace() {
         );
         return;
       }
+      confirmLock.current = true;
       setConfirmPending({
         requirementId,
         mode: selectedFieldPath === null ? "confirm" : "selected",
@@ -1163,6 +1191,7 @@ export function useWorkspace() {
       } catch (error) {
         setScopeError("review", toApiError(error));
       } finally {
+        confirmLock.current = false;
         setConfirmPending(null);
       }
     },
@@ -1280,16 +1309,18 @@ export function useWorkspace() {
 
   const runDemo = useCallback(
     async (caseIdValue?: string) => {
-      if (demoPending) {
+      if (demoPending || demoLock.current) {
         return;
       }
       const requested = (caseIdValue ?? demoCaseId).trim() || DEFAULT_DEMO_CASE_ID;
+      demoLock.current = true;
       setDemoPending(true);
       dismissError("demo");
       try {
+        const body: DemoSessionRequest = { case_id: requested };
         const response = await postJson<DemoSessionResponse>(
           "/api/v1/demo/sessions",
-          { case_id: requested },
+          body,
           { timeoutMs: 180_000 },
         );
         resetTemplateState();
@@ -1325,6 +1356,7 @@ export function useWorkspace() {
         setDemoCaseId(response.case.id);
         setPrompt(response.case.prompt);
         setDocumentName(`${response.case.id}.docx`);
+        setInstruction("");
         setPlan(demoPlan);
         setTemplateId(response.template_id);
         setActiveVersion(response.version);
@@ -1350,6 +1382,7 @@ export function useWorkspace() {
       } catch (error) {
         setScopeError("demo", toApiError(error));
       } finally {
+        demoLock.current = false;
         setDemoPending(false);
       }
     },
@@ -1403,6 +1436,16 @@ export function useWorkspace() {
   );
 
   const maxUploadBytes = capabilities?.limits.max_ddsp_bytes ?? FALLBACK_MAX_UPLOAD_BYTES;
+
+  // The compile endpoint refuses to build a document while any mapping still
+  // needs a human decision; surface the same gate in the UI.
+  const blockingMappingCount = useMemo(() => {
+    if (!mapping) {
+      return 0;
+    }
+    const blockingStatuses = new Set(["needs_review", "conflict", "missing", "invalid"]);
+    return mapping.mappings.filter((item) => blockingStatuses.has(item.status)).length;
+  }, [mapping]);
 
   return {
     // system
@@ -1464,6 +1507,7 @@ export function useWorkspace() {
     ir,
     irDigest,
     mapping,
+    blockingMappingCount,
     validation,
     overall,
     report,

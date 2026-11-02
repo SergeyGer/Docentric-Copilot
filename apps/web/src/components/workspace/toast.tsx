@@ -36,7 +36,7 @@ export function WorkspaceToast({ toast, onDismiss }: WorkspaceToastProps) {
   const style = TONE_STYLE[toast.tone];
   const Icon = style.icon;
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 sm:justify-end sm:px-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[90] flex justify-center px-4 sm:justify-end sm:px-6">
       <div
         role="status"
         aria-live="polite"

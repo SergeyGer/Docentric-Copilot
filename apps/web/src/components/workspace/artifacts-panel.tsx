@@ -60,6 +60,8 @@ export interface ArtifactsPanelProps {
   compileError: ApiError | null;
   templateId: string | null;
   activeVersion: number | null;
+  /** Mappings the compile endpoint will reject until a reviewer confirms them. */
+  blockingMappingCount: number;
   documentName: string;
   onDocumentNameChange: (value: string) => void;
   renderMode: RenderMode;
@@ -80,6 +82,7 @@ export function ArtifactsPanel({
   compileError,
   templateId,
   activeVersion,
+  blockingMappingCount,
   documentName,
   onDocumentNameChange,
   renderMode,
@@ -104,13 +107,14 @@ export function ArtifactsPanel({
   const compileOverall = compileResult
     ? overallFromStatuses(compileResult.validation)
     : null;
+  const compileBlocked = blockingMappingCount > 0;
 
   return (
     <Panel
       id={PANEL_IDS.artifacts}
       step={7}
       title="Artifacts & download"
-      description="Compile the active Template IR into a deterministic generic DOCX, then download the artifact bundle published by the API."
+      description="Compile the active Template IR into a deterministic generic DOCX. The API gates compilation until every blocking mapping has been reviewed, then publishes the artifact bundle."
       actions={
         <>
           <Badge variant="outline">
@@ -205,8 +209,13 @@ export function ArtifactsPanel({
             <Button
               type="button"
               onClick={onCompile}
-              disabled={!templateId || compilePending}
+              disabled={!templateId || compilePending || compileBlocked}
               aria-busy={compilePending}
+              title={
+                compileBlocked
+                  ? "Resolve the blocking mappings in the review panel first"
+                  : undefined
+              }
             >
               {compilePending ? (
                 <Loader2 aria-hidden="true" className="animate-spin" />
@@ -222,9 +231,25 @@ export function ArtifactsPanel({
               </Button>
             ) : null}
             <p className="text-[11px] leading-4 text-muted-foreground">
-              {templateId && activeVersion !== null
-                ? `Compiles version ${activeVersion}; the download starts automatically.`
-                : "Plan a template before compiling a DOCX."}
+              {compileBlocked ? (
+                <>
+                  <span className="font-medium text-warning">
+                    {blockingMappingCount} blocking{" "}
+                    {pluralize(blockingMappingCount, "mapping")}
+                  </span>{" "}
+                  must be reviewed before compiling.{" "}
+                  <a
+                    href={`#${PANEL_IDS.mapping}`}
+                    className="font-medium text-primary underline underline-offset-2"
+                  >
+                    Open mapping review
+                  </a>
+                </>
+              ) : templateId && activeVersion !== null ? (
+                `Compiles version ${activeVersion}; the download starts automatically.`
+              ) : (
+                "Plan a template before compiling a DOCX."
+              )}
             </p>
           </div>
         </div>

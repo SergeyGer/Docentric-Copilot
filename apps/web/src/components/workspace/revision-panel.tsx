@@ -4,6 +4,7 @@ import {
   ArrowRight,
   CheckCircle2,
   GitCommitHorizontal,
+  GitCompareArrows,
   GitPullRequest,
   History,
   Loader2,
@@ -176,13 +177,14 @@ function VersionList({
                         onClick={() => onLoadVersion(version.version)}
                         disabled={loadingVersion !== null}
                         aria-busy={isLoading}
+                        aria-label={`Restore version ${version.version} into the workspace`}
                       >
                         {isLoading ? (
                           <Loader2 aria-hidden="true" className="animate-spin" />
                         ) : (
                           <History aria-hidden="true" />
                         )}
-                        {isLoading ? "Loading…" : "Load"}
+                        {isLoading ? "Restoring…" : "Restore"}
                       </Button>
                     )}
                   </div>
@@ -201,8 +203,8 @@ function VersionList({
       )}
 
       <p className="mt-2 text-[10px] leading-4 text-muted-foreground">
-        Loading a version replaces the IR, mapping and validation panes. Compile again to download
-        that version.
+        Restoring a version replaces the IR, mapping, validation and preview panes. Compile again to
+        download that version.
       </p>
     </div>
   );
@@ -223,9 +225,12 @@ export interface RevisionPanelProps {
   versionsError: ApiError | null;
   loadingVersion: number | null;
   loadVersionError: ApiError | null;
+  canCompare: boolean;
+  compareOpen: boolean;
   onApplyRevision: () => void;
   onRefreshVersions: () => void;
   onLoadVersion: (version: number) => void;
+  onToggleCompare: () => void;
   onDismissRevisionError: () => void;
   onDismissVersionsError: () => void;
   onDismissLoadVersionError: () => void;
@@ -246,9 +251,12 @@ export function RevisionPanel({
   versionsError,
   loadingVersion,
   loadVersionError,
+  canCompare,
+  compareOpen,
   onApplyRevision,
   onRefreshVersions,
   onLoadVersion,
+  onToggleCompare,
   onDismissRevisionError,
   onDismissVersionsError,
   onDismissLoadVersionError,
@@ -355,9 +363,24 @@ export function RevisionPanel({
                     v{revision.version}
                   </Badge>
                 </div>
-                <p className="font-mono text-[10px] text-muted-foreground">
-                  job {revision.job_id}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {canCompare ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={compareOpen ? "secondary" : "outline"}
+                      onClick={onToggleCompare}
+                      aria-pressed={compareOpen}
+                      title="Open a side-by-side preview of the previous and new version"
+                    >
+                      <GitCompareArrows aria-hidden="true" />
+                      Compare versions
+                    </Button>
+                  ) : null}
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    job {revision.job_id}
+                  </p>
+                </div>
               </div>
               <dl className="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
                 {[

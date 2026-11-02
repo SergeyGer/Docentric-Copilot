@@ -93,6 +93,7 @@ export type MappingStatus =
   | "confirmed"
   | "schema_valid"
   | "needs_review"
+  | "conflict"
   | "missing"
   | "invalid";
 

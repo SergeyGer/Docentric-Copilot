@@ -1,9 +1,18 @@
 "use client";
 
-import { FileCheck2, FileType2, ShieldAlert, ShieldCheck } from "lucide-react";
+import {
+  FileCheck2,
+  FileType2,
+  Loader2,
+  ShieldAlert,
+  ShieldCheck,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ArtifactsPanel } from "@/components/workspace/artifacts-panel";
+import { DemoTour } from "@/components/workspace/demo-tour";
+import { ErrorAlert } from "@/components/workspace/error-alert";
 import { MappingPanel } from "@/components/workspace/mapping-panel";
 import { PreviewPanel } from "@/components/workspace/preview-panel";
 import { PromptPanel } from "@/components/workspace/prompt-panel";
@@ -11,14 +20,15 @@ import { RevisionPanel } from "@/components/workspace/revision-panel";
 import { SchemaExplorer } from "@/components/workspace/schema-explorer";
 import { SourcePanel } from "@/components/workspace/source-panel";
 import { ValidationPanel } from "@/components/workspace/validation-panel";
+import { VersionCompareDialog } from "@/components/workspace/version-compare-dialog";
 import { WorkspaceToast } from "@/components/workspace/toast";
 import { WorkflowStepper, type WorkflowStep } from "@/components/workflow-stepper";
-import { useWorkspace } from "@/hooks/use-workspace";
+import { useWorkspaceContext } from "@/hooks/workspace-context";
 import { focusElement, scrollToElement } from "@/lib/clipboard";
 import { PANEL_IDS } from "@/lib/constants";
 
 export function Workspace() {
-  const workspace = useWorkspace();
+  const workspace = useWorkspaceContext();
 
   const handleInsertPath = (path: string) => {
     const inserted = workspace.insertPathIntoPrompt(path);
@@ -39,7 +49,12 @@ export function Workspace() {
     { id: "mapping", label: "Mapping review", panelId: PANEL_IDS.mapping, done: workspace.mapping !== null },
     { id: "validation", label: "Validation", panelId: PANEL_IDS.validation, done: workspace.validation !== null },
     { id: "preview", label: "Preview", panelId: PANEL_IDS.preview, done: workspace.previewHtml !== null },
-    { id: "artifacts", label: "Artifacts & DOCX", panelId: PANEL_IDS.artifacts, done: workspace.compileResult !== null },
+    {
+      id: "artifacts",
+      label: "Artifacts & DOCX",
+      panelId: PANEL_IDS.artifacts,
+      done: workspace.compileResult !== null || workspace.artifacts.length > 0,
+    },
     { id: "revision", label: "Revision", panelId: PANEL_IDS.revision, done: workspace.revision !== null },
   ];
   const incompleteIndex = steps.findIndex((step) => !step.done);
@@ -87,7 +102,76 @@ export function Workspace() {
         <WorkflowStepper steps={steps} currentStep={currentStep} />
       </div>
 
-      <div className="mt-6 space-y-6">
+      {workspace.demoPending ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-info/30 bg-info/5 px-3 py-2 text-xs text-info"
+        >
+          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+          Running the demo: parsing the bundled source and building the plan, mapping, validation
+          and preview. The guided tour starts automatically.
+        </div>
+      ) : null}
+
+      {workspace.demoError ? (
+        <ErrorAlert
+          error={workspace.demoError}
+          title="Demo failed"
+          className="mt-4"
+          onDismiss={() => workspace.dismissError("demo")}
+          action={
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                void workspace.runDemo();
+              }}
+              disabled={workspace.demoPending}
+            >
+              {workspace.demoPending ? (
+                <Loader2 aria-hidden="true" className="animate-spin" />
+              ) : null}
+              Retry demo
+            </Button>
+          }
+        />
+      ) : null}
+
+      {workspace.demoExamplesError ? (
+        <ErrorAlert
+          error={workspace.demoExamplesError}
+          title="Demo examples unavailable"
+          className="mt-4"
+          onDismiss={() => workspace.dismissError("demo-examples")}
+          action={
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                void workspace.reloadDemoCases();
+              }}
+              disabled={workspace.demoCasesPending}
+            >
+              {workspace.demoCasesPending ? (
+                <Loader2 aria-hidden="true" className="animate-spin" />
+              ) : null}
+              Retry examples
+            </Button>
+          }
+        />
+      ) : null}
+
+      <div
+        className={
+          workspace.demoPending
+            ? "pointer-events-none mt-6 space-y-6 opacity-60"
+            : "mt-6 space-y-6"
+        }
+        aria-busy={workspace.demoPending}
+      >
         <SourcePanel
           source={workspace.source}
           diagnostics={workspace.diagnostics}
@@ -107,6 +191,7 @@ export function Workspace() {
           hasSource={workspace.source !== null}
           schemaPending={workspace.schemaPending}
           schemaError={workspace.schemaError}
+          activePreviewPath={workspace.activePreviewPath}
           onReloadSchema={workspace.reloadSchema}
           onDismissSchemaError={() => workspace.dismissError("schema")}
           onCopyPath={handleCopyPath}
@@ -151,10 +236,16 @@ export function Workspace() {
           mapping={workspace.mapping}
           removedBindings={workspace.removedBindings}
           selectedCandidatePath={workspace.selectedMappingPath}
+          activePath={workspace.activePreviewPath}
+          mappingFocus={workspace.mappingFocus}
+          confirming={workspace.confirmPending}
+          reviewError={workspace.reviewError}
           onSelectCandidate={workspace.setSelectedMappingCandidate}
           onClearCandidate={workspace.clearSelectedMappingCandidate}
           onCopyPath={handleCopyPath}
           onInsertPath={handleInsertPath}
+          onConfirmMapping={workspace.confirmMapping}
+          onDismissReviewError={() => workspace.dismissError("review")}
         />
 
         <ValidationPanel
@@ -175,6 +266,9 @@ export function Workspace() {
             previewError={workspace.previewError}
             templateId={workspace.templateId}
             previewArtifact={previewArtifact}
+            activePath={workspace.activePreviewPath}
+            onActivePathChange={workspace.setActivePreviewPath}
+            onPathClick={workspace.selectPreviewPath}
             onRefresh={workspace.refreshPreview}
             onDismissError={() => workspace.dismissError("preview")}
           />
@@ -186,6 +280,7 @@ export function Workspace() {
             compileError={workspace.compileError}
             templateId={workspace.templateId}
             activeVersion={workspace.activeVersion}
+            blockingMappingCount={workspace.blockingMappingCount}
             documentName={workspace.documentName}
             onDocumentNameChange={workspace.setDocumentName}
             renderMode={workspace.renderMode}
@@ -215,14 +310,35 @@ export function Workspace() {
           versionsError={workspace.versionsError}
           loadingVersion={workspace.loadingVersion}
           loadVersionError={workspace.loadVersionError}
+          canCompare={workspace.compareVersions !== null}
+          compareOpen={workspace.compareOpen}
           onApplyRevision={workspace.applyRevision}
           onRefreshVersions={workspace.refreshVersions}
           onLoadVersion={workspace.loadVersion}
+          onToggleCompare={workspace.toggleCompare}
           onDismissRevisionError={() => workspace.dismissError("revise")}
           onDismissVersionsError={() => workspace.dismissError("versions")}
           onDismissLoadVersionError={() => workspace.dismissError("load-version")}
         />
       </div>
+
+      {workspace.compareVersions ? (
+        <VersionCompareDialog
+          open={workspace.compareOpen}
+          versions={workspace.compareVersions}
+          revision={workspace.revision}
+          activeVersion={workspace.activeVersion}
+          loadingVersion={workspace.loadingVersion}
+          previews={workspace.comparePreviews}
+          onClose={workspace.closeCompare}
+          onRetry={workspace.openCompare}
+          onRestore={workspace.loadVersion}
+        />
+      ) : null}
+
+      {workspace.tourSteps ? (
+        <DemoTour steps={workspace.tourSteps} onClose={workspace.closeTour} />
+      ) : null}
 
       <WorkspaceToast toast={workspace.toast} onDismiss={workspace.dismissToast} />
     </div>

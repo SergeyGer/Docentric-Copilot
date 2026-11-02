@@ -315,6 +315,291 @@
         "title": "CompileTarget",
         "type": "string"
       },
+      "ConfirmMappingRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "selected_field_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Field Path"
+          }
+        },
+        "title": "ConfirmMappingRequest",
+        "type": "object"
+      },
+      "ConfirmMappingResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "ir": {
+            "additionalProperties": true,
+            "title": "Ir",
+            "type": "object"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "mapping": {
+            "additionalProperties": true,
+            "title": "Mapping",
+            "type": "object"
+          },
+          "rebind_count": {
+            "title": "Rebind Count",
+            "type": "integer"
+          },
+          "report": {
+            "additionalProperties": true,
+            "title": "Report",
+            "type": "object"
+          },
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "selected_field_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Field Path"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "template_id",
+          "version",
+          "requirement_id",
+          "selected_field_path",
+          "mapping",
+          "report",
+          "validation",
+          "ir",
+          "ir_digest",
+          "rebind_count"
+        ],
+        "title": "ConfirmMappingResponse",
+        "type": "object"
+      },
+      "DemoCase": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "prompt"
+        ],
+        "title": "DemoCase",
+        "type": "object"
+      },
+      "DemoRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "default": "quotation",
+            "maxLength": 40,
+            "title": "Case Id",
+            "type": "string"
+          }
+        },
+        "title": "DemoRequest",
+        "type": "object"
+      },
+      "DemoResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactView"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "case": {
+            "$ref": "#/components/schemas/DemoCase"
+          },
+          "diagnostics": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "docx_artifact_id": {
+            "title": "Docx Artifact Id",
+            "type": "string"
+          },
+          "elapsed_ms": {
+            "title": "Elapsed Ms",
+            "type": "integer"
+          },
+          "ir": {
+            "additionalProperties": true,
+            "title": "Ir",
+            "type": "object"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "mapping": {
+            "additionalProperties": true,
+            "title": "Mapping",
+            "type": "object"
+          },
+          "preview_html": {
+            "title": "Preview Html",
+            "type": "string"
+          },
+          "report": {
+            "additionalProperties": true,
+            "title": "Report",
+            "type": "object"
+          },
+          "schema_id": {
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "title": "Stats",
+            "type": "object"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "tour": {
+            "items": {
+              "$ref": "#/components/schemas/DemoTourStep"
+            },
+            "title": "Tour",
+            "type": "array"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "case",
+          "source_id",
+          "schema_id",
+          "sections",
+          "stats",
+          "diagnostics",
+          "template_id",
+          "version",
+          "ir",
+          "ir_digest",
+          "mapping",
+          "report",
+          "validation",
+          "preview_html",
+          "docx_artifact_id",
+          "artifacts",
+          "tour",
+          "elapsed_ms"
+        ],
+        "title": "DemoResponse",
+        "type": "object"
+      },
+      "DemoTourStep": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "title",
+          "body"
+        ],
+        "title": "DemoTourStep",
+        "type": "object"
+      },
       "DesignStyle": {
         "enum": [
           "classic",
@@ -1300,6 +1585,72 @@
         ]
       }
     },
+    "/api/v1/demo/examples": {
+      "get": {
+        "operationId": "list_examples_api_v1_demo_examples_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DemoCase"
+                  },
+                  "title": "Response List Examples Api V1 Demo Examples Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Examples",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/api/v1/demo/sessions": {
+      "post": {
+        "operationId": "create_session_api_v1_demo_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "health_api_v1_health_get",
@@ -1777,6 +2128,76 @@
         "summary": "List Versions",
         "tags": [
           "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/{template_id}/versions/{version}/mappings/{requirement_id}/confirm": {
+      "post": {
+        "operationId": "confirm_mapping_api_v1_templates__template_id__versions__version__mappings__requirement_id__confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "requirement_id",
+            "required": true,
+            "schema": {
+              "title": "Requirement Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmMappingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmMappingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Confirm Mapping",
+        "tags": [
+          "review"
         ]
       }
     },

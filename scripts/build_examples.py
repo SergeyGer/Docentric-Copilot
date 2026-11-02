@@ -225,10 +225,9 @@ SALES_QUOTATION_SAMPLE = f"""<?xml version="1.0" encoding="utf-8"?>
 """
 
 SALES_QUOTATION_PROMPT = (
-    "Create a professional sales quotation. Include the company logo, customer information, "
-    "quotation date, product lines with quantities and unit prices, line amounts, final amount, "
-    "bank details in the footer, and an EU VAT notice when the customer is in the EU and has a "
-    "VAT number."
+    "Create a professional sales quotation with the company logo, customer details, quotation number "
+    "and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT "
+    "number, bank details in the footer, and an EU VAT notice when the customer is in the EU."
 )
 
 INVOICE_XSD = """<?xml version="1.0" encoding="utf-8"?>

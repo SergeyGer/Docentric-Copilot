@@ -15,9 +15,13 @@ services:
       DC_DATA_DIR: /data
       DC_CORS_ORIGINS: http://localhost:3000
       DC_LOG_JSON: "true"
-      # Optional provider credentials (never baked into the image):
-      # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Provider credentials come from the shell or the compose .env file.
+      # They are passed at runtime and never baked into the image.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DC_OPENAI_MODEL: ${DC_OPENAI_MODEL:-}
+      DC_ANTHROPIC_MODEL: ${DC_ANTHROPIC_MODEL:-}
       # GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - copilot-data:/data

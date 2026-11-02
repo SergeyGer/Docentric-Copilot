@@ -24,7 +24,7 @@
       "MainData.Quotation.TotalAmount",
       "MainData.Quotation.ValidUntil",
       "MainData.QuotationLines.Line",
-      "MainData.QuotationLines.Line.ItemId",
+      "MainData.QuotationLines.Line.Description",
       "MainData.QuotationLines.Line.LineAmount",
       "MainData.QuotationLines.Line.Quantity",
       "MainData.QuotationLines.Line.UnitPrice"
@@ -50,10 +50,13 @@
       "MainData.Invoice.InvoiceDate",
       "MainData.Invoice.InvoiceId",
       "MainData.Invoice.NetAmount",
+      "MainData.Invoice.ReverseCharge",
       "MainData.Invoice.TaxAmount",
       "MainData.InvoiceLines.Line",
       "MainData.InvoiceLines.Line.Description",
-      "MainData.InvoiceLines.Line.LineAmount"
+      "MainData.InvoiceLines.Line.LineAmount",
+      "MainData.InvoiceLines.Line.Quantity",
+      "MainData.InvoiceLines.Line.UnitPrice"
     ]
   },
   {
@@ -74,7 +77,8 @@
       "MainData.PurchaseOrderLines.Line",
       "MainData.PurchaseOrderLines.Line.Description",
       "MainData.PurchaseOrderLines.Line.LineAmount",
-      "MainData.PurchaseOrderLines.Line.Quantity"
+      "MainData.PurchaseOrderLines.Line.Quantity",
+      "MainData.PurchaseOrderLines.Line.UnitPrice"
     ]
   }
 ]

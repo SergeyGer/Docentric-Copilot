@@ -305,6 +305,12 @@ class TableRepeat(StrictModel):
     max_items: int | None = Field(default=None, ge=1, le=1_000)
 
 
+class PageBreak(StrictModel):
+    """Force a new page (used to separate a document body from its terms)."""
+
+    kind: Literal["page_break"] = "page_break"
+
+
 class Table(StrictModel):
     kind: Literal["table"] = "table"
     columns: list[TableColumn] = Field(min_length=1, max_length=20)
@@ -335,7 +341,7 @@ class Table(StrictModel):
 
 
 Block = Annotated[
-    Paragraph | Heading | ImageBinding | Repeat | Conditional | Table,
+    Paragraph | Heading | ImageBinding | Repeat | Conditional | Table | PageBreak,
     Field(discriminator="kind"),
 ]
 
@@ -383,7 +389,18 @@ class Document(StrictModel):
 
 
 # Recursive models: resolve forward references now that every class exists.
-for _model in (Cell, Repeat, Conditional, TableRow, Table, Paragraph, Heading, Section, Document):
+for _model in (
+    Cell,
+    Repeat,
+    Conditional,
+    TableRow,
+    Table,
+    PageBreak,
+    Paragraph,
+    Heading,
+    Section,
+    Document,
+):
     _model.model_rebuild()
 
 __all__ = [
@@ -404,6 +421,7 @@ __all__ = [
     "Heading",
     "ImageBinding",
     "InlineContent",
+    "PageBreak",
     "PageSettings",
     "Paragraph",
     "Repeat",

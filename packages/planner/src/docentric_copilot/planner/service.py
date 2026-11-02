@@ -15,18 +15,26 @@ from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError, ProviderError
 from docentric_copilot.llm.gateway import LLMGateway
 from docentric_copilot.llm.models import GenerationResult
+from docentric_copilot.schema_resolver.concept_match import matches_kind, paths_for_concept
 from docentric_copilot.schema_resolver.mapping import (
     FieldMapping,
     MappingReport,
     MappingStatus,
     RequirementKind,
-    validate_mapping,
 )
 from docentric_copilot.schema_resolver.paths import (
     PathResolutionError,
     Scope,
     resolve_collection,
     resolve_value,
+)
+from docentric_copilot.schema_resolver.requirements import (
+    CONCEPT_QUERY,
+    Concept,
+    Requirement,
+    _match_concept,
+    parse_requirements,
+    split_clauses,
 )
 from docentric_copilot.schema_resolver.search import (
     Candidate,
@@ -57,6 +65,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .heuristic import BASELINE_VERSION, build_document
 from .prompt import build_messages, build_repair_message
+from .revision_ops import apply_revision
 from .revisions import Change, diff_documents, summarize_changes
 
 _MAX_REQUIREMENTS = 12
@@ -99,21 +108,11 @@ class PlanOutcome(BaseModel):
 # Requirement extraction and mapping report
 # --------------------------------------------------------------------------- #
 def extract_requirements(requirement: str, *, limit: int = _MAX_REQUIREMENTS) -> list[str]:
-    """Split a free-form requirement into reviewable clauses."""
-    seen: set[str] = set()
-    clauses: list[str] = []
-    for raw in _CLAUSE_SPLIT.split(requirement):
-        clause = raw.strip(" .;:-*\t")
-        if len(clause.split()) < 2:
-            continue
-        lowered = clause.lower()
-        if lowered in seen:
-            continue
-        seen.add(lowered)
-        clauses.append(clause[:200])
-        if len(clauses) >= limit:
-            break
-    return clauses
+    """Return the reviewable clauses of a brief (interpretation lives in the parser)."""
+    parsed = parse_requirements(requirement)
+    if parsed.requirements:
+        return [item.text for item in parsed.requirements][:limit]
+    return [clause[:200] for clause in split_clauses(requirement, limit=limit)]
 
 
 def _used_paths(document: Document, schema: NormalizedSchema) -> dict[str, str]:
@@ -142,6 +141,15 @@ def _used_paths(document: Document, schema: NormalizedSchema) -> dict[str, str]:
                 used[block.path] = collection.absolute
                 walk(block.blocks, scope.push(block.alias, collection.absolute))
             elif isinstance(block, Conditional):
+                for expression in iter_expressions(block.condition):
+                    if expression.field is None:
+                        continue
+                    try:
+                        used[expression.field] = resolve_value(
+                            schema, expression.field, scope
+                        ).absolute
+                    except PathResolutionError:
+                        continue
                 walk(block.then_blocks, scope)
                 walk(block.else_blocks or [], scope)
             elif isinstance(block, Table):
@@ -172,6 +180,144 @@ def absolute_bindings(document: Document, schema: NormalizedSchema) -> list[str]
     return sorted(set(_used_paths(document, schema).values()))
 
 
+def _bound_for_concept(
+    schema: NormalizedSchema, concept: Concept, bound_paths: set[str]
+) -> list[str]:
+    return paths_for_concept(schema, concept, bound_paths)
+
+
+def _candidates_for(
+    schema: NormalizedSchema, requirement: Requirement, limit: int = 4
+) -> list[Candidate]:
+    query = f"{requirement.text} {CONCEPT_QUERY.get(requirement.concept, '')}".strip()
+    candidates = search_candidates(
+        schema,
+        query,
+        kind=requirement.kind,
+        limit=limit,
+        include_collections=requirement.kind is RequirementKind.COLLECTION,
+    )
+    return [
+        candidate
+        for candidate in candidates
+        if matches_kind(requirement.kind, schema.node(candidate.path))
+    ] or candidates
+
+
+def _ambiguity(candidates: list[Candidate]) -> bool:
+    if len(candidates) < 2:
+        return False
+    gap = candidates[0].score - candidates[1].score
+    return gap < max(0.03, 0.15 * candidates[0].score)
+
+
+_PARTY_TOKENS = {"customer", "client", "billto", "soldto", "vendor", "supplier", "buyer"}
+_COMPANY_TOKENS = {"company", "issuer", "organization", "organisation"}
+_LINE_TOKENS = {"line", "item", "product", "row"}
+
+
+def _disambiguated(requirement: Requirement) -> bool:
+    """True when the clause itself names the object the concept belongs to."""
+    tokens = set(tokenize(requirement.text))
+    groups = {
+        Concept.COMPANY_LOGO: _COMPANY_TOKENS | {"logo"},
+        Concept.COMPANY_NAME: _COMPANY_TOKENS,
+        Concept.COMPANY_ADDRESS: _COMPANY_TOKENS,
+        Concept.COMPANY_VAT: _COMPANY_TOKENS,
+        Concept.CUSTOMER_NAME: _PARTY_TOKENS,
+        Concept.CUSTOMER_ADDRESS: _PARTY_TOKENS,
+        Concept.CUSTOMER_VAT: _PARTY_TOKENS,
+        Concept.CUSTOMER_ACCOUNT: _PARTY_TOKENS,
+        Concept.LINE_QUANTITY: _LINE_TOKENS | {"quantity", "qty"},
+        Concept.LINE_PRICE: _LINE_TOKENS | {"price", "unit"},
+        Concept.LINE_AMOUNT: _LINE_TOKENS | {"amount"},
+    }
+    expected = groups.get(requirement.concept)
+    if expected is None:
+        return True
+    return bool(tokens & expected)
+
+
+def _evidence_score(
+    requirement: Requirement,
+    bound: list[str],
+    schema: NormalizedSchema,
+    *,
+    disambiguated: bool,
+) -> tuple[float, list[str]]:
+    """Deterministic semantic confidence for a bound requirement."""
+    score = 0.55
+    reasons: list[str] = []
+    node = schema.node(bound[0])
+    name_tokens = set(tokenize(bound[0].rsplit(".", 1)[-1]))
+    concept_tokens = set(tokenize(CONCEPT_QUERY.get(requirement.concept, "")))
+    if concept_tokens & name_tokens:
+        score += 0.2
+        reasons.append("the field name matches the requested concept")
+    if node is not None and matches_kind(requirement.kind, node):
+        score += 0.1
+        reasons.append("the value type matches")
+    if disambiguated:
+        score += 0.1
+        reasons.append("the brief names the object explicitly")
+    if len(bound) == 1:
+        score += 0.05
+    return min(0.99, score), reasons
+
+
+_COUNTERPARTS = {
+    Concept.CUSTOMER_NAME: Concept.COMPANY_NAME,
+    Concept.CUSTOMER_ADDRESS: Concept.COMPANY_ADDRESS,
+    Concept.CUSTOMER_VAT: Concept.COMPANY_VAT,
+}
+
+
+def _counterpart_candidates(
+    requirement: Requirement, schema: NormalizedSchema, bound_absolute: set[str]
+) -> list[str]:
+    """The other object's field when the brief does not say whose field it means."""
+    counterpart = _COUNTERPARTS.get(requirement.concept)
+    if counterpart is None or _disambiguated(requirement):
+        return []
+    return _bound_for_concept(schema, counterpart, bound_absolute)
+
+
+def _conflict_for(
+    requirement: Requirement, selected: str, existing: list[FieldMapping]
+) -> str | None:
+    for mapping in existing:
+        if mapping.selected_field_path != selected:
+            continue
+        if mapping.concept and mapping.concept != requirement.concept.value:
+            return mapping.requirement_id
+    return None
+
+
+def _status_for(score: float, *, conflict: bool) -> MappingStatus:
+    if conflict:
+        return MappingStatus.NEEDS_REVIEW
+    if score >= 0.9:
+        return MappingStatus.CONFIRMED
+    if score >= 0.8:
+        return MappingStatus.SCHEMA_VALID
+    return MappingStatus.NEEDS_REVIEW
+
+
+def _explain(
+    status: MappingStatus, requirement: Requirement, bound: list[str], reasons: list[str]
+) -> str:
+    if status is MappingStatus.NEEDS_REVIEW:
+        return (
+            "Technically valid, but the evidence is not strong enough to confirm silently: "
+            + "; ".join(reasons)
+            + "."
+        )
+    if status is MappingStatus.CONFIRMED:
+        detail = f"Bound to {len(bound)} field(s)" if len(bound) > 1 else "Bound"
+        return f"{detail}. " + "; ".join(reason.capitalize() for reason in reasons) + "."
+    return "Schema-valid binding with partial semantic evidence; review is recommended."
+
+
 def build_mapping_report(
     schema: NormalizedSchema,
     document: Document,
@@ -180,89 +326,162 @@ def build_mapping_report(
 ) -> MappingReport:
     """Derive a reviewable requirement-to-field report from the produced IR.
 
-    The report is intentionally conservative: a clause is ``resolved`` only when
-    the plan actually binds the best matching field. A confident candidate that
-    the plan does not use is reported as ``missing`` so a human can accept it,
-    while genuinely close alternatives are reported as ``ambiguous``.
+    Requirements are interpreted first (concept, value type, requested placement),
+    then matched against the paths the template actually binds. A clause is
+    ``resolved`` only when a bound path satisfies its concept; a confident
+    alternative the plan ignores is reported as ``missing``; two equally good
+    alternatives are reported as ``needs_review`` even when one of them is bound.
     """
     used = _used_paths(document, schema)
-    used_absolute = set(used.values())
+    bound_absolute = set(used.values())
+    parsed = parse_requirements(requirement)
     mappings: list[FieldMapping] = []
 
-    for index, clause in enumerate(extract_requirements(requirement)):
-        requirement_id = f"req_{index:02d}"
-        kind: RequirementKind = infer_kind(clause)
-        candidates: list[Candidate] = search_candidates(
-            schema,
-            clause,
-            kind=kind,
-            limit=4,
-            include_collections=kind is RequirementKind.COLLECTION,
-        )
-        candidate_paths = [candidate.path for candidate in candidates]
-        top = candidates[0] if candidates else None
-        clause_tokens = set(tokenize(clause))
-        title_tokens = set(tokenize(document.title))
-
-        if clause_tokens and clause_tokens <= title_tokens:
+    for item in parsed:
+        if item.concept is Concept.TITLE:
             mappings.append(
                 FieldMapping(
-                    requirement_id=requirement_id,
-                    requirement=clause,
-                    candidate_field_paths=[],
-                    selected_field_path=None,
-                    status=MappingStatus.RESOLVED,
+                    requirement_id=item.id,
+                    requirement=item.text,
+                    concept=item.concept.value,
+                    status=MappingStatus.CONFIRMED,
                     confidence_score=1.0,
-                    explanation="Satisfied by the document title.",
+                    evidence_score=1.0,
+                    explanation="Satisfied by the document title and layout.",
                 )
             )
             continue
+        bound = _bound_for_concept(schema, item.concept, bound_absolute)
+        candidates = _candidates_for(schema, item)
+        candidate_paths = [candidate.path for candidate in candidates]
+        top = candidates[0] if candidates else None
+        node = schema.node(bound[0]) if bound else None
 
-        used_candidate = next(
-            (candidate for candidate in candidates if candidate.path in used_absolute), None
-        )
-        if used_candidate is not None:
-            offset = candidate_paths.index(used_candidate.path)
-            mappings.append(
-                validate_mapping(
-                    schema,
+        if item.negated:
+            if bound:
+                mappings.append(
                     FieldMapping(
-                        requirement_id=requirement_id,
-                        requirement=clause,
+                        requirement_id=item.id,
+                        requirement=item.text,
+                        concept=item.concept.value,
+                        placement=item.placement.value if item.placement else None,
                         candidate_field_paths=candidate_paths,
-                        selected_field_path=used_candidate.path,
-                        status=MappingStatus.RESOLVED,
-                        confidence_score=min(1.0, max(0.05, used_candidate.score - 0.05 * offset)),
-                        explanation="The plan binds the best matching field for this requirement.",
-                    ),
+                        selected_field_path=bound[0],
+                        supporting_field_paths=bound[:10],
+                        data_type=node.data_type if node else None,
+                        status=MappingStatus.INVALID,
+                        confidence_score=1.0,
+                        explanation="The brief asks to exclude this content, but the plan still binds it.",
+                    )
+                )
+            else:
+                mappings.append(
+                    FieldMapping(
+                        requirement_id=item.id,
+                        requirement=item.text,
+                        concept=item.concept.value,
+                        placement=item.placement.value if item.placement else None,
+                        status=MappingStatus.CONFIRMED,
+                        confidence_score=1.0,
+                        evidence_score=1.0,
+                        explanation="Content is intentionally excluded, as requested.",
+                    )
+                )
+            continue
+
+        if bound:
+            competitors = [candidate.path for candidate in candidates[:2]]
+            covered = all(path in bound_absolute for path in competitors)
+            ambiguous = _ambiguity(candidates) and candidates[0].path not in bound and not covered
+            counterparts = _counterpart_candidates(item, schema, bound_absolute)
+            score, reasons = _evidence_score(
+                item, bound, schema, disambiguated=_disambiguated(item)
+            )
+            if counterparts:
+                score = max(0.0, score - 0.2)
+                reasons.append(
+                    "both the customer and the company expose this value and the brief does not say which"
+                )
+                candidate_paths = list(dict.fromkeys([*bound, *counterparts, *candidate_paths]))[:6]
+            if ambiguous:
+                score = max(0.0, score - 0.3)
+                reasons.append("a competing field matches almost as well")
+            conflict_with = _conflict_for(item, bound[0], mappings)
+            if conflict_with is not None:
+                score = max(0.0, score - 0.35)
+                reasons.append(f"field already used by {conflict_with}")
+            status = _status_for(
+                score, conflict=conflict_with is not None or ambiguous or bool(counterparts)
+            )
+            explanation = _explain(status, item, bound, reasons)
+            mappings.append(
+                FieldMapping(
+                    requirement_id=item.id,
+                    requirement=item.text,
+                    concept=item.concept.value,
+                    placement=item.placement.value if item.placement else None,
+                    candidate_field_paths=candidate_paths,
+                    selected_field_path=bound[0],
+                    supporting_field_paths=bound[:10],
+                    data_type=node.data_type if node else None,
+                    schema_evidence=f"{bound[0]}:{node.data_type if node else 'any'}",
+                    status=status,
+                    confidence_score=round(score, 3),
+                    evidence_score=round(score, 3),
+                    conflict=conflict_with is not None,
+                    conflicts_with=[conflict_with] if conflict_with else [],
+                    explanation=explanation,
                 )
             )
             continue
 
         decision = decide_status(candidates)
-        if decision == "ambiguous":
-            status = MappingStatus.AMBIGUOUS
-            explanation = "Several fields match equally well; a human decision is required."
-        elif decision == "resolved":
-            status = MappingStatus.MISSING
-            explanation = (
-                "A matching field exists but the plan does not use it; "
-                "accept the suggested field or refine the requirement."
+        status = MappingStatus.NEEDS_REVIEW if decision == "ambiguous" else MappingStatus.MISSING
+        explanation = (
+            "Several fields match the requirement equally well; confirm the choice."
+            if status is MappingStatus.NEEDS_REVIEW
+            else (
+                "A matching field exists but the template does not use it; accept the suggestion or refine the brief."
+                if decision == "resolved"
+                else "No field in the schema satisfies this requirement."
             )
-        else:
-            status = MappingStatus.MISSING
-            explanation = "No field in the schema satisfies this requirement."
+        )
         mappings.append(
-            validate_mapping(
-                schema,
-                FieldMapping(
-                    requirement_id=requirement_id,
-                    requirement=clause,
-                    candidate_field_paths=candidate_paths,
-                    selected_field_path=None,
-                    status=status,
-                    confidence_score=top.score if top else None,
-                    explanation=explanation,
+            FieldMapping(
+                requirement_id=item.id,
+                requirement=item.text,
+                concept=item.concept.value,
+                placement=item.placement.value if item.placement else None,
+                candidate_field_paths=candidate_paths,
+                selected_field_path=None,
+                status=status,
+                confidence_score=top.score if top else None,
+                explanation=explanation,
+            )
+        )
+
+    # Clauses the lexicon cannot interpret are still reported, so a user can see
+    # that something was asked for and not satisfied.
+    recognised_texts = {item.text for item in parsed}
+    unrecognised = [
+        clause
+        for clause in split_clauses(requirement)
+        if clause not in recognised_texts and _match_concept(clause, used=set()) is None
+    ]
+    for index, clause in enumerate(unrecognised):
+        kind = infer_kind(clause)
+        candidates = search_candidates(schema, clause, kind=kind, limit=4)
+        decision = decide_status(candidates)
+        status = MappingStatus.NEEDS_REVIEW if decision == "ambiguous" else MappingStatus.MISSING
+        mappings.append(
+            FieldMapping(
+                requirement_id=f"req_x{index:02d}",
+                requirement=clause,
+                candidate_field_paths=[candidate.path for candidate in candidates],
+                status=status,
+                confidence_score=candidates[0].score if candidates else None,
+                explanation=(
+                    "No recognised document concept in this clause; the planner cannot bind it."
                 ),
             )
         )
@@ -524,11 +743,32 @@ class TemplatePlanner:
         model: str | None = None,
         options: PlanOptions | None = None,
     ) -> PlanOutcome:
-        """Create a new IR version from a natural-language change request."""
+        """Create a new IR version from a natural-language change request.
+
+        A clear structural instruction is applied as a targeted edit, which keeps
+        the diff small and makes no model call. Anything else falls back to
+        replanning with the combined intent.
+        """
         if not instruction.strip():
             raise InvalidInputError("A revision instruction is required")
         previous_intent = document.metadata.intent or ""
         merged = f"{previous_intent}\nRevision request: {instruction}"[:2_000]
+
+        targeted = apply_revision(document, instruction, schema)
+        if targeted is not None:
+            sanitized, removed = sanitize_document(targeted.document, schema)
+            mapping = build_mapping_report(schema, sanitized, merged, removed)
+            changes = diff_documents(document, sanitized)
+            return PlanOutcome(
+                document=sanitized,
+                mapping=mapping,
+                generation=None,
+                removed_bindings=removed,
+                repairs=targeted.notes,
+                warnings=[],
+                changed=changes,
+            )
+
         outcome = await self.plan(schema, merged, provider=provider, model=model, options=options)
         changes = diff_documents(document, outcome.document)
         return outcome.model_copy(update={"changed": changes})

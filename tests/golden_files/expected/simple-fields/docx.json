@@ -3,7 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
+      "text": "Document DOC-1"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Document Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -15,7 +25,7 @@
   ],
   "media": [],
   "package": {
-    "entry_count": 17,
+    "entry_count": 19,
     "has_document": true,
     "has_styles": true
   },
@@ -38,25 +48,28 @@
     },
     {
       "alignment": "None",
-      "style": "Heading 2",
-      "text": "Customer"
-    },
-    {
-      "alignment": "None",
       "style": "Normal",
-      "text": "Acme GmbH"
-    },
-    {
-      "alignment": "RIGHT (2)",
-      "style": "Normal",
-      "text": "Total: 125.50"
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=simple_fields;digest=a52148d38f4534f9e377a8b2ea6385cd;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=simple_fields;digest=4cdeb7bee78ee0832fd71bd64d3ff416;docentric-compatibility=not_tested",
     "subject": "document_template",
     "title": "Document"
   },
-  "tables": []
+  "tables": [
+    [
+      [
+        "BILL TO\nAcme GmbH",
+        "FROM"
+      ]
+    ],
+    [
+      [
+        "Total",
+        "125.50"
+      ]
+    ]
+  ]
 }

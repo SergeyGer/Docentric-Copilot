@@ -35,6 +35,7 @@ from docentric_copilot.template_ir import (
     FieldBinding,
     Heading,
     ImageBinding,
+    PageBreak,
     Paragraph,
     Repeat,
     Section,
@@ -44,9 +45,10 @@ from docentric_copilot.template_ir import (
 )
 from docx import Document as DocxDocument
 from docx.document import Document as DocxDocumentType
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import parse_xml
-from docx.oxml.ns import nsdecls
+from docx.enum.table import WD_ALIGN_VERTICAL
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
+from docx.oxml import OxmlElement, parse_xml
+from docx.oxml.ns import nsdecls, qn
 from docx.shared import Mm, Pt, RGBColor
 from docx.table import Table as DocxTable
 from docx.table import _Cell
@@ -67,6 +69,14 @@ _ALIGN = {
     Alignment.JUSTIFY: WD_ALIGN_PARAGRAPH.JUSTIFY,
 }
 _PAGE_SIZES = {"A4": (210.0, 297.0), "LETTER": (215.9, 279.4)}
+
+#: Brand palette for the generated document. Deliberately restrained: one
+#: accent, one rule colour, two text tones.
+_INK = "1F2937"
+_MUTED = "64748B"
+_RULE = "CBD5E1"
+_TABLE_HEADER_FILL = "0F2A54"
+_TABLE_ZEBRA_FILL = "F6F8FB"
 
 
 class CompileOptions(BaseModel):
@@ -196,12 +206,15 @@ class _Renderer:
     # ------------------------------------------------------------------ setup
     def render(self) -> DocxDocumentType:
         doc = DocxDocument()
+        self._apply_document_styles(doc)
         self._apply_page_settings(doc)
         self._apply_core_properties(doc)
 
         first_section = self._document.sections[0]
         self._render_header_footer(doc, first_section, is_header=True)
         self._render_header_footer(doc, first_section, is_header=False)
+        self._decorate_header(doc)
+        self._decorate_footer(doc)
 
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())
         for index, section in enumerate(self._document.sections):
@@ -222,6 +235,72 @@ class _Renderer:
                 "Docentric AX compatibility: not verified."
             ).italic = True
         return doc
+
+    def _apply_document_styles(self, doc: DocxDocumentType) -> None:
+        """Set a restrained, professional baseline typography."""
+        styles = doc.styles
+        normal = styles["Normal"]
+        normal.font.name = "Calibri"
+        normal.font.size = Pt(10.5)
+        normal.font.color.rgb = RGBColor.from_string(_INK)
+        normal.paragraph_format.space_after = Pt(4)
+        normal.paragraph_format.line_spacing = 1.12
+
+        specification = {
+            1: (20.0, _TABLE_HEADER_FILL, 0.0, 10.0),
+            2: (13.0, _TABLE_HEADER_FILL, 14.0, 5.0),
+            3: (11.0, "334155", 10.0, 3.0),
+        }
+        for level, (size, color, before, after) in specification.items():
+            style = styles[f"Heading {level}"]
+            style.font.name = "Calibri"
+            style.font.size = Pt(size)
+            style.font.bold = True
+            style.font.color.rgb = RGBColor.from_string(color)
+            style.paragraph_format.space_before = Pt(before)
+            style.paragraph_format.space_after = Pt(after)
+            style.paragraph_format.keep_with_next = True
+
+    def _decorate_header(self, doc: DocxDocumentType) -> None:
+        header = doc.sections[0].header
+        paragraphs = [paragraph for paragraph in header.paragraphs if paragraph.text.strip()]
+        if not paragraphs:
+            return
+        last = paragraphs[-1]
+        _paragraph_border(last, "bottom", color=_RULE, size=8, space=6)
+        last.paragraph_format.space_after = Pt(10)
+
+    def _decorate_footer(self, doc: DocxDocumentType) -> None:
+        """Add a rule and ``Page X of Y`` to every page."""
+        section = doc.sections[0]
+        footer = section.footer
+        rule = footer.add_paragraph()
+        _paragraph_border(rule, "top", color=_RULE, size=8, space=6)
+        rule.paragraph_format.space_after = Pt(2)
+
+        page = self._document.page
+        width, _height = _PAGE_SIZES[page.size]
+        if self._oriented:
+            width, _height = _height, width
+        available = width - page.margin_left_mm - page.margin_right_mm
+
+        paragraph = footer.add_paragraph()
+        paragraph.paragraph_format.space_before = Pt(0)
+        paragraph.paragraph_format.space_after = Pt(0)
+        paragraph.paragraph_format.tab_stops.add_tab_stop(Mm(available), WD_TAB_ALIGNMENT.RIGHT)
+        label = self._document.metadata.template_name.replace("_", " ").title()
+        run = paragraph.add_run(label)
+        run.font.size = Pt(8)
+        run.font.color.rgb = RGBColor.from_string(_MUTED)
+        paragraph.add_run("\t")
+        page_run = paragraph.add_run("Page ")
+        page_run.font.size = Pt(8)
+        page_run.font.color.rgb = RGBColor.from_string(_MUTED)
+        _add_field(paragraph, "PAGE", "1", size=8, color=_MUTED)
+        of_run = paragraph.add_run(" of ")
+        of_run.font.size = Pt(8)
+        of_run.font.color.rgb = RGBColor.from_string(_MUTED)
+        _add_field(paragraph, "NUMPAGES", "1", size=8, color=_MUTED)
 
     def _apply_page_settings(self, doc: DocxDocumentType) -> None:
         page = self._document.page
@@ -309,6 +388,8 @@ class _Renderer:
             self._render_repeat(container, block, context)
         elif isinstance(block, Conditional):
             self._render_conditional(container, block, context)
+        elif isinstance(block, PageBreak):
+            container.add_page_break()
         elif isinstance(block, Table):
             self._render_table(container, block, context)
         else:  # pragma: no cover - defensive against future block kinds
@@ -357,6 +438,8 @@ class _Renderer:
             paragraph = container.add_paragraph()
         paragraph.style = f"Heading {block.level}"
         self._apply_paragraph_style(paragraph, block.style)
+        if block.level == 1:
+            _paragraph_border(paragraph, "bottom", color=_TABLE_HEADER_FILL, size=12, space=6)
         for run in block.runs:
             if isinstance(run, FieldBinding):
                 added = paragraph.add_run(self._binding_text(run, context))
@@ -451,26 +534,32 @@ class _Renderer:
         table.autofit = False
         if block.style and block.style.borders:
             table.style = "Table Grid"
+        _table_width_full(table)
 
+        header_fill = (block.style.header_background if block.style else None) or _TABLE_HEADER_FILL
         if block.show_header:
             header_row = table.add_row()
+            _repeat_header_row(header_row)
+            _set_row_cant_split(header_row)
             for index, column in enumerate(block.columns):
                 cell = header_row.cells[index]
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
                 paragraph = cell.paragraphs[0]
                 run = paragraph.add_run(column.header)
                 run.bold = True
-                if block.style and block.style.font_size_pt:
-                    run.font.size = Pt(block.style.font_size_pt)
+                run.font.color.rgb = RGBColor.from_string("FFFFFF")
+                run.font.size = Pt((block.style.font_size_pt if block.style else None) or 9.5)
                 if column.alignment:
                     paragraph.alignment = _ALIGN[column.alignment]
-                if block.style and block.style.header_background:
-                    _shade_cell(cell, block.style.header_background)
+                _shade_cell(cell, header_fill)
                 if column.width_mm is not None:
                     cell.width = Mm(float(column.width_mm))
 
         for row in block.rows:
             docx_row = table.add_row()
+            _set_row_cant_split(docx_row)
             for index, source_cell in enumerate(row.cells):
+                docx_row.cells[index].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
                 self._render_cell(docx_row.cells[index], source_cell, context)
                 column_width = block.columns[index].width_mm
                 if column_width is not None:
@@ -494,6 +583,7 @@ class _Renderer:
                 self._warnings.append(f"Table repeat '{block.repeat.path}' produced no rows")
             for position, item in enumerate(items[:limit] if self._use_sample else []):
                 docx_row = table.add_row()
+                _set_row_cant_split(docx_row)
                 self._stats["repeats_expanded"] += 1
                 child = context.child(block.repeat.alias, collection.absolute, item)
                 for index, template_cell in enumerate(block.row_template):
@@ -502,7 +592,29 @@ class _Renderer:
                     if template_width is not None:
                         docx_row.cells[index].width = Mm(float(template_width))
                     elif block.style and block.style.zebra and position % 2 == 1:
-                        _shade_cell(docx_row.cells[index], "F7F9FC")
+                        _shade_cell(docx_row.cells[index], _TABLE_ZEBRA_FILL)
+                    docx_row.cells[index].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        self._format_table(table, block)
+
+    def _format_table(self, table: DocxTable, block: Table) -> None:
+        """Borders, padding and width normalisation for a data table."""
+        if block.style is None or block.style.borders:
+            _table_borders(table, color=_RULE, size=4)
+        _table_cell_margins(table, top=50, bottom=50, left=90, right=90)
+        page = self._document.page
+        width, _height = _PAGE_SIZES[page.size]
+        if self._oriented:
+            width, _height = _height, width
+        available = width - page.margin_left_mm - page.margin_right_mm
+        declared = sum(column.width_mm for column in block.columns if column.width_mm)
+        for column in block.columns:
+            if column.width_mm is None:
+                continue
+            factor = (available / declared) if declared > available else 1.0
+            width_mm = max(10.0, column.width_mm * factor)
+            for row in table.rows:
+                row.cells[block.columns.index(column)].width = Mm(width_mm)
 
     def _render_cell(self, docx_cell: _Cell, source: Cell, context: SampleContext) -> None:
         docx_cell.paragraphs[0].text = ""
@@ -539,6 +651,85 @@ class _Renderer:
             run.font.size = Pt(style.font_size_pt)
         if style.color is not None:
             run.font.color.rgb = RGBColor.from_string(style.color.lstrip("#").upper())
+
+
+def _paragraph_border(paragraph: Any, edge: str, *, color: str, size: int, space: int) -> None:
+    p_pr = paragraph._p.get_or_add_pPr()
+    borders = OxmlElement("w:pBdr")
+    element = OxmlElement(f"w:{edge}")
+    element.set(qn("w:val"), "single")
+    element.set(qn("w:sz"), str(size))
+    element.set(qn("w:space"), str(space))
+    element.set(qn("w:color"), color)
+    borders.append(element)
+    p_pr.append(borders)
+
+
+def _add_field(
+    paragraph: Any, instruction: str, placeholder: str, *, size: float, color: str
+) -> None:
+    """Insert a Word field (PAGE, NUMPAGES) without external content."""
+    run = paragraph.add_run()
+    run.font.size = Pt(size)
+    run.font.color.rgb = RGBColor.from_string(color)
+    begin = OxmlElement("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = f" {instruction} "
+    separate = OxmlElement("w:fldChar")
+    separate.set(qn("w:fldCharType"), "separate")
+    text = OxmlElement("w:t")
+    text.text = placeholder
+    end = OxmlElement("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+    for node in (begin, instr, separate, text, end):
+        run._r.append(node)
+
+
+def _table_borders(table: DocxTable, *, color: str, size: int) -> None:
+    tbl_pr = table._tbl.tblPr
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        element = OxmlElement(f"w:{edge}")
+        element.set(qn("w:val"), "single")
+        element.set(qn("w:sz"), str(size))
+        element.set(qn("w:space"), "0")
+        element.set(qn("w:color"), color)
+        borders.append(element)
+    tbl_pr.append(borders)
+
+
+def _table_cell_margins(table: DocxTable, *, top: int, bottom: int, left: int, right: int) -> None:
+    tbl_pr = table._tbl.tblPr
+    margins = OxmlElement("w:tblCellMar")
+    for edge, value in (("top", top), ("left", left), ("bottom", bottom), ("right", right)):
+        element = OxmlElement(f"w:{edge}")
+        element.set(qn("w:w"), str(value))
+        element.set(qn("w:type"), "dxa")
+        margins.append(element)
+    tbl_pr.append(margins)
+
+
+def _table_width_full(table: DocxTable) -> None:
+    tbl_pr = table._tbl.tblPr
+    width = OxmlElement("w:tblW")
+    width.set(qn("w:w"), "5000")
+    width.set(qn("w:type"), "pct")
+    tbl_pr.append(width)
+
+
+def _repeat_header_row(row: Any) -> None:
+    properties = row._tr.get_or_add_trPr()
+    header = OxmlElement("w:tblHeader")
+    header.set(qn("w:val"), "true")
+    properties.append(header)
+
+
+def _set_row_cant_split(row: Any) -> None:
+    properties = row._tr.get_or_add_trPr()
+    split = OxmlElement("w:cantSplit")
+    properties.append(split)
 
 
 def _shade_cell(cell: _Cell, hex_color: str) -> None:

@@ -91,6 +91,7 @@ docentric_copilot = "packages/core/src/docentric_copilot"
 "docentric_copilot.storage" = "services/api/src/docentric_copilot/storage"
 
 [tool.setuptools.package-data]
+"docentric_copilot.api" = ["demo/*.ddsp", "demo/*.json"]
 "docentric_copilot.preview" = ["templates/*.html.j2"]
 "docentric_copilot.template_validator" = ["templates/*.html.j2"]
 

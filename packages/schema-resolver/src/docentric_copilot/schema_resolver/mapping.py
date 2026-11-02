@@ -14,8 +14,17 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class MappingStatus(str, Enum):
-    RESOLVED = "resolved"
-    AMBIGUOUS = "ambiguous"
+    """Semantic outcome of one requirement.
+
+    ``confirmed`` and ``schema_valid`` are both technically correct bindings; they
+    differ in how much semantic evidence supports them. ``needs_review`` marks a
+    conflict or a genuine ambiguity that a human must resolve before the document
+    is trusted.
+    """
+
+    CONFIRMED = "confirmed"
+    SCHEMA_VALID = "schema_valid"
+    NEEDS_REVIEW = "needs_review"
     MISSING = "missing"
     INVALID = "invalid"
 
@@ -37,8 +46,14 @@ class FieldMapping(BaseModel):
 
     requirement_id: str = Field(pattern=r"^req_[a-z0-9_]{1,40}$")
     requirement: str = Field(min_length=1, max_length=500)
+    concept: str | None = Field(default=None, max_length=40)
+    placement: str | None = Field(default=None, max_length=20)
     candidate_field_paths: list[str] = Field(default_factory=list, max_length=10)
     selected_field_path: str | None = Field(default=None, max_length=512)
+    supporting_field_paths: list[str] = Field(default_factory=list, max_length=20)
+    conflict: bool = False
+    conflicts_with: list[str] = Field(default_factory=list, max_length=10)
+    evidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
     data_type: str | None = Field(default=None, max_length=20)
     schema_evidence: str | None = Field(default=None, max_length=500)
     confidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
@@ -48,6 +63,15 @@ class FieldMapping(BaseModel):
     @property
     def is_blocking(self) -> bool:
         return self.status in {MappingStatus.MISSING, MappingStatus.INVALID}
+
+    @property
+    def needs_attention(self) -> bool:
+        """True when a human should look at this mapping before sending the document."""
+        return self.status in {
+            MappingStatus.NEEDS_REVIEW,
+            MappingStatus.MISSING,
+            MappingStatus.INVALID,
+        }
 
 
 class MappingReport(BaseModel):
@@ -62,6 +86,17 @@ class MappingReport(BaseModel):
             result[mapping.status.value] += 1
         return result
 
+    def satisfied(self) -> list[FieldMapping]:
+        """Bindings with semantic evidence (confirmed or schema-valid)."""
+        return [
+            mapping
+            for mapping in self.mappings
+            if mapping.status in {MappingStatus.CONFIRMED, MappingStatus.SCHEMA_VALID}
+        ]
+
+    def attention(self) -> list[FieldMapping]:
+        return [mapping for mapping in self.mappings if mapping.needs_attention]
+
     def blocking(self) -> list[FieldMapping]:
         return [mapping for mapping in self.mappings if mapping.is_blocking]
 
@@ -69,7 +104,7 @@ class MappingReport(BaseModel):
         return [
             mapping
             for mapping in self.mappings
-            if mapping.status in {MappingStatus.AMBIGUOUS, MappingStatus.MISSING}
+            if mapping.status in {MappingStatus.NEEDS_REVIEW, MappingStatus.MISSING}
         ]
 
     def by_requirement(self) -> dict[str, FieldMapping]:
@@ -86,8 +121,8 @@ def validate_mapping(schema: NormalizedSchema, mapping: FieldMapping) -> FieldMa
     """
     if mapping.selected_field_path is None:
         status = MappingStatus.MISSING if not mapping.candidate_field_paths else mapping.status
-        if status is MappingStatus.RESOLVED:
-            status = MappingStatus.AMBIGUOUS
+        if status in {MappingStatus.CONFIRMED, MappingStatus.SCHEMA_VALID}:
+            status = MappingStatus.NEEDS_REVIEW
         return mapping.model_copy(update={"status": status})
 
     node = schema.node(mapping.selected_field_path)
@@ -129,8 +164,9 @@ def validate_mapping(schema: NormalizedSchema, mapping: FieldMapping) -> FieldMa
 def summarize(report: MappingReport) -> str:
     counts = report.counts()
     return (
-        f"{counts['resolved']} resolved, {counts['ambiguous']} ambiguous, "
-        f"{counts['missing']} missing, {counts['invalid']} invalid"
+        f"{counts['confirmed']} confirmed, {counts['schema_valid']} schema-valid, "
+        f"{counts['needs_review']} needs review, {counts['missing']} missing, "
+        f"{counts['invalid']} invalid"
     )
 
 

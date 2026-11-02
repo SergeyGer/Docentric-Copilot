@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from . import sources, system, templates
+from . import demo, review, sources, system, templates
 
-__all__ = ["sources", "system", "templates"]
+__all__ = ["demo", "review", "sources", "system", "templates"]

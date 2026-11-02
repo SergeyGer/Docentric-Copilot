@@ -4,17 +4,47 @@
       "candidate_field_paths": [
         "MainData.Invoice.NetAmount",
         "MainData.Invoice.TaxAmount",
-        "MainData.Invoice.TotalAmount",
-        "MainData.Invoice.InvoiceId"
+        "MainData.Invoice.TotalAmount"
       ],
-      "confidence_score": 0.4666666666666667,
+      "concept": "net_amount",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": "number",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
       "requirement": "Create a tax invoice with net",
       "requirement_id": "req_00",
       "schema_evidence": "MainData.Invoice.NetAmount:number",
       "selected_field_path": "MainData.Invoice.NetAmount",
-      "status": "resolved"
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Invoice.NetAmount"
+      ]
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.NetAmount",
+        "MainData.Invoice.TaxAmount",
+        "MainData.Invoice.TotalAmount"
+      ],
+      "concept": "tax_amount",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": "number",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
+      "requirement": "Create a tax invoice with net",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.Invoice.TaxAmount:number",
+      "selected_field_path": "MainData.Invoice.TaxAmount",
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Invoice.TaxAmount"
+      ]
     },
     {
       "candidate_field_paths": [
@@ -22,30 +52,43 @@
         "MainData.Invoice.NetAmount",
         "MainData.Invoice.TaxAmount"
       ],
-      "confidence_score": 0.6857142857142857,
+      "concept": "total_amount",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": "number",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
       "requirement": "total amounts",
-      "requirement_id": "req_01",
+      "requirement_id": "req_02",
       "schema_evidence": "MainData.Invoice.TotalAmount:number",
       "selected_field_path": "MainData.Invoice.TotalAmount",
-      "status": "resolved"
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Invoice.TotalAmount"
+      ]
     },
     {
       "candidate_field_paths": [
-        "MainData.Invoice.IsEU",
-        "MainData.Invoice.CustomerName",
-        "MainData.Invoice.VatNumber",
-        "MainData.Invoice.TaxAmount"
+        "MainData.Invoice.IsEU"
       ],
-      "confidence_score": 0.13181818181818183,
-      "data_type": "string",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "concept": "vat_notice",
+      "confidence_score": 0.8,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": "boolean",
+      "evidence_score": 0.8,
+      "explanation": "Schema-valid binding with partial semantic evidence; review is recommended.",
+      "placement": null,
       "requirement": "a VAT notice when the customer is in the EU",
-      "requirement_id": "req_02",
-      "schema_evidence": "MainData.Invoice.CustomerName:string",
-      "selected_field_path": "MainData.Invoice.CustomerName",
-      "status": "resolved"
+      "requirement_id": "req_03",
+      "schema_evidence": "MainData.Invoice.IsEU:boolean",
+      "selected_field_path": "MainData.Invoice.IsEU",
+      "status": "schema_valid",
+      "supporting_field_paths": [
+        "MainData.Invoice.IsEU"
+      ]
     }
   ],
   "schema_id": "conditional_vat"

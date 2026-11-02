@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "description": "Logo, customer block, item table, totals, VAT notice and bank details in the footer.",
+      "id": "quotation",
+      "package": "quotation.ddsp",
+      "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+      "title": "Sales quotation"
+    },
+    {
+      "description": "Net, tax and gross totals, due date and a reverse-charge notice.",
+      "id": "invoice",
+      "package": "invoice.ddsp",
+      "prompt": "Create a tax invoice with the company logo, bill-to customer, invoice number and dates, a table of services with amounts, net, tax and gross totals, bank details in the footer and a reverse-charge note when the customer is in the EU and the invoice uses reverse charge.",
+      "title": "Tax invoice"
+    },
+    {
+      "description": "Vendor block, ordered items with quantities and prices, delivery terms.",
+      "id": "purchase-order",
+      "package": "purchase-order.ddsp",
+      "prompt": "Create a purchase order document with our company logo, vendor address, order number and date, a table of ordered items with quantities, unit prices and line amounts, a total and the delivery terms.",
+      "title": "Purchase order"
+    }
+  ]
+}

@@ -4,28 +4,41 @@
       "candidate_field_paths": [
         "MainData.Invoice.CustomerName",
         "MainData.Invoice.InvoiceId",
-        "MainData.Invoice.VatNumber",
-        "MainData.Invoice.IsEU"
+        "MainData.Invoice.VatNumber"
       ],
-      "confidence_score": 0.5666666666666667,
+      "concept": "customer_name",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": "string",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
       "requirement": "Create an invoice with the customer name",
       "requirement_id": "req_00",
       "schema_evidence": "MainData.Invoice.CustomerName:string",
       "selected_field_path": "MainData.Invoice.CustomerName",
-      "status": "resolved"
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Invoice.CustomerName"
+      ]
     },
     {
       "candidate_field_paths": [],
+      "concept": null,
       "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": null,
-      "explanation": "No field in the schema satisfies this requirement.",
+      "evidence_score": null,
+      "explanation": "No recognised document concept in this clause; the planner cannot bind it.",
+      "placement": null,
       "requirement": "a product image gallery",
-      "requirement_id": "req_01",
+      "requirement_id": "req_x00",
       "schema_evidence": null,
       "selected_field_path": null,
-      "status": "missing"
+      "status": "missing",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "missing_data"

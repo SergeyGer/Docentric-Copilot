@@ -3,12 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
-      "text": "Bank details"
+      "text": "Contoso Consulting AG  \u00b7  Document SQ-100245"
     },
     {
       "alignment": "None",
       "style": "Normal",
-      "text": "Bank Name: Northwind Bank  \u00b7  Iban: DE44 5001 0517 5407 3249 31  \u00b7  Swift: NORTDEFFXXX"
+      "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Quotation Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -56,42 +61,17 @@
     {
       "alignment": "None",
       "style": "Heading 2",
-      "text": "Customer"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Example Customer GmbH"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Account: DE-1042"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Hauptstrasse 12, 10115 Berlin, Germany"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "VAT number: DE123456789"
-    },
-    {
-      "alignment": "None",
-      "style": "Heading 2",
       "text": "Items"
     },
     {
       "alignment": "None",
       "style": "Normal",
-      "text": "Tax: 376.20"
+      "text": ""
     },
     {
-      "alignment": "RIGHT (2)",
-      "style": "Normal",
-      "text": "Total: 1,980.00"
+      "alignment": "None",
+      "style": "Heading 2",
+      "text": "Terms and notices"
     },
     {
       "alignment": "None",
@@ -102,33 +82,80 @@
       "alignment": "None",
       "style": "Normal",
       "text": "VAT notice: this document follows the EU VAT rules applicable to the customer tax status. Customer VAT number: DE123456789"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Payment details"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Bank Name: Northwind Bank"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Iban: DE44 5001 0517 5407 3249 31"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Swift: NORTDEFFXXX"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=sales_quotation;digest=9f8d8ad173de468783ce0ecc78539498;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=sales_quotation;digest=933462042466c818aa24ffecd9cb5a5d;docentric-compatibility=not_tested",
     "subject": "quotation_template",
     "title": "Sales Quotation"
   },
   "tables": [
     [
       [
+        "BILL TO\nExample Customer GmbH\nHauptstrasse 12, 10115 Berlin, Germany\nVAT: DE123456789",
+        "FROM\nContoso Consulting AG\nFriedrichstrasse 88, 10117 Berlin, Germany\nVAT: DE987654321"
+      ]
+    ],
+    [
+      [
+        "SKU",
         "Description",
         "Qty",
+        "Unit",
         "Unit price",
         "Amount"
       ],
       [
+        "ES-100",
         "Enterprise Subscription (annual)",
         "2",
+        "pcs",
         "750.00",
         "1,500.00"
       ],
       [
+        "TR-200",
         "Implementation Workshop",
         "3",
+        "days",
         "160.00",
         "480.00"
+      ]
+    ],
+    [
+      [
+        "Tax",
+        "376.20"
+      ],
+      [
+        "Total",
+        "1,980.00"
       ]
     ]
   ]

@@ -3,7 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
+      "text": "Contoso AG  \u00b7  "
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Document Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -27,7 +37,7 @@
     "word/media/image1.png"
   ],
   "package": {
-    "entry_count": 20,
+    "entry_count": 21,
     "has_document": true,
     "has_styles": true
   },
@@ -44,16 +54,29 @@
       "text": "Document"
     },
     {
-      "alignment": "RIGHT (2)",
+      "alignment": "None",
       "style": "Normal",
-      "text": "Total: 42.00"
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=image_binding;digest=ffd6ca01a7580f6266b6ebe4aa0ff188;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=image_binding;digest=7398583775a5a23a79a0aa91c5c6e08e;docentric-compatibility=not_tested",
     "subject": "document_template",
     "title": "Document"
   },
-  "tables": []
+  "tables": [
+    [
+      [
+        "BILL TO",
+        "FROM\nContoso AG\niVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==\nVAT: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+      ]
+    ],
+    [
+      [
+        "Total",
+        "42.00"
+      ]
+    ]
+  ]
 }

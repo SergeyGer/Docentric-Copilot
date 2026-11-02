@@ -74,7 +74,7 @@ class TestBaselinePlanner:
 
     def test_mapping_report_is_complete(self, planned) -> None:
         counts = planned.mapping.counts()
-        assert counts["resolved"] >= 8
+        assert counts["confirmed"] + counts["schema_valid"] >= 8
         assert counts["invalid"] == 0
         assert not planned.removed_bindings
 
@@ -203,7 +203,7 @@ class TestMappingReport:
     def test_title_requirement_counts_as_satisfied(self, schema) -> None:
         document = build_document(schema, "Create a professional sales quotation")
         report = build_mapping_report(schema, document, "Create a professional sales quotation")
-        assert report.mappings[0].status.value == "resolved"
+        assert report.mappings[0].status.value == "confirmed"
         assert report.mappings[0].selected_field_path is None
 
 

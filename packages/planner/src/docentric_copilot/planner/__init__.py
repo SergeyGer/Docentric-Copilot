@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .heuristic import BASELINE_VERSION, Roles, build_document, detect_document_kind, discover_roles
 from .prompt import PROMPT_VERSION, SYSTEM_PROMPT, build_messages, build_repair_message
+from .rebind import rebind_paths
 from .revisions import Change, diff_documents, summarize_changes
 from .service import (
     PlanOptions,
@@ -35,6 +36,7 @@ __all__ = [
     "diff_documents",
     "discover_roles",
     "extract_requirements",
+    "rebind_paths",
     "sanitize_document",
     "summarize_changes",
 ]

@@ -3,7 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
+      "text": "Document [[MainData.Invoice.InvoiceId]]"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Invoice Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -15,7 +25,7 @@
   ],
   "media": [],
   "package": {
-    "entry_count": 18,
+    "entry_count": 19,
     "has_document": true,
     "has_styles": true
   },
@@ -38,40 +48,51 @@
     },
     {
       "alignment": "None",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "alignment": "None",
       "style": "Heading 2",
-      "text": "Customer"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "[[MainData.Invoice.CustomerName]]"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Net: [[MainData.Invoice.NetAmount]]"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Tax: [[MainData.Invoice.TaxAmount]]"
-    },
-    {
-      "alignment": "RIGHT (2)",
-      "style": "Normal",
-      "text": "Total: [[MainData.Invoice.TotalAmount]]"
+      "text": "Terms and notices"
     },
     {
       "alignment": "None",
       "style": "Normal",
       "text": "VAT notice: this document follows the EU VAT rules applicable to the customer tax status."
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=missing_data;digest=2e43d1a749c0faf34fab9147db616fc0;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=missing_data;digest=6d3638c46f85b133a18a8ae308fe5e33;docentric-compatibility=not_tested",
     "subject": "invoice_template",
     "title": "Tax Invoice"
   },
-  "tables": []
+  "tables": [
+    [
+      [
+        "BILL TO\n[[MainData.Invoice.CustomerName]]",
+        "FROM\nVAT: [[MainData.Invoice.VatNumber]]"
+      ]
+    ],
+    [
+      [
+        "Net",
+        "[[MainData.Invoice.NetAmount]]"
+      ],
+      [
+        "Tax",
+        "[[MainData.Invoice.TaxAmount]]"
+      ],
+      [
+        "Total",
+        "[[MainData.Invoice.TotalAmount]]"
+      ]
+    ]
+  ]
 }

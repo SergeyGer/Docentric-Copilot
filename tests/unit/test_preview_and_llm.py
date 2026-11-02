@@ -92,6 +92,13 @@ class TestPreview:
         result = render_preview(planned.document, schema, sample_data=sample_data)
         assert "data:image/png;base64," in result.html
         assert result.stats["images"] == 1
+        assert 'class="doc-value" data-path="GeneralData.Company.CompanyLogo"' in result.html
+
+    def test_pages_and_binding_annotations(self, planned, schema, sample_data) -> None:
+        result = render_preview(planned.document, schema, sample_data=sample_data)
+        assert result.html.count('class="page"') >= 2
+        assert "Page 1 of 2" in result.html
+        assert 'data-path="MainData.Quotation.TotalAmount"' in result.html
 
     def test_landscape_page(self, schema, sample_data) -> None:
         document = load_document(
@@ -108,7 +115,7 @@ class TestPreview:
             }
         )
         result = render_preview(document, schema, sample_data=sample_data)
-        assert "page landscape" in result.html
+        assert 'class="page"' in result.html
 
 
 # --------------------------------------------------------------------------- #

@@ -128,7 +128,7 @@ class TestSemanticMapping:
             requirement_id="req_00",
             requirement="Customer name",
             selected_field_path="MainData.Quotation.Customer.Imaginary",
-            status=MappingStatus.RESOLVED,
+            status=MappingStatus.SCHEMA_VALID,
         )
         validated = validate_mapping(schema, mapping)
         assert validated.status is MappingStatus.INVALID
@@ -140,7 +140,7 @@ class TestSemanticMapping:
             requirement="Amount",
             selected_field_path="MainData.Quotation.Customer.Name",
             data_type="number",
-            status=MappingStatus.RESOLVED,
+            status=MappingStatus.SCHEMA_VALID,
         )
         assert validate_mapping(schema, mapping).status is MappingStatus.INVALID
 
@@ -150,10 +150,10 @@ class TestSemanticMapping:
             requirement="Total",
             selected_field_path="MainData.Quotation.TotalAmount",
             data_type="number",
-            status=MappingStatus.RESOLVED,
+            status=MappingStatus.SCHEMA_VALID,
         )
         validated = validate_mapping(schema, mapping)
-        assert validated.status is MappingStatus.RESOLVED
+        assert validated.status is MappingStatus.SCHEMA_VALID
         assert validated.schema_evidence.startswith("MainData.Quotation.TotalAmount")
 
 

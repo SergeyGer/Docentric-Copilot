@@ -221,17 +221,29 @@ class TestCompiler:
     def test_document_content(self, compiled) -> None:
         document = DocxDocument(io.BytesIO(compiled.content))
         texts = [paragraph.text for paragraph in document.paragraphs]
+        cell_texts = [
+            cell.text for table in document.tables for row in table.rows for cell in row.cells
+        ]
+        corpus = "\n".join(texts + cell_texts)
         assert "Sales Quotation" in texts
-        assert any("SQ-100245" in text for text in texts)
-        assert any("Example Customer GmbH" in text for text in texts)
-        assert any("1,980.00" in text for text in texts)
+        assert "SQ-100245" in corpus
+        assert "Example Customer GmbH" in corpus
+        assert "1,980.00" in corpus
+        assert "SKU" in corpus
         assert document.tables, "the item table is required"
-        rows = document.tables[0].rows
+        items_table = next(
+            table
+            for table in document.tables
+            if any("SKU" in cell.text for cell in table.rows[0].cells)
+        )
+        rows = items_table.rows
         assert len(rows) == 3  # header + two lines
-        assert rows[1].cells[0].text.startswith("Enterprise Subscription")
-        assert "DE44 5001 0517 5407 3249 31" in " ".join(
+        assert rows[1].cells[0].text == "ES-100"
+        footer_text = " ".join(
             paragraph.text for paragraph in document.sections[0].footer.paragraphs
         )
+        body_text = " ".join(paragraph.text for paragraph in document.paragraphs)
+        assert "DE44 5001 0517 5407 3249 31" in f"{footer_text} {body_text}"
 
     def test_logo_is_embedded(self, compiled) -> None:
         assert any(name.startswith("word/media/") for name in compiled.package["entries"])

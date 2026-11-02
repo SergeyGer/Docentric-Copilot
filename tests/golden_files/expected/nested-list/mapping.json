@@ -2,33 +2,45 @@
   "mappings": [
     {
       "candidate_field_paths": [
+        "MainData.Orders.Order.Lines.Line"
+      ],
+      "concept": "line_items",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": "collection",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
+      "requirement": "their line items",
+      "requirement_id": "req_00",
+      "schema_evidence": "MainData.Orders.Order.Lines.Line:collection",
+      "selected_field_path": "MainData.Orders.Order.Lines.Line",
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Orders.Order.Lines.Line"
+      ]
+    },
+    {
+      "candidate_field_paths": [
         "MainData.Orders.Order.OrderId",
         "MainData.Orders.Order.Lines.Line.Description",
         "MainData.Orders.Order.Lines.Line.Quantity"
       ],
+      "concept": null,
       "confidence_score": 0.1954545454545455,
-      "data_type": "string",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No recognised document concept in this clause; the planner cannot bind it.",
+      "placement": null,
       "requirement": "Create an order report with a list of orders",
-      "requirement_id": "req_00",
-      "schema_evidence": "MainData.Orders.Order.OrderId:string",
-      "selected_field_path": "MainData.Orders.Order.OrderId",
-      "status": "resolved"
-    },
-    {
-      "candidate_field_paths": [
-        "MainData.Orders.Order.Lines.Line",
-        "MainData.Orders.Order.Lines.Line.Description",
-        "MainData.Orders.Order.Lines.Line.Quantity"
-      ],
-      "confidence_score": 0.5571428571428572,
-      "data_type": "collection",
-      "explanation": "The plan binds the best matching field for this requirement.",
-      "requirement": "their line items",
-      "requirement_id": "req_01",
-      "schema_evidence": "MainData.Orders.Order.Lines.Line:collection",
-      "selected_field_path": "MainData.Orders.Order.Lines.Line",
-      "status": "resolved"
+      "requirement_id": "req_x00",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "nested_list"

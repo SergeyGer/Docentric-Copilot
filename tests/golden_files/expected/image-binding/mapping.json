@@ -4,14 +4,43 @@
       "candidate_field_paths": [
         "MainData.Company.CompanyLogo"
       ],
-      "confidence_score": 0.6111111111111112,
+      "concept": "company_logo",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": "image",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
       "requirement": "Create a report with the company logo",
       "requirement_id": "req_00",
       "schema_evidence": "MainData.Company.CompanyLogo:image",
       "selected_field_path": "MainData.Company.CompanyLogo",
-      "status": "resolved"
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Company.CompanyLogo"
+      ]
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Report.TotalAmount"
+      ],
+      "concept": "total_amount",
+      "confidence_score": 0.99,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": "number",
+      "evidence_score": 0.99,
+      "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly.",
+      "placement": null,
+      "requirement": "the total amount",
+      "requirement_id": "req_01",
+      "schema_evidence": "MainData.Report.TotalAmount:number",
+      "selected_field_path": "MainData.Report.TotalAmount",
+      "status": "confirmed",
+      "supporting_field_paths": [
+        "MainData.Report.TotalAmount"
+      ]
     },
     {
       "candidate_field_paths": [
@@ -19,27 +48,20 @@
         "MainData.Company.Name",
         "MainData.Report.TotalAmount"
       ],
-      "confidence_score": 0.13571428571428573,
-      "data_type": "string",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "concept": null,
+      "confidence_score": 0.4,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No recognised document concept in this clause; the planner cannot bind it.",
+      "placement": null,
       "requirement": "the report title",
-      "requirement_id": "req_01",
-      "schema_evidence": "MainData.Company.Name:string",
-      "selected_field_path": "MainData.Company.Name",
-      "status": "resolved"
-    },
-    {
-      "candidate_field_paths": [
-        "MainData.Report.TotalAmount"
-      ],
-      "confidence_score": 0.6857142857142857,
-      "data_type": "number",
-      "explanation": "The plan binds the best matching field for this requirement.",
-      "requirement": "the total amount",
-      "requirement_id": "req_02",
-      "schema_evidence": "MainData.Report.TotalAmount:number",
-      "selected_field_path": "MainData.Report.TotalAmount",
-      "status": "resolved"
+      "requirement_id": "req_x00",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "image_binding"

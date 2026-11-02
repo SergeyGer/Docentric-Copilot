@@ -4,6 +4,16 @@
       "alignment": "None",
       "style": "Footer",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Document Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -15,7 +25,7 @@
   ],
   "media": [],
   "package": {
-    "entry_count": 17,
+    "entry_count": 19,
     "has_document": true,
     "has_styles": true
   },
@@ -45,11 +55,16 @@
       "alignment": "None",
       "style": "Normal",
       "text": "Order: O-2"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=nested_list;digest=7788aab12c6ef84faab5dd118b94e62a;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=nested_list;digest=fe37a1e500e7e20496c15af7f2ddd33d;docentric-compatibility=not_tested",
     "subject": "document_template",
     "title": "Document"
   },

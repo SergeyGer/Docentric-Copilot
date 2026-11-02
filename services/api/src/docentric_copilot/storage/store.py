@@ -342,6 +342,16 @@ class Store:
             model=row["model"],
         )
 
+    def template_source(self, template_id: str) -> str:
+        """Return the source id a template belongs to."""
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT source_id FROM templates WHERE id = ?", (template_id,)
+            ).fetchone()
+        if row is None:
+            raise NotFoundError("Template not found", details={"template_id": template_id})
+        return str(row["source_id"])
+
     def list_versions(self, template_id: str) -> list[dict[str, Any]]:
         with self._lock:
             rows = self._connection.execute(

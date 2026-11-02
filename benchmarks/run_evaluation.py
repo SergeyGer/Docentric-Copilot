@@ -77,10 +77,14 @@ def main(argv: list[str] | None = None) -> int:
                 expected_paths=sorted(set(definition["expected_paths"])),
                 actual_paths=absolute_bindings(outcome.document, parsed.schema),
                 requirements=len(outcome.mapping.mappings),
-                covered_requirements=counts.get("resolved", 0),
+                covered_requirements=counts.get("confirmed", 0) + counts.get("schema_valid", 0),
                 compiled=compiled,
-                clarifications=counts.get("ambiguous", 0),
-                corrections=1 if outcome.removed_bindings or counts.get("invalid", 0) else 0,
+                clarifications=counts.get("needs_review", 0),
+                corrections=1
+                if outcome.removed_bindings
+                or counts.get("invalid", 0)
+                or counts.get("needs_review", 0)
+                else 0,
                 verified_compatible=False,
                 cost_usd=(
                     outcome.generation.usage.estimated_cost_usd if outcome.generation else 0.0

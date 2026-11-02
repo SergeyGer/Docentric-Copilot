@@ -4,17 +4,62 @@
       "candidate_field_paths": [
         "MainData.Invoice.InvoiceId",
         "MainData.Invoice.CurrencyCode",
-        "MainData.Invoice.CustomerName",
-        "MainData.Invoice.TotalAmount"
+        "MainData.Invoice.CustomerName"
       ],
-      "confidence_score": 0.3333333333333333,
+      "concept": "document_number",
+      "confidence_score": 0.8,
+      "conflict": false,
+      "conflicts_with": [],
       "data_type": "string",
-      "explanation": "The plan binds the best matching field for this requirement.",
+      "evidence_score": 0.8,
+      "explanation": "Schema-valid binding with partial semantic evidence; review is recommended.",
+      "placement": null,
       "requirement": "Create an invoice document with the invoice number",
       "requirement_id": "req_00",
       "schema_evidence": "MainData.Invoice.InvoiceId:string",
       "selected_field_path": "MainData.Invoice.InvoiceId",
-      "status": "resolved"
+      "status": "schema_valid",
+      "supporting_field_paths": [
+        "MainData.Invoice.InvoiceId"
+      ]
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.CustomerName"
+      ],
+      "concept": null,
+      "confidence_score": 0.5,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No recognised document concept in this clause; the planner cannot bind it.",
+      "placement": null,
+      "requirement": "customer",
+      "requirement_id": "req_x00",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing",
+      "supporting_field_paths": []
+    },
+    {
+      "candidate_field_paths": [
+        "MainData.Invoice.TotalAmount"
+      ],
+      "concept": null,
+      "confidence_score": 0.72,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No recognised document concept in this clause; the planner cannot bind it.",
+      "placement": null,
+      "requirement": "amount",
+      "requirement_id": "req_x01",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "missing",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "multilingual"

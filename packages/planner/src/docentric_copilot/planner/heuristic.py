@@ -28,6 +28,7 @@ from docentric_copilot.template_ir import (
     FieldBinding,
     Heading,
     ImageBinding,
+    PageBreak,
     PageSettings,
     Paragraph,
     Repeat,
@@ -35,6 +36,7 @@ from docentric_copilot.template_ir import (
     Table,
     TableColumn,
     TableRepeat,
+    TableRow,
     TableStyle,
     TextRun,
     TextStyle,
@@ -92,6 +94,7 @@ class Roles:
     line_description: str | None = None
     line_item: str | None = None
     line_quantity: str | None = None
+    line_unit: str | None = None
     line_price: str | None = None
     line_amount: str | None = None
     bank_fields: tuple[str, ...] = ()
@@ -318,6 +321,7 @@ def discover_roles(schema: NormalizedSchema, requirement: str) -> Roles:
     line_description = _pick_child(children, ("description", "name"))
     line_item = _pick_child(children, ("item", "id", "code", "number"), exclude=("description",))
     line_quantity = _pick_child(children, ("quantity", "qty", "count"))
+    line_unit = _pick_child(children, ("unit",), exclude=("price",))
     line_price = _pick_child(children, ("price", "rate"), exclude=("amount",))
     line_amount = _pick_child(children, ("amount", "total"), exclude=("price",))
 
@@ -378,6 +382,7 @@ def discover_roles(schema: NormalizedSchema, requirement: str) -> Roles:
         line_description=line_description,
         line_item=line_item,
         line_quantity=line_quantity,
+        line_unit=line_unit,
         line_price=line_price,
         line_amount=line_amount,
         bank_fields=bank_fields,
@@ -474,36 +479,27 @@ def build_document(
     if meta_runs:
         body.append(Paragraph(runs=meta_runs, space_after_pt=10))
 
-    if roles.party_name or roles.party_address:
-        body.append(
-            Heading(level=2, runs=[TextRun(text=roles.party_label)], style=_style(accent, 12, True))
-        )
-        if roles.party_name:
-            body.append(
-                Paragraph(runs=[FieldBinding(path=roles.party_name, style=_style(bold=True))])
-            )
-        if roles.party_id:
-            body.append(_label_value("Account", roles.party_id))
-        if roles.party_address:
-            body.append(
-                Paragraph(runs=[FieldBinding(path=roles.party_address, style=_style(size=9.5))])
-            )
-        if roles.party_vat:
-            body.append(_label_value("VAT number", roles.party_vat))
+    party_table = _party_block(roles, accent)
+    if party_table is not None:
+        body.append(party_table)
 
     # ----------------------------------------------------------------- table
     columns: list[_Column] = []
+    if roles.line_item:
+        columns.append(_Column("SKU", roles.line_item, 24.0))
     if roles.line_description:
-        columns.append(_Column("Description", roles.line_description, 70.0))
-    elif roles.line_item:
+        columns.append(_Column("Description", roles.line_description, 62.0))
+    elif roles.line_item and len(columns) == 0:
         columns.append(_Column("Item", roles.line_item, 70.0))
     if roles.line_quantity:
         columns.append(
-            _Column("Qty", roles.line_quantity, 16.0, Alignment.RIGHT, ValueFormat.NUMBER, 0)
+            _Column("Qty", roles.line_quantity, 14.0, Alignment.RIGHT, ValueFormat.NUMBER, 0)
         )
+    if roles.line_unit:
+        columns.append(_Column("Unit", roles.line_unit, 14.0))
     if roles.line_price:
         columns.append(
-            _Column("Unit price", roles.line_price, 28.0, Alignment.RIGHT, ValueFormat.NUMBER, 2)
+            _Column("Unit price", roles.line_price, 26.0, Alignment.RIGHT, ValueFormat.NUMBER, 2)
         )
     if roles.line_amount:
         columns.append(
@@ -539,11 +535,8 @@ def build_document(
                 for c in columns
             ],
             show_header=True,
-            style=TableStyle(
-                borders=True, header_background="#EEF2F7", zebra=True, font_size_pt=9.5
-            ),
+            style=TableStyle(borders=True, header_background=accent, zebra=True, font_size_pt=9.5),
         )
-        # Nested collections require an explicit enclosing repeat per level.
         for ancestor in reversed(chain[:-1]):
             alias = aliases[ancestor]
             inner_blocks: list[Any] = [block]
@@ -566,32 +559,22 @@ def build_document(
         body.append(block)
 
     # ---------------------------------------------------------------- totals
-    if roles.net:
-        body.append(_label_value("Net", roles.net, fmt=ValueFormat.NUMBER))
-    if roles.tax:
-        body.append(_label_value("Tax", roles.tax, fmt=ValueFormat.NUMBER))
-    if roles.total:
+    totals = _totals_block(roles, accent)
+    if totals is not None:
+        body.append(totals)
+
+    # ------------------------------------------------------- terms and notice
+    if roles.payment_terms or roles.vat_flag or roles.party_vat:
+        body.append(PageBreak())
         body.append(
-            Paragraph(
-                runs=[
-                    TextRun(text="Total: ", style=_style(bold=True, size=11)),
-                    FieldBinding(
-                        path=roles.total,
-                        format=ValueFormat.NUMBER,
-                        decimals=2,
-                        style=_style(bold=True, size=11),
-                    ),
-                ],
-                style=TextStyle(alignment=Alignment.RIGHT),
-                space_after_pt=6,
+            Heading(
+                level=2, runs=[TextRun(text="Terms and notices")], style=_style(accent, 12, True)
             )
         )
     if roles.payment_terms:
         body.append(_label_value("Payment terms", roles.payment_terms))
     if roles.delivery_terms:
         body.append(_label_value("Delivery terms", roles.delivery_terms))
-
-    # ------------------------------------------------------- conditional VAT
     if roles.vat_flag:
         notice_runs: list = [
             TextRun(
@@ -619,19 +602,41 @@ def build_document(
                 ],
             )
         )
+    if roles.bank_fields:
+        body.append(
+            Paragraph(runs=[TextRun(text="Payment details")], style=_style(accent, 11, True))
+        )
+        for _index, path in enumerate(roles.bank_fields):
+            body.append(
+                Paragraph(
+                    runs=[
+                        TextRun(
+                            text=f"{_humanize(path.rsplit('.', 1)[-1])}: ", style=_style(size=9.5)
+                        ),
+                        FieldBinding(path=path, style=_style(size=9.5)),
+                    ],
+                    space_after_pt=1,
+                )
+            )
+    body.append(
+        Paragraph(
+            runs=[
+                TextRun(text="Authorised signature: ______________________", style=_style(size=9.5))
+            ],
+            space_after_pt=2,
+        )
+    )
 
     # ---------------------------------------------------------------- footer
-    bank_runs: list = []
-    for index, path in enumerate(roles.bank_fields):
-        if index:
-            bank_runs.append(TextRun(text="  ·  "))
-        bank_runs.append(TextRun(text=f"{_humanize(path.rsplit('.', 1)[-1])}: "))
-        bank_runs.append(FieldBinding(path=path))
-    if bank_runs:
-        footer.append(
-            Paragraph(runs=[TextRun(text="Bank details")], style=_style(size=8.5, bold=True))
-        )
-        footer.append(Paragraph(runs=bank_runs, style=TextStyle(font_size_pt=8.5)))
+    footer_runs: list = []
+    if roles.company_name:
+        footer_runs.append(FieldBinding(path=roles.company_name, style=_style(size=8)))
+        footer_runs.append(TextRun(text="  ·  ", style=_style(size=8)))
+    if roles.number:
+        footer_runs.append(TextRun(text="Document ", style=_style(size=8)))
+        footer_runs.append(FieldBinding(path=roles.number, style=_style(size=8)))
+    if footer_runs:
+        footer.append(Paragraph(runs=footer_runs, style=TextStyle(font_size_pt=8)))
 
     if not body:
         body.append(
@@ -656,6 +661,93 @@ def build_document(
         sections=[
             Section(name="Main", body=body, header=header or None, footer=footer or None),
         ],
+    )
+
+
+def _party_block(roles: Roles, accent: str) -> Table | None:
+    """Two-column "Bill to" / "From" block rendered as a borderless table."""
+    if not (roles.party_name or roles.company_name):
+        return None
+
+    def cell_blocks(title: str, name: str | None, address: str | None, vat: str | None) -> Cell:
+        blocks: list = [Paragraph(runs=[TextRun(text=title, style=_style(accent, 9, True))])]
+        if name:
+            blocks.append(
+                Paragraph(runs=[FieldBinding(path=name, style=_style(bold=True, size=10))])
+            )
+        if address:
+            blocks.append(Paragraph(runs=[FieldBinding(path=address, style=_style(size=9))]))
+        if vat:
+            blocks.append(
+                Paragraph(
+                    runs=[
+                        TextRun(text="VAT: ", style=_style(size=9)),
+                        FieldBinding(path=vat, style=_style(size=9)),
+                    ]
+                )
+            )
+        return Cell(blocks=blocks)
+
+    return Table(
+        columns=[TableColumn(header="", width_mm=85.0), TableColumn(header="", width_mm=85.0)],
+        rows=[
+            TableRow(
+                cells=[
+                    cell_blocks("BILL TO", roles.party_name, roles.party_address, roles.party_vat),
+                    cell_blocks(
+                        "FROM", roles.company_name, roles.company_address, roles.company_vat
+                    ),
+                ]
+            )
+        ],
+        show_header=False,
+        style=TableStyle(borders=False, font_size_pt=9),
+    )
+
+
+def _totals_block(roles: Roles, accent: str) -> Table | None:
+    """Right-aligned totals block with a bold grand total."""
+    rows: list[TableRow] = []
+    for label, path, bold in (
+        ("Net", roles.net, False),
+        ("Tax", roles.tax, False),
+        ("Total", roles.total, True),
+    ):
+        if path is None:
+            continue
+        rows.append(
+            TableRow(
+                cells=[
+                    Cell(
+                        blocks=[
+                            Paragraph(runs=[TextRun(text=label, style=_style(bold=bold, size=10))])
+                        ]
+                    ),
+                    Cell(
+                        blocks=[
+                            Paragraph(
+                                runs=[
+                                    FieldBinding(
+                                        path=path,
+                                        format=ValueFormat.NUMBER,
+                                        decimals=2,
+                                        style=_style(bold=bold, size=10),
+                                    )
+                                ],
+                                style=TextStyle(alignment=Alignment.RIGHT),
+                            )
+                        ]
+                    ),
+                ]
+            )
+        )
+    if not rows:
+        return None
+    return Table(
+        columns=[TableColumn(header="", width_mm=55.0), TableColumn(header="", width_mm=40.0)],
+        rows=rows,
+        show_header=False,
+        style=TableStyle(borders=False, font_size_pt=10),
     )
 
 

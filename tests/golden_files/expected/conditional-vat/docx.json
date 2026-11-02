@@ -3,7 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
+      "text": "Document INV-77"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Invoice Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -15,7 +25,7 @@
   ],
   "media": [],
   "package": {
-    "entry_count": 18,
+    "entry_count": 19,
     "has_document": true,
     "has_styles": true
   },
@@ -38,40 +48,51 @@
     },
     {
       "alignment": "None",
+      "style": "Normal",
+      "text": ""
+    },
+    {
+      "alignment": "None",
       "style": "Heading 2",
-      "text": "Customer"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Nordic Trading AB"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Net: 1,000.00"
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
-      "text": "Tax: 250.00"
-    },
-    {
-      "alignment": "RIGHT (2)",
-      "style": "Normal",
-      "text": "Total: 1,250.00"
+      "text": "Terms and notices"
     },
     {
       "alignment": "None",
       "style": "Normal",
       "text": "VAT notice: this document follows the EU VAT rules applicable to the customer tax status."
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=conditional_vat;digest=676cbe25621c5a9f86517f5c0c911396;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=conditional_vat;digest=b76771bcfe594cdaefdcfa7ae3f29c3b;docentric-compatibility=not_tested",
     "subject": "invoice_template",
     "title": "Tax Invoice"
   },
-  "tables": []
+  "tables": [
+    [
+      [
+        "BILL TO\nNordic Trading AB",
+        "FROM\nVAT: SE556677889901"
+      ]
+    ],
+    [
+      [
+        "Net",
+        "1,000.00"
+      ],
+      [
+        "Tax",
+        "250.00"
+      ],
+      [
+        "Total",
+        "1,250.00"
+      ]
+    ]
+  ]
 }

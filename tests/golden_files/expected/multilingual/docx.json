@@ -3,7 +3,17 @@
     {
       "alignment": "None",
       "style": "Footer",
+      "text": "Document RE-2026-1"
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
       "text": ""
+    },
+    {
+      "alignment": "None",
+      "style": "Normal",
+      "text": "Invoice Template\tPage 1 of 1"
     }
   ],
   "header": [
@@ -15,7 +25,7 @@
   ],
   "media": [],
   "package": {
-    "entry_count": 17,
+    "entry_count": 19,
     "has_document": true,
     "has_styles": true
   },
@@ -38,25 +48,28 @@
     },
     {
       "alignment": "None",
-      "style": "Heading 2",
-      "text": "Customer"
-    },
-    {
-      "alignment": "None",
       "style": "Normal",
-      "text": "M\u00fcller & S\u00f6hne GmbH"
-    },
-    {
-      "alignment": "RIGHT (2)",
-      "style": "Normal",
-      "text": "Total: 99.90"
+      "text": "Authorised signature: ______________________"
     }
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=multilingual;digest=1f4f33403a3b190d65820fab5714fe94;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=multilingual;digest=2bfcc3a3bca9e8cb401960a45a0416e6;docentric-compatibility=not_tested",
     "subject": "invoice_template",
     "title": "Tax Invoice"
   },
-  "tables": []
+  "tables": [
+    [
+      [
+        "BILL TO\nM\u00fcller & S\u00f6hne GmbH",
+        "FROM"
+      ]
+    ],
+    [
+      [
+        "Total",
+        "99.90"
+      ]
+    ]
+  ]
 }

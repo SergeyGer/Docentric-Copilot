@@ -37,6 +37,10 @@ Docentric AX.
       (IR changes), `docs/API_SPEC.md` + `docs/openapi.json` (endpoint/schema changes),
       `docs/DDSP_COMPATIBILITY.md` (parser/diagnostics/limits), `docs/THREAT_MODEL.md` (new trust
       boundary), README feature matrix, `docs/ROADMAP.md`.
+- [ ] **Wiki:** the affected page in `docs/wiki/` is updated (a behaviour change always updates its page),
+      the page is listed in `_Sidebar.md`, and `python scripts/check_docs_links.py` passes.
+- [ ] **ADR:** a decision that is hard to reverse is recorded as `docs/adr/NNNN-*.md` and added to
+      `docs/adr/README.md`; existing ADRs are superseded, never rewritten.
 - [ ] **No unverified compatibility claim** was introduced anywhere (code, docs, comments, UI copy).
 - [ ] **No secrets or real data:** no API keys, `.env`, customer data, third-party templates or
       proprietary DDSP packages in code, tests, fixtures, logs or screenshots.

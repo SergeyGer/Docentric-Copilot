@@ -193,3 +193,49 @@ Version numbers follow semantic versioning for the distribution; the IR has its 
    attaches the distributions to the GitHub release (registry publishing is not configured).
 
 No release may be published while the documentation claims an unverified compatibility.
+
+## Documentation
+
+Documentation is part of the change, not a follow-up.
+
+### The wiki rule
+
+Behaviour changes update the page that describes them **in the same pull request**:
+
+| If you change | Update |
+| --- | --- |
+| A mapping status, confidence rule, review action | `docs/wiki/Validation-Model.md`, `docs/wiki/Feature-Tour.md` |
+| The planner or the requirement concepts | `docs/wiki/Architecture.md`, `docs/wiki/Template-IR.md` |
+| An endpoint, CLI flag or exit code | `docs/wiki/API-Reference.md`, `docs/wiki/CLI-Reference.md` |
+| Compatibility gating or its wording | `docs/wiki/Docentric-AX-Compatibility.md` |
+| The build, tests or CI | `docs/wiki/Testing.md`, `docs/wiki/Contributing.md` |
+
+`docs/wiki/` is the reviewed source; the GitHub Wiki is published from it:
+
+```bash
+python scripts/check_docs_links.py     # links, anchors, ADR structure, sidebar coverage
+python scripts/sync_wiki.py --push     # publish after the pull request merges
+python scripts/sync_wiki.py --pull     # bring remote edits back for review
+```
+
+A page that is not listed in `docs/wiki/_Sidebar.md` is invisible and fails CI.
+
+### Versioning
+
+- Documentation describes the **current release**; the changelog keeps history.
+- Statements that depend on a release or an environment state it explicitly
+  ("as of 0.3.0", "not tested in a Docentric runtime").
+- Compatibility pages carry a verification status and a date; treating "not tested" as a
+  temporary placeholder is a bug.
+- Nothing is deleted to make a page look current — superseded guidance moves to the changelog.
+
+### Architecture Decision Records
+
+Decisions that are expensive to reverse get an ADR in `docs/adr/`, following
+[the template](docs/adr/TEMPLATE.md): **Status → Context → Decision → Consequences**, plus the
+alternatives considered. The ADR is reviewed with the pull request that needs it and listed in
+[`docs/adr/README.md`](docs/adr/README.md). An accepted ADR is immutable; a changed decision is
+recorded as a new ADR that supersedes it.
+
+CI runs `scripts/check_docs_links.py`, so broken links and missing sections fail the build.
+

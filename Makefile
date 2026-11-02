@@ -62,3 +62,6 @@ ci: lint typecheck test-cov ## Everything CI runs for Python
 clean: ## Remove local caches and build output
 	rm -rf .pytest_cache .ruff_cache .mypy_cache htmlcov coverage.xml dist build .data
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +
+
+docs-check:
+	python scripts/check_docs_links.py

@@ -49,6 +49,9 @@ jobs:
       - name: Golden files are up to date
         run: python -m tests.golden_files.update_golden --check
 
+      - name: Docs links, ADR index and wiki sidebar
+        run: python scripts/check_docs_links.py
+
       - name: OpenAPI document is up to date
         run: |
           python scripts/export_openapi.py

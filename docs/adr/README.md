@@ -1,0 +1,16 @@
+# Architecture Decision Records
+
+Every significant decision is recorded as an ADR: what forced it, what we chose, and what it costs.
+ADRs are immutable once accepted; a changed decision is superseded, never rewritten.
+
+| ADR | Decision | Status |
+| --- | --- | --- |
+| [ADR-0001](0001-template-ir.md) | A versioned Template IR between the planner and the compilers | Accepted |
+| [ADR-0002](0002-llm-compiler-separation.md) | The LLM plans; deterministic code compiles | Accepted |
+| [ADR-0003](0003-deterministic-docx.md) | Deterministic DOCX output and content addressing | Accepted |
+| [ADR-0004](0004-preview-strategy.md) | Independent HTML preview, never a Docentric runtime | Accepted |
+| [ADR-0005](0005-docentric-compatibility-gate.md) | Fail-closed Docentric AX compatibility gate | Accepted |
+| [ADR-0006](0006-provider-gateway.md) | Provider gateway with a deterministic baseline | Accepted |
+
+New ADRs start from [TEMPLATE.md](TEMPLATE.md) and are reviewed in the pull request that needs
+the decision. `scripts/check_docs_links.py` verifies the structure and this index in CI.

@@ -16,6 +16,20 @@ _TRUE = {"1", "true", "yes", "on"}
 _FALSE = {"0", "false", "no", "off"}
 
 
+def _load_local_env() -> None:
+    """Load a local ``.env`` from the working directory, without overriding the real env."""
+    try:
+        from dotenv import find_dotenv, load_dotenv
+    except ImportError:  # pragma: no cover - optional convenience
+        return
+    path = find_dotenv(usecwd=True)
+    if path:
+        load_dotenv(path, override=False)
+
+
+_load_local_env()
+
+
 def _env_str(name: str, default: str) -> str:
     value = os.environ.get(name)
     return default if value is None or value == "" else value

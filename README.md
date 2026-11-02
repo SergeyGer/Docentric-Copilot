@@ -20,6 +20,19 @@ No designer sessions. No manual field hunting. No surprises in front of a custom
 
 ---
 
+## Configure an AI provider
+
+The deterministic `mock` provider needs no key. To use a real model, create `.env` from the template
+and fill in the key:
+
+```bash
+cp .env.example .env      # then edit .env
+uvicorn docentric_copilot.api.main:app --port 8000
+```
+
+`GET /api/v1/providers` reports which providers are configured. `.env` is git-ignored; real
+environment variables always override it. Without a key the application keeps working offline.
+
 ## Try it now
 
 **[Open the live demo →](https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app)**

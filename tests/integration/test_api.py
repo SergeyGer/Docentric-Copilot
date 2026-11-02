@@ -123,9 +123,7 @@ def test_full_flow(client: TestClient, source: dict) -> None:
 
     # One requirement is genuinely ambiguous (customer vs company VAT); a reviewer
     # confirms it before compilation is allowed.
-    pending = [
-        item for item in plan_body["mapping"]["mappings"] if item["status"] != "confirmed"
-    ]
+    pending = [item for item in plan_body["mapping"]["mappings"] if item["status"] != "confirmed"]
     version = plan_body["version"]
     for item in pending:
         target = item.get("selected_field_path") or item["candidate_field_paths"][0]

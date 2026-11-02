@@ -8,6 +8,12 @@ const apiProxyTarget = process.env.API_PROXY_TARGET ?? "http://127.0.0.1:8000";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Live model comparisons run several provider calls sequentially and can
+    // take a minute or more; the 30 s default proxy timeout would cut the
+    // response off even though the API finished the work.
+    proxyTimeout: 300_000,
+  },
   async rewrites() {
     return [
       {

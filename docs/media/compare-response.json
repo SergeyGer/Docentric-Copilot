@@ -1,0 +1,58 @@
+{
+  "runs": [
+    {
+      "provider": "openai",
+      "model": "gpt-4.1-2025-04-14",
+      "ok": true,
+      "error": null,
+      "latency_ms": 21001,
+      "tokens": 0,
+      "cost_usd": null,
+      "counts": {
+        "confirmed": 9,
+        "schema_valid": 2,
+        "needs_review": 1,
+        "conflict": 0,
+        "missing": 0,
+        "invalid": 0
+      },
+      "validation": {
+        "structural": "passed",
+        "semantic": "passed",
+        "logical": "passed",
+        "visual": "skipped",
+        "docentric_compatibility": "not_tested"
+      },
+      "ir_digest": "3ee6835a6bf1d6378d09ee86d658582b0b8fe44e7f9686afc918f0ed7212cb4d",
+      "requirements": 12
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "ok": true,
+      "error": null,
+      "latency_ms": 17671,
+      "tokens": 0,
+      "cost_usd": null,
+      "counts": {
+        "confirmed": 9,
+        "schema_valid": 2,
+        "needs_review": 1,
+        "conflict": 0,
+        "missing": 0,
+        "invalid": 0
+      },
+      "validation": {
+        "structural": "passed",
+        "semantic": "passed",
+        "logical": "passed",
+        "visual": "skipped",
+        "docentric_compatibility": "not_tested"
+      },
+      "ir_digest": "04eb5648b1b0defeb029964e0cb8be68023cfdd514d67c93df5f235276a9d71b",
+      "requirements": 12
+    }
+  ],
+  "recommended": "anthropic",
+  "note": "Measured on this exact brief and schema. Cost is reported only when the provider returned usage and a known price; zero for the deterministic baseline."
+}

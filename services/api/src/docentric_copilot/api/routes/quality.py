@@ -183,11 +183,8 @@ async def compare(
                     model=target.model or getattr(generation, "model", None),
                     ok=True,
                     latency_ms=int((time.perf_counter() - started) * 1000),
-                    tokens=int(
-                        getattr(generation, "prompt_tokens", 0)
-                        + getattr(generation, "completion_tokens", 0)
-                    ),
-                    cost_usd=getattr(generation, "cost_usd", None),
+                    tokens=_usage_tokens(generation),
+                    cost_usd=_usage_cost(generation),
                     counts=outcome.mapping.counts(),
                     validation=report.statuses(),
                     ir_digest=ir_digest(outcome.document),
@@ -244,3 +241,15 @@ async def decide_route(request: RouteRequest, store: Store = Depends(get_store))
 
 
 __all__ = ["router"]
+
+
+def _usage_tokens(generation: Any) -> int:
+    usage = getattr(generation, "usage", None)
+    if usage is None:
+        return 0
+    return int((usage.prompt_tokens or 0) + (usage.completion_tokens or 0))
+
+
+def _usage_cost(generation: Any) -> float | None:
+    usage = getattr(generation, "usage", None)
+    return getattr(usage, "estimated_cost_usd", None) if usage is not None else None

@@ -19,7 +19,7 @@ from docentric_copilot.schema_resolver import (
     split_clauses,
 )
 from docentric_copilot.schema_resolver.concept_match import matches_kind
-from docentric_copilot.template_ir import load_document
+from docentric_copilot.template_ir import FieldBinding, load_document
 
 from tests.conftest import EXAMPLES
 
@@ -139,3 +139,30 @@ def test_revision_falls_back_to_replanning(source, planned) -> None:
         )
     )
     assert outcome.changed
+
+
+@pytest.mark.parametrize(
+    ("package", "prompt", "document_type"),
+    [
+        ("invoice/sales-invoice.ddsp", "invoice/prompt.txt", "Invoice"),
+        ("purchase-order/purchase-order.ddsp", "purchase-order/prompt.txt", "PurchaseOrder"),
+    ],
+)
+def test_company_roles_bind_their_own_field(package: str, prompt: str, document_type: str) -> None:
+    """The logo must never satisfy the company address or VAT role."""
+    from docentric_copilot.preview import render_preview
+
+    source = parse_ddsp((EXAMPLES / package).read_bytes(), "x.ddsp")
+    outcome = asyncio.run(
+        TemplatePlanner(LLMGateway()).plan(source.schema, (EXAMPLES / prompt).read_text())
+    )
+    header_paths = [
+        run.path
+        for block in outcome.document.sections[0].header or []
+        for run in getattr(block, "runs", [])
+        if isinstance(run, FieldBinding)
+    ]
+    assert "GeneralData.Company.CompanyLogo" not in header_paths
+    html = render_preview(outcome.document, source.schema, sample_data=source.sample_data).html
+    assert ">iVBOR" not in html
+    assert html.count('src="data:image/png;base64,') == 1

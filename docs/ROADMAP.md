@@ -174,3 +174,14 @@ verification below 1024 px. Both are tracked under M5.
 - Training or fine-tuning models.
 - Multi-tenant SaaS billing.
 - Claiming compatibility based on the absence of errors.
+
+## Three strategic initiatives
+
+| Initiative | Status | Evidence |
+| --- | --- | --- |
+| Adaptive multi-LLM architecture | Router, policy, budgets and deterministic fallback implemented; live per-provider benchmark pending | `docs/ROUTING.md`, `tests/unit/test_routing_and_quality.py` |
+| AI document quality and visual optimisation | IR-level quality checks and typed optimisation shipped; PDF renderer optional and not enabled | `docs/QUALITY.md`, ADR-0008 |
+| Docentric AX compatibility engine | Interface and capability matrix only, gated and `experimental` | ADR-0009, `docs/DOCENTRIC_AX_COMPATIBILITY.md` |
+
+Sequence follows the product brief: measurable AI quality first, then visual quality, with AX
+feasibility research in parallel and no compatibility claims before an independent integration run.

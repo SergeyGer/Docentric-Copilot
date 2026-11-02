@@ -60,3 +60,17 @@ If you have a licensed environment and can run a permitted verification, open an
 - [DDSP Compatibility](DDSP-Compatibility) — the input side of the same problem.
 - [Validation Model](Validation-Model) — why `not_tested` is a first-class result.
 - [ADR-0005 Compatibility gate](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/adr/0005-docentric-compatibility-gate.md).
+
+## Adapter interface (experimental, gated)
+
+The repository now ships the AX adapter **contract** and a capability matrix — `FieldAdapter`,
+`ListAdapter`, `ImageAdapter`, `ConditionalAdapter`, `CompatibilityValidator` and
+`IntegrationTestHarness`. Every capability is marked `experimental`; the adapter raises
+`UnsupportedTargetError` and the API keeps rejecting the AX target.
+
+The blocking questions are explicit: which tagging format is lawfully supported, where licensed
+runtime and reference packages can be obtained, and which dynamic elements an independent
+integration run must execute. Until those are answered, **generic DOCX is the only output** and the
+status stays `not_tested`.
+
+Decision record: [ADR-0009](../adr/0009-ax-adapter-gate.md).

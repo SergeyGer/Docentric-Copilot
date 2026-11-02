@@ -11,6 +11,22 @@ version (`1.0`) independent of the distribution version.
 No changes yet after the 0.2.0 release. Planned work is tracked in [docs/ROADMAP.md](docs/ROADMAP.md);
 plans are not changelog entries.
 
+## [Unreleased]
+
+### Added — strategic initiatives
+
+- **Adaptive routing** (`docs/ROUTING.md`): complexity classification from observable facts, provider
+  tiers with explicit budgets, deterministic fallback and `requires_review` for ambiguous briefs.
+  `POST /api/v1/templates/route` returns the decision, its reasons and the policy.
+- **Document quality engine** (`docs/QUALITY.md`): IR-level checks for table overflow, image clipping,
+  empty sections, header/footer, typography and unbreakable values, plus typed layout optimisation
+  that writes a new immutable version and re-validates it. `POST /api/v1/templates/quality` and
+  `POST /api/v1/templates/optimize`.
+- **AX adapter interface** (`docs/adr/0009-ax-adapter-gate.md`): the capability matrix for Field,
+  List, Image, Conditional, validator and integration harness, all `experimental`; the adapter raises
+  `UnsupportedTargetError`. Compatibility stays `not_tested`.
+- ADR-0007, ADR-0008, ADR-0009 and the documentation policy (link checks, ADR index, wiki mirror).
+
 ## [0.2.1] - toolchain update
 
 Patch release with dependency updates only. No engine behaviour changed.

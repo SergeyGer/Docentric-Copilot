@@ -11,6 +11,9 @@ ADRs are immutable once accepted; a changed decision is superseded, never rewrit
 | [ADR-0004](0004-preview-strategy.md) | Independent HTML preview, never a Docentric runtime | Accepted |
 | [ADR-0005](0005-docentric-compatibility-gate.md) | Fail-closed Docentric AX compatibility gate | Accepted |
 | [ADR-0006](0006-provider-gateway.md) | Provider gateway with a deterministic baseline | Accepted |
+| [ADR-0007](0007-adaptive-model-routing.md) | Adaptive routing with a deterministic fallback | Accepted |
+| [ADR-0008](0008-ir-level-quality-engine.md) | Quality checks on the IR, not on pixels | Accepted |
+| [ADR-0009](0009-ax-adapter-gate.md) | The AX adapter is a gated interface, not an implementation | Accepted |
 
 New ADRs start from [TEMPLATE.md](TEMPLATE.md) and are reviewed in the pull request that needs
 the decision. `scripts/check_docs_links.py` verifies the structure and this index in CI.

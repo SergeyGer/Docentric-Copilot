@@ -609,6 +609,54 @@
         "title": "DesignStyle",
         "type": "string"
       },
+      "DocumentRef": {
+        "additionalProperties": false,
+        "properties": {
+          "ir": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ir"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "source_id"
+        ],
+        "title": "DocumentRef",
+        "type": "object"
+      },
       "Finding": {
         "additionalProperties": false,
         "properties": {
@@ -757,6 +805,64 @@
         ],
         "title": "Level",
         "type": "string"
+      },
+      "OptimizeResponse": {
+        "properties": {
+          "after": {
+            "additionalProperties": true,
+            "title": "After",
+            "type": "object"
+          },
+          "before": {
+            "additionalProperties": true,
+            "title": "Before",
+            "type": "object"
+          },
+          "fixes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Fixes",
+            "type": "array"
+          },
+          "ir": {
+            "additionalProperties": true,
+            "title": "Ir",
+            "type": "object"
+          },
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "template_id": {
+            "title": "Template Id",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Validation",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "template_id",
+          "version",
+          "fixes",
+          "before",
+          "after",
+          "ir",
+          "ir_digest",
+          "validation"
+        ],
+        "title": "OptimizeResponse",
+        "type": "object"
       },
       "PlanOptionsRequest": {
         "additionalProperties": false,
@@ -1024,6 +1130,25 @@
         "title": "ProviderView",
         "type": "object"
       },
+      "QualityResponse": {
+        "properties": {
+          "ir_digest": {
+            "title": "Ir Digest",
+            "type": "string"
+          },
+          "report": {
+            "additionalProperties": true,
+            "title": "Report",
+            "type": "object"
+          }
+        },
+        "required": [
+          "report",
+          "ir_digest"
+        ],
+        "title": "QualityResponse",
+        "type": "object"
+      },
       "RevisionRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1169,6 +1294,52 @@
           "change_summary"
         ],
         "title": "RevisionResponse",
+        "type": "object"
+      },
+      "RouteRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "prompt"
+        ],
+        "title": "RouteRequest",
+        "type": "object"
+      },
+      "RouteResponse": {
+        "properties": {
+          "decision": {
+            "additionalProperties": true,
+            "title": "Decision",
+            "type": "object"
+          },
+          "policy": {
+            "additionalProperties": true,
+            "title": "Policy",
+            "type": "object"
+          },
+          "requirements": {
+            "title": "Requirements",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "decision",
+          "policy",
+          "requirements"
+        ],
+        "title": "RouteResponse",
         "type": "object"
       },
       "SchemaView": {
@@ -1866,6 +2037,47 @@
         ]
       }
     },
+    "/api/v1/templates/optimize": {
+      "post": {
+        "operationId": "optimize_api_v1_templates_optimize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentRef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Optimize",
+        "tags": [
+          "quality"
+        ]
+      }
+    },
     "/api/v1/templates/plan": {
       "post": {
         "description": "Turn a natural language requirement into a validated Template IR.",
@@ -1950,6 +2162,47 @@
         ]
       }
     },
+    "/api/v1/templates/quality": {
+      "post": {
+        "operationId": "quality_api_v1_templates_quality_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentRef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Quality",
+        "tags": [
+          "quality"
+        ]
+      }
+    },
     "/api/v1/templates/revise": {
       "post": {
         "description": "Create a new IR version from a natural language change request.",
@@ -1989,6 +2242,47 @@
         "summary": "Revise Template",
         "tags": [
           "templates"
+        ]
+      }
+    },
+    "/api/v1/templates/route": {
+      "post": {
+        "operationId": "decide_route_api_v1_templates_route_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide Route",
+        "tags": [
+          "quality"
         ]
       }
     },

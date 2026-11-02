@@ -10,7 +10,7 @@ from docentric_copilot.api.routes.common import resolve_document
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.config import get_settings
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
-from docentric_copilot.errors import InvalidInputError
+from docentric_copilot.errors import InvalidInputError, ProviderError
 from docentric_copilot.planner import (
     analyze_quality,
     classify,

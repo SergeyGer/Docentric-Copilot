@@ -41,10 +41,11 @@ def anchors(path: Path) -> set[str]:
 def check_links(path: Path, failures: list[str]) -> None:
     for raw in LINK.findall(path.read_text(encoding="utf-8")):
         target = raw.strip()
-        if target.startswith(("http://", "https://", "mailto:", "#")):
-            if target.startswith("#") and target[1:]:
-                if slug(target[1:]) not in anchors(path):
-                    failures.append(f"{path.relative_to(ROOT)}: missing anchor {target}")
+        if target.startswith(("http://", "https://", "mailto:")):
+            continue
+        if target.startswith("#"):
+            if target[1:] and slug(target[1:]) not in anchors(path):
+                failures.append(f"{path.relative_to(ROOT)}: missing anchor {target}")
             continue
         file_part, _, anchor = target.partition("#")
         resolved = (path.parent / unquote(file_part)).resolve()

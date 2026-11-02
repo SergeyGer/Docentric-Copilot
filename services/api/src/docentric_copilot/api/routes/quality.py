@@ -7,6 +7,7 @@ from typing import Any
 from docentric_copilot.api.deps import get_service, get_store
 from docentric_copilot.api.routes.common import resolve_document
 from docentric_copilot.app.service import TemplateService
+from docentric_copilot.config import get_settings
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError
 from docentric_copilot.planner import (
@@ -129,7 +130,10 @@ async def decide_route(request: RouteRequest, store: Store = Depends(get_store))
     schema = NormalizedSchema.model_validate(source.schema_dict())
     requirements = parse_requirements(request.prompt).requirements
     complexity, reasons = classify(schema, requirements)
-    decision = route(complexity, configured={"mock"})
+    configured = {
+        name for name, provider in get_settings().providers.items() if provider.configured
+    }
+    decision = route(complexity, configured=configured)
     decision = decision.model_copy(update={"reason": [*reasons, *decision.reason]})
     return RouteResponse(
         decision=decision.model_dump(mode="json"),

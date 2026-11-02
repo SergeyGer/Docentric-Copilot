@@ -8,12 +8,9 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
-No changes yet after the 0.2.0 release. Planned work is tracked in [docs/ROADMAP.md](docs/ROADMAP.md);
-plans are not changelog entries.
+## [0.3.0] - 2026-11-02
 
-## [Unreleased]
-
-### Added — strategic initiatives
+### Added
 
 - **Adaptive routing** (`docs/ROUTING.md`): complexity classification from observable facts, provider
   tiers with explicit budgets, deterministic fallback and `requires_review` for ambiguous briefs.
@@ -26,6 +23,19 @@ plans are not changelog entries.
   List, Image, Conditional, validator and integration harness, all `experimental`; the adapter raises
   `UnsupportedTargetError`. Compatibility stays `not_tested`.
 - ADR-0007, ADR-0008, ADR-0009 and the documentation policy (link checks, ADR index, wiki mirror).
+- `.env.example` with every supported variable, automatic `.env` loading and explicit
+  `python-dotenv` dependency.
+- Reviewer confirmation endpoint, demo sessions and the Streamlit demo.
+
+### Fixed
+- Company roles bind their own field: the logo no longer satisfies the address or VAT role.
+- Preview renders borderless tables and page numbers correctly.
+- Anthropic adapter: no deprecated `temperature`, fallback when a model rejects forced tool choice.
+- OpenAI adapter: truncated output is reported as such instead of a JSON parse error.
+
+### Changed
+- Compilation is gated while a mapping still needs review.
+- Mapping statuses are `confirmed`, `schema_valid`, `needs_review`, `conflict`, `missing`, `invalid`.
 
 ## [0.2.1] - toolchain update
 

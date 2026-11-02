@@ -222,7 +222,7 @@ def _build_settings() -> Settings:
         llm_timeout_seconds=_env_float("DC_LLM_TIMEOUT_SECONDS", 60.0, minimum=1.0),
         llm_max_retries=_env_int("DC_LLM_MAX_RETRIES", 2, minimum=0, maximum=5),
         llm_max_generation_cost_usd=_env_float("DC_LLM_MAX_GENERATION_COST_USD", 0.50, minimum=0.0),
-        llm_max_output_tokens=_env_int("DC_LLM_MAX_OUTPUT_TOKENS", 8_000, minimum=256),
+        llm_max_output_tokens=_env_int("DC_LLM_MAX_OUTPUT_TOKENS", 16_000, minimum=256),
         log_level=_env_str("DC_LOG_LEVEL", "INFO").upper(),
         log_json=_env_bool("DC_LOG_JSON", True),
     )

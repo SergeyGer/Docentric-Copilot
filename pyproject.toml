@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docentric-copilot"
-version = "0.2.1"
+version = "0.3.0"
 description = "Schema-aware AI prompt-to-template engine for enterprise document automation"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -3,7 +3,7 @@
 | Field | Value |
 | --- | --- |
 | Product | Docentric Copilot |
-| Version | 0.2.1 |
+| Version | 0.3.0 |
 | IR version | 1.0 |
 | Status | Living document; claims map to the implementation in this repository |
 | Audience | Engineering, QA, security review, integration partners |

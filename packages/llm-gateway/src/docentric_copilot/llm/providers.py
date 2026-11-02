@@ -269,13 +269,22 @@ class OpenAIProvider(BaseHTTPProvider):
                 details={"provider": self.name},
             ) from exc
         usage = body.get("usage") or {}
+        finish_reason = body["choices"][0].get("finish_reason")
+        if finish_reason == "length":
+            raise ProviderError(
+                "The model stopped before finishing the document",
+                details={
+                    "reason": "output_truncated",
+                    "hint": "increase DC_LLM_MAX_OUTPUT_TOKENS or use a smaller schema",
+                },
+            )
         return self._result(
             content=extract_json_object(text or ""),
             model=body.get("model") or settings.model,
             prompt_tokens=int(usage.get("prompt_tokens", 0)),
             completion_tokens=int(usage.get("completion_tokens", 0)),
             latency_ms=latency_ms,
-            finish_reason=(body["choices"][0].get("finish_reason") or None),
+            finish_reason=finish_reason,
             raw_text=text,
         )
 
@@ -311,7 +320,8 @@ class AnthropicProvider(BaseHTTPProvider):
         payload: dict[str, Any] = {
             "model": settings.model,
             "max_tokens": settings.max_output_tokens,
-            "temperature": settings.temperature,
+            # Newer Claude models reject `temperature`; the gateway does not need
+            # it because validation, not sampling, decides what is acceptable.
             "messages": dialogue,
             "tools": [
                 {
@@ -326,7 +336,19 @@ class AnthropicProvider(BaseHTTPProvider):
             payload["system"] = system
 
         started = time.perf_counter()
-        response = await self._post(url, headers=headers, payload=payload, settings=settings)
+        try:
+            response = await self._post(url, headers=headers, payload=payload, settings=settings)
+        except ProviderError as exc:
+            # Some newer Claude models reject forced tool choice. Ask the model to
+            # use the tool instead of forcing it; validation still decides.
+            reason = str(exc.details.get("reason", ""))
+            if exc.details.get("status") == 400 and "tool_choice" in reason:
+                payload.pop("tool_choice", None)
+                response = await self._post(
+                    url, headers=headers, payload=payload, settings=settings
+                )
+            else:
+                raise
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         body = response.json()

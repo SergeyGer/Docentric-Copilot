@@ -120,3 +120,19 @@ def test_ax_adapter_fails_closed() -> None:
     assert len(matrix["capabilities"]) == 6
     with pytest.raises(UnsupportedTargetError):
         AXAdapter().compile(None)  # type: ignore[arg-type]
+
+
+def test_unknown_price_is_reported_as_unknown() -> None:
+    from docentric_copilot.api.routes.quality import _usage_cost
+
+    class Usage:
+        estimated_cost_usd = 0.0
+
+    class Generation:
+        usage = Usage()
+
+        def __init__(self, provider: str) -> None:
+            self.provider = provider
+
+    assert _usage_cost(Generation("openai")) is None
+    assert _usage_cost(Generation("mock")) == 0.0

@@ -185,7 +185,7 @@ The complete documentation lives in the **[project Wiki](https://github.com/Serg
 
 | | |
 | --- | --- |
-| **Version** | 0.4.0 |
+| **Version** | 0.4.1 |
 | **Licence** | Apache-2.0 |
 | **Interfaces** | Web workspace · command line · REST API |
 | **AI providers** | OpenAI · Anthropic · Google Gemini · offline deterministic assistant |

@@ -8,6 +8,16 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-02
+
+### Fixed
+- Unknown model prices are reported as `—`, not `$0.00`; the deterministic baseline keeps its zero.
+- OpenAI adapter retries with `max_completion_tokens` and without `temperature`, as the GPT-6 models require.
+- Runtime version string follows the release.
+
+### Changed
+- Default OpenAI model is `gpt-6-sol` (GPT-4.1 is being retired).
+
 ## [0.4.0] - 2026-11-02
 
 ### Added

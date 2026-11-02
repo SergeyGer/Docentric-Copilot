@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| System | Docentric Copilot 0.4.0 (API, CLI, Next.js web workspace, SQLite, local artifacts) |
+| System | Docentric Copilot 0.4.1 (API, CLI, Next.js web workspace, SQLite, local artifacts) |
 | Method | Asset/actor inventory, trust boundaries, STRIDE-oriented threat table, residual-risk register |
 | Related | [SECURITY.md](../SECURITY.md), [SRS NFR-02…NFR-06](SRS.md#3-non-functional-requirements), [DDSP_COMPATIBILITY](DDSP_COMPATIBILITY.md) |
 

@@ -47,9 +47,12 @@ Measured on 2026-11-02 with the bundled quotation package and the same brief:
 | --- | --- | --- | --- |
 | Anthropic | `claude-haiku-5-5` | valid IR, 5 confirmed mappings | ~10 s |
 | Anthropic | `claude-sonnet-5-5` | valid IR, 5 confirmed mappings | ~17 s |
+| OpenAI | `gpt-6-sol` | valid IR, 4 confirmed + 1 missing | ~21 s |
+| OpenAI | `gpt-6.1-sol` | valid IR, 4 confirmed + 1 missing | ~33 s |
 | OpenAI | `gpt-4.1` | valid IR, 5 confirmed mappings | ~42 s |
 | OpenAI | `gpt-4.1-mini` | rejected: invalid date pattern and a malformed table row | — |
 
-The default model in `.env.example` is therefore `gpt-4.1`, not the cheaper mini variant: quality,
-not price, decides the default until the repair loop handles those two failure modes reliably. These
+The default model in `.env.example` is `gpt-6-sol`. The GPT-4.1 family is being retired and the
+cheaper mini variant produced invalid IR; the adapter now also retries with `max_completion_tokens`
+and without `temperature`, which the GPT-6 models require. These
 numbers are single observations, not a benchmark; the reproducible harness is tracked separately.

@@ -251,5 +251,18 @@ def _usage_tokens(generation: Any) -> int:
 
 
 def _usage_cost(generation: Any) -> float | None:
+    """Return a measured cost, or None when the model price is unknown.
+
+    The gateway reports 0.0 for models missing from its price table; showing that
+    as "$0.00" would falsely imply a free call, so it becomes unknown instead.
+    The deterministic baseline is genuinely free and keeps the zero.
+    """
     usage = getattr(generation, "usage", None)
-    return getattr(usage, "estimated_cost_usd", None) if usage is not None else None
+    if usage is None:
+        return None
+    cost = getattr(usage, "estimated_cost_usd", None)
+    if cost is None:
+        return None
+    if cost == 0.0 and getattr(generation, "provider", "mock") != "mock":
+        return None
+    return float(cost)

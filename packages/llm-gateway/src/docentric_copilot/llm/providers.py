@@ -246,18 +246,35 @@ class OpenAIProvider(BaseHTTPProvider):
             payload["max_tokens"] = settings.max_output_tokens
 
         started = time.perf_counter()
-        try:
-            response = await self._post(url, headers=headers, payload=payload, settings=settings)
-        except ProviderError as exc:
-            if exc.code != "provider_bad_response" or "response_format" not in str(exc.details):
-                raise
-            # Older deployments do not support json_schema; degrade to JSON mode.
-            payload.pop("response_format", None)
-            payload["messages"] = [
-                {"role": "system", "content": "Respond with a single JSON object and no prose."},
-                *payload["messages"],
-            ]
-            response = await self._post(url, headers=headers, payload=payload, settings=settings)
+        response = None
+        for _attempt in range(3):
+            try:
+                response = await self._post(
+                    url, headers=headers, payload=payload, settings=settings
+                )
+                break
+            except ProviderError as exc:
+                detail = str(exc.details)
+                if "max_tokens" in detail and "Unsupported parameter" in detail:
+                    payload.pop("max_tokens", None)
+                    payload["max_completion_tokens"] = settings.max_output_tokens
+                elif "temperature" in detail and "Unsupported value" in detail:
+                    payload.pop("temperature", None)
+                elif exc.code == "provider_bad_response" and "response_format" in detail:
+                    payload.pop("response_format", None)
+                    payload["messages"] = [
+                        {
+                            "role": "system",
+                            "content": "Respond with a single JSON object and no prose.",
+                        },
+                        *payload["messages"],
+                    ]
+                else:
+                    raise
+        if response is None:
+            raise ProviderError(
+                "The provider rejected the request", details={"provider": self.name}
+            )
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         body = response.json()

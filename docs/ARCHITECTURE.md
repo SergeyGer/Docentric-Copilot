@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| System | Docentric Copilot 0.4.0 |
+| System | Docentric Copilot 0.4.1 |
 | Contract versions | Template IR 1.0; HTTP API `/api/v1`; CLI exit codes 0–6 |
 | Related | [SRS](SRS.md), [TEMPLATE_IR](TEMPLATE_IR.md), [API_SPEC](API_SPEC.md), [ADR index](#12-adr-index) |
 

@@ -425,6 +425,7 @@ slides.append(
     )
 )
 
+
 def render_slides(items: list[tuple[str, str]]) -> list[Path]:
     out_dir = WORK / "slides"
     out_dir.mkdir(parents=True, exist_ok=True)

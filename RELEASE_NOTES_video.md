@@ -9,7 +9,7 @@ Nothing is committed or pushed; the files are in the working tree. It supersedes
 
 ## What changed from v3
 
-- **New Auto-routing scene (00:40–00:58).** The scene opens on the
+- **New Auto-routing scene (00:41–00:57).** The scene opens on the
   real workspace with routing switched to Auto (before Plan), then shows the real decision card from the
   live plan: complexity, recommendation, executed provider/model, match/fallback and run id. It sits
   between the brief and the benchmark.

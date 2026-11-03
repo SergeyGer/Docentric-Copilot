@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+from .compact_ir import (
+    COMPACT_SYSTEM_PROMPT,
+    COMPACT_TEMPLATE_NAME,
+    build_compact_messages,
+    compact_schema,
+    expand_compact,
+)
 from .heuristic import BASELINE_VERSION, Roles, build_document, detect_document_kind, discover_roles
 from .optimize import LayoutFix, LayoutOptimization, optimize_layout  # noqa: F401
 from .prompt import PROMPT_VERSION, SYSTEM_PROMPT, build_messages, build_repair_message
@@ -22,6 +29,8 @@ from .service import (
 
 __all__ = [
     "BASELINE_VERSION",
+    "COMPACT_SYSTEM_PROMPT",
+    "COMPACT_TEMPLATE_NAME",
     "PROMPT_VERSION",
     "SYSTEM_PROMPT",
     "Change",
@@ -36,14 +45,17 @@ __all__ = [
     "TemplatePlanner",
     "absolute_bindings",
     "analyze_quality",
+    "build_compact_messages",
     "build_document",
     "build_mapping_report",
     "build_messages",
     "build_repair_message",
     "classify",
+    "compact_schema",
     "detect_document_kind",
     "diff_documents",
     "discover_roles",
+    "expand_compact",
     "extract_requirements",
     "optimize_layout",
     "rebind_paths",

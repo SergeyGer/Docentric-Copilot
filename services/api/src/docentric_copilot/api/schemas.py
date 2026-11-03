@@ -30,6 +30,15 @@ class PlanRequest(BaseModel):
     #: provider). ``auto`` classifies the brief, routes against the configured
     #: providers, and returns an execution trace.
     routing: Literal["explicit", "auto"] = "explicit"
+    #: ``None`` auto-enables the compact wire format for providers that need it
+    #: (currently Gemini 3.x). ``False`` forces the full Template IR contract.
+    compact_ir: bool | None = Field(
+        default=None,
+        description=(
+            "Use the compact wire format and expand it deterministically. "
+            "None auto-enables it for Gemini; False forces full Template IR."
+        ),
+    )
     design_style: DesignStyle = DesignStyle.MODERN
     target: CompileTarget = CompileTarget.GENERIC_DOCX
     options: PlanOptionsRequest = Field(default_factory=PlanOptionsRequest)

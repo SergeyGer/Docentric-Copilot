@@ -120,12 +120,19 @@ class LLMGateway:
         provider: str,
         model: str | None,
         messages: list[Message],
-        schema: type[BaseModel],
+        schema: type[BaseModel] | dict[str, Any],
         temperature: float | None = None,
         max_output_tokens: int | None = None,
         budget_usd: float | None = None,
     ) -> GenerationResult:
-        """Generate JSON validated against ``schema`` through the chosen provider."""
+        """Generate JSON through the chosen provider.
+
+        ``schema`` is either a Pydantic model class (the result is validated
+        against it before it is returned) or a raw JSON Schema object. The raw
+        form is used by compact planning: the compact payload has its own
+        validator/expander, so validating it against ``Document`` here would
+        reject every response before the expander can run.
+        """
         selected = self.get(provider)
         model_id = self.resolve_model(provider, model)
         settings = GenerationSettings(
@@ -138,10 +145,18 @@ class LLMGateway:
             if budget_usd is None
             else budget_usd,
         )
+        validator: type[BaseModel] | None = None
+        if isinstance(schema, dict):
+            json_schema = schema
+            schema_name = str(schema.get("title") or "json")
+        else:
+            json_schema = schema.model_json_schema(mode="validation")
+            schema_name = schema.__name__
+            validator = schema
         try:
             result = await selected.generate_structured(
                 messages=messages,
-                schema=schema.model_json_schema(mode="validation"),
+                schema=json_schema,
                 settings=settings,
             )
         except ProviderError:
@@ -152,23 +167,24 @@ class LLMGateway:
                 details={"provider": provider, "error": type(exc).__name__},
             ) from exc
 
-        try:
-            schema.model_validate(result.content)
-        except ValidationError as exc:
-            raise ProviderError(
-                "Provider output does not satisfy the required schema",
-                code="provider_invalid_output",
-                details={
-                    "provider": provider,
-                    "errors": [
-                        {
-                            "location": ".".join(str(part) for part in error["loc"]),
-                            "message": error["msg"],
-                        }
-                        for error in exc.errors()[:10]
-                    ],
-                },
-            ) from exc
+        if validator is not None:
+            try:
+                validator.model_validate(result.content)
+            except ValidationError as exc:
+                raise ProviderError(
+                    "Provider output does not satisfy the required schema",
+                    code="provider_invalid_output",
+                    details={
+                        "provider": provider,
+                        "errors": [
+                            {
+                                "location": ".".join(str(part) for part in error["loc"]),
+                                "message": error["msg"],
+                            }
+                            for error in exc.errors()[:10]
+                        ],
+                    },
+                ) from exc
 
         logger.info(
             "llm.generation",
@@ -176,7 +192,7 @@ class LLMGateway:
                 "context": {
                     **result.public_view(),
                     "prompt_version": settings.prompt_version,
-                    "schema": schema.__name__,
+                    "schema": schema_name,
                 }
             },
         )

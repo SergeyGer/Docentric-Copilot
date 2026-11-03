@@ -319,16 +319,12 @@ def data_uri(path: Path, crop: tuple[int, int, int, int] | None = None) -> str:
     return image_uri(image)
 
 
-def crop_uri(
-    path: Path, box: tuple[int, int, int, int], size: tuple[int, int]
-) -> str:
+def crop_uri(path: Path, box: tuple[int, int, int, int], size: tuple[int, int]) -> str:
     image = Image.open(path).convert("RGB").crop(box).resize(size, Image.LANCZOS)
     return image_uri(image)
 
 
-def relative_rect(
-    rect: tuple[int, int, int, int], crop: tuple[int, int, int, int]
-) -> str:
+def relative_rect(rect: tuple[int, int, int, int], crop: tuple[int, int, int, int]) -> str:
     cx0, cy0, cx1, cy1 = crop
     x0, y0, x1, y1 = rect
     x0, y0 = max(x0, cx0), max(y0, cy0)
@@ -1717,7 +1713,9 @@ def make_transition(
     for step in range(1, count + 1):
         alpha = step / (count + 1)
         blended = Image.blend(base_a, base_b, alpha)
-        path = WORK / "video" / f"scene{scene_index + 1:02d}_trans{shot_index + 1:02d}_{step:03d}.png"
+        path = (
+            WORK / "video" / f"scene{scene_index + 1:02d}_trans{shot_index + 1:02d}_{step:03d}.png"
+        )
         blended.save(path)
         paths.append(path)
     return paths

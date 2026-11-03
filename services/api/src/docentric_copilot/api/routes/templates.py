@@ -82,6 +82,12 @@ async def plan_template(
         provider = request.provider
         model = request.model
 
+    # None = auto: Gemini 3.x returns the compact wire format so a full plan
+    # fits inside its output budget. An explicit False keeps full IR.
+    compact_ir = request.compact_ir
+    if compact_ir is None:
+        compact_ir = provider == "gemini"
+
     trace_written = False
     trace_path = None
 
@@ -128,6 +134,7 @@ async def plan_template(
                 target=request.target.value,
                 max_repair_attempts=request.options.max_repair_attempts,
                 max_generation_cost_usd=request.options.max_generation_cost_usd,
+                compact_ir=compact_ir,
             )
         except ProviderError as exc:
             if auto and decision is not None:

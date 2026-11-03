@@ -320,13 +320,13 @@ class TestGeminiAdapter:
 
         _run(scenario())
 
-    def test_rejected_generation_config_retries_without_schema(self) -> None:
+    def test_rejected_generation_config_drops_one_feature_per_retry(self) -> None:
         seen: list[dict] = []
 
         def handler(request: httpx.Request) -> httpx.Response:
             body = json.loads(request.content)
             seen.append(body)
-            if len(seen) == 1:
+            if len(seen) <= 3:
                 return httpx.Response(400, json={"error": {"status": "INVALID_ARGUMENT"}})
             return httpx.Response(
                 200,
@@ -351,11 +351,19 @@ class TestGeminiAdapter:
             await client.aclose()
 
         _run(scenario())
-        assert "responseSchema" in seen[0]["generationConfig"]
-        retry_config = seen[1]["generationConfig"]
-        assert "responseSchema" not in retry_config
-        assert "temperature" not in retry_config
-        assert retry_config["responseMimeType"] == "application/json"
+        assert "thinkingConfig" in seen[0]["generationConfig"]
+        assert "thinkingConfig" not in seen[1]["generationConfig"]
+        assert "responseSchema" in seen[1]["generationConfig"]
+        assert "temperature" in seen[1]["generationConfig"]
+        # The second 400 drops temperature; the schema is kept.
+        assert "temperature" not in seen[2]["generationConfig"]
+        assert "responseSchema" in seen[2]["generationConfig"]
+        # Only the third rejection gives up the schema.
+        fourth = seen[3]["generationConfig"]
+        assert "responseSchema" not in fourth
+        assert "temperature" not in fourth
+        assert "thinkingConfig" not in fourth
+        assert fourth["responseMimeType"] == "application/json"
 
 
 class TestGateway:

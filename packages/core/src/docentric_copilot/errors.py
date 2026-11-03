@@ -120,6 +120,20 @@ class ProviderNotConfiguredError(ProviderError):
     exit_code = 5
 
 
+class PlanInvalidError(InvalidInputError):
+    """A plan payload cannot be expanded into valid Template IR.
+
+    This is how the compact wire format reports a structurally invalid model
+    answer (unknown keys, unknown formats, invalid block shapes). It keeps the
+    offending JSON path in ``details`` so the planner can feed it back into a
+    repair attempt and an operator can locate the exact node.
+    """
+
+    code = "plan_invalid"
+    http_status = 502
+    exit_code = 5
+
+
 class BudgetExceededError(ProviderError):
     """A hard token/cost budget would be exceeded."""
 
@@ -143,6 +157,7 @@ __all__ = [
     "CopilotError",
     "InvalidInputError",
     "NotFoundError",
+    "PlanInvalidError",
     "ProviderError",
     "ProviderNotConfiguredError",
     "SecurityViolationError",

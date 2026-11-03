@@ -12,9 +12,9 @@ import re
 from typing import Any
 
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
-from docentric_copilot.errors import InvalidInputError, ProviderError
+from docentric_copilot.errors import InvalidInputError, PlanInvalidError, ProviderError
 from docentric_copilot.llm.gateway import LLMGateway
-from docentric_copilot.llm.models import GenerationResult
+from docentric_copilot.llm.models import GenerationResult, Message
 from docentric_copilot.schema_resolver.concept_match import matches_kind, paths_for_concept
 from docentric_copilot.schema_resolver.mapping import (
     FieldMapping,
@@ -63,6 +63,12 @@ from docentric_copilot.template_ir import (
 )
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from .compact_ir import (
+    COMPACT_TEMPLATE_NAME,
+    build_compact_messages,
+    compact_schema,
+    expand_compact,
+)
 from .heuristic import BASELINE_VERSION, build_document
 from .prompt import build_messages, build_repair_message
 from .revision_ops import apply_revision
@@ -82,6 +88,9 @@ class PlanOptions(BaseModel):
     design_style: DesignStyle = DesignStyle.MODERN
     target: CompileTarget = CompileTarget.GENERIC_DOCX
     max_repair_attempts: int = 1
+    #: Ask the provider for the compact wire format and expand it deterministically.
+    #: Off by default so existing callers keep the full-IR contract.
+    compact_ir: bool = False
 
 
 class RemovedBinding(BaseModel):
@@ -675,31 +684,34 @@ class TemplatePlanner:
         if not requirement.strip():
             raise InvalidInputError("A requirement prompt is required")
 
-        messages = build_messages(
-            schema,
-            requirement,
-            design_style=resolved_options.design_style.value,
-            language=resolved_options.language,
-            target=resolved_options.target.value,
-        )
+        if resolved_options.compact_ir:
+            messages = build_compact_messages(
+                schema,
+                requirement,
+                design_style=resolved_options.design_style.value,
+                language=resolved_options.language,
+                target=resolved_options.target.value,
+            )
+        else:
+            messages = build_messages(
+                schema,
+                requirement,
+                design_style=resolved_options.design_style.value,
+                language=resolved_options.language,
+                target=resolved_options.target.value,
+            )
         if provider == "mock":
             self._install_baseline_responder(schema, requirement, resolved_options)
 
-        result = await self._generate_with_repair(
+        result, document = await self._generate_with_repair(
             provider=provider,
             model=model,
             messages=messages,
             attempts=resolved_options.max_repair_attempts + 1,
             budget_usd=budget_usd,
+            compact_ir=resolved_options.compact_ir,
+            domain_schema=schema,
         )
-        try:
-            document = Document.model_validate(result.content)
-        except ValidationError as exc:  # pragma: no cover - gateway already validates
-            raise ProviderError(
-                "The planner returned an invalid Template IR",
-                code="plan_invalid",
-                details={"errors": exc.error_count()},
-            ) from exc
 
         document = document.model_copy(update={"target": resolved_options.target})
         sanitized, removed = sanitize_document(document, schema)
@@ -752,6 +764,18 @@ class TemplatePlanner:
         previous_intent = document.metadata.intent or ""
         merged = f"{previous_intent}\nRevision request: {instruction}"[:2_000]
 
+        resolved_options = options
+        if resolved_options is None and document.metadata.template_name == COMPACT_TEMPLATE_NAME:
+            # A document produced by the compact wire format replans through the
+            # same format by default: its IR has already lost the compact-only
+            # metadata, so this keeps the provider budget predictable.
+            resolved_options = PlanOptions(
+                language=document.language,
+                design_style=document.metadata.design_style or DesignStyle.MODERN,
+                target=document.target,
+                compact_ir=True,
+            )
+
         targeted = apply_revision(document, instruction, schema)
         if targeted is not None:
             sanitized, removed = sanitize_document(targeted.document, schema)
@@ -767,7 +791,9 @@ class TemplatePlanner:
                 changed=changes,
             )
 
-        outcome = await self.plan(schema, merged, provider=provider, model=model, options=options)
+        outcome = await self.plan(
+            schema, merged, provider=provider, model=model, options=resolved_options
+        )
         changes = diff_documents(document, outcome.document)
         return outcome.model_copy(update={"changed": changes})
 
@@ -780,20 +806,63 @@ class TemplatePlanner:
         *,
         provider: str,
         model: str | None,
-        messages: list,
+        messages: list[Message],
         attempts: int,
         budget_usd: float | None = None,
-    ) -> GenerationResult:
-        last_error: ProviderError | None = None
+        compact_ir: bool = False,
+        domain_schema: NormalizedSchema | None = None,
+    ) -> tuple[GenerationResult, Document]:
+        """Generate, validate/expand, and retry repairable failures.
+
+        In compact mode the provider validates against ``compact_schema()`` and
+        the payload is expanded here, so an expansion error is as repairable as a
+        JSON-schema error: the next attempt keeps the compact schema and receives
+        the offending paths in the repair message.
+        """
+        last_error: ProviderError | PlanInvalidError | None = None
+        current_messages = list(messages)
+        response_schema: type[BaseModel] | dict[str, Any] = (
+            compact_schema() if compact_ir else Document
+        )
         for attempt in range(1, max(1, attempts) + 1):
             try:
-                return await self._gateway.generate_structured(
+                result = await self._gateway.generate_structured(
                     provider=provider,
                     model=model,
-                    messages=messages,
-                    schema=Document,
+                    messages=current_messages,
+                    schema=response_schema,
                     budget_usd=budget_usd,
                 )
+                if compact_ir:
+                    if domain_schema is None:  # pragma: no cover - internal misuse
+                        raise InvalidInputError("Compact planning requires the normalized schema")
+                    document = expand_compact(result.content, domain_schema)
+                else:
+                    try:
+                        document = Document.model_validate(result.content)
+                    except ValidationError as exc:
+                        raise ProviderError(
+                            "The planner returned an invalid Template IR",
+                            code="plan_invalid",
+                            details={
+                                "errors": [
+                                    {
+                                        "location": ".".join(str(part) for part in error["loc"]),
+                                        "message": error["msg"],
+                                    }
+                                    for error in exc.errors()[:10]
+                                ]
+                            },
+                        ) from exc
+                return result, document
+            except PlanInvalidError as exc:
+                last_error = exc
+                if attempt >= attempts:
+                    raise
+                current_messages = [
+                    *current_messages,
+                    build_repair_message(exc.details.get("errors") or [exc.message]),
+                ]
             except ProviderError as exc:
                 last_error = exc
                 if attempt >= attempts or exc.code not in {
@@ -801,7 +870,10 @@ class TemplatePlanner:
                     "plan_invalid",
                 }:
                     raise
-                messages = [*messages, build_repair_message(exc.details.get("errors", []))]
+                current_messages = [
+                    *current_messages,
+                    build_repair_message(exc.details.get("errors", [])),
+                ]
         raise last_error or ProviderError(  # pragma: no cover - defensive
             "The provider produced no usable output",
             details={"provider": provider},

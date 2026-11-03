@@ -505,6 +505,19 @@ def to_gemini_schema(schema: dict[str, Any]) -> dict[str, Any]:
                 variants = [convert(item, depth + 1) for item in union]
                 non_null_inline = [item for item in variants if item.get("type") != "null"]
                 return {"anyOf": non_null_inline}
+            has_scalar_variant = any(
+                str(item.get("type")) in {"string", "integer", "number", "boolean"}
+                for item in union
+                if isinstance(item, dict)
+            )
+            if has_scalar_variant and depth >= _GEMINI_UNION_DEPTH:
+                # Compact plans intentionally mix literal strings with objects
+                # (runs, static table cells). Degrading the union to an object
+                # would forbid the literal form, so keep the small anyOf even
+                # past the depth budget used for the large full-IR unions.
+                variants = [convert(item, depth + 1) for item in union]
+                non_null_scalar = [item for item in variants if item.get("type") != "null"]
+                return {"anyOf": non_null_scalar} if non_null_scalar else {"type": "string"}
             if depth >= _GEMINI_UNION_DEPTH:
                 shallow_variants = [shallow(item) for item in union]
                 shallow_non_null = [item for item in shallow_variants if item.get("type") != "null"]

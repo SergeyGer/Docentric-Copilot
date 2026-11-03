@@ -13,7 +13,12 @@ from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.docx_compiler import CompilationResult, CompileOptions
 from docentric_copilot.docx_compiler import compile_document as compile_with_registry
 from docentric_copilot.llm.gateway import LLMGateway
-from docentric_copilot.planner import PlanOptions, PlanOutcome, TemplatePlanner
+from docentric_copilot.planner import (
+    COMPACT_TEMPLATE_NAME,
+    PlanOptions,
+    PlanOutcome,
+    TemplatePlanner,
+)
 from docentric_copilot.planner.revisions import diff_documents, summarize_changes
 from docentric_copilot.preview import PreviewOptions, PreviewResult, render_preview
 from docentric_copilot.template_ir import Document
@@ -66,12 +71,17 @@ class TemplateService:
         target: str = "generic-docx",
         max_repair_attempts: int = 1,
         max_generation_cost_usd: float | None = None,
+        compact_ir: bool | None = None,
     ) -> tuple[PlanOutcome, ValidationReport]:
+        # None means "auto": Gemini 3.x needs the compact wire format to fit a
+        # full plan in its output budget. An explicit False always wins.
+        resolved_compact = (provider == "gemini") if compact_ir is None else compact_ir
         options = PlanOptions(
             language=language,
             design_style=design_style,  # type: ignore[arg-type]
             target=target,  # type: ignore[arg-type]
             max_repair_attempts=max_repair_attempts,
+            compact_ir=resolved_compact,
         )
         outcome = await self._planner.plan(
             schema,
@@ -118,11 +128,18 @@ class TemplateService:
         design_style: str = "modern",
         language: str = "en",
         target: str = "generic-docx",
+        compact_ir: bool | None = None,
     ) -> RevisionResult:
+        resolved_compact = compact_ir
+        if resolved_compact is None:
+            resolved_compact = (
+                provider == "gemini" or document.metadata.template_name == COMPACT_TEMPLATE_NAME
+            )
         options = PlanOptions(
             language=language,
             design_style=design_style,  # type: ignore[arg-type]
             target=target,  # type: ignore[arg-type]
+            compact_ir=resolved_compact,
         )
         outcome = await self._planner.revise(
             schema, document, instruction, provider=provider, model=model, options=options

@@ -96,6 +96,15 @@ def _parse_providers(raw: str) -> list[tuple[str, str | None]]:
     return targets
 
 
+def _compact_enabled(mode: str, provider: str) -> bool:
+    """Resolve --compact-ir for one provider (auto = Gemini only)."""
+    if mode == "on":
+        return True
+    if mode == "off":
+        return False
+    return provider == "gemini"
+
+
 def _worst_case_cost(schema, prompt: str, model: str, max_output_tokens: int) -> float | None:
     messages = build_messages(schema, prompt)
     chars = sum(len(message.content) for message in messages)
@@ -143,6 +152,7 @@ def _run_one(
     model: str | None,
     provider_configured: bool,
     repair_attempts: int = 0,
+    compact_ir: bool = False,
 ) -> dict[str, Any]:
     case_id = definition["case_id"]
     prompt = definition["prompt"]
@@ -166,6 +176,7 @@ def _run_one(
         "usage": None,
         "cost_usd": None,
         "cost_known": False,
+        "compact_ir": compact_ir,
         "validation": {},
         "validation_passed": False,
         "compiled": False,
@@ -199,7 +210,10 @@ def _run_one(
                 prompt,
                 provider=provider,
                 model=model,
-                options=PlanOptions(max_repair_attempts=repair_attempts),
+                options=PlanOptions(
+                    max_repair_attempts=repair_attempts,
+                    compact_ir=compact_ir,
+                ),
             )
         )
     except Exception as exc:
@@ -323,6 +337,7 @@ def _markdown(report: dict[str, Any]) -> str:
         f"- Aborted early: {'yes' if report['budget']['aborted'] else 'no'}",
         f"- Repair attempts per plan: {report.get('repair_attempts', 0)} "
         f"(max output {report.get('max_output_tokens', 'n/a')} tokens)",
+        f"- Compact IR mode: {report.get('compact_ir', 'n/a')}",
         "",
     ]
     if report["budget"]["aborted"]:
@@ -432,6 +447,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-unpriced", action="store_true")
     parser.add_argument("--max-output-tokens", type=int, default=None)
     parser.add_argument(
+        "--compact-ir",
+        choices=["auto", "on", "off"],
+        default="auto",
+        help=(
+            "auto (default) uses the compact wire format for Gemini and full IR for "
+            "other providers; on forces compact for every provider; off forces full IR"
+        ),
+    )
+    parser.add_argument(
         "--repair-attempts",
         type=int,
         default=0,
@@ -507,6 +531,7 @@ def main(argv: list[str] | None = None) -> int:
                     model=model,
                     provider_configured=False,
                     repair_attempts=args.repair_attempts,
+                    compact_ir=_compact_enabled(args.compact_ir, provider),
                 )
                 runs.append(run)
                 continue
@@ -546,6 +571,7 @@ def main(argv: list[str] | None = None) -> int:
                 model=model,
                 provider_configured=True,
                 repair_attempts=args.repair_attempts,
+                compact_ir=_compact_enabled(args.compact_ir, provider),
             )
             runs.append(run)
             if run["cost_usd"] is not None:
@@ -648,6 +674,7 @@ def main(argv: list[str] | None = None) -> int:
         "cases_file": str(args.cases.relative_to(ROOT)),
         "case_count": len({run["case_id"] for run in runs}),
         "repair_attempts": args.repair_attempts,
+        "compact_ir": args.compact_ir,
         "max_output_tokens": settings.llm_max_output_tokens,
         "providers": provider_state,
         "budget": {

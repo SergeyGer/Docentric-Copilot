@@ -1115,6 +1115,18 @@
       "PlanRequest": {
         "additionalProperties": false,
         "properties": {
+          "compact_ir": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Use the compact wire format and expand it deterministically. None auto-enables it for Gemini; False forces full Template IR.",
+            "title": "Compact Ir"
+          },
           "design_style": {
             "$ref": "#/components/schemas/DesignStyle",
             "default": "modern"

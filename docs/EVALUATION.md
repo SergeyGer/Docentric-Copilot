@@ -87,6 +87,7 @@ replaced by the mock.
 | Reports | `benchmarks/live_report.json` and `benchmarks/live_report.md` |
 | Traces | `docs/media/runs/` (git-ignored; sanitized, no prompt text) |
 | Providers | `--providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.1-flash-lite` |
+| Compact IR | `--compact-ir auto|on|off` (default `auto`: Gemini uses the compact wire format) |
 | Budget | `--max-spend-usd` (default 3.0); pre-flight worst-case guard, abort with a partial report |
 
 The dataset covers the six requested families: simple fields, repeats, conditionals, ambiguous

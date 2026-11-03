@@ -195,6 +195,7 @@ Errors: `404 not_found` for an unknown source.
   "provider": "mock",
   "model": null,
   "routing": "explicit",
+  "compact_ir": null,
   "design_style": "modern",
   "target": "generic-docx",
   "options": {
@@ -213,6 +214,7 @@ Errors: `404 not_found` for an unknown source.
 | `provider` | no | default `mock`; `openai`, `anthropic`, `gemini` require configuration. Ignored when `routing` is `auto` |
 | `model` | no | provider default if omitted. Ignored when `routing` is `auto` |
 | `routing` | no | `explicit` (default) uses the request provider/model; `auto` classifies the brief, routes against the configured providers and returns an execution trace |
+| `compact_ir` | no | `null` (default) auto-enables the compact wire format for Gemini 3.x; `true` forces it for any provider; `false` forces the full Template IR response |
 | `design_style` | no | `modern` (default), `classic`, `minimal` |
 | `target` | no | `generic-docx` (default) or `docentric-ax`; the IR records the request, compilation still enforces the gate |
 | `options.language` | no | `^[a-z]{2}(-[A-Z]{2})?$` |

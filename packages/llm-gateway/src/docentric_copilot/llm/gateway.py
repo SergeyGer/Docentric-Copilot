@@ -124,6 +124,7 @@ class LLMGateway:
         temperature: float | None = None,
         max_output_tokens: int | None = None,
         budget_usd: float | None = None,
+        response_schema: bool = True,
     ) -> GenerationResult:
         """Generate JSON through the chosen provider.
 
@@ -144,6 +145,7 @@ class LLMGateway:
             budget_usd=self._settings.llm_max_generation_cost_usd
             if budget_usd is None
             else budget_usd,
+            response_schema=response_schema,
         )
         validator: type[BaseModel] | None = None
         if isinstance(schema, dict):

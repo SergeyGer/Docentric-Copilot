@@ -29,11 +29,54 @@ _MAX_BODY_CHARS = 400
 _MAX_TOKENS_PER_CHAR = 0.35  # rough pre-flight estimate for budget checks
 
 
+_TRAILING_COMMA = re.compile(r",\s*([}\]])")
+
+
+def _load_json_dict(candidate: str) -> dict[str, Any] | None:
+    try:
+        parsed = json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _repair_json(candidate: str) -> dict[str, Any] | None:
+    """Recover one stray delimiter or trailing comma, never truncated output.
+
+    Prompt-only JSON (no provider-side response schema) occasionally contains a
+    single extra ``}``/``]`` or a trailing comma. Those are syntax slips, not
+    missing content: deleting the reported character still leaves a complete
+    object, which is then validated structurally by the caller. A truncated
+    response has no closing delimiter to delete, so it is never "repaired".
+    """
+    repaired = _load_json_dict(candidate)
+    if repaired is not None:
+        return repaired
+    cleaned = _TRAILING_COMMA.sub(r"\1", candidate)
+    repaired = _load_json_dict(cleaned)
+    if repaired is not None:
+        return repaired
+    try:
+        json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        window = range(max(0, exc.pos - 2), min(len(cleaned), exc.pos + 3))
+        for position in window:
+            if cleaned[position] not in "}],":
+                continue
+            attempt = cleaned[:position] + cleaned[position + 1 :]
+            repaired = _load_json_dict(attempt)
+            if repaired is not None:
+                return repaired
+    return None
+
+
 def extract_json_object(text: str) -> dict[str, Any]:
     """Extract the first JSON object from a model response.
 
-    Handles bare JSON, fenced blocks and leading prose. Raises ``ProviderError``
-    with a truncated, redaction-safe reason when nothing parses.
+    Handles bare JSON, fenced blocks and leading prose. A single stray delimiter
+    or trailing comma is recovered deterministically (see :func:`_repair_json`).
+    Raises ``ProviderError`` with a truncated, redaction-safe reason when
+    nothing parses.
     """
     candidates: list[str] = [text.strip()]
     candidates.extend(match.strip() for match in _JSON_FENCE.findall(text))
@@ -43,15 +86,30 @@ def extract_json_object(text: str) -> dict[str, Any]:
     for candidate in candidates:
         if not candidate:
             continue
-        try:
-            parsed = json.loads(candidate)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(parsed, dict):
+        parsed = _load_json_dict(candidate)
+        if parsed is None:
+            parsed = _repair_json(candidate)
+        if parsed is not None:
             return parsed
+    try:
+        json.loads(candidates[0])
+        json_error = "not a JSON object"
+    except json.JSONDecodeError as exc:
+        json_error = f"{exc.msg} at {exc.pos}"
     raise ProviderError(
         "The model did not return a JSON object",
-        details={"reason": "structured_output_unparseable", "preview": text[:120]},
+        # Treat unparseable output as a repairable invalid output, not as a
+        # transport failure: the planner can send the error back and retry
+        # once, which is what makes an empty or malformed completion
+        # recoverable for every provider.
+        code="provider_invalid_output",
+        details={
+            "reason": "structured_output_unparseable",
+            "preview": text[:120],
+            "tail": text[-160:],
+            "length": len(text),
+            "json_error": json_error,
+        },
     )
 
 
@@ -237,11 +295,12 @@ class OpenAIProvider(BaseHTTPProvider):
             "model": settings.model,
             "messages": [{"role": m.role.value, "content": m.content} for m in messages],
             "temperature": settings.temperature,
-            "response_format": {
+        }
+        if settings.response_schema:
+            payload["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {"name": "template_ir", "strict": False, "schema": schema},
-            },
-        }
+            }
         if settings.max_output_tokens:
             payload["max_tokens"] = settings.max_output_tokens
 
@@ -589,8 +648,9 @@ def _gemini_generation_config(
         "temperature": settings.temperature,
         "maxOutputTokens": settings.max_output_tokens,
         "responseMimeType": "application/json",
-        "responseSchema": to_gemini_schema(schema),
     }
+    if settings.response_schema:
+        config["responseSchema"] = to_gemini_schema(schema)
     if settings.model.startswith("gemini-3"):
         # Thinking tokens are billed as output and are drawn from the same
         # completion budget. Minimal thinking keeps a large IR from being

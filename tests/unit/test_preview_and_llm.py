@@ -320,6 +320,48 @@ class TestGeminiAdapter:
 
         _run(scenario())
 
+    def test_prompt_only_mode_omits_the_response_schema(self) -> None:
+        seen: list[dict] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            seen.append(json.loads(request.content))
+            return httpx.Response(
+                200,
+                json={
+                    "candidates": [
+                        {"content": {"parts": [{"text": '{"ok": true}'}]}, "finishReason": "STOP"}
+                    ],
+                    "usageMetadata": {"promptTokenCount": 3, "candidatesTokenCount": 2},
+                },
+            )
+
+        async def scenario() -> None:
+            client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+            provider = GeminiProvider(api_key="k", base_url="https://api.test", client=client)
+            result = await provider.generate_structured(
+                messages=_messages(),
+                schema={"type": "object"},
+                settings=GenerationSettings(
+                    model="gemini-3.6-flash", max_output_tokens=256, response_schema=False
+                ),
+            )
+            assert result.content == {"ok": True}
+            await client.aclose()
+
+        _run(scenario())
+        config = seen[0]["generationConfig"]
+        assert "responseSchema" not in config
+        assert config["responseMimeType"] == "application/json"
+
+    def test_single_stray_delimiter_is_repaired(self) -> None:
+        assert extract_json_object('{"a": [1, 2}]}') == {"a": [1, 2]}
+        assert extract_json_object('{"a": 1,}') == {"a": 1}
+
+    def test_truncated_json_is_still_rejected(self) -> None:
+        with pytest.raises(ProviderError) as info:
+            extract_json_object('{"a": [1, 2')
+        assert info.value.code == "provider_invalid_output"
+
     def test_rejected_generation_config_drops_one_feature_per_retry(self) -> None:
         seen: list[dict] = []
 

@@ -2022,7 +2022,9 @@ PLAYWRIGHT_BROWSERS_PATH=.tools/pw-browsers .venv/bin/python scripts/build_demo_
 
 
 def main() -> int:
-    print(f"benchmark: {BENCH_DATE}, {CASE_COUNT} cases, {PROVIDER_COUNT} providers, spend {SPEND if SPEND is not None else 'N/A'}")
+    print(
+        f"benchmark: {BENCH_DATE}, {CASE_COUNT} cases, {PROVIDER_COUNT} providers, spend {SPEND if SPEND is not None else 'N/A'}"
+    )
     print(f"brief: {BRIEF_CHARS} chars")
     print(f"output: {OUT}")
     panel_paths = build_panel_frames()

@@ -9,7 +9,8 @@ what was accepted, what was dropped and what still needs a human decision.
 from __future__ import annotations
 
 import re
-from typing import Any
+from collections.abc import Callable
+from typing import Any, Literal
 
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError, PlanInvalidError, ProviderError
@@ -64,10 +65,16 @@ from docentric_copilot.template_ir import (
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .compact_ir import (
+    COMPACT_GENERATOR,
     COMPACT_TEMPLATE_NAME,
     build_compact_messages,
     compact_schema,
     expand_compact,
+)
+from .compact_ir_v2 import (
+    build_compact_messages_v2,
+    compact_schema_v2,
+    expand_compact_v2,
 )
 from .heuristic import BASELINE_VERSION, build_document
 from .prompt import build_messages, build_repair_message
@@ -91,6 +98,10 @@ class PlanOptions(BaseModel):
     #: Ask the provider for the compact wire format and expand it deterministically.
     #: Off by default so existing callers keep the full-IR contract.
     compact_ir: bool = False
+    #: Wire-format revision used when ``compact_ir`` is on. v2 is the
+    #: ultra-compact array format used for Gemini; v1 stays available for
+    #: back-compat and for callers that pin the older readable format.
+    compact_version: Literal["v1", "v2"] = "v2"
 
 
 class RemovedBinding(BaseModel):
@@ -685,7 +696,12 @@ class TemplatePlanner:
             raise InvalidInputError("A requirement prompt is required")
 
         if resolved_options.compact_ir:
-            messages = build_compact_messages(
+            build_messages_for_compact = (
+                build_compact_messages
+                if resolved_options.compact_version == "v1"
+                else build_compact_messages_v2
+            )
+            messages = build_messages_for_compact(
                 schema,
                 requirement,
                 design_style=resolved_options.design_style.value,
@@ -710,6 +726,7 @@ class TemplatePlanner:
             attempts=resolved_options.max_repair_attempts + 1,
             budget_usd=budget_usd,
             compact_ir=resolved_options.compact_ir,
+            compact_version=resolved_options.compact_version,
             domain_schema=schema,
         )
 
@@ -774,6 +791,11 @@ class TemplatePlanner:
                 design_style=document.metadata.design_style or DesignStyle.MODERN,
                 target=document.target,
                 compact_ir=True,
+                # A v1 document replans through v1 so its payload keeps the
+                # same wire contract; everything else uses v2.
+                compact_version=(
+                    "v1" if document.metadata.generator == COMPACT_GENERATOR else "v2"
+                ),
             )
 
         targeted = apply_revision(document, instruction, schema)
@@ -810,20 +832,32 @@ class TemplatePlanner:
         attempts: int,
         budget_usd: float | None = None,
         compact_ir: bool = False,
+        compact_version: str = "v2",
         domain_schema: NormalizedSchema | None = None,
     ) -> tuple[GenerationResult, Document]:
         """Generate, validate/expand, and retry repairable failures.
 
-        In compact mode the provider validates against ``compact_schema()`` and
+        In compact mode the provider validates against the compact schema and
         the payload is expanded here, so an expansion error is as repairable as a
         JSON-schema error: the next attempt keeps the compact schema and receives
         the offending paths in the repair message.
         """
         last_error: ProviderError | PlanInvalidError | None = None
         current_messages = list(messages)
-        response_schema: type[BaseModel] | dict[str, Any] = (
-            compact_schema() if compact_ir else Document
-        )
+        expand: Callable[[dict[str, Any], NormalizedSchema], Document] | None = None
+        response_schema: type[BaseModel] | dict[str, Any] = Document
+        if compact_ir:
+            if compact_version == "v2":
+                response_schema = compact_schema_v2()
+                expand = expand_compact_v2
+            else:
+                response_schema = compact_schema()
+                expand = expand_compact
+        # Gemini's structured-output converter cannot express v2's positional
+        # arrays without inventing a union that encourages empty objects. The
+        # v2 prompt is precise enough on its own, so Gemini gets JSON mode
+        # without a responseSchema; the expander remains the validator.
+        guided_schema = not (compact_ir and compact_version == "v2" and provider == "gemini")
         for attempt in range(1, max(1, attempts) + 1):
             try:
                 result = await self._gateway.generate_structured(
@@ -831,12 +865,13 @@ class TemplatePlanner:
                     model=model,
                     messages=current_messages,
                     schema=response_schema,
+                    response_schema=guided_schema,
                     budget_usd=budget_usd,
                 )
                 if compact_ir:
-                    if domain_schema is None:  # pragma: no cover - internal misuse
+                    if domain_schema is None or expand is None:  # pragma: no cover
                         raise InvalidInputError("Compact planning requires the normalized schema")
-                    document = expand_compact(result.content, domain_schema)
+                    document = expand(result.content, domain_schema)
                 else:
                     try:
                         document = Document.model_validate(result.content)

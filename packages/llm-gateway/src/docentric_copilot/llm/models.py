@@ -35,6 +35,11 @@ class GenerationSettings(BaseModel):
     retries: int = Field(default=2, ge=0, le=5)
     budget_usd: float | None = Field(default=0.5, ge=0.0)
     prompt_version: str = Field(default="planner-v1", max_length=40)
+    #: When false the provider should rely on the prompt for JSON shape instead
+    #: of a response schema. Providers that cannot express the schema safely
+    #: (Gemini + the positional v2 compact format) use this. The caller still
+    #: validates the payload deterministically.
+    response_schema: bool = True
 
 
 class Usage(BaseModel):

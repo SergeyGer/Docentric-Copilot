@@ -1,7 +1,7 @@
 [
   {
-    "case_id": "simple-company-identity",
-    "category": "simple",
+    "case_id": "flat-company-identity",
+    "category": "flat",
     "package": "examples/quotation/sales-quotation.ddsp",
     "prompt": "Add the company name and the company logo to the document header.",
     "expected_paths": [
@@ -11,8 +11,8 @@
     "notes": "Two scalar fields with a clear object scope."
   },
   {
-    "case_id": "simple-document-identifiers",
-    "category": "simple",
+    "case_id": "flat-document-identifiers",
+    "category": "flat",
     "package": "examples/quotation/sales-quotation.ddsp",
     "prompt": "Show the quotation number, the quotation date and the validity date.",
     "expected_paths": [
@@ -23,8 +23,8 @@
     "notes": "Three scalar fields on the document root."
   },
   {
-    "case_id": "simple-customer-details",
-    "category": "simple",
+    "case_id": "flat-customer-details",
+    "category": "flat",
     "package": "examples/invoice/sales-invoice.ddsp",
     "prompt": "Show the customer name, account number and VAT number.",
     "expected_paths": [
@@ -33,6 +33,19 @@
       "MainData.Invoice.Customer.VatNumber"
     ],
     "notes": "Party-scoped fields; the brief names the customer explicitly."
+  },
+  {
+    "case_id": "flat-quotation-owner-terms",
+    "category": "flat",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show the quotation number, the sales owner, the payment terms and the total amount.",
+    "expected_paths": [
+      "MainData.Quotation.QuotationId",
+      "MainData.Quotation.SalesOwner",
+      "MainData.Quotation.PaymentTerms",
+      "MainData.Quotation.TotalAmount"
+    ],
+    "notes": "Four scalar fields, including a monetary amount that must come from data."
   },
   {
     "case_id": "repeat-quotation-lines",
@@ -77,46 +90,6 @@
     "notes": "Collection iteration in the purchase-order vocabulary."
   },
   {
-    "case_id": "conditional-eu-vat-notice",
-    "category": "conditional",
-    "package": "examples/quotation/sales-quotation.ddsp",
-    "prompt": "Show an EU VAT notice only when the customer is in the EU.",
-    "expected_paths": [
-      "MainData.Quotation.Customer.IsEU"
-    ],
-    "notes": "The condition field must be bound inside a conditional block."
-  },
-  {
-    "case_id": "conditional-reverse-charge",
-    "category": "conditional",
-    "package": "examples/invoice/sales-invoice.ddsp",
-    "prompt": "Add a reverse-charge note only when reverse charge applies and the customer is in the EU.",
-    "expected_paths": [
-      "MainData.Invoice.ReverseCharge",
-      "MainData.Invoice.Customer.IsEU"
-    ],
-    "notes": "Compound condition over a document flag and a party flag."
-  },
-  {
-    "case_id": "ambiguous-address",
-    "category": "ambiguous",
-    "package": "examples/quotation/sales-quotation.ddsp",
-    "prompt": "Add the address to the document.",
-    "expected_paths": [
-      "GeneralData.Company.Address",
-      "MainData.Quotation.Customer.Address"
-    ],
-    "notes": "No party is named. Either address is defensible, so both are in the expected set and recall is capped at 0.5 unless both are bound; a safe plan should ask instead of guessing."
-  },
-  {
-    "case_id": "missing-field",
-    "category": "missing",
-    "package": "examples/quotation/sales-quotation.ddsp",
-    "prompt": "Show the customer's loyalty number and preferred courier.",
-    "expected_paths": [],
-    "notes": "Neither field exists in the schema. The correct behaviour is to report the requirement as missing, not to invent a path; precision and recall are not defined for this case."
-  },
-  {
     "case_id": "multiline-invoice-items",
     "category": "multiline",
     "package": "examples/invoice/sales-invoice.ddsp",
@@ -145,5 +118,150 @@
       "MainData.PurchaseOrder.DeliveryTerms"
     ],
     "notes": "Mixed scalar, collection and total requirements in one brief."
+  },
+  {
+    "case_id": "conditional-eu-vat-notice",
+    "category": "conditional",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show an EU VAT notice only when the customer is in the EU.",
+    "expected_paths": [
+      "MainData.Quotation.Customer.IsEU"
+    ],
+    "notes": "The condition field must be bound inside a conditional block."
+  },
+  {
+    "case_id": "conditional-reverse-charge",
+    "category": "conditional",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Add a reverse-charge note only when reverse charge applies and the customer is in the EU.",
+    "expected_paths": [
+      "MainData.Invoice.ReverseCharge",
+      "MainData.Invoice.Customer.IsEU"
+    ],
+    "notes": "Compound condition over a document flag and a party flag."
+  },
+  {
+    "case_id": "conditional-rush-notice",
+    "category": "conditional",
+    "package": "benchmarks/fixtures/field-service.ddsp",
+    "prompt": "Add a rush handling notice only when the customer is in the EU.",
+    "expected_paths": [
+      "MainData.ServiceOrder.Customer.IsEU"
+    ],
+    "notes": "Conditional on the field-service schema; exercises a different boolean flag."
+  },
+  {
+    "case_id": "nested-service-tasks",
+    "category": "nested",
+    "package": "benchmarks/fixtures/field-service.ddsp",
+    "prompt": "Show each service line with its description and amount, and under each line list the tasks with task description, hours and amount.",
+    "expected_paths": [
+      "MainData.ServiceOrderLines.Line",
+      "MainData.ServiceOrderLines.Line.Description",
+      "MainData.ServiceOrderLines.Line.LineAmount",
+      "MainData.ServiceOrderLines.Line.Tasks.Task",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Description",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Hours",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+    ],
+    "notes": "Nested collection: a repeat over lines that contains a repeat over tasks."
+  },
+  {
+    "case_id": "nested-task-effort",
+    "category": "nested",
+    "package": "benchmarks/fixtures/field-service.ddsp",
+    "prompt": "For every service line, list its tasks with the task id, hours, rate and amount.",
+    "expected_paths": [
+      "MainData.ServiceOrderLines.Line",
+      "MainData.ServiceOrderLines.Line.Tasks.Task",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Hours",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Rate",
+      "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+    ],
+    "notes": "Nested task scope with four bindings; tests the alias derived for Task."
+  },
+  {
+    "case_id": "long-table-order-lines",
+    "category": "long_table",
+    "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+    "prompt": "Add a table of order lines with the SKU, description, quantity, unit, unit price, discount, net amount, tax amount, line amount, warehouse, delivery date and line note for every line.",
+    "expected_paths": [
+      "MainData.SalesOrderLines.Line",
+      "MainData.SalesOrderLines.Line.ItemId",
+      "MainData.SalesOrderLines.Line.Description",
+      "MainData.SalesOrderLines.Line.Quantity",
+      "MainData.SalesOrderLines.Line.Unit",
+      "MainData.SalesOrderLines.Line.UnitPrice",
+      "MainData.SalesOrderLines.Line.DiscountPct",
+      "MainData.SalesOrderLines.Line.NetAmount",
+      "MainData.SalesOrderLines.Line.TaxAmount",
+      "MainData.SalesOrderLines.Line.LineAmount",
+      "MainData.SalesOrderLines.Line.Warehouse",
+      "MainData.SalesOrderLines.Line.DeliveryDate",
+      "MainData.SalesOrderLines.Line.LineNote"
+    ],
+    "notes": "13 expected paths: the widest table in the dataset (12 columns)."
+  },
+  {
+    "case_id": "long-table-commercial-columns",
+    "category": "long_table",
+    "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+    "prompt": "Show the SKU, description, quantity, unit price, discount, tax and line amount, plus the warehouse and delivery date, for every order line.",
+    "expected_paths": [
+      "MainData.SalesOrderLines.Line",
+      "MainData.SalesOrderLines.Line.ItemId",
+      "MainData.SalesOrderLines.Line.Description",
+      "MainData.SalesOrderLines.Line.Quantity",
+      "MainData.SalesOrderLines.Line.UnitPrice",
+      "MainData.SalesOrderLines.Line.DiscountPct",
+      "MainData.SalesOrderLines.Line.TaxAmount",
+      "MainData.SalesOrderLines.Line.LineAmount",
+      "MainData.SalesOrderLines.Line.Warehouse",
+      "MainData.SalesOrderLines.Line.DeliveryDate"
+    ],
+    "notes": "A narrower long table that mixes money, percentage and date columns."
+  },
+  {
+    "case_id": "multilingual-company-de",
+    "category": "multilingual",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Fügen Sie den Firmennamen und das Firmenlogo in die Kopfzeile ein.",
+    "expected_paths": [
+      "GeneralData.Company.Name",
+      "GeneralData.Company.CompanyLogo"
+    ],
+    "notes": "German brief; the expected bindings are language-independent."
+  },
+  {
+    "case_id": "multilingual-invoice-fr",
+    "category": "multilingual",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Affichez le numéro de facture, la date de facture et la date d'échéance.",
+    "expected_paths": [
+      "MainData.Invoice.InvoiceId",
+      "MainData.Invoice.InvoiceDate",
+      "MainData.Invoice.DueDate"
+    ],
+    "notes": "French brief with three date/identifier fields."
+  },
+  {
+    "case_id": "missing-field",
+    "category": "missing",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show the customer's loyalty number and preferred courier.",
+    "expected_paths": [],
+    "notes": "Neither field exists in the schema. The correct behaviour is to report the requirement as missing, not to invent a path; precision and recall are not defined for this case."
+  },
+  {
+    "case_id": "ambiguous-address",
+    "category": "ambiguous",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Add the address to the document.",
+    "expected_paths": [
+      "GeneralData.Company.Address",
+      "MainData.Quotation.Customer.Address"
+    ],
+    "notes": "No party is named. Either address is defensible, so both are in the expected set and recall is capped at 0.5 unless both are bound; a safe plan should ask instead of guessing."
   }
 ]

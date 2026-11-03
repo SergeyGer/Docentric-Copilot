@@ -9,6 +9,14 @@ from .compact_ir import (
     compact_schema,
     expand_compact,
 )
+from .compact_ir_v2 import (
+    COMPACT_V2_GENERATOR,
+    COMPACT_V2_SCHEMA_TITLE,
+    COMPACT_V2_SYSTEM_PROMPT,
+    build_compact_messages_v2,
+    compact_schema_v2,
+    expand_compact_v2,
+)
 from .heuristic import BASELINE_VERSION, Roles, build_document, detect_document_kind, discover_roles
 from .optimize import LayoutFix, LayoutOptimization, optimize_layout  # noqa: F401
 from .prompt import PROMPT_VERSION, SYSTEM_PROMPT, build_messages, build_repair_message
@@ -31,6 +39,9 @@ __all__ = [
     "BASELINE_VERSION",
     "COMPACT_SYSTEM_PROMPT",
     "COMPACT_TEMPLATE_NAME",
+    "COMPACT_V2_GENERATOR",
+    "COMPACT_V2_SCHEMA_TITLE",
+    "COMPACT_V2_SYSTEM_PROMPT",
     "PROMPT_VERSION",
     "SYSTEM_PROMPT",
     "Change",
@@ -46,16 +57,19 @@ __all__ = [
     "absolute_bindings",
     "analyze_quality",
     "build_compact_messages",
+    "build_compact_messages_v2",
     "build_document",
     "build_mapping_report",
     "build_messages",
     "build_repair_message",
     "classify",
     "compact_schema",
+    "compact_schema_v2",
     "detect_document_kind",
     "diff_documents",
     "discover_roles",
     "expand_compact",
+    "expand_compact_v2",
     "extract_requirements",
     "optimize_layout",
     "rebind_paths",

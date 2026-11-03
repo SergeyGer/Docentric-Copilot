@@ -16,11 +16,16 @@ from docentric_copilot.llm.models import GenerationResult, Usage
 from docentric_copilot.planner import (
     COMPACT_SYSTEM_PROMPT,
     COMPACT_TEMPLATE_NAME,
+    COMPACT_V2_SCHEMA_TITLE,
+    COMPACT_V2_SYSTEM_PROMPT,
     PlanOptions,
     TemplatePlanner,
+    absolute_bindings,
     build_document,
     compact_schema,
+    compact_schema_v2,
     expand_compact,
+    expand_compact_v2,
 )
 from docentric_copilot.template_ir import (
     Alignment,
@@ -31,6 +36,7 @@ from docentric_copilot.template_ir import (
     ImageBinding,
     PageBreak,
     Paragraph,
+    Repeat,
     Table,
     ValueFormat,
 )
@@ -135,6 +141,31 @@ class _FakeGateway:
 
 
 def _compact_payload() -> dict[str, Any]:
+    """The v2 ultra-compact payload the planner now asks providers for."""
+    return {
+        "t": "Sales Quotation",
+        "l": "en",
+        "s": [
+            {
+                "n": "Main",
+                "b": [
+                    ["h", 1, "Sales Quotation"],
+                    ["p", "Quotation ", {"f": "MainData.Quotation.QuotationId"}],
+                    [
+                        "tbl",
+                        "MainData.QuotationLines.Line",
+                        [
+                            ["SKU", "line.ItemId"],
+                            ["Amount", "line.LineAmount", 30, "n", 2],
+                        ],
+                    ],
+                ],
+            }
+        ],
+    }
+
+
+def _compact_v1_payload() -> dict[str, Any]:
     return {
         "title": "Sales Quotation",
         "language": "en",
@@ -396,17 +427,14 @@ class TestPlannerCompact:
 
         call = gateway.calls[0]
         assert isinstance(call["schema"], dict)
-        assert call["schema"]["title"] == "CompactTemplatePlan"
-        assert call["schema"] == compact_schema()
-        assert call["messages"][0].content == COMPACT_SYSTEM_PROMPT
+        assert call["schema"]["title"] == COMPACT_V2_SCHEMA_TITLE
+        assert call["schema"] == compact_schema_v2()
+        assert call["messages"][0].content == COMPACT_V2_SYSTEM_PROMPT
         assert outcome.document.metadata.template_name == COMPACT_TEMPLATE_NAME
         assert outcome.document.sections[0].body
 
     def test_compact_repair_reuses_the_schema_and_reports_the_path(self, schema) -> None:
-        invalid = {
-            "title": "T",
-            "sections": [{"name": "Main", "body": [{"p": ["x"], "zz": 1}]}],
-        }
+        invalid = {"t": "T", "s": [{"n": "Main", "b": [["zz", 1]]}]}
         gateway = _FakeGateway([invalid, _compact_payload()])
         planner = TemplatePlanner(gateway)  # type: ignore[arg-type]
         outcome = _run(
@@ -419,13 +447,13 @@ class TestPlannerCompact:
         )
 
         assert len(gateway.calls) == 2
-        assert all(call["schema"]["title"] == "CompactTemplatePlan" for call in gateway.calls)
+        assert all(call["schema"]["title"] == COMPACT_V2_SCHEMA_TITLE for call in gateway.calls)
         repair = gateway.calls[1]["messages"][-1].content
-        assert "sections[0].body[0].zz" in repair
+        assert "$.s[0].b[0][0]" in repair
         assert outcome.document.sections[0].body
 
     def test_revision_replans_compact_documents_with_compact_mode(self, schema) -> None:
-        compact_document = expand_compact(_compact_payload(), schema)
+        compact_document = expand_compact_v2(_compact_payload(), schema)
         gateway = _FakeGateway([_compact_payload()])
         planner = TemplatePlanner(gateway)  # type: ignore[arg-type]
         _run(
@@ -437,7 +465,22 @@ class TestPlannerCompact:
             )
         )
         assert gateway.calls
-        assert gateway.calls[0]["schema"]["title"] == "CompactTemplatePlan"
+        assert gateway.calls[0]["schema"]["title"] == COMPACT_V2_SCHEMA_TITLE
+
+    def test_v1_compact_version_keeps_the_readable_format(self, schema) -> None:
+        gateway = _FakeGateway([_compact_v1_payload()])
+        planner = TemplatePlanner(gateway)  # type: ignore[arg-type]
+        outcome = _run(
+            planner.plan(
+                schema,
+                "Create a sales quotation.",
+                provider="gemini",
+                options=PlanOptions(compact_ir=True, compact_version="v1"),
+            )
+        )
+        assert gateway.calls[0]["schema"] == compact_schema()
+        assert gateway.calls[0]["messages"][0].content == COMPACT_SYSTEM_PROMPT
+        assert outcome.document.sections[0].body
 
 
 # --------------------------------------------------------------------------- #
@@ -446,6 +489,7 @@ class TestPlannerCompact:
 class TestApiAutoCompact:
     def test_plan_options_default_is_full_ir(self) -> None:
         assert PlanOptions().compact_ir is False
+        assert PlanOptions().compact_version == "v2"
 
     def test_plan_request_default_is_auto(self) -> None:
         from docentric_copilot.api.schemas import PlanRequest
@@ -468,7 +512,7 @@ class TestApiAutoCompact:
             )
         )
         assert isinstance(gateway.calls[0]["schema"], dict)
-        assert gateway.calls[0]["schema"]["title"] == "CompactTemplatePlan"
+        assert gateway.calls[0]["schema"]["title"] == COMPACT_V2_SCHEMA_TITLE
         assert outcome.document.metadata.template_name == COMPACT_TEMPLATE_NAME
         assert report.can_compile
 
@@ -504,7 +548,7 @@ class TestApiAutoCompact:
         body = plan.json()
         assert body["ir"]["metadata"]["template_name"] == COMPACT_TEMPLATE_NAME
         assert isinstance(gateway.calls[0]["schema"], dict)
-        assert gateway.calls[0]["schema"]["title"] == "CompactTemplatePlan"
+        assert gateway.calls[0]["schema"]["title"] == COMPACT_V2_SCHEMA_TITLE
 
     def test_explicit_false_override_keeps_full_ir(self, schema, quotation_request) -> None:
         gateway = _FakeGateway([build_document(schema, quotation_request).model_dump(mode="json")])
@@ -525,3 +569,352 @@ class TestApiAutoCompact:
         service = TemplateService(gateway=gateway, settings=get_settings())  # type: ignore[arg-type]
         _run(service.plan(schema, quotation_request, provider="openai", model="gpt-5"))
         assert gateway.calls[0]["schema"] is Document
+
+
+# --------------------------------------------------------------------------- #
+# v2 ultra-compact format
+# --------------------------------------------------------------------------- #
+def _v2_full_feature_payload() -> dict[str, Any]:
+    return {
+        "t": "Sales Quotation",
+        "l": "en",
+        "s": [
+            {
+                "n": "Main",
+                "b": [
+                    ["h", 1, "Sales Quotation"],
+                    [
+                        "p",
+                        "Quotation ",
+                        {"f": "MainData.Quotation.QuotationId"},
+                        " · ",
+                        {"f": "MainData.Quotation.QuotationDate", "fmt": "d"},
+                    ],
+                    ["img", "GeneralData.Company.CompanyLogo", 42, "Company logo"],
+                    [
+                        "tbl",
+                        "MainData.QuotationLines.Line",
+                        [
+                            ["SKU", "line.ItemId"],
+                            ["Description", "line.Description"],
+                            ["Qty", "line.Quantity", "n", 0],
+                            ["Amount", "line.LineAmount", None, "n", 2, "r"],
+                        ],
+                    ],
+                    [
+                        "if",
+                        "MainData.Quotation.Customer.IsEU",
+                        "eq",
+                        True,
+                        [["p", "EU customer"]],
+                        [["p", "Non-EU customer"]],
+                    ],
+                    ["pb"],
+                ],
+                "h": [["img", "GeneralData.Company.CompanyLogo"]],
+                "f": [["p", {"f": "GeneralData.Company.Name"}]],
+            }
+        ],
+    }
+
+
+class TestExpandCompactV2:
+    def test_full_feature_payload_becomes_a_valid_document(self, schema) -> None:
+        document = expand_compact_v2(_v2_full_feature_payload(), schema)
+
+        assert isinstance(document, Document)
+        assert document.title == "Sales Quotation"
+        assert document.language == "en"
+        assert document.metadata.template_name == COMPACT_TEMPLATE_NAME
+        assert document.metadata.source_schema_id == schema.schema_id
+        assert document.page.margin_top_mm == 20.0
+
+        body = document.sections[0].body
+        assert [block.kind for block in body] == [
+            "heading",
+            "paragraph",
+            "image",
+            "table",
+            "conditional",
+            "page_break",
+        ]
+        assert isinstance(body[1], Paragraph)
+        assert body[1].runs[1].path == "MainData.Quotation.QuotationId"
+        assert body[1].runs[3].format is ValueFormat.DATE_ISO
+        assert isinstance(body[2], ImageBinding) and body[2].width_mm == 42
+        table = body[3]
+        assert isinstance(table, Table)
+        assert table.repeat is not None and table.repeat.alias == "line"
+        assert table.row_template is not None and len(table.row_template) == 4
+        conditional = body[4]
+        assert isinstance(conditional, Conditional)
+        assert conditional.condition.operator.value == "equals"
+        assert conditional.else_blocks
+        assert document.sections[0].header and document.sections[0].footer
+
+        report = validate_document(document, schema)
+        assert report.can_compile
+        assert report.statuses()["structural"] == "passed"
+        assert report.statuses()["semantic"] == "passed"
+
+    def test_defaults_are_filled_by_the_expander(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "tbl",
+                            "MainData.QuotationLines.Line",
+                            [["Amount", "line.LineAmount", "n", 2]],
+                        ]
+                    ],
+                }
+            ],
+        }
+        document = expand_compact_v2(payload, schema)
+        table = document.sections[0].body[0]
+        assert isinstance(table, Table)
+        assert document.language == "en"
+        assert table.show_header is True
+        assert table.repeat is not None and table.repeat.alias == "line"
+        assert table.columns[0].width_mm == 30.0
+        assert table.columns[0].alignment is Alignment.RIGHT
+        binding = table.row_template[0].blocks[0].runs[0]
+        assert isinstance(binding, FieldBinding)
+        assert binding.format is ValueFormat.NUMBER and binding.decimals == 2
+        assert binding.style is not None and binding.style.alignment is Alignment.RIGHT
+
+    def test_v2_binds_every_expected_path(self, schema) -> None:
+        v1_document = expand_compact(_full_feature_payload(), schema)
+        v2_document = expand_compact_v2(_v2_full_feature_payload(), schema)
+        assert [block.kind for block in v1_document.sections[0].body] == [
+            block.kind for block in v2_document.sections[0].body
+        ]
+        assert set(absolute_bindings(v2_document, schema)) == {
+            "GeneralData.Company.CompanyLogo",
+            "GeneralData.Company.Name",
+            "MainData.Quotation.Customer.IsEU",
+            "MainData.Quotation.QuotationDate",
+            "MainData.Quotation.QuotationId",
+            "MainData.QuotationLines.Line",
+            "MainData.QuotationLines.Line.Description",
+            "MainData.QuotationLines.Line.ItemId",
+            "MainData.QuotationLines.Line.LineAmount",
+            "MainData.QuotationLines.Line.Quantity",
+        }
+
+    def test_expanded_document_round_trips_through_the_full_ir_passthrough(self, schema) -> None:
+        document = expand_compact_v2(_v2_full_feature_payload(), schema)
+        restored = expand_compact_v2(document.model_dump(mode="json"), schema)
+        assert restored.model_dump(mode="json") == document.model_dump(mode="json")
+
+    def test_conditional_accepts_long_operator_and_omits_else(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "if",
+                            "MainData.Quotation.Customer.IsEU",
+                            "equals",
+                            True,
+                            [["p", "EU"]],
+                        ],
+                        [
+                            "if",
+                            "MainData.Quotation.Customer.IsEU",
+                            "notnull",
+                            None,
+                            [["p", "has flag"]],
+                        ],
+                    ],
+                }
+            ],
+        }
+        document = expand_compact_v2(payload, schema)
+        first, second = document.sections[0].body
+        assert isinstance(first, Conditional) and first.else_blocks is None
+        assert isinstance(second, Conditional)
+        assert second.condition.operator.value == "not_null"
+
+    def test_repeat_block_derives_its_alias(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "rep",
+                            "MainData.QuotationLines.Line",
+                            [["p", "Item ", {"f": "line.ItemId"}]],
+                        ]
+                    ],
+                }
+            ],
+        }
+        repeat = expand_compact_v2(payload, schema).sections[0].body[0]
+        assert isinstance(repeat, Repeat)
+        assert repeat.alias == "line"
+        assert repeat.blocks[0].kind == "paragraph"
+
+    def test_unknown_block_object_is_rejected(self, schema) -> None:
+        payload = {"t": "T", "s": [{"n": "Main", "b": [{"p": ["x"]}]}]}
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert "$.s[0].b[0]" in info.value.message
+        assert "block array" in info.value.message
+
+    def test_unknown_form_is_rejected_with_its_path(self, schema) -> None:
+        payload = {"t": "T", "s": [{"n": "Main", "b": [["zz", 1]]}]}
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0][0]"
+        assert "unknown block form" in info.value.message
+
+    def test_wrong_heading_arity_is_rejected(self, schema) -> None:
+        payload = {"t": "T", "s": [{"n": "Main", "b": [["h", 1]]}]}
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0]"
+
+    def test_unknown_field_run_key_is_rejected(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        ["p", {"f": "MainData.Quotation.QuotationId", "style": "bold"}],
+                    ],
+                }
+            ],
+        }
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0][1].style"
+
+    def test_empty_paragraph_is_a_spacer(self, schema) -> None:
+        payload = {"t": "T", "s": [{"n": "Main", "b": [["p"], ["p", "x"]]}]}
+        document = expand_compact_v2(payload, schema)
+        assert document.sections[0].body[0].kind == "paragraph"
+        assert document.sections[0].body[0].runs == []
+        assert document.sections[0].body[1].runs[0].text == "x"
+
+    def test_show_header_may_precede_the_columns(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "tbl",
+                            "MainData.QuotationLines.Line",
+                            False,
+                            [["Amount", "line.LineAmount", "n", 2]],
+                        ]
+                    ],
+                }
+            ],
+        }
+        table = expand_compact_v2(payload, schema).sections[0].body[0]
+        assert isinstance(table, Table)
+        assert table.show_header is False
+        assert len(table.columns) == 1
+
+    def test_v1_run_key_aliases_are_accepted(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "p",
+                            {
+                                "f": "MainData.Quotation.TotalAmount",
+                                "fmt": "n",
+                                "d": 2,
+                                "align": "r",
+                            },
+                        ]
+                    ],
+                }
+            ],
+        }
+        run = expand_compact_v2(payload, schema).sections[0].body[0].runs[0]
+        assert isinstance(run, FieldBinding)
+        assert run.decimals == 2
+        assert run.style is not None and run.style.alignment is Alignment.RIGHT
+
+    def test_unknown_format_is_rejected(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [{"n": "Main", "b": [["p", {"f": "MainData.Quotation.QuotationId", "fmt": "x"}]]}],
+        }
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0][1].fmt"
+        assert "unknown format" in info.value.message
+
+    def test_extra_column_item_is_rejected(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "tbl",
+                            "MainData.QuotationLines.Line",
+                            [["Amount", "line.LineAmount", 30, "n", 2, "r", "extra"]],
+                        ]
+                    ],
+                }
+            ],
+        }
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"].endswith("[2][0]")
+
+    def test_static_table_without_a_collection_is_rejected(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [{"n": "Main", "b": [["tbl", None, [["A", "MainData.Quotation.QuotationId"]]]]}],
+        }
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0][1]"
+
+    def test_notnull_with_a_value_is_rejected(self, schema) -> None:
+        payload = {
+            "t": "T",
+            "s": [
+                {
+                    "n": "Main",
+                    "b": [
+                        [
+                            "if",
+                            "MainData.Quotation.Customer.IsEU",
+                            "notnull",
+                            True,
+                            [["p", "x"]],
+                        ]
+                    ],
+                }
+            ],
+        }
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.s[0].b[0][3]"
+
+    def test_unknown_top_level_key_is_rejected(self, schema) -> None:
+        payload = {"t": "T", "s": [], "title": "T"}
+        with pytest.raises(PlanInvalidError) as info:
+            expand_compact_v2(payload, schema)
+        assert info.value.details["path"] == "$.title"

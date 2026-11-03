@@ -631,10 +631,15 @@ class GeminiProvider(BaseHTTPProvider):
                 config.pop(key, None)
                 retried = True
                 try:
-                    response = await self._post(url, headers=headers, payload=payload, settings=settings)
+                    response = await self._post(
+                        url, headers=headers, payload=payload, settings=settings
+                    )
                     break
                 except ProviderError as retry_exc:
-                    if retry_exc.code != "provider_bad_response" or retry_exc.details.get("status") != 400:
+                    if (
+                        retry_exc.code != "provider_bad_response"
+                        or retry_exc.details.get("status") != 400
+                    ):
                         raise
             else:
                 raise

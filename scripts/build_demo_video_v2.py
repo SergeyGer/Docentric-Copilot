@@ -26,7 +26,6 @@ import base64
 import html
 import json
 import os
-import re
 import shutil
 import subprocess
 import textwrap
@@ -55,7 +54,15 @@ for directory in (SLIDES, TTS, AUDIO, VIDEO):
 os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(ROOT / ".tools" / "pw-browsers"))
 
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
-FFPROBE = ROOT / ".tools" / "ffprobe-tool" / "node_modules" / "@ffprobe-installer" / "linux-x64" / "ffprobe"
+FFPROBE = (
+    ROOT
+    / ".tools"
+    / "ffprobe-tool"
+    / "node_modules"
+    / "@ffprobe-installer"
+    / "linux-x64"
+    / "ffprobe"
+)
 FFPROBE = FFPROBE if FFPROBE.exists() else Path(shutil.which("ffprobe") or "ffprobe")
 
 W, H = 2560, 1440
@@ -503,7 +510,7 @@ def scene_2() -> str:
           <div style="width:840px; flex:0 0 840px;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
               <div style="background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px 22px;">
-                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS['node_count']}</div>
+                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS["node_count"]}</div>
                 <div style="font-size:19px; color:#64748b; margin-top:6px;">fields in the schema</div>
               </div>
               <div style="background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px 22px;">
@@ -511,16 +518,16 @@ def scene_2() -> str:
                 <div style="font-size:19px; color:#64748b; margin-top:6px;">root sections</div>
               </div>
               <div style="background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px 22px;">
-                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS['collection_count']}</div>
+                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS["collection_count"]}</div>
                 <div style="font-size:19px; color:#64748b; margin-top:6px;">repeating collection</div>
               </div>
               <div style="background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px 22px;">
-                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS['max_depth']}</div>
+                <div style="font-size:46px; font-weight:700; color:#0f2a54; line-height:1;">{SCHEMA_STATS["max_depth"]}</div>
                 <div style="font-size:19px; color:#64748b; margin-top:6px;">levels deep</div>
               </div>
             </div>
             <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-              {''.join(f'<span class="pill">{esc(section)}</span>' for section in SCHEMA_SECTIONS)}
+              {"".join(f'<span class="pill">{esc(section)}</span>' for section in SCHEMA_SECTIONS)}
               <span class="pill green">sample data</span>
               <span class="pill amber">3 parser diagnostics</span>
             </div>
@@ -625,10 +632,12 @@ def bench_row(row: dict, recommended: bool) -> str:
     valid_class = "ok" if valid == runs else ("warn" if valid else "bad")
     p50_text = f"{p50 / 1000:.1f} s" if p50 is not None else "N/A"
     per_text = f"${per:,.4f}" if per is not None else "N/A"
-    badge = '<span class="pill green" style="font-size:15px; padding:6px 12px; margin-left:12px;">recommended</span>' if recommended else ""
-    sub = (
-        f"validation {row['validation_pass_rate'] * 100:.0f}% · compile {row['compilation_success_rate'] * 100:.0f}%"
+    badge = (
+        '<span class="pill green" style="font-size:15px; padding:6px 12px; margin-left:12px;">recommended</span>'
+        if recommended
+        else ""
     )
+    sub = f"validation {row['validation_pass_rate'] * 100:.0f}% · compile {row['compilation_success_rate'] * 100:.0f}%"
     return f"""
       <div class="brow">
         <div class="bmodel">
@@ -664,14 +673,14 @@ def scene_4() -> str:
           <div class="bhead">
             <div>Provider / model</div><div>Valid templates</div><div>p50 latency</div><div>Cost per valid template</div>
           </div>
-          {bench_row(OPENAI, rec == 'openai')}
-          {bench_row(ANTHROPIC, rec == 'anthropic')}
-          {bench_row(GEMINI, rec == 'gemini')}
+          {bench_row(OPENAI, rec == "openai")}
+          {bench_row(ANTHROPIC, rec == "anthropic")}
+          {bench_row(GEMINI, rec == "gemini")}
         </div>
         <div class="footnote" style="max-width:2340px;">
           <b>n = {CASE_COUNT} cases per provider · {BENCH_DATE} · one run per case · {PROVIDER_COUNT} models:</b>
           openai:gpt-6-sol, anthropic:claude-sonnet-5-5, gemini:gemini-3.1-flash-lite.
-          Estimated spend ${SPEND:.6f} of ${BENCH['budget']['max_spend_usd']:.2f}; unknown-cost runs: {UNKNOWN_COST_RUNS}.
+          Estimated spend ${SPEND:.6f} of ${BENCH["budget"]["max_spend_usd"]:.2f}; unknown-cost runs: {UNKNOWN_COST_RUNS}.
           <b>Cost per valid template = provider cost ÷ successful runs.</b>
           N/A means the report has no price or no successful latency sample — never $0.00.
           These are observations, not a significance claim.
@@ -835,7 +844,7 @@ def scene_7() -> str:
             </div>
             <div style="margin-top:18px; background:#0b1f3a; color:#e2e8f0; border-radius:16px; padding:16px 20px;">
               <div style="font-size:16px; letter-spacing:1.4px; text-transform:uppercase; color:#7dd3fc; font-weight:700; margin-bottom:8px;">Changed IR paths</div>
-              {''.join(f'<div class="mono" style="font-size:16px; color:#cbd5e1; line-height:1.55;">{esc(path)}</div>' for path in paths)}
+              {"".join(f'<div class="mono" style="font-size:16px; color:#cbd5e1; line-height:1.55;">{esc(path)}</div>' for path in paths)}
             </div>
             <div style="margin-top:14px; display:flex; gap:12px; align-items:center;">
               <span class="pill green">Restore version</span>
@@ -990,7 +999,19 @@ async def _synth_once(text: str, rate: int, path: Path) -> tuple[bytes, list[Sen
 
 def decode_mp3(path: Path, wav_path: Path) -> np.ndarray:
     subprocess.run(
-        [str(FFMPEG), "-y", "-loglevel", "error", "-i", str(path), "-ar", "48000", "-ac", "1", str(wav_path)],
+        [
+            str(FFMPEG),
+            "-y",
+            "-loglevel",
+            "error",
+            "-i",
+            str(path),
+            "-ar",
+            "48000",
+            "-ac",
+            "1",
+            str(wav_path),
+        ],
         check=True,
     )
     with wave.open(str(wav_path), "rb") as handle:
@@ -1074,7 +1095,9 @@ def build_audio(scenes: list[NarratedScene]) -> np.ndarray:
         fade = min(240, len(scene.samples))
         if fade:
             ramp = np.linspace(1.0, 0.0, fade, dtype=np.float32)
-            track[end - fade : end] = (track[end - fade : end].astype(np.float32) * ramp).astype(np.int16)
+            track[end - fade : end] = (track[end - fade : end].astype(np.float32) * ramp).astype(
+                np.int16
+            )
     wav_path = AUDIO / "narration.wav"
     with wave.open(str(wav_path), "wb") as handle:
         handle.setnchannels(1)
@@ -1109,7 +1132,9 @@ def build_srt(scenes: list[NarratedScene]) -> str:
             end = offset + sentence.start + sentence.duration + 0.18
             if position + 1 < len(scene.sentences):
                 end = min(end, offset + scene.sentences[position + 1].start - 0.02)
-            end = min(end, offset + scene.duration + 0.10, offset + SCENE_SECONDS[scene.index] - 0.02)
+            end = min(
+                end, offset + scene.duration + 0.10, offset + SCENE_SECONDS[scene.index] - 0.02
+            )
             if end - start < 0.35:
                 start = max(offset, end - 0.35)
             cues.append((start, end, caption_text(sentence.text)))
@@ -1127,7 +1152,9 @@ def build_srt(scenes: list[NarratedScene]) -> str:
 
 def render_html(html_text: str, png: Path) -> None:
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(args=["--force-color-profile=srgb", "--font-render-hinting=none"])
+        browser = playwright.chromium.launch(
+            args=["--force-color-profile=srgb", "--font-render-hinting=none"]
+        )
         page = browser.new_page(viewport={"width": W, "height": H}, device_scale_factor=1)
         page.set_content(html_text, wait_until="load")
         page.evaluate("document.fonts.ready")
@@ -1138,7 +1165,9 @@ def render_html(html_text: str, png: Path) -> None:
 
 def render_thumbnail() -> None:
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(args=["--force-color-profile=srgb", "--font-render-hinting=none"])
+        browser = playwright.chromium.launch(
+            args=["--force-color-profile=srgb", "--font-render-hinting=none"]
+        )
         page = browser.new_page(viewport={"width": 1280, "height": 720}, device_scale_factor=1)
         page.set_content(thumbnail_html(), wait_until="load")
         page.evaluate("document.fonts.ready")
@@ -1206,11 +1235,26 @@ def encode_scene(index: int) -> Path:
 def encode_video(scenes: list[NarratedScene]) -> None:
     parts = [encode_scene(index) for index in range(8)]
     concat_file = VIDEO / "concat.txt"
-    concat_file.write_text("".join(f"file '{part.as_posix()}'\n" for part in parts), encoding="utf-8")
+    concat_file.write_text(
+        "".join(f"file '{part.as_posix()}'\n" for part in parts), encoding="utf-8"
+    )
     silent = VIDEO / "video-only.mp4"
     subprocess.run(
-        [str(FFMPEG), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(concat_file),
-         "-c", "copy", str(silent)],
+        [
+            str(FFMPEG),
+            "-y",
+            "-loglevel",
+            "error",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(concat_file),
+            "-c",
+            "copy",
+            str(silent),
+        ],
         check=True,
     )
     wav = AUDIO / "narration.wav"
@@ -1262,7 +1306,9 @@ def write_narration() -> None:
         "The script is English only. Each scene is one paragraph; the SRT follows the same sentences.",
         "",
     ]
-    for index, (title, start, end) in enumerate(zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS), start=1):
+    for index, (title, start, end) in enumerate(
+        zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS), start=1
+    ):
         lines.append(f"## {index}. {title} — {mmss(start)}–{mmss(end)}")
         lines.append("")
         lines.append(SCENE_NARRATION[index - 1])
@@ -1283,7 +1329,9 @@ def write_manifest() -> None:
                 "evidence": SCENE_EVIDENCE[index],
             }
         )
-    (MEDIA / "scene-manifest.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (MEDIA / "scene-manifest.json").write_text(
+        json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 def write_release_notes() -> None:
@@ -1294,7 +1342,7 @@ def write_release_notes() -> None:
     }
     text = f"""# Demo video v2 — release notes
 
-This release note accompanies `docs/media/demo-v2.mp4` ({sizes['video_mb']:.1f} MiB),
+This release note accompanies `docs/media/demo-v2.mp4` ({sizes["video_mb"]:.1f} MiB),
 `docs/media/demo-v2.srt`, `docs/media/thumbnail.png`, `docs/media/narration-v2.md` and
 `docs/media/scene-manifest.json`. Nothing is committed or pushed; the files are in the working tree.
 
@@ -1320,7 +1368,7 @@ dropdown visible in the full workspace capture is not used as evidence for the l
 ## Benchmark caveats
 
 - One run per case and provider. These are observations, not a statistically significant benchmark.
-- The benchmark's recommendation is `{BENCH['recommendation']['provider']}` (quality first, then known cost,
+- The benchmark's recommendation is `{BENCH["recommendation"]["provider"]}` (quality first, then known cost,
   then p50 latency). The routing panel in scene 3 is a workspace routing recommendation, not that aggregate.
 - Cost per valid template is derived as `cost_usd / successful_runs` from the report. Unknown prices are
   shown as **N/A**, never **$0.00**.
@@ -1352,8 +1400,8 @@ not tested" and the manifest records the `not_tested` session value.
 
 The build script is `scripts/build_demo_video_v2.py`. It renders source slides at 2560×1440 and downscales
 to 1920×1080 with ffmpeg. `ffprobe` reports H.264 video, AAC audio, 1920×1080, 30 fps and a duration of
-{mmss(TOTAL_SECONDS)}. File sizes: video {sizes['video_mb']:.1f} MiB, SRT {sizes['srt_kb']:.1f} KiB,
-thumbnail {sizes['thumb_kb']:.1f} KiB.
+{mmss(TOTAL_SECONDS)}. File sizes: video {sizes["video_mb"]:.1f} MiB, SRT {sizes["srt_kb"]:.1f} KiB,
+thumbnail {sizes["thumb_kb"]:.1f} KiB.
 """
     (ROOT / "RELEASE_NOTES_video.md").write_text(text, encoding="utf-8")
 

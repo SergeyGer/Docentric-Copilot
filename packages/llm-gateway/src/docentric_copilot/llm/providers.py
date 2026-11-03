@@ -622,16 +622,23 @@ class GeminiProvider(BaseHTTPProvider):
             response = await self._post(url, headers=headers, payload=payload, settings=settings)
         except ProviderError as exc:
             # Gemini 3.x rejects some generationConfig combinations with a bare
-            # 400 and no field name. Retry once without the features that vary
-            # most between model generations; JSON mode stays on.
+            # 400 and no field name. Drop one capability at a time so the schema
+            # (which keeps the output shape) survives as long as possible.
             if exc.code != "provider_bad_response" or exc.details.get("status") != 400:
                 raise
             config = payload["generationConfig"]
-            config.pop("responseSchema", None)
-            config.pop("temperature", None)
-            config.pop("thinkingConfig", None)
-            retried = True
-            response = await self._post(url, headers=headers, payload=payload, settings=settings)
+            for key in ("thinkingConfig", "temperature", "responseSchema"):
+                config.pop(key, None)
+                retried = True
+                try:
+                    response = await self._post(url, headers=headers, payload=payload, settings=settings)
+                    break
+                except ProviderError as retry_exc:
+                    if retry_exc.code != "provider_bad_response" or retry_exc.details.get("status") != 400:
+                        raise
+            else:
+                raise
+        latency_ms = int((time.perf_counter() - started) * 1000)
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         body = response.json()

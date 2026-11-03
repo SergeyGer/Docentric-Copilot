@@ -65,6 +65,25 @@ export function formatDateTime(unixSeconds: number): string {
   }).format(new Date(unixSeconds * 1000));
 }
 
+/** Format an ISO-8601 trace timestamp in UTC, including seconds. */
+export function formatTraceTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+  const formatted = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  }).format(date);
+  return `${formatted} UTC`;
+}
+
 export function formatConfidence(value: number | null): string {
   if (value === null || !Number.isFinite(value)) {
     return "—";

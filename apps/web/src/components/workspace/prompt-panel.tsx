@@ -24,6 +24,8 @@ import { CheckboxRow } from "@/components/workspace/checkbox-row";
 import { CopyButton } from "@/components/workspace/copy-button";
 import { ErrorAlert } from "@/components/workspace/error-alert";
 import { Panel } from "@/components/workspace/panel";
+import { RoutingDecisionCard } from "@/components/workspace/routing-decision-card";
+import { RoutingModeToggle } from "@/components/workspace/routing-mode-toggle";
 import { RoutingPanel } from "@/components/workspace/routing-panel";
 import type { ApiError } from "@/lib/api";
 import {
@@ -41,6 +43,7 @@ import type {
   PlanResponse,
   ProviderView,
   RouteResponse,
+  RoutingMode,
   SourceView,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -60,6 +63,8 @@ export interface PromptPanelProps {
   providers: ProviderView[];
   providersPending: boolean;
   providerError: ApiError | null;
+  routingMode: RoutingMode;
+  onRoutingModeChange: (mode: RoutingMode) => void;
   provider: string;
   onProviderChange: (value: string) => void;
   selectedProvider: ProviderView | null;
@@ -96,6 +101,8 @@ export function PromptPanel({
   providers,
   providersPending,
   providerError,
+  routingMode,
+  onRoutingModeChange,
   provider,
   onProviderChange,
   selectedProvider,
@@ -125,6 +132,7 @@ export function PromptPanel({
   onDismissProviderError,
 }: PromptPanelProps) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const autoRouting = routingMode === "auto";
   const languageValid = LANGUAGE_PATTERN.test(language.trim());
   const counterTone =
     prompt.length > PROMPT_MAX_LENGTH * 0.92 ? "text-warning" : "text-muted-foreground";
@@ -180,41 +188,54 @@ export function PromptPanel({
             are appended to this brief.
           </p>
 
-          <RoutingPanel
-            routing={routing}
-            execution={plan?.routing ?? null}
-            pending={routingPending}
-            unavailable={routingUnavailable}
-            enabled={source !== null && prompt.trim().length > 0}
-          />
+          {!autoRouting ? (
+            <RoutingPanel
+              routing={routing}
+              pending={routingPending}
+              unavailable={routingUnavailable}
+              enabled={source !== null && prompt.trim().length > 0}
+            />
+          ) : null}
 
           {planError ? (
-            <ErrorAlert error={planError} title="Planning failed" onDismiss={onDismissPlanError} />
+            <ErrorAlert
+              error={planError}
+              title={autoRouting ? "Auto-routing plan failed" : "Planning failed"}
+              onDismiss={onDismissPlanError}
+            />
           ) : null}
 
           {plan ? (
-            <div className="rounded-lg border border-border bg-muted/25 p-3">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
-                  <Badge variant="success" className="h-5">
-                    Planned
-                  </Badge>
-                  Template
-                  <code className="font-mono text-foreground">{plan.template_id}</code>
-                  <CopyButton value={plan.template_id} label="Copy template ID" />
-                </span>
-                <span>Version {plan.version}</span>
-                <span className="font-mono">IR {truncateMiddle(plan.ir_digest)}</span>
-                {generation ? (
-                  <span>
-                    {generation.provider}
-                    {generation.model ? ` / ${generation.model}` : ""} ·{" "}
-                    {generation.latency_ms.toLocaleString("en-GB")} ms ·{" "}
-                    {formatCostUsd(generation.usage.estimated_cost_usd)}
+            <>
+              <div className="rounded-lg border border-border bg-muted/25 p-3">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
+                    <Badge variant="success" className="h-5">
+                      Planned
+                    </Badge>
+                    {plan.routing ? (
+                      <Badge variant="info" className="h-5">
+                        Auto
+                      </Badge>
+                    ) : null}
+                    Template
+                    <code className="font-mono text-foreground">{plan.template_id}</code>
+                    <CopyButton value={plan.template_id} label="Copy template ID" />
                   </span>
-                ) : null}
+                  <span>Version {plan.version}</span>
+                  <span className="font-mono">IR {truncateMiddle(plan.ir_digest)}</span>
+                  {generation && !plan.routing ? (
+                    <span>
+                      {generation.provider}
+                      {generation.model ? ` / ${generation.model}` : ""} ·{" "}
+                      {generation.latency_ms.toLocaleString("en-GB")} ms ·{" "}
+                      {formatCostUsd(generation.usage.estimated_cost_usd)}
+                    </span>
+                  ) : null}
+                </div>
               </div>
-            </div>
+              {plan.routing ? <RoutingDecisionCard trace={plan.routing} /> : null}
+            </>
           ) : null}
 
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-1">
@@ -245,6 +266,11 @@ export function PromptPanel({
                 <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
                 Mapping requirements and running validation…
               </p>
+            ) : autoRouting ? (
+              <p className="text-xs text-muted-foreground">
+                The router picks the provider. A failure is shown as-is; there is no silent manual
+                or mock fallback.
+              </p>
             ) : (
               <p className="text-xs text-muted-foreground">
                 Deterministic mock provider is available offline.
@@ -254,62 +280,79 @@ export function PromptPanel({
         </div>
 
         <div className="flex min-w-0 flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <label htmlFor="provider-select" className="text-xs font-medium text-foreground">
-                Provider
-              </label>
-              {providersPending ? (
-                <Skeleton className="h-9 w-full" />
-              ) : (
-                <Select
-                  id="provider-select"
-                  value={provider}
-                  onChange={(event) => onProviderChange(event.target.value)}
-                  disabled={planPending || providers.length === 0}
-                  aria-describedby="provider-hint"
-                >
-                  <option value="auto">Auto (routing policy)</option>
-                  {providers.length === 0 ? <option value={provider}>{provider}</option> : null}
-                  {providers.map((item) => (
-                    <option key={item.name} value={item.name} disabled={!item.configured}>
-                      {formatProviderLabel(item.name, item.configured)}
-                    </option>
-                  ))}
-                </Select>
-              )}
-              <p id="provider-hint" className="text-[11px] leading-4 text-muted-foreground">
-                {provider === "auto"
-                  ? "The router classifies the brief, selects a configured provider and records the executed model."
-                  : selectedProvider?.configured
+          <RoutingModeToggle
+            mode={routingMode}
+            onModeChange={onRoutingModeChange}
+            disabled={planPending}
+            autoDisabled={source === null}
+            autoDisabledReason="Upload a data source to enable auto routing."
+          />
+
+          {autoRouting ? (
+            <div className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2.5 text-[11px] leading-4 text-muted-foreground">
+              <p className="font-medium text-foreground">
+                Provider and model are chosen by the router
+              </p>
+              <p className="mt-0.5">
+                No provider or model override is sent. Switch back to Manual to choose them
+                yourself.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label htmlFor="provider-select" className="text-xs font-medium text-foreground">
+                  Provider
+                </label>
+                {providersPending ? (
+                  <Skeleton className="h-9 w-full" />
+                ) : (
+                  <Select
+                    id="provider-select"
+                    value={provider}
+                    onChange={(event) => onProviderChange(event.target.value)}
+                    disabled={planPending || providers.length === 0}
+                    aria-describedby="provider-hint"
+                  >
+                    {providers.length === 0 ? <option value={provider}>{provider}</option> : null}
+                    {providers.map((item) => (
+                      <option key={item.name} value={item.name} disabled={!item.configured}>
+                        {formatProviderLabel(item.name, item.configured)}
+                      </option>
+                    ))}
+                  </Select>
+                )}
+                <p id="provider-hint" className="text-[11px] leading-4 text-muted-foreground">
+                  {selectedProvider?.configured
                     ? "Configured provider"
                     : "Mock always works offline; other providers require API keys."}
-              </p>
-            </div>
+                </p>
+              </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="model-input" className="text-xs font-medium text-foreground">
-                Model <span className="font-normal text-muted-foreground">(optional)</span>
-              </label>
-              <Input
-                id="model-input"
-                list="provider-models"
-                value={model}
-                onChange={(event) => onModelChange(event.target.value)}
-                placeholder={selectedProvider?.default_model ?? "Provider default"}
-                maxLength={120}
-                disabled={planPending || provider === "auto"}
-              />
-              <datalist id="provider-models">
-                {(selectedProvider?.models ?? []).map((item) => (
-                  <option key={item} value={item} />
-                ))}
-              </datalist>
-              <p className="text-[11px] leading-4 text-muted-foreground">
-                Leave blank to use the provider default.
-              </p>
+              <div className="space-y-1.5">
+                <label htmlFor="model-input" className="text-xs font-medium text-foreground">
+                  Model <span className="font-normal text-muted-foreground">(optional)</span>
+                </label>
+                <Input
+                  id="model-input"
+                  list="provider-models"
+                  value={model}
+                  onChange={(event) => onModelChange(event.target.value)}
+                  placeholder={selectedProvider?.default_model ?? "Provider default"}
+                  maxLength={120}
+                  disabled={planPending}
+                />
+                <datalist id="provider-models">
+                  {(selectedProvider?.models ?? []).map((item) => (
+                    <option key={item} value={item} />
+                  ))}
+                </datalist>
+                <p className="text-[11px] leading-4 text-muted-foreground">
+                  Leave blank to use the provider default.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">

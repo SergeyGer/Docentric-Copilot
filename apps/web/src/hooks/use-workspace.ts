@@ -51,6 +51,7 @@ import type {
   RevisionRequest,
   RevisionResponse,
   RouteResponse,
+  RoutingMode,
   SchemaView,
   SourceView,
   TemplateIr,
@@ -213,11 +214,32 @@ export function useWorkspace() {
 
   /* ------------------------------------------------------------- routing */
 
+  // Manual is the historical behaviour: the provider/model selects drive the
+  // request. Auto delegates both to the server-side router.
+  const [routingMode, setRoutingModeState] = useState<RoutingMode>("manual");
   const [routing, setRouting] = useState<RouteResponse | null>(null);
   const [routingPending, setRoutingPending] = useState(false);
   const [routingUnavailable, setRoutingUnavailable] = useState(false);
   const routingRequestId = useRef(0);
   const sourceId = source?.source_id ?? null;
+
+  const setRoutingMode = useCallback(
+    (mode: RoutingMode) => {
+      // Auto planning needs a source, so the control must never enter that
+      // state while the workspace is empty.
+      if (mode === "auto" && !source) {
+        return;
+      }
+      setRoutingModeState(mode);
+    },
+    [source],
+  );
+
+  useEffect(() => {
+    if (!source) {
+      setRoutingModeState("manual");
+    }
+  }, [source]);
 
   /* ------------------------------------------------------------ template */
 
@@ -339,10 +361,11 @@ export function useWorkspace() {
   /* ------------------------------------------------------------- routing */
 
   // Purely informational: routing never gates planning, and a failure only
-  // swaps the card for a quiet "routing unavailable" label.
+  // swaps the card for a quiet "routing unavailable" label. Auto mode hides
+  // this advisory card, so it does not ask the router for a second decision.
   useEffect(() => {
     const trimmedPrompt = prompt.trim();
-    if (!sourceId || trimmedPrompt.length === 0) {
+    if (!sourceId || trimmedPrompt.length === 0 || routingMode === "auto") {
       routingRequestId.current += 1;
       setRouting(null);
       setRoutingPending(false);
@@ -386,7 +409,7 @@ export function useWorkspace() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [prompt, sourceId]);
+  }, [prompt, routingMode, sourceId]);
 
   const copyPath = useCallback(
     async (path: string) => {
@@ -882,15 +905,18 @@ export function useWorkspace() {
     resetTemplateState();
     setPlanPending(true);
     try {
-      const autoRoute = provider === "auto";
+      const autoRouting = routingMode === "auto";
       const body: PlanRequest = {
         source_id: source.source_id,
         prompt: trimmedPrompt,
-        // The provider is ignored when routing is auto, but the field stays
-        // valid so older servers still understand the request.
-        provider: autoRoute ? "mock" : provider,
-        model: autoRoute ? null : model.trim().length > 0 ? model.trim() : null,
-        routing: autoRoute ? "auto" : "explicit",
+        // Auto mode deliberately omits provider/model: the router chooses the
+        // execution target. Manual mode keeps the historical explicit pair.
+        ...(autoRouting
+          ? { routing: "auto" as const }
+          : {
+              provider,
+              model: model.trim().length > 0 ? model.trim() : null,
+            }),
         design_style: designStyle,
         target: "generic-docx",
         options: {
@@ -943,6 +969,7 @@ export function useWorkspace() {
     prompt,
     provider,
     resetTemplateState,
+    routingMode,
     setScopeError,
     source,
     strictValidation,
@@ -1800,6 +1827,8 @@ export function useWorkspace() {
     useExamplePrompt,
     insertPathIntoPrompt,
     // routing
+    routingMode,
+    setRoutingMode,
     routing,
     routingPending,
     routingUnavailable,

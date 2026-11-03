@@ -336,13 +336,21 @@ export interface PlanOptionsRequest {
   max_repair_attempts: number;
 }
 
+/** How the prompt panel chooses the model for a plan. */
+export type RoutingMode = "manual" | "auto";
+
 export interface PlanRequest {
   source_id: string;
   prompt: string;
-  provider: string;
-  model: string | null;
-  /** `auto` lets the router choose; `explicit` keeps the historical contract. */
-  routing?: "explicit" | "auto";
+  /** Required for manual planning; omitted when `routing` is `"auto"`. */
+  provider?: string;
+  /** Required for manual planning (`null` uses the provider default); omitted for auto. */
+  model?: string | null;
+  /**
+   * `auto` asks the router to classify the brief and execute its choice.
+   * Manual mode omits the field entirely and keeps the explicit provider/model.
+   */
+  routing?: "auto";
   design_style: DesignStyle;
   target: CompileTarget;
   options: PlanOptionsRequest;

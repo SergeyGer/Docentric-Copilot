@@ -5,7 +5,7 @@ import { Info, Loader2, Route, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, humanizeKey } from "@/lib/format";
-import type { Complexity, RouteResponse, RoutingExecutionTrace } from "@/lib/types";
+import type { Complexity, RouteResponse } from "@/lib/types";
 
 type ComplexityVariant = "success" | "info" | "warning" | "destructive";
 
@@ -20,8 +20,6 @@ const COMPLEXITY_ORDER: readonly Complexity[] = ["simple", "standard", "complex"
 
 export interface RoutingPanelProps {
   routing: RouteResponse | null;
-  /** Present after an `auto` plan: what ran versus what was recommended. */
-  execution?: RoutingExecutionTrace | null;
   pending: boolean;
   unavailable: boolean;
   /** Routing only runs when a source and a non-empty brief both exist. */
@@ -29,38 +27,27 @@ export interface RoutingPanelProps {
 }
 
 /**
- * Compact, informational routing card. It never blocks the planner: failures
- * collapse to a quiet label and the decision is purely advisory.
+ * Compact, informational routing card for manual planning. It never gates the
+ * planner: failures collapse to a quiet label and the decision is advisory.
+ * Auto plans use {@link RoutingDecisionCard} instead, so this card is hidden.
  */
-export function RoutingPanel({
-  routing,
-  execution = null,
-  pending,
-  unavailable,
-  enabled,
-}: RoutingPanelProps) {
+export function RoutingPanel({ routing, pending, unavailable, enabled }: RoutingPanelProps) {
   const tooltipId = useId();
 
-  if (!enabled && !routing && !execution && !pending && !unavailable) {
+  if (!enabled && !routing && !pending && !unavailable) {
     return null;
   }
 
-  const decision = routing?.decision ?? execution?.decision ?? null;
+  const decision = routing?.decision ?? null;
   const ariaSummary = pending
-    ? "Updating the routing decision."
+    ? "Updating the advisory routing decision."
     : decision
-      ? `Routing decision: ${humanizeKey(decision.complexity)} via ${decision.provider}${
+      ? `Advisory routing decision: ${humanizeKey(decision.complexity)} via ${decision.provider}${
           decision.model ? `, ${decision.model}` : ""
-        }. Budget ${formatUsd(decision.budget_usd)}.${
-          execution
-            ? ` Executed with ${execution.actual_provider}${
-                execution.actual_model ? `, ${execution.actual_model}` : ""
-              }; ${execution.match ? "recommendation matched" : "recommendation did not match"}.`
-            : ""
-        }`
+        }. Budget ${formatUsd(decision.budget_usd)}.`
       : unavailable
-        ? "Routing unavailable."
-        : "Routing has not run yet.";
+        ? "Advisory routing unavailable."
+        : "Advisory routing has not run yet.";
 
   return (
     <section
@@ -79,6 +66,9 @@ export function RoutingPanel({
         >
           <Route aria-hidden="true" className="h-3.5 w-3.5" />
           Routing
+          <span className="rounded-full border border-border bg-card px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal text-muted-foreground">
+            advisory only
+          </span>
         </h3>
 
         {decision ? (
@@ -107,61 +97,39 @@ export function RoutingPanel({
                 fallback
               </Badge>
             ) : null}
-            {execution ? (
-              <>
-                <span className="text-[11px] text-muted-foreground">executed</span>
-                <span className="text-[11px] font-medium text-foreground">
-                  {execution.actual_provider}
+            <span className="group relative inline-flex">
+              <button
+                type="button"
+                aria-describedby={tooltipId}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+              >
+                <Info aria-hidden="true" className="h-3 w-3" />
+                Policy
+              </button>
+              <span
+                id={tooltipId}
+                role="tooltip"
+                className="pointer-events-none absolute left-0 top-full z-20 mt-1 w-64 rounded-md border border-border bg-card p-2 text-left opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Tier budgets
                 </span>
-                <span className="text-[11px] text-muted-foreground">
-                  {execution.actual_model ?? "provider default"}
-                </span>
-                <Badge
-                  variant={execution.match ? "success" : "warning"}
-                  title={`Recommended ${decision.provider}; executed ${execution.actual_provider}`}
-                >
-                  {execution.match ? "match" : "mismatch"}
-                </Badge>
-                <span className="sr-only" role="status" aria-live="polite">
-                  Run {execution.run_id}
-                </span>
-              </>
-            ) : null}
-            {routing ? (
-              <span className="group relative inline-flex">
-                <button
-                  type="button"
-                  aria-describedby={tooltipId}
-                  className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-                >
-                  <Info aria-hidden="true" className="h-3 w-3" />
-                  Policy
-                </button>
-                <span
-                  id={tooltipId}
-                  role="tooltip"
-                  className="pointer-events-none absolute left-0 top-full z-20 mt-1 w-64 rounded-md border border-border bg-card p-2 text-left opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-                >
-                  <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Tier budgets
-                  </span>
-                  <span className="mt-1 block space-y-0.5">
-                    {COMPLEXITY_ORDER.map((complexity) => (
-                      <span
-                        key={complexity}
-                        className="flex items-center justify-between gap-2 text-[11px] leading-4"
-                      >
-                        <span className="text-foreground">{humanizeKey(complexity)}</span>
-                        <span className="text-muted-foreground">
-                          {routing.policy[complexity].tier} ·{" "}
-                          {formatUsd(routing.policy[complexity].budget_usd)}
-                        </span>
+                <span className="mt-1 block space-y-0.5">
+                  {COMPLEXITY_ORDER.map((complexity) => (
+                    <span
+                      key={complexity}
+                      className="flex items-center justify-between gap-2 text-[11px] leading-4"
+                    >
+                      <span className="text-foreground">{humanizeKey(complexity)}</span>
+                      <span className="text-muted-foreground">
+                        {routing?.policy[complexity].tier} ·{" "}
+                        {formatUsd(routing?.policy[complexity].budget_usd)}
                       </span>
-                    ))}
-                  </span>
+                    </span>
+                  ))}
                 </span>
               </span>
-            ) : null}
+            </span>
           </>
         ) : null}
 

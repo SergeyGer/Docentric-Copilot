@@ -207,6 +207,8 @@ export function Workspace() {
           providers={workspace.providers}
           providersPending={workspace.providersPending}
           providerError={workspace.providerError}
+          routingMode={workspace.routingMode}
+          onRoutingModeChange={workspace.setRoutingMode}
           provider={workspace.provider}
           onProviderChange={workspace.changeProvider}
           selectedProvider={workspace.selectedProvider}

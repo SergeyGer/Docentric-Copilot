@@ -227,7 +227,9 @@ SCENE_EVIDENCE = [
 ]
 
 SCENE_STARTS = [sum(SCENE_SECONDS[:i]) for i in range(len(SCENE_SECONDS))]
-SCENE_ENDS = [start + duration for start, duration in zip(SCENE_STARTS, SCENE_SECONDS)]
+SCENE_ENDS = [
+    start + duration for start, duration in zip(SCENE_STARTS, SCENE_SECONDS, strict=False)
+]
 TOTAL_SECONDS = sum(SCENE_SECONDS)
 assert TOTAL_SECONDS == 166
 
@@ -1083,7 +1085,7 @@ def synthesize_scene(index: int) -> NarratedScene:
 def build_audio(scenes: list[NarratedScene]) -> np.ndarray:
     total_samples = TOTAL_SECONDS * 48000
     track = np.zeros(total_samples, dtype=np.int16)
-    for scene, start in zip(scenes, SCENE_STARTS):
+    for scene, start in zip(scenes, SCENE_STARTS, strict=False):
         begin = start * 48000
         end = begin + len(scene.samples)
         if end > total_samples:
@@ -1109,7 +1111,7 @@ def build_audio(scenes: list[NarratedScene]) -> np.ndarray:
 
 def srt_time(seconds: float) -> str:
     seconds = max(0.0, seconds)
-    millis = int(round(seconds * 1000))
+    millis = round(seconds * 1000)
     hours, rem = divmod(millis, 3_600_000)
     minutes, rem = divmod(rem, 60_000)
     secs, ms = divmod(rem, 1000)
@@ -1126,7 +1128,7 @@ def caption_text(text: str) -> str:
 
 def build_srt(scenes: list[NarratedScene]) -> str:
     cues: list[tuple[float, float, str]] = []
-    for scene, offset in zip(scenes, SCENE_STARTS):
+    for scene, offset in zip(scenes, SCENE_STARTS, strict=False):
         for position, sentence in enumerate(scene.sentences):
             start = offset + sentence.start
             end = offset + sentence.start + sentence.duration + 0.18
@@ -1307,7 +1309,7 @@ def write_narration() -> None:
         "",
     ]
     for index, (title, start, end) in enumerate(
-        zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS), start=1
+        zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS, strict=False), start=1
     ):
         lines.append(f"## {index}. {title} — {mmss(start)}–{mmss(end)}")
         lines.append("")
@@ -1318,7 +1320,9 @@ def write_narration() -> None:
 
 def write_manifest() -> None:
     entries = []
-    for index, (title, start, end) in enumerate(zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS)):
+    for index, (title, start, end) in enumerate(
+        zip(SCENE_TITLES, SCENE_STARTS, SCENE_ENDS, strict=False)
+    ):
         entries.append(
             {
                 "scene": f"{index + 1:02d} {title}",

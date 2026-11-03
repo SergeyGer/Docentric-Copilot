@@ -1,0 +1,126 @@
+{
+  "template_id": "tpl_al6pcnsqjkk3e9h3udwz",
+  "version": 2,
+  "fixes": [
+    {
+      "id": "fit_text_width",
+      "message": "widened Description from 62.0 mm to 88.7 mm by rebalancing the other columns",
+      "path": "sections[0].body[4].columns[1].width_mm",
+      "before": 62.0,
+      "after": 88.7
+    },
+    {
+      "id": "fit_text_font",
+      "message": "reduced the table font from 9.5 pt to 9.0 pt",
+      "path": "sections[0].body[4].style.font_size_pt",
+      "before": 9.5,
+      "after": 9.0
+    }
+  ],
+  "ir_digest": "e5f759f3295d5c3117dcdeca518edec8d0cde382d18ec411700f0d20e7fc2f0d",
+  "validation": {
+    "structural": "passed",
+    "semantic": "passed",
+    "logical": "passed",
+    "visual": "passed",
+    "docentric_compatibility": "not_tested"
+  },
+  "ir_diff": [
+    {
+      "path": "sections[0].body[4].columns[0].width_mm",
+      "kind": "changed",
+      "before": 24.0,
+      "after": 17.3
+    },
+    {
+      "path": "sections[0].body[4].columns[1].width_mm",
+      "kind": "changed",
+      "before": 62.0,
+      "after": 88.7
+    },
+    {
+      "path": "sections[0].body[4].columns[2].width_mm",
+      "kind": "changed",
+      "before": 14.0,
+      "after": 12.9
+    },
+    {
+      "path": "sections[0].body[4].columns[3].width_mm",
+      "kind": "changed",
+      "before": 14.0,
+      "after": 12.9
+    },
+    {
+      "path": "sections[0].body[4].columns[4].width_mm",
+      "kind": "changed",
+      "before": 26.0,
+      "after": 18.2
+    },
+    {
+      "path": "sections[0].body[4].columns[5].width_mm",
+      "kind": "changed",
+      "before": 30.0,
+      "after": 20.0
+    },
+    {
+      "path": "sections[0].body[4].style.font_size_pt",
+      "kind": "changed",
+      "before": 9.5,
+      "after": 9.0
+    }
+  ],
+  "before": {
+    "overall": "warning",
+    "checks": [
+      {
+        "id": "table_layout",
+        "label": "Table layout",
+        "status": "passed",
+        "message": "every table fits the text area",
+        "path": null
+      },
+      {
+        "id": "text_fit",
+        "label": "Text fit",
+        "status": "warning",
+        "message": "2 table cell(s) exceed 4 estimated lines; worst: Description ~7 lines at 62 mm / 9.5 pt",
+        "path": "sections[0].body[4].row_template[1]"
+      }
+    ],
+    "metrics": {
+      "page": "A4",
+      "text_width_mm": 170.0,
+      "tables": 3,
+      "images": 0,
+      "blocks": 34
+    }
+  },
+  "after": {
+    "overall": "passed",
+    "checks": [
+      {
+        "id": "table_layout",
+        "label": "Table layout",
+        "status": "passed",
+        "message": "every table fits the text area",
+        "path": null
+      },
+      {
+        "id": "text_fit",
+        "label": "Text fit",
+        "status": "passed",
+        "message": "no table cell exceeds 4 estimated lines",
+        "path": null
+      }
+    ],
+    "metrics": {
+      "page": "A4",
+      "text_width_mm": 170.0,
+      "tables": 3,
+      "images": 0,
+      "blocks": 34
+    }
+  },
+  "case_id": "quotation-long-items",
+  "source_id": "src_d2nzhhk9h27diiemllnp"
+}

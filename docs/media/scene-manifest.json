@@ -1,0 +1,66 @@
+[
+  {
+    "scene": "01 Hook",
+    "start": "00:00",
+    "end": "00:12",
+    "asset": "docs/assets/preview-pages.png",
+    "claim": "A quotation brief becomes a two-page DOCX with the schema, validation and diff attached.",
+    "evidence": "docs/media/demo-session.json artifacts[docx].size_bytes=40585 and docs/assets/preview-pages.png (page 1 of 2, page 2 of 2)."
+  },
+  {
+    "scene": "02 Data source and schema",
+    "start": "00:12",
+    "end": "00:30",
+    "asset": "docs/assets/schema-explorer.png",
+    "claim": "The document is grounded in a normalized schema: 34 fields, 3 sections, 1 repeating collection.",
+    "evidence": "docs/media/demo-session.json stats: node_count=34, collection_count=1, max_depth=3; sections MainData, GeneralData, Parameters."
+  },
+  {
+    "scene": "03 Live adaptive routing",
+    "start": "00:30",
+    "end": "00:55",
+    "asset": "docs/assets/routing-panel.png; docs/media/runs/bench_6312bb882a834b97.json",
+    "claim": "The routing panel recommends Anthropic; the live quotation run used gpt-6-sol and passed the validation gate.",
+    "evidence": "docs/assets/routing-panel.png (Ambiguous; anthropic; budget $0.30; human review) and benchmarks/live_report.json run simple-company-identity/openai (actual_model gpt-6-sol, latency 19402 ms, cost 0.035580 USD, validation_passed true)."
+  },
+  {
+    "scene": "04 Multi-LLM benchmark",
+    "start": "00:55",
+    "end": "01:17",
+    "asset": "benchmarks/live_report.json (rendered benchmark table)",
+    "claim": "Across 6 live cases, gpt-6-sol and claude-sonnet-5-5 each produced 6 valid templates; gemini-3.1-flash-lite produced 0.",
+    "evidence": "benchmarks/live_report.json aggregates: openai 6/6, p50 19002 ms, cost 0.199774 USD; anthropic 6/6, p50 14235.5 ms, cost 0.279024 USD; gemini 0/6, p50 null, cost null. Cost per valid template is derived as cost_usd / successful_runs."
+  },
+  {
+    "scene": "05 DOCX artifact",
+    "start": "01:17",
+    "end": "01:41",
+    "asset": "docs/assets/preview-pages.png; docs/assets/quality-before-libreoffice.png",
+    "claim": "quotation.docx is 40,585 bytes and two pages; the right-hand page is a LibreOffice rendering, not a Word fidelity claim.",
+    "evidence": "docs/media/demo-session.json artifacts[docx].size_bytes=40585; docs/assets/preview-pages.png shows two preview pages; docs/assets/quality-before-libreoffice.png is page 1 of 2 at 1241x1754, recorded from LibreOffice Writer 25.2 + pdftoppm."
+  },
+  {
+    "scene": "06 Visual defect to repair",
+    "start": "01:41",
+    "end": "02:12",
+    "asset": "docs/assets/quality-before-libreoffice.png; docs/assets/quality-after-libreoffice.png; docs/media/optimize-response.json",
+    "claim": "The defect is 62.0 mm at 9.5 pt; the repair is 88.7 mm at 9.0 pt, 7 IR fields changed, and text-fit passes.",
+    "evidence": "docs/media/optimize-response.json (regenerated from the bundled quotation-long-items demo) fixes fit_text_width 62.0 -> 88.7 mm and fit_text_font 9.5 -> 9.0 pt; ir_diff has 7 entries; before text_fit warning, after passed; docs/assets/quality-before-libreoffice.png and quality-after-libreoffice.png are the recorded LibreOffice renders."
+  },
+  {
+    "scene": "07 Revision V1/V2",
+    "start": "02:12",
+    "end": "02:32",
+    "asset": "docs/assets/revision-v1-v2.png",
+    "claim": "V1 to V2 changed 5 IR fields, added 0 and removed 0; either version can be restored.",
+    "evidence": "docs/assets/revision-v1-v2.png: TOTAL CHANGES 5, ADDED 0, REMOVED 0, CHANGED 5; Restore version is visible on both panes."
+  },
+  {
+    "scene": "08 Closing",
+    "start": "02:32",
+    "end": "02:46",
+    "asset": "README.md; LICENSE",
+    "claim": "Docentric Copilot is open source on GitHub; Docentric AX compatibility is not tested.",
+    "evidence": "README.md GitHub URL https://github.com/SergeyGer/Docentric-Copilot and LICENSE Apache-2.0; SESSION validation docentric_compatibility=not_tested."
+  }
+]

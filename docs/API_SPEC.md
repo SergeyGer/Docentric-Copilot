@@ -194,6 +194,7 @@ Errors: `404 not_found` for an unknown source.
   "prompt": "Create a professional sales quotation for the customer.",
   "provider": "mock",
   "model": null,
+  "routing": "explicit",
   "design_style": "modern",
   "target": "generic-docx",
   "options": {
@@ -209,8 +210,9 @@ Errors: `404 not_found` for an unknown source.
 | --- | --- | --- |
 | `source_id` | yes | 4–60 chars; must exist |
 | `prompt` | yes | 3–5,000 chars |
-| `provider` | no | default `mock`; `openai`, `anthropic`, `gemini` require configuration |
-| `model` | no | provider default if omitted |
+| `provider` | no | default `mock`; `openai`, `anthropic`, `gemini` require configuration. Ignored when `routing` is `auto` |
+| `model` | no | provider default if omitted. Ignored when `routing` is `auto` |
+| `routing` | no | `explicit` (default) uses the request provider/model; `auto` classifies the brief, routes against the configured providers and returns an execution trace |
 | `design_style` | no | `modern` (default), `classic`, `minimal` |
 | `target` | no | `generic-docx` (default) or `docentric-ax`; the IR records the request, compilation still enforces the gate |
 | `options.language` | no | `^[a-z]{2}(-[A-Z]{2})?$` |
@@ -330,6 +332,7 @@ Errors: `404 not_found` for an unknown source.
     "finish_reason": "stop",
     "attempts": 1
   },
+  "routing": null,
   "artifacts": [
     {
       "id": "art_or9owtwz9xfcqldzlyba",
@@ -352,11 +355,20 @@ Notes:
 - `artifacts` normally contains `ir`, `mapping`, `validation`, `validation_html` and `preview`; the
   example is abridged.
 - `generation.usage` is zero for the mock provider; hosted providers report tokens and an estimated
-  cost.
+  cost. `estimated_cost_usd` is `null` (N/A) when the model has no published price; it is never a
+  hidden `0.0`. See [PRICING](PRICING.md).
+- `routing` is `null` for the default explicit mode. With `"routing": "auto"` it contains
+  `decision`, `actual_provider`, `actual_model`, `fallback`, `match`, `run_id`, `started_at`,
+  `finished_at` and `usage`; `match` is true only when the recommended provider equals the executed
+  provider. A sanitized trace is written under the git-ignored `docs/media/runs/<run_id>.json`
+  (configurable with `DC_ROUTING_TRACE_DIR`); it contains no prompt text or keys.
 
 Errors: `404 not_found` (source), `503 provider_not_configured` (unknown/unconfigured provider),
-`502 provider_*` (provider failure), `422 validation_failed` when strict validation fails (body
-contains `validation`, `overall`, `report`), `400 input_invalid` (empty prompt after trimming).
+`502 provider_*` (provider failure), `502 routing_provider_failed` when the provider selected by
+auto-routing fails — details include the recommendation, the executed provider, `fallback` and the
+trace path, and no silent mock substitution is performed — `422 validation_failed` when strict
+validation fails (body contains `validation`, `overall`, `report`), `400 input_invalid` (empty prompt
+after trimming).
 
 **Strict-validation failure (`422 validation_failed`)**
 

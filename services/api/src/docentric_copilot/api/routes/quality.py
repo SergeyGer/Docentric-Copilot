@@ -14,6 +14,7 @@ from docentric_copilot.errors import InvalidInputError, ProviderError
 from docentric_copilot.planner import (
     analyze_quality,
     classify,
+    diff_documents,
     optimize_layout,
     route,
     routing_policy,
@@ -51,6 +52,7 @@ class OptimizeResponse(BaseModel):
     ir: dict[str, Any]
     ir_digest: str
     validation: dict[str, str]
+    ir_diff: list[dict[str, Any]]
 
 
 class CompareTarget(BaseModel):
@@ -114,6 +116,15 @@ def _load(store: Store, reference: DocumentRef):
     return source, schema, document
 
 
+def _layout_ir_diff(before: Any, after: Any) -> list[dict[str, Any]]:
+    """Changed width and font fields only, in structural IR-path form."""
+    return [
+        change.to_dict()
+        for change in diff_documents(before, after)
+        if change.kind == "changed" and change.path.endswith((".width_mm", ".font_size_pt"))
+    ]
+
+
 @router.post("/quality", response_model=QualityResponse)
 async def quality(reference: DocumentRef, store: Store = Depends(get_store)) -> QualityResponse:
     source, schema, document = _load(store, reference)
@@ -157,6 +168,7 @@ async def optimize(
         ir=outcome.document.model_dump(mode="json"),
         ir_digest=ir_digest(outcome.document),
         validation=validation.statuses(),
+        ir_diff=_layout_ir_diff(document, outcome.document),
     )
 
 

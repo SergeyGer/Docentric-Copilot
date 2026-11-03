@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
-from docentric_copilot.api.deps import get_service, get_store
+from datetime import UTC, datetime
+
+from docentric_copilot.api.deps import get_service, get_settings, get_store
 from docentric_copilot.api.routes.common import (
     MEDIA_TYPES,
     load_source,
     publish,
     publish_ir_bundle,
     resolve_document,
+)
+from docentric_copilot.api.routing import (
+    build_trace,
+    decide,
+    new_run_id,
+    trace_document,
+    write_trace,
 )
 from docentric_copilot.api.schemas import (
     CompileRequest,
@@ -18,12 +27,15 @@ from docentric_copilot.api.schemas import (
     PreviewRequest,
     RevisionRequest,
     RevisionResponse,
+    RoutingExecutionTrace,
     ValidateRequest,
     ValidateResponse,
 )
 from docentric_copilot.app.service import TemplateService
+from docentric_copilot.config import Settings
 from docentric_copilot.docx_compiler import CompileOptions
-from docentric_copilot.errors import CopilotError, ValidationFailedError
+from docentric_copilot.errors import CopilotError, ProviderError, ValidationFailedError
+from docentric_copilot.planner import RouteDecision
 from docentric_copilot.storage import Store
 from docentric_copilot.template_ir import canonical_ir_json, ir_digest
 from docentric_copilot.template_validator import render_report_html
@@ -50,24 +62,150 @@ async def plan_template(
     request: PlanRequest,
     store: Store = Depends(get_store),
     service: TemplateService = Depends(get_service),
+    settings: Settings = Depends(get_settings),
 ) -> PlanResponse:
     """Turn a natural language requirement into a validated Template IR."""
     record, schema = load_source(store, request.source_id)
     job_id = store.create_job("plan", request.model_dump(mode="json"))
-    try:
-        outcome, report = await service.plan(
-            schema,
-            request.prompt,
-            provider=request.provider,
-            model=request.model,
-            design_style=request.design_style.value,
-            language=request.options.language,
-            target=request.target.value,
-            max_repair_attempts=request.options.max_repair_attempts,
-            max_generation_cost_usd=request.options.max_generation_cost_usd,
+
+    auto = request.routing == "auto"
+    decision: RouteDecision | None = None
+    if auto:
+        started_at = datetime.now(UTC)
+        run_id = new_run_id()
+        decision, _ = decide(schema, request.prompt, settings)
+        provider = decision.provider
+        model = decision.model
+    else:
+        started_at = datetime.now(UTC)
+        run_id = ""
+        provider = request.provider
+        model = request.model
+
+    trace_written = False
+    trace_path = None
+
+    def record_failure(
+        exc: CopilotError,
+        *,
+        generation=None,
+        report=None,
+        document=None,
+    ) -> None:
+        nonlocal trace_written, trace_path
+        if not auto or decision is None or trace_written:
+            return
+        finished_at = datetime.now(UTC)
+        trace_path = write_trace(
+            settings,
+            trace_document(
+                run_id=run_id,
+                decision=decision,
+                started_at=started_at,
+                finished_at=finished_at,
+                prompt=request.prompt,
+                actual_provider=provider,
+                actual_model=getattr(generation, "model", None) or model,
+                generation=generation,
+                report=report,
+                ir_digest=ir_digest(document) if document is not None else None,
+                request_budget_usd=request.options.max_generation_cost_usd,
+                status="failed",
+                error={"code": exc.code, "message": exc.message},
+            ),
         )
+        trace_written = True
+
+    try:
+        try:
+            outcome, report = await service.plan(
+                schema,
+                request.prompt,
+                provider=provider,
+                model=model,
+                design_style=request.design_style.value,
+                language=request.options.language,
+                target=request.target.value,
+                max_repair_attempts=request.options.max_repair_attempts,
+                max_generation_cost_usd=request.options.max_generation_cost_usd,
+            )
+        except ProviderError as exc:
+            if auto and decision is not None:
+                record_failure(exc)
+                trace = build_trace(
+                    run_id=run_id,
+                    decision=decision,
+                    started_at=started_at,
+                    finished_at=datetime.now(UTC),
+                    prompt=request.prompt,
+                    generation=None,
+                    actual_provider=provider,
+                    actual_model=model,
+                )
+                raise ProviderError(
+                    f"Auto-routing selected '{provider}', but the provider call failed. "
+                    "No silent mock substitution was attempted.",
+                    code="routing_provider_failed",
+                    details={
+                        "routing": trace.model_dump(mode="json"),
+                        "fallback": {
+                            "used": decision.fallback_used,
+                            "recommended_provider": decision.provider,
+                            "recommended_model": decision.model,
+                            "actual_provider": provider,
+                            "reason": "The routed provider failed; the request is returned as an error.",
+                        },
+                        "provider_error": {"code": exc.code, "message": exc.message[:300]},
+                        "trace_path": str(trace_path) if trace_path is not None else None,
+                    },
+                ) from exc
+            raise
+
         if request.options.strict_validation and not report.can_compile:
+            record_failure(
+                _validation_failure(report),
+                generation=outcome.generation,
+                report=report,
+                document=outcome.document,
+            )
             raise _validation_failure(report)
+
+        actual_provider = (
+            outcome.generation.provider if outcome.generation is not None else provider
+        )
+        actual_model = outcome.generation.model if outcome.generation is not None else model
+        routing: RoutingExecutionTrace | None = None
+        if auto and decision is not None:
+            finished_at = datetime.now(UTC)
+            digest = ir_digest(outcome.document)
+            routing = build_trace(
+                run_id=run_id,
+                decision=decision,
+                started_at=started_at,
+                finished_at=finished_at,
+                prompt=request.prompt,
+                generation=outcome.generation,
+                actual_provider=actual_provider,
+                actual_model=actual_model,
+            )
+            trace_path = write_trace(
+                settings,
+                trace_document(
+                    run_id=run_id,
+                    decision=decision,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    prompt=request.prompt,
+                    actual_provider=actual_provider,
+                    actual_model=actual_model,
+                    generation=outcome.generation,
+                    report=report,
+                    ir_digest=digest,
+                    request_budget_usd=request.options.max_generation_cost_usd,
+                    status="succeeded",
+                ),
+            )
+            trace_written = True
 
         template_id, _ = store.create_template(record.id)
         version = store.add_version(
@@ -75,8 +213,8 @@ async def plan_template(
             ir=outcome.document.model_dump(mode="json"),
             mapping=outcome.mapping.model_dump(mode="json"),
             validation=report.model_dump(mode="json"),
-            provider=request.provider,
-            model=request.model,
+            provider=actual_provider,
+            model=actual_model,
         )
         stem = f"{template_id}-v{version}"
         preview = await run_in_threadpool(
@@ -105,6 +243,7 @@ async def plan_template(
             warnings=[*outcome.warnings, *preview.warnings],
             removed_bindings=[item.model_dump(mode="json") for item in outcome.removed_bindings],
             generation=outcome.generation.public_view() if outcome.generation else None,
+            routing=routing,
             artifacts=artifacts,
         )
         store.finish_job(
@@ -115,10 +254,12 @@ async def plan_template(
                 "ir_digest": response.ir_digest,
                 "validation": response.validation,
                 "artifacts": [artifact.id for artifact in artifacts],
+                "routing": routing.model_dump(mode="json") if routing is not None else None,
             },
         )
         return response
     except CopilotError as exc:
+        record_failure(exc)
         store.fail_job(job_id, exc.to_dict())
         raise
 

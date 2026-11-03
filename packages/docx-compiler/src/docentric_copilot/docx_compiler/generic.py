@@ -608,13 +608,17 @@ class _Renderer:
             width, _height = _height, width
         available = width - page.margin_left_mm - page.margin_right_mm
         declared = sum(column.width_mm for column in block.columns if column.width_mm)
-        for column in block.columns:
+        for index, column in enumerate(block.columns):
             if column.width_mm is None:
                 continue
             factor = (available / declared) if declared > available else 1.0
             width_mm = max(10.0, column.width_mm * factor)
+            # Word and LibreOffice both read the table grid first; setting only
+            # tcW lets a renderer fall back to equal columns. Keep tblGrid in
+            # sync with the IR so the declared layout is what actually renders.
+            table.columns[index].width = Mm(width_mm)
             for row in table.rows:
-                row.cells[block.columns.index(column)].width = Mm(width_mm)
+                row.cells[index].width = Mm(width_mm)
 
     def _render_cell(self, docx_cell: _Cell, source: Cell, context: SampleContext) -> None:
         docx_cell.paragraphs[0].text = ""

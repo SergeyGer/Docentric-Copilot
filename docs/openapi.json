@@ -604,9 +604,16 @@
       "DemoCase": {
         "properties": {
           "defect": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "default": false,
-            "title": "Defect",
-            "type": "boolean"
+            "title": "Defect"
           },
           "description": {
             "title": "Description",
@@ -1031,6 +1038,14 @@
             "title": "Ir",
             "type": "object"
           },
+          "ir_diff": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Ir Diff",
+            "type": "array"
+          },
           "ir_digest": {
             "title": "Ir Digest",
             "type": "string"
@@ -1059,7 +1074,8 @@
           "after",
           "ir",
           "ir_digest",
-          "validation"
+          "validation",
+          "ir_diff"
         ],
         "title": "OptimizeResponse",
         "type": "object"
@@ -1131,6 +1147,15 @@
             "title": "Provider",
             "type": "string"
           },
+          "routing": {
+            "default": "explicit",
+            "enum": [
+              "explicit",
+              "auto"
+            ],
+            "title": "Routing",
+            "type": "string"
+          },
           "source_id": {
             "maxLength": 60,
             "minLength": 4,
@@ -1199,6 +1224,16 @@
           },
           "report": {
             "$ref": "#/components/schemas/ValidationReport"
+          },
+          "routing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoutingExecutionTrace"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "status": {
             "title": "Status",
@@ -1540,6 +1575,77 @@
           "requirements"
         ],
         "title": "RouteResponse",
+        "type": "object"
+      },
+      "RoutingExecutionTrace": {
+        "additionalProperties": false,
+        "description": "What auto-routing recommended versus what actually ran.",
+        "properties": {
+          "actual_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Model"
+          },
+          "actual_provider": {
+            "title": "Actual Provider",
+            "type": "string"
+          },
+          "decision": {
+            "additionalProperties": true,
+            "title": "Decision",
+            "type": "object"
+          },
+          "fallback": {
+            "default": false,
+            "title": "Fallback",
+            "type": "boolean"
+          },
+          "finished_at": {
+            "format": "date-time",
+            "title": "Finished At",
+            "type": "string"
+          },
+          "match": {
+            "default": false,
+            "title": "Match",
+            "type": "boolean"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage"
+          }
+        },
+        "required": [
+          "decision",
+          "actual_provider",
+          "run_id",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "RoutingExecutionTrace",
         "type": "object"
       },
       "SchemaView": {

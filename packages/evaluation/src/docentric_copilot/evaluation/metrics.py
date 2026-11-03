@@ -43,7 +43,8 @@ class EvaluationCase(BaseModel):
     clarifications: int = Field(default=0, ge=0)
     corrections: int = Field(default=0, ge=0)
     verified_compatible: bool = False
-    cost_usd: float = Field(default=0.0, ge=0.0)
+    #: ``None`` when the model has no published price (N/A, not free).
+    cost_usd: float | None = Field(default=None, ge=0.0)
 
     def true_positives(self) -> int:
         return len(set(self.expected_paths) & set(self.actual_paths))
@@ -75,6 +76,10 @@ def evaluate(
     true_positives = sum(case.true_positives() for case in cases)
     selected = sum(len(case.actual_paths) for case in cases)
     expected = sum(len(case.expected_paths) for case in cases)
+    costs = [case.cost_usd for case in cases]
+    cost_known = bool(costs) and all(cost is not None for cost in costs)
+    total_cost = sum(cost for cost in costs if cost is not None) if cost_known else None
+    valid_templates = max(1, sum(1 for case in cases if case.compiled))
 
     metrics = {
         "field_selection_precision": _metric(
@@ -119,11 +124,22 @@ def evaluate(
             len(cases),
             "Share of templates proven to execute in Docentric AX (0 until the gate passes).",
         ),
-        "cost_per_valid_template_usd": _metric(
-            "cost_per_valid_template_usd",
-            sum(case.cost_usd for case in cases),
-            max(1, sum(1 for case in cases if case.compiled)),
-            "Generation cost divided by the number of successfully validated templates.",
+        "cost_per_valid_template_usd": (
+            _metric(
+                "cost_per_valid_template_usd",
+                total_cost or 0.0,
+                valid_templates,
+                "Generation cost divided by the number of successfully validated templates.",
+            )
+            if total_cost is not None
+            else MetricValue(
+                name="cost_per_valid_template_usd",
+                value=None,
+                definition=(
+                    "Generation cost divided by successfully validated templates; "
+                    "N/A because at least one model has no published price."
+                ),
+            )
         ),
     }
     return MetricsReport(provider=provider, model=model, cases=cases, metrics=metrics)

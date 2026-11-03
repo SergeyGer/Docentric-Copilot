@@ -3,10 +3,10 @@
 | Field | Value |
 | --- | --- |
 | Purpose | Measure planner quality and cost on a fixed, reproducible case set |
-| Harness | [packages/evaluation/src/docentric_copilot/evaluation/metrics.py](../packages/evaluation/src/docentric_copilot/evaluation/metrics.py), [benchmarks/run_evaluation.py](../benchmarks/run_evaluation.py) |
-| Cases | [benchmarks/evaluation_cases.json](../benchmarks/evaluation_cases.json) (3 synthetic fixtures) |
+| Harness | [metrics.py](../packages/evaluation/src/docentric_copilot/evaluation/metrics.py), [reporting.py](../packages/evaluation/src/docentric_copilot/evaluation/reporting.py), [run_evaluation.py](../benchmarks/run_evaluation.py), [live_evaluation.py](../benchmarks/live_evaluation.py) |
+| Cases | [benchmarks/evaluation_cases.json](../benchmarks/evaluation_cases.json) (3 synthetic fixtures), [benchmarks/live_cases.json](../benchmarks/live_cases.json) (12 live cases) |
 | Default provider | `mock` (deterministic baseline, no credentials) |
-| Related | [BENCHMARKS](BENCHMARKS.md), [SRS](SRS.md), [DDSP_COMPATIBILITY](DDSP_COMPATIBILITY.md) |
+| Related | [BENCHMARKS](BENCHMARKS.md), [PRICING](PRICING.md), [ROUTING](ROUTING.md), [SRS](SRS.md), [DDSP_COMPATIBILITY](DDSP_COMPATIBILITY.md) |
 
 This document defines the metrics, describes the harness as implemented, and separates what has been
 measured from what is still `TBD`. It contains **no** invented numbers: every non-`TBD` value comes
@@ -78,7 +78,42 @@ python benchmarks/run_evaluation.py --cases path/to/cases.json --output path/to/
 Without credentials the hosted-provider invocation fails with a provider error; it is never silently
 replaced by the mock.
 
-### 2.3 Known measurement limitations
+### 2.3 Live multi-provider harness (VID-02)
+
+| Item | Value |
+| --- | --- |
+| Runner | [benchmarks/live_evaluation.py](../benchmarks/live_evaluation.py) |
+| Cases | [benchmarks/live_cases.json](../benchmarks/live_cases.json) (12 cases) |
+| Reports | `benchmarks/live_report.json` and `benchmarks/live_report.md` |
+| Traces | `docs/media/runs/` (git-ignored; sanitized, no prompt text) |
+| Providers | `--providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.1-flash-lite` |
+| Budget | `--max-spend-usd` (default 3.0); pre-flight worst-case guard, abort with a partial report |
+
+The dataset covers the six requested families: simple fields, repeats, conditionals, ambiguous
+binding, missing field and multi-line items. Each case is planned **once** per provider with the
+identical prompt and schema; `max_repair_attempts` is 0 and transport retries are disabled, so a
+failure is recorded rather than retried.
+
+```bash
+.venv/bin/python benchmarks/live_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.1-flash-lite \
+  --limit 4 --max-spend-usd 2.5
+```
+
+The harness measures field precision/recall against `expected_paths`, requirement coverage from the
+mapping report, validation pass, compilation success, latency p50/p95, tokens and cost. An unknown
+price is reported as `N/A`; if any run is unpriced the aggregate cost is `N/A` and the known subtotal
+is kept separately. The report metadata records `pricing_version`, `pricing_as_of` and
+`pricing_source` from [PRICING](PRICING.md).
+
+The recommendation function is
+`docentric_copilot.evaluation.reporting.recommend_provider`: **quality first** (weighted precision
+0.4, recall 0.4, coverage 0.2, multiplied by the validation pass rate), **then known cost**, **then
+p50 latency**. An unpriced provider sorts after every priced provider on the budget criterion; a
+provider with no validating plan scores 0 and is never recommended. The policy is lexicographic and
+deterministic, not learned.
+
+### 2.4 Known measurement limitations
 
 These are properties of the current harness, not of the product. They must be fixed before recall
 numbers are used for decisions.
@@ -127,6 +162,21 @@ resolved because the document title satisfies it).
 `compilation_success_rate`, `clarification_rate`, `correction_rate`, `verified_compatibility_rate` and
 `cost_per_valid_template_usd` are the exact metric keys emitted by the harness.
 
+The live harness reuses these field definitions and adds:
+
+| Metric | Formula (implementation) | Notes |
+| --- | --- | --- |
+| Validation pass rate | `count(validation_passed) / successful_runs` | `ValidationReport.can_compile` on the produced IR |
+| Latency p50 / p95 | Linear-interpolated percentile over successful runs (`reporting.percentile`) | One sample per case/provider; not a load test |
+| Token totals | Sum of `prompt_tokens` + `completion_tokens` returned by each provider | Provider-reported |
+| Cost aggregate | `aggregate_cost`: sum of known `estimated_cost_usd`; `None` if any run is unpriced | `N/A`, never `$0.00`, for unpriced models |
+| Quality score | `0.4×precision + 0.4×recall + 0.2×coverage`, multiplied by validation pass rate | `0.0` when nothing validates |
+| Recommendation | Lexicographic `(-quality, cost or ∞, p50)` | `recommend_provider`; unpriced loses the budget tie |
+
+Cases with an empty expected set (the `missing-field` case) have an undefined precision/recall
+denominator and are excluded from those aggregates; requirement coverage still records whether the
+planner admitted the requirement was missing.
+
 ## 4. Mock baseline vs LLM comparison
 
 The mock provider is a deterministic, explainable heuristic (`heuristic-baseline-v1`). It exists so
@@ -171,12 +221,12 @@ running `make eval` on the same fixtures, although exact timings are not part of
 | Verified compatibility rate | 0.000 | 0 / 3 |
 | Cost per valid template (USD) | 0.000 | 0.0 / 3 |
 
-Interpretation with the limitations in §2.3:
+Interpretation with the limitations in §2.4:
 
 - **Precision 0.932** means almost every path the baseline bound was in the ground truth; the extra
   bindings are legitimate fields (for example bank `Swift` and payment terms) that the ground-truth
   list does not require.
-- **Recall 0.965** is measured after the collector was switched to the scope-aware walker (§2.3), so
+- **Recall 0.965** is measured after the collector was switched to the scope-aware walker (§2.4), so
   table and nested-repeat bindings are counted. The remaining misses are condition-only fields
   (`Customer.IsEU`, `ReverseCharge`), which are used in expressions rather than as scalar bindings.
 - **Requirement coverage 1.0** means every extracted clause got a `resolved` mapping. The mapping
@@ -222,7 +272,7 @@ For every result published in this file or in a PR:
 4. Cases file version (the JSON is part of the repository).
 5. Raw output file path (`benchmarks/evaluation.json` or an alternative).
 6. Number of repetitions and how variance was handled.
-7. Known limitations that apply (§2.3) and whether any were fixed for this run.
+7. Known limitations that apply (§2.4) and whether any were fixed for this run.
 
 Results without these are anecdotes and must not be presented as metrics.
 
@@ -232,7 +282,7 @@ Results without these are anecdotes and must not be presented as metrics.
 | --- | --- | --- |
 | Tiny, synthetic case set | Overstates generalisation | Add permitted real fixtures; report per-case results |
 | Ground truth authored by the same team | Confirmation bias | Independent review of `expected_paths`; publish the cases |
-| Alias/collection accounting (§2.3) | Recall understated | **Resolved**: scope-aware collector; re-baselined in the 0.2.0 tree |
+| Alias/collection accounting (§2.4) | Recall understated | **Resolved**: scope-aware collector; re-baselined in the 0.2.0 tree |
 | Single run, temperature 0 | Cannot show variance | Repeat runs; report range |
 | Cost table drift | Cost metric wrong | Record actual provider billing when available; mark unpriced models |
 | Compiled ≠ correct | Compilation metric is necessary, not sufficient | Pair with precision/recall and human review |
@@ -249,3 +299,9 @@ Results without these are anecdotes and must not be presented as metrics.
    document why recall will be affected.
 5. Never edit an expected path merely to raise a metric; every change to ground truth is a product
    decision and must be reviewable in the diff.
+
+For a live case in `benchmarks/live_cases.json`, also record `category` (`simple`, `repeat`,
+`conditional`, `ambiguous`, `missing`, `multiline`) and a `notes` field explaining the ground truth.
+The `ambiguous-address` case intentionally puts both defensible paths in `expected_paths`, so a
+single-address plan scores recall 0.5; the `missing-field` case has an empty expected set because no
+correct binding exists, so it is excluded from precision/recall and judged by requirement coverage.

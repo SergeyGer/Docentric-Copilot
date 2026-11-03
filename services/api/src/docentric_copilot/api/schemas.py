@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Literal
 
 from docentric_copilot.template_ir import CompileTarget, DesignStyle
@@ -25,6 +26,10 @@ class PlanRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=5_000)
     provider: str = Field(default="mock", min_length=2, max_length=40)
     model: str | None = Field(default=None, max_length=120)
+    #: ``explicit`` keeps the historical behaviour (the caller chooses the
+    #: provider). ``auto`` classifies the brief, routes against the configured
+    #: providers, and returns an execution trace.
+    routing: Literal["explicit", "auto"] = "explicit"
     design_style: DesignStyle = DesignStyle.MODERN
     target: CompileTarget = CompileTarget.GENERIC_DOCX
     options: PlanOptionsRequest = Field(default_factory=PlanOptionsRequest)
@@ -115,6 +120,26 @@ class SchemaView(BaseModel):
     diagnostics: list[dict[str, Any]]
 
 
+class RoutingExecutionTrace(BaseModel):
+    """What auto-routing recommended versus what actually ran."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    decision: dict[str, Any]
+    actual_provider: str
+    actual_model: str | None = None
+    #: True when the router could not use its preferred tier (including the
+    #: explicit deterministic-baseline fallback). It is never an error by
+    #: itself, but it is always visible.
+    fallback: bool = False
+    #: True only when the recommended provider equals the executed provider.
+    match: bool = False
+    run_id: str
+    started_at: datetime
+    finished_at: datetime
+    usage: dict[str, Any] | None = None
+
+
 class PlanResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -130,6 +155,7 @@ class PlanResponse(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     removed_bindings: list[dict[str, Any]] = Field(default_factory=list)
     generation: dict[str, Any] | None = None
+    routing: RoutingExecutionTrace | None = None
     artifacts: list[ArtifactView] = Field(default_factory=list)
 
 
@@ -225,6 +251,7 @@ __all__ = [
     "ProviderView",
     "RevisionRequest",
     "RevisionResponse",
+    "RoutingExecutionTrace",
     "SchemaView",
     "SourceView",
     "ValidateRequest",

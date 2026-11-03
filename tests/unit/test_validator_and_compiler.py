@@ -245,6 +245,22 @@ class TestCompiler:
         body_text = " ".join(paragraph.text for paragraph in document.paragraphs)
         assert "DE44 5001 0517 5407 3249 31" in f"{footer_text} {body_text}"
 
+    def test_table_grid_follows_ir_widths(self, compiled, planned) -> None:
+        document = DocxDocument(io.BytesIO(compiled.content))
+        items_table = next(
+            table
+            for table in document.tables
+            if any("SKU" in cell.text for cell in table.rows[0].cells)
+        )
+        ir_table = next(
+            block
+            for block in planned.document.sections[0].body
+            if block.kind == "table" and block.repeat is not None
+        )
+        assert [round(column.width.mm, 1) for column in items_table.columns] == [
+            column.width_mm for column in ir_table.columns
+        ]
+
     def test_logo_is_embedded(self, compiled) -> None:
         assert any(name.startswith("word/media/") for name in compiled.package["entries"])
         assert compiled.stats["images"] == 1

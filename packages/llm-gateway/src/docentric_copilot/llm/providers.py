@@ -175,7 +175,7 @@ class BaseHTTPProvider(abc.ABC):
             settings.model, approx_prompt_tokens, settings.max_output_tokens
         )
         _, known = price_for(settings.model)
-        if known and worst_case > settings.budget_usd:
+        if known and worst_case is not None and worst_case > settings.budget_usd:
             from docentric_copilot.errors import BudgetExceededError
 
             raise BudgetExceededError(
@@ -410,38 +410,135 @@ _GEMINI_ALLOWED_KEYS = {
     "properties",
     "required",
     "anyOf",
+    "const",
     "minimum",
     "maximum",
     "minItems",
-    "maxItems",
     "minLength",
     "maxLength",
     "pattern",
 }
 
+#: Gemini rejects `maxItems` with a bare 400 INVALID_ARGUMENT once the limit is
+#: "too large for the schema"; the threshold varies with schema size and is not
+#: documented. Omitting the keyword keeps the structural schema and removes the
+#: failure mode. Array limits remain enforced by the IR model and validator.
+_GEMINI_DROP_KEYS = {"maxItems"}
+#: A discriminated union of block kinds cannot be sent as-is (Gemini accepts
+#: `anyOf`, but the full IR union is far too large). Variants of the same object
+#: shape are merged into one permissive object schema; beyond this depth the
+#: union degrades to a free-form object so the request stays finite.
+_GEMINI_UNION_DEPTH = 8
+_GEMINI_MAX_REF_DEPTH = 24
+
 
 def to_gemini_schema(schema: dict[str, Any]) -> dict[str, Any]:
-    """Convert a JSON Schema document to the subset Gemini accepts."""
+    """Convert a JSON Schema document to the subset Gemini accepts.
+
+    Two pragmatic transformations keep the request valid on Gemini 3.x:
+
+    * ``maxItems`` is removed. The API rejects sufficiently large array limits
+      with an uninformative 400; the limit depends on the whole schema.
+    * object unions (the ``Block`` discriminated union) are merged instead of
+      emitted as ``oneOf`` (which Gemini ignores) or a huge ``anyOf``. The
+      resulting schema is permissive but still names every block property.
+    """
     definitions = schema.get("$defs", {})
 
-    def convert(node: Any, depth: int = 0) -> Any:
-        if depth > 12 or not isinstance(node, dict):
+    def shallow(node: Any, depth: int = 0) -> Any:
+        """One-level projection used when the full union recursion budget is spent."""
+        if depth > _GEMINI_MAX_REF_DEPTH or not isinstance(node, dict):
             return {"type": "string"}
         if "$ref" in node:
             ref = str(node["$ref"]).rsplit("/", 1)[-1]
-            target = definitions.get(ref, {})
-            return convert(target, depth + 1)
-        if "anyOf" in node:
-            variants = [convert(item, depth + 1) for item in node["anyOf"]]
+            return shallow(definitions.get(ref, {}), depth + 1)
+        union = node.get("anyOf") or node.get("oneOf")
+        if union is not None:
+            variants = [shallow(item, depth + 1) for item in union]
             non_null = [item for item in variants if item.get("type") != "null"]
             if len(non_null) == 1:
                 merged = dict(non_null[0])
                 merged["nullable"] = True
                 return merged
-            return {"anyOf": non_null} if non_null else {"type": "string"}
+            return {"type": "object"}
+        result: dict[str, Any] = {}
+        if "type" in node:
+            result["type"] = node["type"]
+        if "enum" in node:
+            result["enum"] = [str(item) for item in node["enum"]]
+        if "const" in node:
+            result["enum"] = [str(node["const"])]
+        if "format" in node:
+            result["format"] = node["format"]
+        if "items" in node:
+            result["items"] = {"type": "string"}
+            result["type"] = "array"
+        if "properties" in node:
+            properties: dict[str, Any] = {}
+            for name, prop in node["properties"].items():
+                if not isinstance(prop, dict):
+                    properties[name] = {"type": "string"}
+                    continue
+                resolved = shallow(prop, depth + 1)
+                if resolved.get("type") == "array":
+                    resolved = {"type": "array", "items": {"type": "string"}}
+                properties[name] = resolved
+            result["properties"] = properties
+            result["type"] = "object"
+        if "type" not in result:
+            result["type"] = "string"
+        return result
+
+    def convert(node: Any, depth: int = 0) -> Any:
+        if depth > _GEMINI_MAX_REF_DEPTH or not isinstance(node, dict):
+            return {"type": "string"}
+        if "$ref" in node:
+            ref = str(node["$ref"]).rsplit("/", 1)[-1]
+            target = definitions.get(ref, {})
+            return convert(target, depth + 1)
+        union = node.get("anyOf") or node.get("oneOf")
+        if union is not None:
+            refs = {str(item.get("$ref")) for item in union if isinstance(item, dict)}
+            if refs == {"#/$defs/TextRun", "#/$defs/FieldBinding"}:
+                # Inline runs are a small union and must stay discriminable:
+                # a merged object let the model emit empty run objects.
+                variants = [convert(item, depth + 1) for item in union]
+                non_null_inline = [item for item in variants if item.get("type") != "null"]
+                return {"anyOf": non_null_inline}
+            if depth >= _GEMINI_UNION_DEPTH:
+                shallow_variants = [shallow(item) for item in union]
+                shallow_non_null = [item for item in shallow_variants if item.get("type") != "null"]
+                if len(shallow_non_null) == 1:
+                    merged = dict(shallow_non_null[0])
+                    merged["nullable"] = True
+                    return merged
+                return {"type": "object"}
+            variants = [convert(item, depth + 1) for item in union]
+            non_null = [item for item in variants if item.get("type") != "null"]
+            if not non_null:
+                return {"type": "string"}
+            if len(non_null) == 1:
+                merged = dict(non_null[0])
+                merged["nullable"] = True
+                return merged
+            if all(item.get("type") == "object" for item in non_null):
+                properties: dict[str, Any] = {}
+                kind_values: set[str] = set()
+                for item in non_null:
+                    if "kind" in item.get("properties", {}):
+                        kind_values.update(item["properties"]["kind"].get("enum", []))
+                    properties.update(item.get("properties", {}))
+                if kind_values:
+                    properties["kind"] = {"type": "string", "enum": sorted(kind_values)}
+                return {
+                    "type": "object",
+                    "properties": properties,
+                    "required": ["kind"],
+                }
+            return {"anyOf": non_null}
         result: dict[str, Any] = {}
         for key, value in node.items():
-            if key not in _GEMINI_ALLOWED_KEYS:
+            if key not in _GEMINI_ALLOWED_KEYS or key in _GEMINI_DROP_KEYS:
                 continue
             if key == "properties":
                 result["properties"] = {
@@ -451,16 +548,42 @@ def to_gemini_schema(schema: dict[str, Any]) -> dict[str, Any]:
                 result["items"] = convert(value, depth + 1)
             elif key == "enum":
                 result["enum"] = [str(item) for item in value]
+            elif key == "const":
+                result["enum"] = [str(value)]
             else:
                 result[key] = value
         if "type" not in result and "properties" in result:
             result["type"] = "object"
+        if "kind" in result.get("properties", {}):
+            # Pydantic's discriminator rejects a block or run without `kind`,
+            # even though the IR field has a default.
+            required = [str(item) for item in result.get("required", [])]
+            if "kind" not in required:
+                required.insert(0, "kind")
+            result["required"] = required
         return result
 
     converted = convert(schema)
     if converted.get("type") == "object":
         converted.pop("nullable", None)
     return converted
+
+
+def _gemini_generation_config(
+    settings: GenerationSettings, schema: dict[str, Any]
+) -> dict[str, Any]:
+    config: dict[str, Any] = {
+        "temperature": settings.temperature,
+        "maxOutputTokens": settings.max_output_tokens,
+        "responseMimeType": "application/json",
+        "responseSchema": to_gemini_schema(schema),
+    }
+    if settings.model.startswith("gemini-3"):
+        # Thinking tokens are billed as output and are drawn from the same
+        # completion budget. Minimal thinking keeps a large IR from being
+        # truncated; validation, not the model, decides whether it is usable.
+        config["thinkingConfig"] = {"thinkingLevel": "minimal"}
+    return config
 
 
 class GeminiProvider(BaseHTTPProvider):
@@ -488,44 +611,60 @@ class GeminiProvider(BaseHTTPProvider):
         ]
         payload: dict[str, Any] = {
             "contents": contents,
-            "generationConfig": {
-                "temperature": settings.temperature,
-                "maxOutputTokens": settings.max_output_tokens,
-                "responseMimeType": "application/json",
-                "responseSchema": to_gemini_schema(schema),
-            },
+            "generationConfig": _gemini_generation_config(settings, schema),
         }
         if system:
             payload["systemInstruction"] = {"parts": [{"text": system}]}
 
         started = time.perf_counter()
+        retried = False
         try:
             response = await self._post(url, headers=headers, payload=payload, settings=settings)
         except ProviderError as exc:
-            if exc.code != "provider_bad_response" or "responseSchema" not in str(exc.details):
+            # Gemini 3.x rejects some generationConfig combinations with a bare
+            # 400 and no field name. Retry once without the features that vary
+            # most between model generations; JSON mode stays on.
+            if exc.code != "provider_bad_response" or exc.details.get("status") != 400:
                 raise
-            payload["generationConfig"].pop("responseSchema", None)
+            config = payload["generationConfig"]
+            config.pop("responseSchema", None)
+            config.pop("temperature", None)
+            config.pop("thinkingConfig", None)
+            retried = True
             response = await self._post(url, headers=headers, payload=payload, settings=settings)
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         body = response.json()
         try:
-            parts = body["candidates"][0]["content"]["parts"]
+            candidate = body["candidates"][0]
+            parts = candidate["content"]["parts"]
             text = "".join(str(part.get("text", "")) for part in parts)
         except (KeyError, IndexError, TypeError) as exc:
             raise ProviderError(
                 "Provider response is missing a completion",
                 details={"provider": self.name},
             ) from exc
+        finish_reason = candidate.get("finishReason") or None
+        if finish_reason == "MAX_TOKENS":
+            raise ProviderError(
+                "The model stopped before finishing the document",
+                details={
+                    "provider": self.name,
+                    "reason": "output_truncated",
+                    "hint": "increase DC_LLM_MAX_OUTPUT_TOKENS or use a smaller schema",
+                    "retried_without_schema": retried,
+                },
+            )
         usage = body.get("usageMetadata") or {}
         return self._result(
             content=extract_json_object(text),
-            model=settings.model,
+            model=body.get("modelVersion") or settings.model,
             prompt_tokens=int(usage.get("promptTokenCount", 0)),
             completion_tokens=int(usage.get("candidatesTokenCount", 0)),
             latency_ms=latency_ms,
-            finish_reason=(body["candidates"][0].get("finishReason") or None),
+            finish_reason=finish_reason,
             raw_text=text,
+            attempts=2 if retried else 1,
         )
 
 
@@ -583,7 +722,8 @@ class MockProvider:
             provider=self.name,
             model=settings.model,
             content=content,
-            usage=Usage(),
+            # The deterministic baseline makes no paid call: its zero is real.
+            usage=Usage(estimated_cost_usd=0.0),
             latency_ms=latency_ms,
             finish_reason="stop",
             raw_text=None,

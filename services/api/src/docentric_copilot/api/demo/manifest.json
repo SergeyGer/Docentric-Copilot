@@ -23,6 +23,14 @@
       "title": "Quotation with a layout defect"
     },
     {
+      "defect": "long_items",
+      "description": "Same brief, but two product descriptions are long enough to wrap over several table lines: use it to demo the text-fit check and Optimize layout.",
+      "id": "quotation-long-items",
+      "package": "quotation-long-items.ddsp",
+      "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+      "title": "Quotation with long item descriptions"
+    },
+    {
       "description": "Vendor block, ordered items with quantities and prices, delivery terms.",
       "id": "purchase-order",
       "package": "purchase-order.ddsp",

@@ -882,11 +882,15 @@ export function useWorkspace() {
     resetTemplateState();
     setPlanPending(true);
     try {
+      const autoRoute = provider === "auto";
       const body: PlanRequest = {
         source_id: source.source_id,
         prompt: trimmedPrompt,
-        provider,
-        model: model.trim().length > 0 ? model.trim() : null,
+        // The provider is ignored when routing is auto, but the field stays
+        // valid so older servers still understand the request.
+        provider: autoRoute ? "mock" : provider,
+        model: autoRoute ? null : model.trim().length > 0 ? model.trim() : null,
+        routing: autoRoute ? "auto" : "explicit",
         design_style: designStyle,
         target: "generic-docx",
         options: {
@@ -1627,6 +1631,7 @@ export function useWorkspace() {
           warnings: [],
           removed_bindings: [],
           generation: null,
+          routing: null,
           artifacts: response.artifacts,
         };
         setSource(sourceSummary);

@@ -129,6 +129,9 @@ class Settings:
     artifact_ttl_seconds: int = 3600
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     enable_docentric_ax_adapter: bool = False
+    #: Sanitized auto-routing traces. Git-ignored: they are local run evidence,
+    #: not source. Empty string disables writing.
+    routing_trace_dir: Path = Path("docs/media/runs")
     providers: dict[str, ProviderSettings] = field(default_factory=dict)
     llm_timeout_seconds: float = 60.0
     llm_max_retries: int = 2
@@ -221,6 +224,7 @@ def _build_settings() -> Settings:
         artifact_ttl_seconds=_env_int("DC_ARTIFACT_TTL_SECONDS", 3600, minimum=60),
         cors_origins=tuple(origins),
         enable_docentric_ax_adapter=_env_bool("DC_ENABLE_AX_ADAPTER", False),
+        routing_trace_dir=Path(_env_str("DC_ROUTING_TRACE_DIR", "docs/media/runs")),
         providers=_build_providers(),
         llm_timeout_seconds=_env_float("DC_LLM_TIMEOUT_SECONDS", 60.0, minimum=1.0),
         llm_max_retries=_env_int("DC_LLM_MAX_RETRIES", 2, minimum=0, maximum=5),

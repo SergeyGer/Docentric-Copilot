@@ -341,6 +341,8 @@ export interface PlanRequest {
   prompt: string;
   provider: string;
   model: string | null;
+  /** `auto` lets the router choose; `explicit` keeps the historical contract. */
+  routing?: "explicit" | "auto";
   design_style: DesignStyle;
   target: CompileTarget;
   options: PlanOptionsRequest;
@@ -482,7 +484,8 @@ export interface DemoSessionResponse {
 export interface GenerationUsage {
   prompt_tokens: number;
   completion_tokens: number;
-  estimated_cost_usd: number;
+  /** `null` when the model has no published price (N/A, not free). */
+  estimated_cost_usd: number | null;
 }
 
 export interface GenerationInfo {
@@ -500,6 +503,20 @@ export interface RemovedBinding {
   block_kind: string;
 }
 
+export interface RoutingExecutionTrace {
+  decision: RouteDecision;
+  actual_provider: string;
+  actual_model: string | null;
+  /** The preferred tier was unavailable (including the deterministic fallback). */
+  fallback: boolean;
+  /** True only when the recommended provider equals the executed provider. */
+  match: boolean;
+  run_id: string;
+  started_at: string;
+  finished_at: string;
+  usage: GenerationUsage | null;
+}
+
 export interface PlanResponse {
   job_id: string;
   status: string;
@@ -513,6 +530,8 @@ export interface PlanResponse {
   warnings: string[];
   removed_bindings: RemovedBinding[];
   generation: GenerationInfo | null;
+  /** Present only for `routing: "auto"`. */
+  routing: RoutingExecutionTrace | null;
   artifacts: ArtifactView[];
 }
 
@@ -549,6 +568,15 @@ export interface OptimizeFix {
   id: string;
   message: string;
   path?: string | null;
+  before?: number | null;
+  after?: number | null;
+}
+
+export interface IrDiffEntry {
+  path: string;
+  kind: "changed";
+  before: number | null;
+  after: number | null;
 }
 
 export interface OptimizeResponse {
@@ -561,6 +589,8 @@ export interface OptimizeResponse {
   ir: TemplateIr;
   ir_digest: string;
   validation: Record<string, string>;
+  /** Only changed width and font fields, with structural IR paths. */
+  ir_diff: IrDiffEntry[];
 }
 
 export interface CompareRun {

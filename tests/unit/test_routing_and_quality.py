@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 
 import pytest
 from docentric_copilot.ddsp_parser import parse_ddsp
@@ -18,12 +19,23 @@ from docentric_copilot.planner import (
     route,
     routing_policy,
 )
+from docentric_copilot.planner.quality import (
+    QualityStatus,
+    estimate_wrapped_lines,
+    required_width_mm,
+)
 from docentric_copilot.schema_resolver import parse_requirements
-from docentric_copilot.template_ir import ImageBinding, TableColumn
+from docentric_copilot.template_ir import (
+    ImageBinding,
+    Table,
+    TableColumn,
+    TableStyle,
+)
 
-from tests.conftest import EXAMPLES
+from tests.conftest import EXAMPLES, ROOT
 
 PROMPT = (EXAMPLES / "quotation" / "prompt.txt").read_text()
+DEMO_DIR = ROOT / "services" / "api" / "src" / "docentric_copilot" / "api" / "demo"
 
 
 @pytest.fixture(scope="module")
@@ -31,6 +43,32 @@ def planned():
     source = parse_ddsp((EXAMPLES / "quotation" / "sales-quotation.ddsp").read_bytes(), "q.ddsp")
     outcome = asyncio.run(TemplatePlanner(LLMGateway()).plan(source.schema, PROMPT))
     return source, outcome
+
+
+@pytest.fixture(scope="module")
+def long_items():
+    package = DEMO_DIR / "quotation-long-items.ddsp"
+    source = parse_ddsp(package.read_bytes(), package.name)
+    outcome = asyncio.run(TemplatePlanner(LLMGateway()).plan(source.schema, PROMPT))
+    return source, outcome
+
+
+def _check(report, check_id: str):
+    return next(check for check in report.checks if check.id == check_id)
+
+
+def test_text_fit_estimator_is_deterministic() -> None:
+    text = " ".join(
+        ["A long product description with normal words and spaces that wraps over several lines"]
+        * 3
+    )
+    lines = estimate_wrapped_lines(text, 62.0, 9.5)
+    assert lines == estimate_wrapped_lines(text, 62.0, 9.5)
+    assert lines > 4
+    assert estimate_wrapped_lines("Short item", 62.0, 9.5) == 1
+    assert estimate_wrapped_lines("   ", 62.0, 9.5) == 0
+    assert estimate_wrapped_lines(text, 120.0, 9.5) < lines
+    assert required_width_mm(198, 9.5) > 62.0
 
 
 def test_ambiguous_brief_routes_to_review() -> None:
@@ -69,6 +107,75 @@ def test_quality_detects_unbreakable_values(planned) -> None:
     report = analyze_quality(outcome.document, source.schema, sample_data=sample)
     broken = [check for check in report.checks if check.id == "content_safety"]
     assert broken and broken[0].status.value == "failed"
+
+
+def test_text_fit_warns_for_long_item_descriptions(long_items) -> None:
+    source, outcome = long_items
+    report = analyze_quality(outcome.document, source.schema, sample_data=source.sample_data)
+    check = _check(report, "text_fit")
+    assert check.status is QualityStatus.WARNING
+    assert check.path is not None
+    assert check.path.startswith("sections[0].body[")
+    assert check.path.endswith(".row_template[1]")
+    assert "Description" in check.message
+    assert " lines" in check.message
+
+
+def test_optimize_fixes_long_item_descriptions(long_items) -> None:
+    source, outcome = long_items
+    result = optimize_layout(outcome.document, source.schema, sample_data=source.sample_data)
+    width_fix = next(fix for fix in result.fixes if fix.id == "fit_text_width")
+    assert width_fix.path == "sections[0].body[4].columns[1].width_mm"
+    assert width_fix.before == 62.0
+    assert width_fix.after is not None and width_fix.after > width_fix.before
+    font_fix = next(fix for fix in result.fixes if fix.id == "fit_text_font")
+    assert font_fix.before == 9.5 and font_fix.after == 9.0
+    assert _check(result.after, "text_fit").status is QualityStatus.PASSED
+    table = next(
+        block
+        for block in result.document.sections[0].body
+        if isinstance(block, Table) and block.repeat is not None
+    )
+    declared = sum(column.width_mm or 0 for column in table.columns)
+    assert declared <= result.after.metrics.text_width_mm + 0.5
+
+
+def test_optimize_lowers_table_font_when_width_is_exhausted(planned) -> None:
+    source, outcome = planned
+    assert source.sample_data is not None
+    item_table = next(
+        block
+        for block in outcome.document.sections[0].body
+        if isinstance(block, Table) and block.repeat is not None
+    )
+    assert item_table.row_template is not None
+    table = Table(
+        columns=[
+            TableColumn(header="Description", width_mm=160.0),
+            TableColumn(header="SKU", width_mm=10.0),
+        ],
+        rows=[],
+        repeat=item_table.repeat,
+        row_template=[item_table.row_template[1], item_table.row_template[0]],
+        show_header=True,
+        style=TableStyle(font_size_pt=9.5),
+    )
+    section = outcome.document.sections[0]
+    document = outcome.document.model_copy(
+        update={"sections": [section.model_copy(update={"body": [table]})]}
+    )
+    sample = copy.deepcopy(source.sample_data)
+    sample["MainData"]["QuotationLines"]["Line"][0]["Description"] = " ".join(["delivery"] * 45)
+
+    before = analyze_quality(document, source.schema, sample_data=sample)
+    assert _check(before, "text_fit").status is QualityStatus.WARNING
+
+    result = optimize_layout(document, source.schema, sample_data=sample)
+    font_fixes = [fix for fix in result.fixes if fix.id == "fit_text_font"]
+    assert [fix.after for fix in font_fixes] == [9.0, 8.5, 8.0]
+    assert all(fix.before is not None for fix in font_fixes)
+    assert all(fix.path == "sections[0].body[0].style.font_size_pt" for fix in font_fixes)
+    assert _check(result.after, "text_fit").status is QualityStatus.PASSED
 
 
 def test_optimize_fits_an_oversized_table(planned) -> None:

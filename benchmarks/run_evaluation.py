@@ -87,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
                 else 0,
                 verified_compatible=False,
                 cost_usd=(
-                    outcome.generation.usage.estimated_cost_usd if outcome.generation else 0.0
+                    outcome.generation.usage.estimated_cost_usd if outcome.generation else None
                 ),
             )
         )

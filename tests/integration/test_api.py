@@ -256,6 +256,8 @@ def test_quality_optimize_and_compare_link(client: TestClient) -> None:
     optimised = client.post("/api/v1/templates/optimize", json=reference)
     assert optimised.status_code == 200, optimised.text
     assert optimised.json()["after"]["overall"] != "warning"
+    assert optimised.json()["ir_diff"]
+    assert all(entry["kind"] == "changed" for entry in optimised.json()["ir_diff"])
     compare = client.post(
         "/api/v1/templates/compare",
         json={
@@ -267,3 +269,48 @@ def test_quality_optimize_and_compare_link(client: TestClient) -> None:
     assert compare.status_code == 200
     assert all(run["ok"] for run in compare.json()["runs"])
     assert compare.json()["recommended"] == "mock"
+
+
+def test_long_items_demo_warning_and_optimize_ir_diff(client: TestClient) -> None:
+    demo = client.post("/api/v1/demo/sessions", json={"case_id": "quotation-long-items"})
+    assert demo.status_code == 200, demo.text
+    body = demo.json()
+    assert body["case"]["defect"] == "long_items"
+    fit = next(check for check in body["quality"]["checks"] if check["id"] == "text_fit")
+    assert fit["status"] == "warning"
+    assert fit["path"].startswith("sections[")
+    assert " lines" in fit["message"]
+    layout = next(check for check in body["quality"]["checks"] if check["id"] == "table_layout")
+    assert layout["status"] == "passed"
+    item_table = next(
+        block
+        for section in body["ir"]["sections"]
+        for block in section["body"]
+        if block["kind"] == "table"
+        and block.get("repeat")
+        and block["columns"][1]["header"] == "Description"
+    )
+    # The long-items defect must come from the sample text, not a wider column.
+    assert item_table["columns"][1]["width_mm"] == 62.0
+
+    reference = {
+        "source_id": body["source_id"],
+        "template_id": body["template_id"],
+        "version": body["version"],
+    }
+    optimised = client.post("/api/v1/templates/optimize", json=reference)
+    assert optimised.status_code == 200, optimised.text
+    result = optimised.json()
+
+    after_fit = next(check for check in result["after"]["checks"] if check["id"] == "text_fit")
+    assert after_fit["status"] == "passed"
+    assert result["ir_diff"]
+    for entry in result["ir_diff"]:
+        assert entry["kind"] == "changed"
+        assert entry["path"].endswith((".width_mm", ".font_size_pt"))
+        assert entry["before"] != entry["after"]
+    changed_paths = {entry["path"] for entry in result["ir_diff"]}
+    assert any(path.endswith("columns[1].width_mm") for path in changed_paths)
+    assert any(path.endswith("style.font_size_pt") for path in changed_paths)
+    assert any(fix["id"] == "fit_text_width" for fix in result["fixes"])
+    assert any(fix["id"] == "fit_text_font" for fix in result["fixes"])

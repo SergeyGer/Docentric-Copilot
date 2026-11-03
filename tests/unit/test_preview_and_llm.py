@@ -142,10 +142,22 @@ class TestJsonExtraction:
         assert "properties" in converted
         dumped = json.dumps(converted)
         assert "$defs" not in dumped and "$ref" not in dumped
+        # Gemini rejects large maxItems with an uninformative 400.
+        assert "maxItems" not in dumped
+        # The block union is merged rather than discarded.
+        sections = converted["properties"]["sections"]["items"]
+        assert "body" in sections["properties"]
 
     def test_cost_estimate(self) -> None:
         assert estimate_cost_usd("gpt-4o-mini", 1_000_000, 0) == pytest.approx(0.15)
-        assert estimate_cost_usd("unknown-model", 1000, 1000) == 0.0
+        # Unknown is N/A, not a free call.
+        assert estimate_cost_usd("unknown-model", 1000, 1000) is None
+        assert estimate_cost_usd("mock-planner-v1", 1000, 1000) == 0.0
+
+    def test_gemini_3_flash_price_is_known(self) -> None:
+        assert estimate_cost_usd("gemini-3-flash-preview", 1_000_000, 1_000_000) == (
+            pytest.approx(3.50)
+        )
 
 
 # --------------------------------------------------------------------------- #
@@ -307,6 +319,43 @@ class TestGeminiAdapter:
             await client.aclose()
 
         _run(scenario())
+
+    def test_rejected_generation_config_retries_without_schema(self) -> None:
+        seen: list[dict] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            body = json.loads(request.content)
+            seen.append(body)
+            if len(seen) == 1:
+                return httpx.Response(400, json={"error": {"status": "INVALID_ARGUMENT"}})
+            return httpx.Response(
+                200,
+                json={
+                    "candidates": [
+                        {"content": {"parts": [{"text": '{"ok": true}'}]}, "finishReason": "STOP"}
+                    ],
+                    "usageMetadata": {"promptTokenCount": 3, "candidatesTokenCount": 2},
+                },
+            )
+
+        async def scenario() -> None:
+            client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+            provider = GeminiProvider(api_key="k", base_url="https://api.test", client=client)
+            result = await provider.generate_structured(
+                messages=_messages(),
+                schema={"type": "object"},
+                settings=GenerationSettings(model="gemini-3.1-flash-lite", max_output_tokens=256),
+            )
+            assert result.content == {"ok": True}
+            assert result.attempts == 2
+            await client.aclose()
+
+        _run(scenario())
+        assert "responseSchema" in seen[0]["generationConfig"]
+        retry_config = seen[1]["generationConfig"]
+        assert "responseSchema" not in retry_config
+        assert "temperature" not in retry_config
+        assert retry_config["responseMimeType"] == "application/json"
 
 
 class TestGateway:

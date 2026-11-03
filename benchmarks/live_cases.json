@@ -1,0 +1,149 @@
+[
+  {
+    "case_id": "simple-company-identity",
+    "category": "simple",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Add the company name and the company logo to the document header.",
+    "expected_paths": [
+      "GeneralData.Company.Name",
+      "GeneralData.Company.CompanyLogo"
+    ],
+    "notes": "Two scalar fields with a clear object scope."
+  },
+  {
+    "case_id": "simple-document-identifiers",
+    "category": "simple",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show the quotation number, the quotation date and the validity date.",
+    "expected_paths": [
+      "MainData.Quotation.QuotationId",
+      "MainData.Quotation.QuotationDate",
+      "MainData.Quotation.ValidUntil"
+    ],
+    "notes": "Three scalar fields on the document root."
+  },
+  {
+    "case_id": "simple-customer-details",
+    "category": "simple",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Show the customer name, account number and VAT number.",
+    "expected_paths": [
+      "MainData.Invoice.Customer.Name",
+      "MainData.Invoice.Customer.AccountNum",
+      "MainData.Invoice.Customer.VatNumber"
+    ],
+    "notes": "Party-scoped fields; the brief names the customer explicitly."
+  },
+  {
+    "case_id": "repeat-quotation-lines",
+    "category": "repeat",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Add a table of product lines with the description, quantity, unit price and line amount for each line.",
+    "expected_paths": [
+      "MainData.QuotationLines.Line",
+      "MainData.QuotationLines.Line.Description",
+      "MainData.QuotationLines.Line.Quantity",
+      "MainData.QuotationLines.Line.UnitPrice",
+      "MainData.QuotationLines.Line.LineAmount"
+    ],
+    "notes": "Collection iteration with an aliased row scope."
+  },
+  {
+    "case_id": "repeat-invoice-services",
+    "category": "repeat",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Add a table of services with description, quantity, unit price and amount for each line.",
+    "expected_paths": [
+      "MainData.InvoiceLines.Line",
+      "MainData.InvoiceLines.Line.Description",
+      "MainData.InvoiceLines.Line.Quantity",
+      "MainData.InvoiceLines.Line.UnitPrice",
+      "MainData.InvoiceLines.Line.LineAmount"
+    ],
+    "notes": "Same requirement shape as the quotation case on a different schema."
+  },
+  {
+    "case_id": "repeat-purchase-order-lines",
+    "category": "repeat",
+    "package": "examples/purchase-order/purchase-order.ddsp",
+    "prompt": "Add a table of ordered items with description, quantity, unit price and line amount for each item.",
+    "expected_paths": [
+      "MainData.PurchaseOrderLines.Line",
+      "MainData.PurchaseOrderLines.Line.Description",
+      "MainData.PurchaseOrderLines.Line.Quantity",
+      "MainData.PurchaseOrderLines.Line.UnitPrice",
+      "MainData.PurchaseOrderLines.Line.LineAmount"
+    ],
+    "notes": "Collection iteration in the purchase-order vocabulary."
+  },
+  {
+    "case_id": "conditional-eu-vat-notice",
+    "category": "conditional",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show an EU VAT notice only when the customer is in the EU.",
+    "expected_paths": [
+      "MainData.Quotation.Customer.IsEU"
+    ],
+    "notes": "The condition field must be bound inside a conditional block."
+  },
+  {
+    "case_id": "conditional-reverse-charge",
+    "category": "conditional",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Add a reverse-charge note only when reverse charge applies and the customer is in the EU.",
+    "expected_paths": [
+      "MainData.Invoice.ReverseCharge",
+      "MainData.Invoice.Customer.IsEU"
+    ],
+    "notes": "Compound condition over a document flag and a party flag."
+  },
+  {
+    "case_id": "ambiguous-address",
+    "category": "ambiguous",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Add the address to the document.",
+    "expected_paths": [
+      "GeneralData.Company.Address",
+      "MainData.Quotation.Customer.Address"
+    ],
+    "notes": "No party is named. Either address is defensible, so both are in the expected set and recall is capped at 0.5 unless both are bound; a safe plan should ask instead of guessing."
+  },
+  {
+    "case_id": "missing-field",
+    "category": "missing",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Show the customer's loyalty number and preferred courier.",
+    "expected_paths": [],
+    "notes": "Neither field exists in the schema. The correct behaviour is to report the requirement as missing, not to invent a path; precision and recall are not defined for this case."
+  },
+  {
+    "case_id": "multiline-invoice-items",
+    "category": "multiline",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "prompt": "Itemise each service over multiple lines with its quantity, unit price and line amount.",
+    "expected_paths": [
+      "MainData.InvoiceLines.Line",
+      "MainData.InvoiceLines.Line.Quantity",
+      "MainData.InvoiceLines.Line.UnitPrice",
+      "MainData.InvoiceLines.Line.LineAmount"
+    ],
+    "notes": "Multi-line item block without an explicit description clause."
+  },
+  {
+    "case_id": "mixed-purchase-order",
+    "category": "multiline",
+    "package": "examples/purchase-order/purchase-order.ddsp",
+    "prompt": "Include the vendor address, order number, order date, a table of items with quantity and unit price, the total amount and the delivery terms.",
+    "expected_paths": [
+      "MainData.PurchaseOrder.Vendor.Address",
+      "MainData.PurchaseOrder.OrderId",
+      "MainData.PurchaseOrder.OrderDate",
+      "MainData.PurchaseOrderLines.Line",
+      "MainData.PurchaseOrderLines.Line.Quantity",
+      "MainData.PurchaseOrderLines.Line.UnitPrice",
+      "MainData.PurchaseOrder.TotalAmount",
+      "MainData.PurchaseOrder.DeliveryTerms"
+    ],
+    "notes": "Mixed scalar, collection and total requirements in one brief."
+  }
+]

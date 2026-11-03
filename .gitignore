@@ -30,6 +30,9 @@ out/
 pnpm-debug.log*
 npm-debug.log*
 
+# Local execution traces (sanitized, but never published)
+docs/media/runs/
+
 # Test / tooling artifacts
 .playwright/
 playwright-report/

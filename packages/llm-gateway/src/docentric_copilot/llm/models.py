@@ -42,7 +42,14 @@ class Usage(BaseModel):
 
     prompt_tokens: int = Field(default=0, ge=0)
     completion_tokens: int = Field(default=0, ge=0)
-    estimated_cost_usd: float = Field(default=0.0, ge=0.0)
+    #: ``None`` means the model has no entry in the price table. That is not the
+    #: same as free: the UI and reports render it as N/A. The deterministic mock
+    #: is genuinely free and reports 0.0.
+    estimated_cost_usd: float | None = Field(default=None, ge=0.0)
+
+    @property
+    def cost_known(self) -> bool:
+        return self.estimated_cost_usd is not None
 
     @property
     def total_tokens(self) -> int:

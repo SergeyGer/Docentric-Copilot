@@ -42,7 +42,8 @@ export function formatUsd(value: number | null | undefined, fractionDigits = 2):
 /** Format a measured provider cost without hiding sub-cent amounts. */
 export function formatCostUsd(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return "—";
+    // No published price is N/A, never $0.00; only a real zero is free.
+    return "N/A";
   }
   if (value === 0) {
     return "$0.00";

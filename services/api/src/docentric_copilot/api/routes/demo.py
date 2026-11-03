@@ -39,7 +39,7 @@ class DemoCase(BaseModel):
     title: str
     description: str
     prompt: str
-    defect: bool = False
+    defect: bool | str = False
 
 
 class DemoRequest(BaseModel):
@@ -166,7 +166,9 @@ async def create_session(
         language="en",
     )
     if case.get("defect"):
-        outcome = outcome.model_copy(update={"document": _inject_layout_defect(outcome.document)})
+        outcome = outcome.model_copy(
+            update={"document": _inject_layout_defect(outcome.document, case["defect"])}
+        )
 
     template_id, _ = store.create_template(source.id)
     version = store.add_version(
@@ -255,8 +257,16 @@ async def create_session(
     )
 
 
-def _inject_layout_defect(document):
-    """Widen the item table so the quality dashboard has something to report."""
+def _inject_layout_defect(document, defect: bool | str = False):
+    """Create the requested demo defect without touching the sample data.
+
+    ``long_items`` is already present in the package's sample data: the item
+    descriptions are long enough to wrap under the normal column widths, so the
+    document must not be widened or the table would stop wrapping.
+    """
+    if defect == "long_items":
+        return document
+
     from docentric_copilot.template_ir import Table
 
     def widen(blocks):

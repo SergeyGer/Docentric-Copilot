@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from .gateway import LLMGateway
 from .models import GenerationResult, GenerationSettings, Message, Role, Usage
-from .pricing import estimate_cost_usd, price_for
+from .pricing import (
+    PRICING_AS_OF,
+    PRICING_SOURCE,
+    PRICING_VERSION,
+    estimate_cost,
+    estimate_cost_usd,
+    price_for,
+    price_table_metadata,
+)
 from .providers import (
     AnthropicProvider,
     BaseHTTPProvider,
@@ -16,6 +24,9 @@ from .providers import (
 )
 
 __all__ = [
+    "PRICING_AS_OF",
+    "PRICING_SOURCE",
+    "PRICING_VERSION",
     "AnthropicProvider",
     "BaseHTTPProvider",
     "GeminiProvider",
@@ -27,8 +38,10 @@ __all__ = [
     "OpenAIProvider",
     "Role",
     "Usage",
+    "estimate_cost",
     "estimate_cost_usd",
     "extract_json_object",
     "price_for",
+    "price_table_metadata",
     "to_gemini_schema",
 ]

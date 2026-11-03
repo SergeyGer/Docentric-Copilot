@@ -5,7 +5,7 @@ import { Info, Loader2, Route, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, humanizeKey } from "@/lib/format";
-import type { Complexity, RouteResponse } from "@/lib/types";
+import type { Complexity, RouteResponse, RoutingExecutionTrace } from "@/lib/types";
 
 type ComplexityVariant = "success" | "info" | "warning" | "destructive";
 
@@ -20,6 +20,8 @@ const COMPLEXITY_ORDER: readonly Complexity[] = ["simple", "standard", "complex"
 
 export interface RoutingPanelProps {
   routing: RouteResponse | null;
+  /** Present after an `auto` plan: what ran versus what was recommended. */
+  execution?: RoutingExecutionTrace | null;
   pending: boolean;
   unavailable: boolean;
   /** Routing only runs when a source and a non-empty brief both exist. */
@@ -30,20 +32,32 @@ export interface RoutingPanelProps {
  * Compact, informational routing card. It never blocks the planner: failures
  * collapse to a quiet label and the decision is purely advisory.
  */
-export function RoutingPanel({ routing, pending, unavailable, enabled }: RoutingPanelProps) {
+export function RoutingPanel({
+  routing,
+  execution = null,
+  pending,
+  unavailable,
+  enabled,
+}: RoutingPanelProps) {
   const tooltipId = useId();
 
-  if (!enabled && !routing && !pending && !unavailable) {
+  if (!enabled && !routing && !execution && !pending && !unavailable) {
     return null;
   }
 
-  const decision = routing?.decision ?? null;
+  const decision = routing?.decision ?? execution?.decision ?? null;
   const ariaSummary = pending
     ? "Updating the routing decision."
     : decision
       ? `Routing decision: ${humanizeKey(decision.complexity)} via ${decision.provider}${
           decision.model ? `, ${decision.model}` : ""
-        }. Budget ${formatUsd(decision.budget_usd)}.`
+        }. Budget ${formatUsd(decision.budget_usd)}.${
+          execution
+            ? ` Executed with ${execution.actual_provider}${
+                execution.actual_model ? `, ${execution.actual_model}` : ""
+              }; ${execution.match ? "recommendation matched" : "recommendation did not match"}.`
+            : ""
+        }`
       : unavailable
         ? "Routing unavailable."
         : "Routing has not run yet.";
@@ -92,6 +106,26 @@ export function RoutingPanel({ routing, pending, unavailable, enabled }: Routing
               <Badge variant="outline" title="The preferred tier had no configured provider">
                 fallback
               </Badge>
+            ) : null}
+            {execution ? (
+              <>
+                <span className="text-[11px] text-muted-foreground">executed</span>
+                <span className="text-[11px] font-medium text-foreground">
+                  {execution.actual_provider}
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  {execution.actual_model ?? "provider default"}
+                </span>
+                <Badge
+                  variant={execution.match ? "success" : "warning"}
+                  title={`Recommended ${decision.provider}; executed ${execution.actual_provider}`}
+                >
+                  {execution.match ? "match" : "mismatch"}
+                </Badge>
+                <span className="sr-only" role="status" aria-live="polite">
+                  Run {execution.run_id}
+                </span>
+              </>
             ) : null}
             {routing ? (
               <span className="group relative inline-flex">

@@ -31,6 +31,7 @@ import {
   PROMPT_MAX_LENGTH,
 } from "@/lib/constants";
 import {
+  formatCostUsd,
   formatProviderLabel,
   truncateMiddle,
 } from "@/lib/format";
@@ -181,6 +182,7 @@ export function PromptPanel({
 
           <RoutingPanel
             routing={routing}
+            execution={plan?.routing ?? null}
             pending={routingPending}
             unavailable={routingUnavailable}
             enabled={source !== null && prompt.trim().length > 0}
@@ -208,7 +210,7 @@ export function PromptPanel({
                     {generation.provider}
                     {generation.model ? ` / ${generation.model}` : ""} ·{" "}
                     {generation.latency_ms.toLocaleString("en-GB")} ms ·{" "}
-                    {generation.usage.estimated_cost_usd.toFixed(3)} USD
+                    {formatCostUsd(generation.usage.estimated_cost_usd)}
                   </span>
                 ) : null}
               </div>
@@ -267,6 +269,7 @@ export function PromptPanel({
                   disabled={planPending || providers.length === 0}
                   aria-describedby="provider-hint"
                 >
+                  <option value="auto">Auto (routing policy)</option>
                   {providers.length === 0 ? <option value={provider}>{provider}</option> : null}
                   {providers.map((item) => (
                     <option key={item.name} value={item.name} disabled={!item.configured}>
@@ -276,9 +279,11 @@ export function PromptPanel({
                 </Select>
               )}
               <p id="provider-hint" className="text-[11px] leading-4 text-muted-foreground">
-                {selectedProvider?.configured
-                  ? "Configured provider"
-                  : "Mock always works offline; other providers require API keys."}
+                {provider === "auto"
+                  ? "The router classifies the brief, selects a configured provider and records the executed model."
+                  : selectedProvider?.configured
+                    ? "Configured provider"
+                    : "Mock always works offline; other providers require API keys."}
               </p>
             </div>
 
@@ -293,7 +298,7 @@ export function PromptPanel({
                 onChange={(event) => onModelChange(event.target.value)}
                 placeholder={selectedProvider?.default_model ?? "Provider default"}
                 maxLength={120}
-                disabled={planPending}
+                disabled={planPending || provider === "auto"}
               />
               <datalist id="provider-models">
                 {(selectedProvider?.models ?? []).map((item) => (

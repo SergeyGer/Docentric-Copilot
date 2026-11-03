@@ -1,0 +1,66 @@
+[
+  {
+    "scene": "01 Hook",
+    "start": "00:00",
+    "end": "00:14",
+    "asset": "docs/assets/preview-pages.png",
+    "claim": "A quotation brief becomes a two-page DOCX with the schema, validation and diff attached.",
+    "evidence": "docs/media/demo-session.json artifacts[docx].size_bytes=40585 and docs/assets/preview-pages.png (page 1 of 2, page 2 of 2)."
+  },
+  {
+    "scene": "02 Data source and schema",
+    "start": "00:14",
+    "end": "00:30",
+    "asset": "docs/assets/schema-explorer.png",
+    "claim": "The document is grounded in a normalized schema: 34 fields, 3 sections, 1 repeating collection.",
+    "evidence": "docs/media/demo-session.json stats: node_count=34, collection_count=1, max_depth=3; sections MainData, GeneralData, Parameters; diagnostics length=3."
+  },
+  {
+    "scene": "03 Brief and adaptive routing",
+    "start": "00:30",
+    "end": "00:54",
+    "asset": "docs/assets/routing-panel.png (recorded prompt panel, re-typed for the animation); docs/media/runs/bench_6312bb882a834b97.json",
+    "claim": "The prompt panel recommends Anthropic; the live quotation run used gpt-6-sol and passed the validation gate.",
+    "evidence": "docs/assets/routing-panel.png (Ambiguous; anthropic; budget $0.30; human review; 281/5000 brief) and benchmarks/live_report.json run simple-company-identity/openai (actual_model gpt-6-sol, latency 19402 ms, cost 0.035580 USD, validation_passed true). The animation re-types the recorded 281-character brief; the routing result and live trace are recorded, not re-run."
+  },
+  {
+    "scene": "04 Multi-LLM benchmark",
+    "start": "00:54",
+    "end": "01:16",
+    "asset": "benchmarks/live_report.json (rendered benchmark table)",
+    "claim": "Across 6 live cases, gpt-6-sol and claude-sonnet-5-5 each produced 6 valid templates; Gemini has no valid run (API quota exceeded).",
+    "evidence": "benchmarks/live_report.json aggregates: openai 6/6, p50 19002 ms, cost 0.199774 USD; anthropic 6/6, p50 14235.5 ms, cost 0.279024 USD; gemini successful_runs=0, runs=6, latency/cost null. Gemini row is a status category, not a quality result: the review reports the Gemini key returns HTTP 429 quota exceeded, and no Gemini quality, latency or cost figure is claimed. Cost per valid template is derived as cost_usd / successful_runs."
+  },
+  {
+    "scene": "05 DOCX artifact",
+    "start": "01:16",
+    "end": "01:42",
+    "asset": "docs/assets/preview-pages.png; docs/assets/quality-before-libreoffice.png",
+    "claim": "quotation.docx is 40,585 bytes and two pages; the zoomed views are an independent preview and a LibreOffice rendering, not a Word fidelity claim.",
+    "evidence": "docs/media/demo-session.json artifacts[docx].size_bytes=40585; docs/assets/preview-pages.png shows two preview pages at 1600x1000; docs/assets/quality-before-libreoffice.png is page 1 of 2 at 1241x1754, recorded from LibreOffice Writer 25.2 + pdftoppm. Video uses 130-155% crops centred on the items table and totals."
+  },
+  {
+    "scene": "06 Visual defect to repair",
+    "start": "01:42",
+    "end": "02:14",
+    "asset": "docs/assets/quality-before-libreoffice.png; docs/assets/quality-after-libreoffice.png; docs/media/optimize-response.json",
+    "claim": "The defect is 62.0 mm at 9.5 pt; the repair is 88.7 mm at 9.0 pt, 7 IR fields changed, and text-fit passes.",
+    "evidence": "docs/media/optimize-response.json fixes fit_text_width 62.0 -> 88.7 mm and fit_text_font 9.5 -> 9.0 pt; ir_diff has 7 entries; before text_fit warning (2 table cells over 4 estimated lines, worst Description ~7 lines), after passed; quality-before/after-libreoffice.png are the recorded LibreOffice renders. Video uses 130-155% crops centred on the Description column."
+  },
+  {
+    "scene": "07 Revision V1/V2",
+    "start": "02:14",
+    "end": "02:31",
+    "asset": "docs/assets/revision-v1-v2.png",
+    "claim": "V1 to V2 changed 5 IR fields, added 0 and removed 0; either version can be restored.",
+    "evidence": "docs/assets/revision-v1-v2.png: TOTAL CHANGES 5, ADDED 0, REMOVED 0, CHANGED 5; Restore version is visible on both panes."
+  },
+  {
+    "scene": "08 Closing",
+    "start": "02:31",
+    "end": "02:46",
+    "asset": "README.md; LICENSE",
+    "claim": "Docentric Copilot is open source on GitHub; Docentric AX compatibility is not tested.",
+    "evidence": "README.md GitHub URL https://github.com/SergeyGer/Docentric-Copilot and LICENSE Apache-2.0; SESSION validation docentric_compatibility=not_tested."
+  }
+]

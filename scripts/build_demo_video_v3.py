@@ -118,6 +118,7 @@ BENCH_DATE = BENCH["generated_at"][:10]
 CASE_COUNT = BENCH["case_count"]
 SPEND = BENCH["budget"]["estimated_spend_usd"]
 MAX_SPEND = BENCH["budget"]["max_spend_usd"]
+SPEND_TEXT = f"${SPEND:.6f}" if SPEND is not None else "N/A"
 UNKNOWN_COST_RUNS = BENCH["budget"]["unknown_cost_runs"]
 PROVIDER_COUNT = len(BENCH["providers"])
 
@@ -198,7 +199,7 @@ SCENE_CLAIMS = [
     "A quotation brief becomes a two-page DOCX with the schema, validation and diff attached.",
     "The document is grounded in a normalized schema: 34 fields, 3 sections, 1 repeating collection.",
     "The prompt panel recommends Anthropic; the live quotation run used gpt-6-sol and passed the validation gate.",
-    "Across 6 live cases, gpt-6-sol and claude-sonnet-5-5 each produced 6 valid templates; Gemini has no valid run (API quota exceeded).",
+    "Across the live test set, two of the three models returned a valid template every time; Gemini is still limited by its output budget.",
     "quotation.docx is 40,585 bytes and two pages; the zoomed views are an independent preview and a LibreOffice rendering, not a Word fidelity claim.",
     "The defect is 62.0 mm at 9.5 pt; the repair is 88.7 mm at 9.0 pt, 7 IR fields changed, and text-fit passes.",
     "V1 to V2 changed 5 IR fields, added 0 and removed 0; either version can be restored.",
@@ -256,9 +257,9 @@ SCENE_EVIDENCE = [
     "latency 19402 ms, cost 0.035580 USD, validation_passed true). The animation re-types the recorded "
     "281-character brief; the routing result and live trace are recorded, not re-run.",
     "benchmarks/live_report.json aggregates: openai 6/6, p50 19002 ms, cost 0.199774 USD; anthropic "
-    "6/6, p50 14235.5 ms, cost 0.279024 USD; gemini successful_runs=0, runs=6, latency/cost null. "
+    "6/6, p50 14517 ms, cost 0.15633 USD; gemini 3/6, p50 16766 ms, cost N/A (unpriced model). "
     "Gemini row is a status category, not a quality result: the review reports the Gemini key returns "
-    "HTTP 429 quota exceeded, and no Gemini quality, latency or cost figure is claimed. Cost per valid "
+    "Gemini: three of six runs valid; the rest hit output or API limits. Cost per valid "
     "template is derived as cost_usd / successful_runs.",
     "docs/media/demo-session.json artifacts[docx].size_bytes=40585; docs/assets/preview-pages.png shows "
     "two preview pages at 1600x1000; docs/assets/quality-before-libreoffice.png is page 1 of 2 at "
@@ -850,7 +851,7 @@ def gemini_row() -> str:
     return f"""
       <div class="brow excluded">
         <div class="bmodel">
-          <div class="bname">Gemini — API quota exceeded; no valid run</div>
+          <div class="bname">Gemini — 3 of 6 valid (output limit)</div>
           <div class="bsub">{esc(GEMINI["model"])} · {GEMINI_RUNS} attempts · excluded from quality, latency and cost</div>
         </div>
         <div class="bmetric">
@@ -893,7 +894,7 @@ def scene_4() -> str:
         <div class="footnote" style="max-width:2340px;">
           <b>n = {CASE_COUNT} cases per provider · {BENCH_DATE} · one run per case · {PROVIDER_COUNT} models configured:</b>
           openai:gpt-6-sol, anthropic:claude-sonnet-5-5, gemini:{esc(GEMINI["model"])}.
-          Estimated spend ${SPEND:.6f} of ${MAX_SPEND:.2f}; unknown-cost runs: {UNKNOWN_COST_RUNS}.
+          Estimated spend {SPEND_TEXT} of ${MAX_SPEND:.2f}; unknown-cost runs: {UNKNOWN_COST_RUNS}.
           <b>Cost per valid template = provider cost ÷ successful runs.</b>
           <b>Gemini:</b> the API quota was exceeded on the provider key; {GEMINI_RUNS} attempts produced
           {GEMINI_VALID} valid runs, so no Gemini quality, latency or cost result is claimed. A dash is not $0.00.
@@ -1319,7 +1320,7 @@ def scene_8() -> str:
         </div>
         <div style="margin-top:10px; font-size:20px; color:#9fb0c8; max-width:1700px; line-height:1.5;">
           The video shows recorded artifacts and a recorded live benchmark. It does not claim Word fidelity
-          or Docentric AX compatibility. Gemini: API quota exceeded; no valid run, so no Gemini quality
+          or Docentric AX compatibility. Gemini: three of six valid runs, cost unavailable; no claim beyond that
           result is claimed.
         </div>
       </div>
@@ -1385,7 +1386,7 @@ def thumbnail_html() -> str:
     <div class="big">{OPENAI_VALID}/{OPENAI_RUNS}</div>
     <div class="metric-label">valid templates<span>gpt-6-sol · n={OPENAI_RUNS} live cases · {BENCH_DATE}</span></div>
   </div>
-  <div class="footerline"><span>Docentric AX compatibility: not tested</span><span>Gemini: quota exceeded · no valid run</span></div>
+  <div class="footerline"><span>Docentric AX compatibility: not tested</span><span>Gemini: 3 of 6 valid · cost N/A</span></div>
 </div>
 </body></html>"""
 
@@ -1882,7 +1883,7 @@ def write_narration() -> None:
         "seconds, no token counts and no per-provider scores are read aloud. All figures appear on "
         "screen and are mapped to their sources in `scene-manifest-v3.json`.",
         "",
-        "The Gemini benchmark row is a status category on screen (API quota exceeded; no valid run). "
+        "The Gemini benchmark row shows its actual result (3 of 6 valid; the rest hit output or API limits). "
         "The voiceover does not mention the failure or claim any Gemini quality result.",
         "",
     ]
@@ -1942,7 +1943,7 @@ It supersedes the v2 video notes; `demo-v2.mp4` and its sidecars are left untouc
   centred on the items table, totals and Description column, with three-frame crossfades between
   zoom levels. They are not shown as full-page evidence.
 - **Benchmark truthfulness.** The Gemini row is now the explicit category
-  "Gemini — API quota exceeded; no valid run". No Gemini quality, latency or cost result is claimed.
+  "Gemini — 3 of 6 valid (output limit)". No Gemini cost is claimed because the model is unpriced.
   The OpenAI and Anthropic rows keep the measured `benchmarks/live_report.json` values.
 - **Labels kept.** The closing line is still "Docentric AX compatibility: not tested", and every
   LibreOffice image is still labelled "LibreOffice rendering".
@@ -1951,7 +1952,7 @@ It supersedes the v2 video notes; `demo-v2.mp4` and its sidecars are left untouc
 
 **Verified live on {BENCH_DATE}.** The multi-LLM table uses `benchmarks/live_report.json`: {CASE_COUNT}
 cases, {PROVIDER_COUNT} providers and one live run per case/provider ({CASE_COUNT * PROVIDER_COUNT}
-attempts total), with an estimated spend of ${SPEND:.6f} and {UNKNOWN_COST_RUNS} unknown-cost runs.
+attempts total), with an estimated spend of {SPEND_TEXT} and {UNKNOWN_COST_RUNS} unknown-cost runs.
 Models: `openai:gpt-6-sol`, `anthropic:claude-sonnet-5-5`, `gemini:gemini-3.1-flash-lite`. The routing
 scene's executed model (`gpt-6-sol`, run `{ROUTING_RUN_ID}`) comes from the same report and its saved
 trace.
@@ -2021,7 +2022,7 @@ PLAYWRIGHT_BROWSERS_PATH=.tools/pw-browsers .venv/bin/python scripts/build_demo_
 
 
 def main() -> int:
-    print(f"benchmark: {BENCH_DATE}, {CASE_COUNT} cases, {PROVIDER_COUNT} providers, ${SPEND:.6f}")
+    print(f"benchmark: {BENCH_DATE}, {CASE_COUNT} cases, {PROVIDER_COUNT} providers, spend {SPEND if SPEND is not None else 'N/A'}")
     print(f"brief: {BRIEF_CHARS} chars")
     print(f"output: {OUT}")
     panel_paths = build_panel_frames()

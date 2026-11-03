@@ -4,7 +4,7 @@ Duration **02:46** · 1920×1080 · 30 fps · voice `en-US-GuyNeural` · measure
 
 The script is English only and deliberately general: no cents or dollars, no latency seconds, no token counts and no per-provider scores are read aloud. All figures appear on screen and are mapped to their sources in `scene-manifest-v3.json`.
 
-The Gemini benchmark row is a status category on screen (API quota exceeded; no valid run). The voiceover does not mention the failure or claim any Gemini quality result.
+The Gemini benchmark row shows its actual result (3 of 6 valid; the rest hit output or API limits). The voiceover does not mention the failure or claim any Gemini quality result.
 
 ## 1. Hook — 00:00–00:14
 

@@ -28,8 +28,8 @@
     "start": "00:54",
     "end": "01:16",
     "asset": "benchmarks/live_report.json (rendered benchmark table)",
-    "claim": "Across 6 live cases, gpt-6-sol and claude-sonnet-5-5 each produced 6 valid templates; Gemini has no valid run (API quota exceeded).",
-    "evidence": "benchmarks/live_report.json aggregates: openai 6/6, p50 19002 ms, cost 0.199774 USD; anthropic 6/6, p50 14235.5 ms, cost 0.279024 USD; gemini successful_runs=0, runs=6, latency/cost null. Gemini row is a status category, not a quality result: the review reports the Gemini key returns HTTP 429 quota exceeded, and no Gemini quality, latency or cost figure is claimed. Cost per valid template is derived as cost_usd / successful_runs."
+    "claim": "Across the live test set, two of the three models returned a valid template every time; Gemini is still limited by its output budget.",
+    "evidence": "benchmarks/live_report.json aggregates: openai 6/6, p50 19002 ms, cost 0.199774 USD; anthropic 6/6, p50 14517 ms, cost 0.15633 USD; gemini 3/6, p50 16766 ms, cost N/A (unpriced model). Gemini row is a status category, not a quality result: the review reports the Gemini key returns Gemini: three of six runs valid; the rest hit output or API limits. Cost per valid template is derived as cost_usd / successful_runs."
   },
   {
     "scene": "05 DOCX artifact",

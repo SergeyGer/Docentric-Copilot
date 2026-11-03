@@ -18,7 +18,7 @@ It supersedes the v2 video notes; `demo-v2.mp4` and its sidecars are left untouc
   centred on the items table, totals and Description column, with three-frame crossfades between
   zoom levels. They are not shown as full-page evidence.
 - **Benchmark truthfulness.** The Gemini row is now the explicit category
-  "Gemini — API quota exceeded; no valid run". No Gemini quality, latency or cost result is claimed.
+  "Gemini — 3 of 6 valid (output limit)". No Gemini cost is claimed because the model is unpriced.
   The OpenAI and Anthropic rows keep the measured `benchmarks/live_report.json` values.
 - **Labels kept.** The closing line is still "Docentric AX compatibility: not tested", and every
   LibreOffice image is still labelled "LibreOffice rendering".
@@ -27,9 +27,9 @@ It supersedes the v2 video notes; `demo-v2.mp4` and its sidecars are left untouc
 
 **Verified live on 2026-11-03.** The multi-LLM table uses `benchmarks/live_report.json`: 6
 cases, 3 providers and one live run per case/provider (18
-attempts total), with an estimated spend of $0.478798 and 0 unknown-cost runs.
+attempts total), with an estimated spend of N/A and 3 unknown-cost runs.
 Models: `openai:gpt-6-sol`, `anthropic:claude-sonnet-5-5`, `gemini:gemini-3.1-flash-lite`. The routing
-scene's executed model (`gpt-6-sol`, run `bench_6312bb882a834b97`) comes from the same report and its saved
+scene's executed model (`gpt-6-sol`, run `bench_20b16a92c4ee40c4`) comes from the same report and its saved
 trace.
 
 **Deterministic or recorded (replay).** The prompt panel, schema explorer, revision diff and DOCX
@@ -43,7 +43,7 @@ mock planner and is saved as `docs/media/optimize-response.json`; no provider wa
 
 ## Gemini quota caveat
 
-`benchmarks/live_report.json` records 6 Gemini attempts, 0 valid runs, null
+`benchmarks/live_report.json` records 6 Gemini attempts, 3 valid runs, null
 latency and null cost. The Gemini key is currently returning **HTTP 429 quota exceeded**, so the v3
 table does not present Gemini as a quality result. The row says
 "Gemini — API quota exceeded; no valid run", its metrics are dashes, and the footnote states that no
@@ -80,7 +80,7 @@ not tested" and the manifest records the `not_tested` session value.
 The build script is `scripts/build_demo_video_v3.py`. It renders source slides at 2560×1440 and
 downscales to 1920×1080 with ffmpeg. `ffprobe` reports H.264 video, AAC audio, 1920×1080, 30 fps and a
 duration of 02:46. File sizes: video 9.0 MiB, SRT
-3.4 KiB, thumbnail 364.2 KiB.
+3.4 KiB, thumbnail 363.0 KiB.
 
 Reproduce with:
 

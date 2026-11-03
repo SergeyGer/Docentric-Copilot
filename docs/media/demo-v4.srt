@@ -1,0 +1,162 @@
+1
+00:00:00,100 --> 00:00:04,740
+A business brief should become a document a
+team can review, not a black box.
+
+2
+00:00:04,760 --> 00:00:12,700
+This is Docentric Copilot: a quotation brief in, a
+reviewable DOCX out, with schema, validation and version
+history attached.
+
+3
+00:00:13,100 --> 00:00:19,030
+Here is a synthetic package with sample data, parser
+diagnostics and a normalized field tree.
+
+4
+00:00:19,050 --> 00:00:24,355
+The schema is typed, so every field the
+document can bind has a type and a source.
+
+5
+00:00:24,375 --> 00:00:27,548
+Nothing is invented from the prompt alone.
+
+6
+00:00:28,100 --> 00:00:34,170
+The brief is the only input: plain language naming the
+fields, the totals, the VAT notice and the footer.
+
+7
+00:00:34,190 --> 00:00:37,692
+The planner turns each requirement into a
+typed field.
+
+8
+00:00:37,712 --> 00:00:40,508
+No model is chosen by hand.
+
+9
+00:00:41,100 --> 00:00:42,955
+Auto does the choosing.
+
+10
+00:00:42,975 --> 00:00:46,962
+It classifies the brief, recommends a
+provider, and then calls it.
+
+11
+00:00:46,982 --> 00:00:52,855
+The decision card records the recommendation, the model
+that ran, whether they matched, and the run identifier.
+
+12
+00:00:52,875 --> 00:00:56,484
+A recommendation is not a promise; execution
+is.
+
+13
+00:00:57,100 --> 00:01:02,483
+The benchmark runs one fixed case set
+through every configured provider, twice.
+
+14
+00:01:02,503 --> 00:01:08,434
+Each row reports valid templates, median
+latency and the cost of a valid template.
+
+15
+00:01:08,454 --> 00:01:14,657
+The numbers are read straight from the report, and the
+recommendation follows the report's own policy.
+
+16
+00:01:14,677 --> 00:01:18,844
+These are observations, not a significance
+claim.
+
+17
+00:01:20,100 --> 00:01:23,023
+Download the document and open it.
+
+18
+00:01:23,043 --> 00:01:30,075
+The preview and the LibreOffice render are independent
+views of the same file, and each is labelled for what it
+is.
+
+19
+00:01:30,095 --> 00:01:36,475
+The preview checks content and field binding; the
+LibreOffice page checks an independent render.
+
+20
+00:01:36,495 --> 00:01:43,548
+This is not a Microsoft Word fidelity claim, and not a
+claim about Docentric AX compatibility.
+
+21
+00:01:44,100 --> 00:01:46,118
+Here is the defect.
+
+22
+00:01:46,138 --> 00:01:53,030
+The description column is too narrow, so the text wraps
+past the line budget, and the checker flags a text-fit
+warning.
+
+23
+00:01:53,050 --> 00:02:00,992
+Optimize layout applies typed changes to the template: it
+rebalances the columns, widens the description and adjusts
+the table font.
+
+24
+00:02:01,012 --> 00:02:05,580
+The panel reruns the checks, and the after
+render uses fewer lines.
+
+25
+00:02:05,600 --> 00:02:09,730
+The change is reviewable in the diff, not
+hidden in a binary.
+
+26
+00:02:09,750 --> 00:02:13,956
+This is a LibreOffice rendering, not Word
+pagination.
+
+27
+00:02:15,100 --> 00:02:17,885
+Every edit creates an immutable version.
+
+28
+00:02:17,905 --> 00:02:23,695
+Compare versions names each changed field, and Restore
+version brings either revision back into the workspace.
+
+29
+00:02:23,715 --> 00:02:27,700
+The diff and rollback are part of the
+deliverable, not an afterthought.
+
+30
+00:02:27,720 --> 00:02:31,396
+A reviewer can see exactly what changed and
+undo it.
+
+31
+00:02:32,100 --> 00:02:36,463
+Docentric Copilot is open source on GitHub
+under the Apache license.
+
+32
+00:02:36,483 --> 00:02:41,908
+The demo, the live Auto decision, the benchmark and the
+evidence are in the repository.
+
+33
+00:02:41,928 --> 00:02:45,564
+Docentric AX compatibility: not tested.
+

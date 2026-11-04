@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semantic quality evaluation</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; padding: 32px 20px 64px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #172033; background: #f5f7fb; line-height: 1.45; }
+  main { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 { font-size: 19px; margin: 0 0 8px; }
+  .muted { color: #64748b; font-weight: 400; font-size: 13px; }
+  .note { background: #fff7ed; border: 1px solid #fed7aa; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+  .note strong { color: #9a3412; }
+  .card { background: #fff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dfe5ef; border-radius: 8px; overflow: hidden; margin: 12px 0 24px; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #edf1f7; text-align: left; vertical-align: top; }
+  th { background: #eef3fa; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; color: #475569; }
+  tr:last-child td { border-bottom: none; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .kv { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+  .kv b { display: block; font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: .04em; }
+  .ok { color: #166534; font-weight: 700; }
+  .warn { color: #b45309; font-weight: 700; }
+  footer { color: #64748b; font-size: 12px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Semantic quality evaluation</h1>
+  <p class="muted">Technical validity and semantic correctness are reported separately. Generated 2026-11-04T10:41:40.880835Z.</p>
+  <div class="note"><strong>Observations, not significance.</strong> These are observations from a fixed, synthetic case set, not statistical significance. Repeats are not independent samples of a population; they show run-to-run variation for the same prompt. No single winner is declared: each metric has its own leader, and ties are shown.</div>
+
+  <div class="grid">
+    <div class="kv"><b>Dataset cases</b>20</div>
+    <div class="kv"><b>Runs completed / planned</b>180 / 180</div>
+    <div class="kv"><b>Repeats per case × provider</b>3</div>
+    <div class="kv"><b>Dataset SHA-256</b><span class="muted">e366100816bc53bf35ed19cc…</span></div>
+    <div class="kv"><b>Known + estimated spend</b>$4.5896 (estimated)</div>
+    <div class="kv"><b>Budget</b>$6.0000 cap · warning at $5.0000</div>
+  </div>
+
+  <h2>Per-provider observations</h2>
+  <table class=""><thead><tr><th>Provider</th><th>Runs</th><th>Precision</th><th>Recall</th><th>Coverage</th><th>Type/context</th><th>Blocks</th><th>Semantic pass</th><th>Valid template</th><th>p50 ms</th><th>Cost</th></tr></thead><tbody><tr><td><strong>openai</strong><br><span class='muted'>gpt-6-sol</span></td><td>60</td><td>0.261</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.778</td><td>58.3%</td><td>100.0%</td><td>16952.5</td><td>$1.8218 (verified)</td></tr><tr><td><strong>anthropic</strong><br><span class='muted'>claude-sonnet-5-5</span></td><td>60</td><td>0.203</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>73.3%</td><td>100.0%</td><td>12116.5</td><td>$2.5598 (verified)</td></tr><tr><td><strong>gemini</strong><br><span class='muted'>gemini-3.6-flash</span></td><td>60</td><td>0.183</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.930</td><td>68.3%</td><td>96.7%</td><td>3955.0</td><td>$0.2080 (estimated)</td></tr></tbody></table>
+
+  <h2>Per-metric leaders (no single winner)</h2>
+  <table class=""><thead><tr><th>Metric</th><th>Direction</th><th>Best</th><th>Leaders (ties included)</th></tr></thead><tbody><tr><td>precision</td><td>higher</td><td>0.261</td><td>openai</td></tr><tr><td>recall</td><td>higher</td><td>1.000</td><td>anthropic, gemini, openai</td></tr><tr><td>requirement_coverage</td><td>higher</td><td>1.000</td><td>anthropic, gemini, openai</td></tr><tr><td>type_context_correctness</td><td>higher</td><td>1.000</td><td>anthropic, gemini, openai</td></tr><tr><td>semantic_pass_rate</td><td>higher</td><td>0.733</td><td>anthropic</td></tr><tr><td>valid_template_rate</td><td>higher</td><td>1.000</td><td>anthropic, openai</td></tr><tr><td>cost_per_valid_template_usd</td><td>lower</td><td>0.030</td><td>openai</td></tr><tr><td>latency_p50_ms</td><td>lower</td><td>3955.000</td><td>gemini</td></tr></tbody></table>
+
+  <h2>Error taxonomy (runs)</h2>
+  <table class=""><thead><tr><th>Code</th><th>Runs with code</th><th>Primary code runs</th></tr></thead><tbody><tr><td>structured_output</td><td>1</td><td>1</td></tr><tr><td>wrong_binding</td><td>170</td><td>170</td></tr><tr><td>wrong_context</td><td>26</td><td>0</td></tr></tbody></table>
+  <p class="muted">A run can carry several semantic codes. Primary counts assign one dominant code per run with at least one code, including semantic misses that still produced a valid template; the primary column is not the failed-run count.</p>
+
+  <h2>Cost and status</h2>
+  <div class="card">
+    <p>Verified cost: $4.3816 · Estimated cost: $0.2080 · Unknown runs: 1</p>
+    <p>Gemini 3.6-flash is unpriced in the product price table. It is reported as <strong>estimated</strong> using the documented proxy, never as $0.00. Unknown cost is rendered as N/A.</p>
+  </div>
+
+  <h2>Cases</h2>
+  <table class=""><thead><tr><th>Case</th><th>Provider</th><th>Precision</th><th>Recall</th><th>Coverage</th><th>Type/context</th><th>Semantic pass</th><th>Valid template</th></tr></thead><tbody><tr><td><strong>flat-company-identity</strong><br><span class='muted'>fields, images, header</span></td><td>openai</td><td>0.316</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-company-identity</strong><br><span class='muted'>fields, images, header</span></td><td>anthropic</td><td>0.146</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-company-identity</strong><br><span class='muted'>fields, images, header</span></td><td>gemini</td><td>0.118</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-identifiers</strong><br><span class='muted'>fields, identifiers</span></td><td>openai</td><td>0.375</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-identifiers</strong><br><span class='muted'>fields, identifiers</span></td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-identifiers</strong><br><span class='muted'>fields, identifiers</span></td><td>gemini</td><td>0.161</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-customer-contact</strong><br><span class='muted'>fields, forbidden, customer_scope</span></td><td>openai</td><td>0.200</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-customer-contact</strong><br><span class='muted'>fields, forbidden, customer_scope</span></td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-customer-contact</strong><br><span class='muted'>fields, forbidden, customer_scope</span></td><td>gemini</td><td>0.167</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-totals</strong><br><span class='muted'>fields, amounts</span></td><td>openai</td><td>0.286</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-totals</strong><br><span class='muted'>fields, amounts</span></td><td>anthropic</td><td>0.095</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>flat-quotation-totals</strong><br><span class='muted'>fields, amounts</span></td><td>gemini</td><td>0.109</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>image-logo-header</strong><br><span class='muted'>images, header</span></td><td>openai</td><td>0.140</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>image-logo-header</strong><br><span class='muted'>images, header</span></td><td>anthropic</td><td>0.130</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>image-logo-header</strong><br><span class='muted'>images, header</span></td><td>gemini</td><td>0.120</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>collection-quotation-lines</strong><br><span class='muted'>collections, table</span></td><td>openai</td><td>0.417</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>collection-quotation-lines</strong><br><span class='muted'>collections, table</span></td><td>anthropic</td><td>0.242</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>collection-quotation-lines</strong><br><span class='muted'>collections, table</span></td><td>gemini</td><td>0.306</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>collection-invoice-lines</strong><br><span class='muted'>collections, table</span></td><td>openai</td><td>0.333</td><td>1.000</td><td>1.000</td><td>1.000</td><td>33.3%</td><td>100.0%</td></tr><tr><td><strong>collection-invoice-lines</strong><br><span class='muted'>collections, table</span></td><td>anthropic</td><td>0.254</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>collection-invoice-lines</strong><br><span class='muted'>collections, table</span></td><td>gemini</td><td>0.312</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>collection-purchase-order-lines</strong><br><span class='muted'>collections, table, fields</span></td><td>openai</td><td>0.462</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>collection-purchase-order-lines</strong><br><span class='muted'>collections, table, fields</span></td><td>anthropic</td><td>0.462</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>collection-purchase-order-lines</strong><br><span class='muted'>collections, table, fields</span></td><td>gemini</td><td>0.439</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>nested-service-tasks</strong><br><span class='muted'>nested_lists, collections</span></td><td>openai</td><td>0.267</td><td>1.000</td><td>1.000</td><td>1.000</td><td>66.7%</td><td>100.0%</td></tr><tr><td><strong>nested-service-tasks</strong><br><span class='muted'>nested_lists, collections</span></td><td>anthropic</td><td>0.222</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>nested-service-tasks</strong><br><span class='muted'>nested_lists, collections</span></td><td>gemini</td><td>0.240</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>wide-line-table</strong><br><span class='muted'>collections, wide_table</span></td><td>openai</td><td>0.500</td><td>1.000</td><td>1.000</td><td>1.000</td><td>66.7%</td><td>100.0%</td></tr><tr><td><strong>wide-line-table</strong><br><span class='muted'>collections, wide_table</span></td><td>anthropic</td><td>0.480</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>wide-line-table</strong><br><span class='muted'>collections, wide_table</span></td><td>gemini</td><td>0.471</td><td>1.000</td><td>1.000</td><td>1.000</td><td>66.7%</td><td>66.7%</td></tr><tr><td><strong>conditional-eu-vat</strong><br><span class='muted'>conditions, vat</span></td><td>openai</td><td>0.133</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>conditional-eu-vat</strong><br><span class='muted'>conditions, vat</span></td><td>anthropic</td><td>0.087</td><td>1.000</td><td>1.000</td><td>1.000</td><td>66.7%</td><td>100.0%</td></tr><tr><td><strong>conditional-eu-vat</strong><br><span class='muted'>conditions, vat</span></td><td>gemini</td><td>0.100</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>conditional-reverse-charge</strong><br><span class='muted'>conditions, vat</span></td><td>openai</td><td>0.118</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>conditional-reverse-charge</strong><br><span class='muted'>conditions, vat</span></td><td>anthropic</td><td>0.090</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>conditional-reverse-charge</strong><br><span class='muted'>conditions, vat</span></td><td>gemini</td><td>0.102</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-quotation-de</strong><br><span class='muted'>multilingual, fields</span></td><td>openai</td><td>0.286</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-quotation-de</strong><br><span class='muted'>multilingual, fields</span></td><td>anthropic</td><td>0.600</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-quotation-de</strong><br><span class='muted'>multilingual, fields</span></td><td>gemini</td><td>0.231</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-invoice-fr</strong><br><span class='muted'>multilingual, fields</span></td><td>openai</td><td>0.545</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-invoice-fr</strong><br><span class='muted'>multilingual, fields</span></td><td>anthropic</td><td>0.667</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>multilingual-invoice-fr</strong><br><span class='muted'>multilingual, fields</span></td><td>gemini</td><td>0.231</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>missing-requisition-number</strong><br><span class='muted'>missing_requirement, fields</span></td><td>openai</td><td>0.083</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>missing-requisition-number</strong><br><span class='muted'>missing_requirement, fields</span></td><td>anthropic</td><td>0.077</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>missing-requisition-number</strong><br><span class='muted'>missing_requirement, fields</span></td><td>gemini</td><td>0.083</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>ambiguous-vat-number</strong><br><span class='muted'>ambiguous, vat</span></td><td>openai</td><td>0.070</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>ambiguous-vat-number</strong><br><span class='muted'>ambiguous, vat</span></td><td>anthropic</td><td>0.049</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>ambiguous-vat-number</strong><br><span class='muted'>ambiguous, vat</span></td><td>gemini</td><td>0.058</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>66.7%</td></tr><tr><td><strong>ambiguous-document-date</strong><br><span class='muted'>ambiguous, fields</span></td><td>openai</td><td>0.107</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>ambiguous-document-date</strong><br><span class='muted'>ambiguous, fields</span></td><td>anthropic</td><td>0.051</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>ambiguous-document-date</strong><br><span class='muted'>ambiguous, fields</span></td><td>gemini</td><td>0.062</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>forbidden-customer-bank</strong><br><span class='muted'>forbidden, customer_scope, bank</span></td><td>openai</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>forbidden-customer-bank</strong><br><span class='muted'>forbidden, customer_scope, bank</span></td><td>anthropic</td><td>0.115</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>forbidden-customer-bank</strong><br><span class='muted'>forbidden, customer_scope, bank</span></td><td>gemini</td><td>0.122</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-vendor-details</strong><br><span class='muted'>fields, forbidden</span></td><td>openai</td><td>0.220</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-vendor-details</strong><br><span class='muted'>fields, forbidden</span></td><td>anthropic</td><td>0.191</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>flat-vendor-details</strong><br><span class='muted'>fields, forbidden</span></td><td>gemini</td><td>0.214</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td><strong>bank-details-footer</strong><br><span class='muted'>fields, footer, bank</span></td><td>openai</td><td>0.205</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>bank-details-footer</strong><br><span class='muted'>fields, footer, bank</span></td><td>anthropic</td><td>0.134</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr><tr><td><strong>bank-details-footer</strong><br><span class='muted'>fields, footer, bank</span></td><td>gemini</td><td>0.170</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td>100.0%</td></tr></tbody></table>
+
+  <h2>Per provider</h2>
+  
+            <section class="card">
+              <h2>openai <span class="muted">gpt-6-sol</span></h2>
+              <p class="muted">Runs: 60 · planned: 60 · valid templates: 60 · cost: $1.8218 (verified)</p>
+              <p>Precision 0.261 · Recall 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 58.3%</p>
+              <p>Valid template rate <strong>100.0%</strong> is reported separately from the semantic metrics.</p>
+              
+            </section>
+            
+            <section class="card">
+              <h2>anthropic <span class="muted">claude-sonnet-5-5</span></h2>
+              <p class="muted">Runs: 60 · planned: 60 · valid templates: 60 · cost: $2.5598 (verified)</p>
+              <p>Precision 0.203 · Recall 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 73.3%</p>
+              <p>Valid template rate <strong>100.0%</strong> is reported separately from the semantic metrics.</p>
+              
+            </section>
+            
+            <section class="card">
+              <h2>gemini <span class="muted">gemini-3.6-flash</span></h2>
+              <p class="muted">Runs: 60 · planned: 59 · valid templates: 58 · cost: $0.2080 (estimated)</p>
+              <p>Precision 0.183 · Recall 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 68.3%</p>
+              <p>Valid template rate <strong>96.7%</strong> is reported separately from the semantic metrics.</p>
+              <p class='muted'>Cost proxy: gemini-3.6-flash → gemini-3.8-flash</p>
+            </section>
+            
+
+  <h2>Settings</h2>
+  <div class="card">
+    <p>Prompt: planner-v1 · Gemini: compact v2 · Repair attempts: 2 · Max output tokens: 16000 · Temperature: 0.0</p>
+    <p>Pricing: 2026-11-03 (2026-11-03) · Source: docs/PRICING.md</p>
+    <p>Runs file: benchmarks/semantic_runs.jsonl · SHA-256 6bae0e55ee7881b627c79544…</p>
+  </div>
+
+  <h2>Limits</h2>
+  <div class="card">
+    <p>Ground truth is authored for synthetic fixtures and encodes this project's judgement, not a customer's. Repeats show run-to-run variation only; they are not a population sample. LibreOffice, Word and Docentric pagination are out of scope here. Verified Docentric AX compatibility remains <strong>not_tested</strong>.</p>
+  </div>
+  <footer>Generated by benchmarks/semantic_evaluation.py · no credentials or raw model output are stored in this report.</footer>
+</main>
+</body>
+</html>

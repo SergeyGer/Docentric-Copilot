@@ -144,14 +144,17 @@ def main() -> int:
         requests: list[str] = []
         page.on(
             "request",
-            lambda request: requests.append(request.url)
-            if request.method == "POST" and "/templates/plan" in request.url
-            else None,
+            lambda request: (
+                requests.append(request.url)
+                if request.method == "POST" and "/templates/plan" in request.url
+                else None
+            ),
         )
         started = time.monotonic()
         with page.expect_response(
-            lambda response: response.request.method == "POST"
-            and "/templates/plan" in response.url,
+            lambda response: (
+                response.request.method == "POST" and "/templates/plan" in response.url
+            ),
             timeout=PLAN_TIMEOUT_MS,
         ) as response_info:
             page.get_by_role("button", name="Plan template").click()

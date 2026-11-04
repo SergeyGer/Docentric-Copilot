@@ -306,3 +306,154 @@ For a live case in `benchmarks/live_cases.json`, also record `category` (`simple
 The `ambiguous-address` case intentionally puts both defensible paths in `expected_paths`, so a
 single-address plan scores recall 0.5; the `missing-field` case has an empty expected set because no
 correct binding exists, so it is excluded from precision/recall and judged by requirement coverage.
+
+## 2.5 Semantic quality evaluation (P0)
+
+The live harness above answers "did the provider produce a valid template?".
+The semantic harness answers a different question: **did it bind the right
+things?** A payload can pass V1–V3 and compile while binding the company VAT
+number for a customer VAT requirement. That is a semantic failure and must be
+visible even when `valid_template_rate` is 1.0.
+
+| Item | Value |
+| --- | --- |
+| Runner | [benchmarks/semantic_evaluation.py](../benchmarks/semantic_evaluation.py) |
+| Scoring | [benchmarks/semantic_scoring.py](../benchmarks/semantic_scoring.py) (pure functions) |
+| Dataset | [benchmarks/semantic_cases.json](../benchmarks/semantic_cases.json) (20 cases) |
+| Runs | `benchmarks/semantic_runs.jsonl` (one JSON object per run, no credentials or raw output) |
+| Reports | [semantic_report.json](../benchmarks/semantic_report.json), `.csv`, [semantic_report.html](../benchmarks/semantic_report.html) |
+| Providers | `openai:gpt-6-sol`, `anthropic:claude-sonnet-5-5`, `gemini:gemini-3.6-flash` |
+| Wire format | Gemini compact **v2**; other providers full IR; `max_repair_attempts=2` |
+| Repeats | 3 per case × provider (180 runs) |
+
+### Ground truth
+
+Each case declares `required_bindings`:
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `concept` | Semantic identity, independent of the planner's own clause ids |
+| `expected_paths` | Absolute schema paths a correct plan may bind |
+| `allowed_alternatives` | Additional domain-acceptable paths (counted as a true positive) |
+| `required` | False means a miss lowers coverage but not recall |
+| `expected_type`, `expected_context` | Optional type/placement checks (`body`, `header`, `footer`, `repeat`, `conditional`) |
+| `satisfiable` | False marks a request the schema cannot express; excluded from recall/coverage, and a hallucinated binding is charged as `wrong_binding` |
+
+`forbidden_paths` are deliberate scope guards (for example the company VAT
+number when the customer VAT number was requested, or bank details in a
+"customer name only" case). `expected_blocks` covers repeats/tables,
+conditionals and images.
+
+The dataset covers flat fields, images, collections, nested lists, conditions,
+missing and ambiguous requirements, multilingual briefs, footer placement and
+forbidden fields. Case families and language counts are in the generated report
+metadata.
+
+### Metrics
+
+Let `TP` be matched requirements, `FP` produced bindings that no requirement
+accepts (including forbidden paths), `FN` required requirements that remain
+unmatched, `R` required satisfiable requirements, `S` satisfiable requirements.
+
+| Metric | Definition |
+| --- | --- |
+| `precision` | `TP / (TP + FP)`; extra or forbidden bindings reduce it |
+| `recall` | matched required / `R` |
+| `requirement_coverage` | matched satisfiable / `S` (optional requirements count in the denominator) |
+| `type_context_correctness` | correct type/context checks / performed checks; an object or collection used as a scalar is an error |
+| `block_coverage` | satisfied `expected_blocks` / declared expected blocks |
+| `semantic_pass_rate` | runs where every required requirement and block is satisfied, no forbidden path is hit, and no type/context error is recorded |
+| `valid_template_rate` | deterministic V1–V3 + compilation success; **reported separately** |
+
+A missing table where the brief asked for a table is a block failure, not a
+precision accident: the score records `wrong_context` and the block remains
+unsatisfied. A condition field used by an expression is `role="condition"`; it
+can satisfy a conditional requirement but is not charged as an extra content
+field when unused.
+
+### Error taxonomy
+
+Every run carries `error_codes` from the fixed set `provider_api`, `quota`,
+`timeout`, `structured_output`, `missing_field`, `wrong_binding`,
+`wrong_context`, `unsupported_expression`, `compilation`, `renderer` and
+`harness`. A run can carry several semantic codes; `primary_error` records one
+dominant code for every run that has at least one code, including semantic
+misses that still produced a valid template. The report counts both "runs with
+code" and primary codes; the primary counts are not the failed-run count.
+
+### Cost
+
+Cost status is `verified` (provider-reported usage and a published price),
+`estimated` (unpriced model with a documented proxy rate) or `unavailable`
+(neither). Gemini 3.6-flash is unpriced: its cost uses the documented
+Gemini 3.8-flash proxy and is never rendered as $0.00. The budget guard aborts
+before a call whose worst case could cross `--max-spend`.
+
+### Reproduce
+
+```bash
+.venv/bin/python benchmarks/semantic_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.6-flash \
+  --repeats 3 --repair-attempts 2 --allow-unpriced --max-spend 6 --warn-spend 5
+```
+
+The HTML report is self-contained, shows per-metric leaders (ties included),
+and says explicitly that the numbers are observations, not statistical
+significance. It never declares a single winner.
+
+### Results
+
+The committed run is summarised from
+[benchmarks/semantic_report.json](../benchmarks/semantic_report.json). Values are
+per-provider aggregates over 60 attempted runs each (20 cases × 3 repeats); see
+the report for per-case rows, latency, error counts and cost status.
+
+**Dataset.** 20 cases, 18 English plus one German and one French brief. By
+label: fields 11, collections 5, images 2, conditions 2, nested lists 1,
+multilingual 2, ambiguous 2, missing requirement 1, forbidden scope 3, tables 3,
+VAT 3, header 2, footer 1, bank 2. Labels overlap, so they do not sum to 20.
+
+| Provider | Model | Runs | Precision | Recall | Coverage | Type/context | Blocks | Semantic pass | Valid template | p50 / p95 | Spend |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| OpenAI | `gpt-6-sol` | 60 | **0.261** | 1.000 | 1.000 | 1.000 | 0.778 | 58.3% | 100% | 17.0 / 22.1 s | $1.8218 (verified) |
+| Anthropic | `claude-sonnet-5-5` | 60 | 0.203 | 1.000 | 1.000 | 1.000 | **1.000** | **73.3%** | 100% | 12.1 / 19.6 s | $2.5598 (verified) |
+| Gemini | `gemini-3.6-flash` | 60 attempted (59 planned) | 0.183 | 1.000 | 1.000 | 1.000 | 0.930 | 68.3% | 96.7% | **3.96 / 10.54 s** | **$0.2080 (estimated)** |
+
+Per-valid-template cost: OpenAI $0.03036 (verified), Anthropic $0.04266
+(verified), Gemini N/A because one attempt returned no usage (unknown, not
+zero). The overall cost-per-valid-template value is therefore unavailable.
+
+**Error taxonomy.** `wrong_binding`: 170 runs; `wrong_context`: 26 runs;
+`structured_output`: 1 run. All other codes were zero. The one
+`structured_output` failure is Gemini's `wide-line-table` repeat 3 ("the model
+did not return a JSON object", 9.1 s, no usage). The primary-code counts are
+`wrong_binding` 170 and `structured_output` 1; `wrong_context` appears only as a
+secondary code because `wrong_binding` sorts first when both are present.
+There were no `missing_field`, `provider_api`, `quota`, `timeout`,
+`unsupported_expression`, `compilation`, `renderer` or `harness` codes.
+
+**What the numbers show (observations, not significance).**
+
+- Every provider matched every required field (recall, coverage and
+  type/context correctness are all 1.0). The separation is in *extra* bindings
+  and shape: precision is 0.261 / 0.203 / 0.183, and semantic pass is 58.3% /
+  73.3% / 68.3%.
+- OpenAI has the highest precision but the lowest block coverage: it often used a
+  paragraph repeat where the brief asked for a table. Anthropic produced the
+  requested tables and has the highest semantic pass rate. Gemini is the fastest
+  and least expensive, but its cost is a proxy estimate and one run has unknown
+  cost.
+- Technical validity and semantic correctness diverge on the same runs: OpenAI
+  and Anthropic are 100% valid templates but only 58.3% / 73.3% semantically
+  passing; Gemini is 96.7% valid. This is exactly what the two metric families
+  are meant to keep separate.
+- No single winner is declared: precision, block coverage, semantic pass,
+  valid-template rate, cost and latency have different leaders. The report shows
+  each metric's leader with ties.
+- Three repeats are not a population sample. These are run-to-run observations
+  on synthetic fixtures; they do not establish statistical significance or
+  customer acceptance.
+
+Spend: **$4.3816 verified + $0.2080 estimated = $4.5896**; the $5 warning line
+was not reached and the $6 cap was not crossed. One run has unknown cost, so the
+report keeps it in `unknown_runs` rather than treating it as free.

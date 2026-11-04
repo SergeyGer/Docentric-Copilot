@@ -1,0 +1,2172 @@
+{
+  "all_checks_passed": false,
+  "case_id": "quotation-40-rows",
+  "family": "multi_page_table",
+  "generated_at": "2026-11-04T10:45:31.046963Z",
+  "header_footer": {
+    "footer_expected": true,
+    "footer_fragments": [
+      "Contoso Consulting AG · Document SQ-100245",
+      "Contoso Consulting AG",
+      "Document SQ-100245"
+    ],
+    "header_expected": true,
+    "header_fragments": [
+      "Contoso Consulting AG",
+      "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+      "Friedrichstrasse 88, 10117 Berlin, Germany",
+      "VAT: DE987654321"
+    ],
+    "page_number_expected": true
+  },
+  "ir": {
+    "after_digest": "fc13f0b5d39dbec372ab2df8a9c7ed3a372c331c27c61ff270f7535e921ac9c7",
+    "before_digest": "933462042466c818aa24ffecd9cb5a5d97100bd7deeacb1783327c06aedb36d1",
+    "fixes": [
+      {
+        "after": 73.6,
+        "before": 62.0,
+        "id": "fit_text_width",
+        "message": "widened Description from 62.0 mm to 73.6 mm by rebalancing the other columns",
+        "path": "sections[0].body[4].columns[1].width_mm"
+      },
+      {
+        "after": 9.0,
+        "before": 9.5,
+        "id": "fit_text_font",
+        "message": "reduced the table font from 9.5 pt to 9.0 pt",
+        "path": "sections[0].body[4].style.font_size_pt"
+      }
+    ],
+    "quality_after": {
+      "checks": {
+        "content_safety": {
+          "label": "Content safety",
+          "message": "no oversized unbreakable values",
+          "path": null,
+          "status": "passed"
+        },
+        "header_footer": {
+          "label": "Header and footer",
+          "message": "running header and footer are defined",
+          "path": null,
+          "status": "passed"
+        },
+        "image_clipping": {
+          "label": "Image clipping",
+          "message": "images fit inside the text area",
+          "path": null,
+          "status": "passed"
+        },
+        "page_breaks": {
+          "label": "Page breaks",
+          "message": "1 explicit page break(s), 3 heading(s)",
+          "path": null,
+          "status": "passed"
+        },
+        "page_overflow": {
+          "label": "Page content",
+          "message": "every section has content",
+          "path": null,
+          "status": "passed"
+        },
+        "table_header_repeat": {
+          "label": "Repeating table headers",
+          "message": "1 repeating table(s) repeat their header row",
+          "path": null,
+          "status": "passed"
+        },
+        "table_layout": {
+          "label": "Table layout",
+          "message": "every table fits the text area",
+          "path": null,
+          "status": "passed"
+        },
+        "text_fit": {
+          "label": "Text fit",
+          "message": "no table cell exceeds 4 estimated lines",
+          "path": null,
+          "status": "passed"
+        },
+        "typography": {
+          "label": "Typography",
+          "message": "type sizes stay in the readable range",
+          "path": null,
+          "status": "passed"
+        }
+      },
+      "counts": {
+        "failed": 0,
+        "passed": 9,
+        "warning": 0
+      },
+      "metrics": {
+        "blocks": 34,
+        "images": 0,
+        "page": "A4",
+        "tables": 3,
+        "text_width_mm": 170.0
+      },
+      "overall": "passed"
+    },
+    "quality_before": {
+      "checks": {
+        "content_safety": {
+          "label": "Content safety",
+          "message": "no oversized unbreakable values",
+          "path": null,
+          "status": "passed"
+        },
+        "header_footer": {
+          "label": "Header and footer",
+          "message": "running header and footer are defined",
+          "path": null,
+          "status": "passed"
+        },
+        "image_clipping": {
+          "label": "Image clipping",
+          "message": "images fit inside the text area",
+          "path": null,
+          "status": "passed"
+        },
+        "page_breaks": {
+          "label": "Page breaks",
+          "message": "1 explicit page break(s), 3 heading(s)",
+          "path": null,
+          "status": "passed"
+        },
+        "page_overflow": {
+          "label": "Page content",
+          "message": "every section has content",
+          "path": null,
+          "status": "passed"
+        },
+        "table_header_repeat": {
+          "label": "Repeating table headers",
+          "message": "1 repeating table(s) repeat their header row",
+          "path": null,
+          "status": "passed"
+        },
+        "table_layout": {
+          "label": "Table layout",
+          "message": "every table fits the text area",
+          "path": null,
+          "status": "passed"
+        },
+        "text_fit": {
+          "label": "Text fit",
+          "message": "40 table cell(s) exceed 4 estimated lines; worst: Description ~5 lines at 62 mm / 9.5 pt",
+          "path": "sections[0].body[4].row_template[1]",
+          "status": "warning"
+        },
+        "typography": {
+          "label": "Typography",
+          "message": "type sizes stay in the readable range",
+          "path": null,
+          "status": "passed"
+        }
+      },
+      "counts": {
+        "failed": 0,
+        "passed": 8,
+        "warning": 1
+      },
+      "metrics": {
+        "blocks": 34,
+        "images": 0,
+        "page": "A4",
+        "tables": 3,
+        "text_width_mm": 170.0
+      },
+      "overall": "warning"
+    }
+  },
+  "ir_checks": {
+    "min_pages": {
+      "critical": false,
+      "detail": {
+        "after": 7,
+        "before": 8,
+        "min_pages": 4
+      },
+      "id": "min_pages",
+      "message": "multi-page expectation met (8 before, 7 after; minimum 4)",
+      "status": "passed"
+    },
+    "page_count": {
+      "critical": false,
+      "detail": {
+        "after": 7,
+        "before": 8
+      },
+      "id": "page_count",
+      "message": "page count changed from 8 to 7",
+      "status": "warning"
+    },
+    "text_fit": {
+      "critical": false,
+      "detail": {
+        "after": "passed",
+        "before": "warning",
+        "improved": true,
+        "method": "IR quality analysis (deterministic line estimate)"
+      },
+      "id": "text_fit",
+      "message": "text_fit improved from warning to passed",
+      "status": "passed"
+    }
+  },
+  "limitations": [
+    "LibreOffice rendering (not Word fidelity)",
+    "Not Microsoft Word fidelity; LibreOffice substitutes fonts and paginates independently.",
+    "Not a Docentric AX rendering or compatibility proof.",
+    "Vertical body overflow is not checked because running headers/footers occupy the margins.",
+    "The header/footer band heuristic is deterministic but approximate."
+  ],
+  "new_critical_defects": [],
+  "not_checked": [
+    {
+      "check": "vertical_overflow",
+      "page": 1,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 2,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 3,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 4,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 5,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 6,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 7,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "check": "blank_page",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "horizontal_overflow",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "page_edge_ink",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "header_present",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "footer_present",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "footer_page_number",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "page_geometry",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "check": "vertical_overflow",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    }
+  ],
+  "notes": "Forty line items force the repeated table header across several LibreOffice pages.",
+  "package": "benchmarks/fixtures/quotation-40-rows.ddsp",
+  "page_count": {
+    "after": 7,
+    "before": 8,
+    "changed": true
+  },
+  "pages": [
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 7624,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 1 of 7",
+        "header_ink_pixels": 24962,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 Sales Quotation",
+        "height": 1555,
+        "image": "after/page-1.png",
+        "ink_fraction": 0.092759,
+        "ink_variance": 2118.5195,
+        "margin_ink_pixels": 721,
+        "max_overflow_mm": 1.864,
+        "page": 1,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2206,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5143,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 1 of 8",
+        "header_ink_pixels": 24962,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 Sales Quotation",
+        "height": 1555,
+        "image": "before/page-1.png",
+        "ink_fraction": 0.085689,
+        "ink_variance": 2028.2299,
+        "margin_ink_pixels": 678,
+        "max_overflow_mm": 1.864,
+        "page": 1,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2168,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.085689,
+            "ink_variance": 2028.2299
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 678,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.092759,
+            "ink_variance": 2118.5195
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 721,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 1,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5132,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 2 of 7",
+        "header_ink_pixels": 55256,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "after/page-2.png",
+        "ink_fraction": 0.096851,
+        "ink_variance": 2066.8028,
+        "margin_ink_pixels": 1007,
+        "max_overflow_mm": 1.864,
+        "page": 2,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2311,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6060,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 2 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-2.png",
+        "ink_fraction": 0.090689,
+        "ink_variance": 1955.5585,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 2,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2356,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.090689,
+            "ink_variance": 1955.5585
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.096851,
+            "ink_variance": 2066.8028
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1007,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 2,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5130,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 3 of 7",
+        "header_ink_pixels": 55256,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "after/page-3.png",
+        "ink_fraction": 0.096888,
+        "ink_variance": 2067.1254,
+        "margin_ink_pixels": 1007,
+        "max_overflow_mm": 1.864,
+        "page": 3,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2308,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6058,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 3 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-3.png",
+        "ink_fraction": 0.090626,
+        "ink_variance": 1952.8786,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 3,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2353,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.090626,
+            "ink_variance": 1952.8786
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.096888,
+            "ink_variance": 2067.1254
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1007,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 3,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5140,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 4 of 7",
+        "header_ink_pixels": 55256,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "after/page-4.png",
+        "ink_fraction": 0.0971,
+        "ink_variance": 2070.3136,
+        "margin_ink_pixels": 1007,
+        "max_overflow_mm": 1.864,
+        "page": 4,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2308,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6068,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 4 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-4.png",
+        "ink_fraction": 0.09063,
+        "ink_variance": 1954.4327,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 4,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2353,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.09063,
+            "ink_variance": 1954.4327
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.0971,
+            "ink_variance": 2070.3136
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1007,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 4,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5138,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 5 of 7",
+        "header_ink_pixels": 55256,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "after/page-5.png",
+        "ink_fraction": 0.097414,
+        "ink_variance": 2075.3685,
+        "margin_ink_pixels": 1007,
+        "max_overflow_mm": 1.864,
+        "page": 5,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2306,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6066,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 5 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-5.png",
+        "ink_fraction": 0.090904,
+        "ink_variance": 1958.7247,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 5,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2352,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.090904,
+            "ink_variance": 1958.7247
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.097414,
+            "ink_variance": 2075.3685
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1007,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 5,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6965,
+        "footer_text": "Total 1,980.00 Contoso Consulting AG · Document SQ-100245 Quotation Template Page 6 of 7",
+        "header_ink_pixels": 55256,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "after/page-6.png",
+        "ink_fraction": 0.098738,
+        "ink_variance": 2100.7866,
+        "margin_ink_pixels": 1007,
+        "max_overflow_mm": 1.864,
+        "page": 6,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2504,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 6075,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 6 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-6.png",
+        "ink_fraction": 0.091055,
+        "ink_variance": 1961.321,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 6,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2351,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.091055,
+            "ink_variance": 1961.321
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.098738,
+            "ink_variance": 2100.7866
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1007,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 6,
+      "status": "warning",
+      "status_note": null
+    },
+    {
+      "after": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5111,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 7 of 7",
+        "header_ink_pixels": 22273,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 Terms and notices",
+        "height": 1555,
+        "image": "after/page-7.png",
+        "ink_fraction": 0.025644,
+        "ink_variance": 579.385,
+        "margin_ink_pixels": 0,
+        "max_overflow_mm": 0.0,
+        "page": 7,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 536,
+        "width": 1100
+      },
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 7878,
+        "footer_text": "Tax 376.20 Total 1,980.00 Contoso Consulting AG · Document SQ-100245 Quotation Template Page 7 of 8",
+        "header_ink_pixels": 55459,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 SKU Description Qty Unit Unit price Amount",
+        "height": 1555,
+        "image": "before/page-7.png",
+        "ink_fraction": 0.092285,
+        "ink_variance": 1985.5881,
+        "margin_ink_pixels": 1015,
+        "max_overflow_mm": 1.864,
+        "page": 7,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 2534,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.092285,
+            "ink_variance": 1985.5881
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 1015,
+            "max_overflow_mm": 1.864,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)",
+          "status": "warning"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": false,
+            "ink_fraction": 0.025644,
+            "ink_variance": 579.385
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 0,
+            "max_overflow_mm": 0.0,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "no ink outside the left/right text box",
+          "status": "passed"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "page": 7,
+      "status": "passed",
+      "status_note": null
+    },
+    {
+      "after": null,
+      "before": {
+        "blank": false,
+        "edge_ink_pixels": 0,
+        "footer_ink_pixels": 5191,
+        "footer_text": "Contoso Consulting AG · Document SQ-100245 Quotation Template Page 8 of 8",
+        "header_ink_pixels": 22273,
+        "header_text": "Contoso Consulting AG Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321 Terms and notices",
+        "height": 1555,
+        "image": "before/page-8.png",
+        "ink_fraction": 0.025691,
+        "ink_variance": 580.5226,
+        "margin_ink_pixels": 0,
+        "max_overflow_mm": 0.0,
+        "page": 8,
+        "page_number_present": true,
+        "text_bbox_available": true,
+        "text_chars": 536,
+        "width": 1100
+      },
+      "before_checks": {
+        "blank_page": {
+          "critical": true,
+          "detail": {
+            "before_blank": null,
+            "ink_fraction": 0.025691,
+            "ink_variance": 580.5226
+          },
+          "id": "blank_page",
+          "message": "the page contains ink",
+          "status": "passed"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "detail": {
+            "method": "pdftotext text, regex 'Page N of M'"
+          },
+          "id": "footer_page_number",
+          "message": "the compiler page number is present",
+          "status": "passed"
+        },
+        "footer_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG · Document SQ-100245",
+              "Contoso Consulting AG",
+              "Document SQ-100245"
+            ],
+            "method": "pdftotext -bbox-layout, bottom 18% band"
+          },
+          "id": "footer_present",
+          "message": "footer text found in the bottom band",
+          "status": "passed"
+        },
+        "header_present": {
+          "critical": false,
+          "detail": {
+            "expected": [
+              "Contoso Consulting AG",
+              "Friedrichstrasse 88, 10117 Berlin, Germany · VAT: DE987654321",
+              "Friedrichstrasse 88, 10117 Berlin, Germany",
+              "VAT: DE987654321"
+            ],
+            "method": "pdftotext -bbox-layout, top 18% band"
+          },
+          "id": "header_present",
+          "message": "header text found in the top band",
+          "status": "passed"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "detail": {
+            "ink_pixels": 0,
+            "max_overflow_mm": 0.0,
+            "method": "pixels outside margin_left/margin_right plus 1.5 mm tolerance",
+            "threshold_mm": 5.0
+          },
+          "id": "horizontal_overflow",
+          "message": "no ink outside the left/right text box",
+          "status": "passed"
+        },
+        "page_edge_ink": {
+          "critical": true,
+          "detail": {
+            "ink_pixels": 0,
+            "threshold": 20
+          },
+          "id": "page_edge_ink",
+          "message": "no ink within 2 mm of a page edge",
+          "status": "passed"
+        },
+        "page_geometry": {
+          "critical": false,
+          "detail": {
+            "actual_ratio": 0.7074,
+            "expected_ratio": 0.7071
+          },
+          "id": "page_geometry",
+          "message": "page aspect 0.707 matches 210×297 mm",
+          "status": "passed"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "vertical body overflow cannot be separated from running header/footer ink",
+          "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data",
+          "status": "not_checked"
+        }
+      },
+      "checks": {
+        "blank_page": {
+          "critical": false,
+          "id": "blank_page",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "footer_page_number": {
+          "critical": false,
+          "id": "footer_page_number",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "footer_present": {
+          "critical": false,
+          "id": "footer_present",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "header_present": {
+          "critical": false,
+          "id": "header_present",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "horizontal_overflow": {
+          "critical": false,
+          "id": "horizontal_overflow",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "page_edge_ink": {
+          "critical": false,
+          "id": "page_edge_ink",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "page_geometry": {
+          "critical": false,
+          "id": "page_geometry",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        },
+        "vertical_overflow": {
+          "critical": false,
+          "id": "vertical_overflow",
+          "message": "the after document has no page at this position",
+          "reason": "the after document has no page at this position",
+          "status": "not_checked"
+        }
+      },
+      "page": 8,
+      "status": "warning",
+      "status_note": "the after document has no page at this position"
+    }
+  ],
+  "prompt_sha256": "860038a16f73ebf31443e303907826c1a4a94e6fb1fe650530224d7c34d4cc43",
+  "renderer": {
+    "dpi": 150,
+    "engine": "LibreOffice",
+    "image": "docentric-copilot-api-pdf:local",
+    "label": "LibreOffice rendering (not Word fidelity)",
+    "target_width_px": 1100
+  },
+  "schema": "visual-regression/v1",
+  "status": "warning",
+  "summary": {
+    "all_checks_passed": false,
+    "case_count": 1,
+    "cases_failed": 0,
+    "cases_passed": 0,
+    "cases_warning": 1,
+    "checked_checks": 52,
+    "failed_checks": [],
+    "global_status": "warning",
+    "new_critical_defects": [],
+    "not_checked_checks": [
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 1,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 2,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 3,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 4,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 5,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 6,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 7,
+        "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "blank_page",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "horizontal_overflow",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "page_edge_ink",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "header_present",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "footer_present",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "footer_page_number",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "page_geometry",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      },
+      {
+        "case_id": "quotation-40-rows",
+        "check": "vertical_overflow",
+        "page": 8,
+        "reason": "the after document has no page at this position"
+      }
+    ],
+    "not_checked_count": 15,
+    "unresolved_warning_counts": {
+      "horizontal_overflow": 6,
+      "page_count": 1
+    },
+    "unresolved_warnings": 7,
+    "verification_summary": "warning for 52 check(s); 15 check(s) not checked"
+  },
+  "verification_summary": "warning for 52 check(s); 15 check(s) not checked",
+  "warnings_by_type": {
+    "horizontal_overflow": 6,
+    "page_count": 1
+  }
+}

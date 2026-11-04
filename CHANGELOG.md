@@ -8,6 +8,22 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-04
+
+### Added
+- Semantic quality evaluation: 20 labelled cases with gold mappings and forbidden paths,
+  precision/recall/coverage computed separately from structural validity, a 9-code error taxonomy,
+  and JSON/CSV/HTML reports. Live run: 180 generations, 178 valid, semantic pass 66.7%, recall and
+  coverage 1.0, precision 0.21; error taxonomy shows 170 wrong-binding and 26 wrong-context findings.
+- Full-document visual regression: LibreOffice rendering of every page before/after optimization for
+  four golden cases (long descriptions, 40-row table, empty collection, conditional block), with
+  page-level checks, explicit `not_checked` semantics, screenshot artifacts and a summary report.
+- Spend transparency: known/estimated/unavailable cost status; the semantic run cost 4.59 USD
+  (under the 5 USD warning threshold).
+
+### Changed
+- Demo V4 remains the published video; a V5 recording is tracked separately.
+
 ## [0.4.1] - 2026-11-02
 
 ### Fixed

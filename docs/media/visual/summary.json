@@ -1,0 +1,202 @@
+{
+  "all_checks_passed": false,
+  "case_count": 4,
+  "cases": [
+    {
+      "case_id": "quotation-long-items",
+      "family": "long_descriptions",
+      "new_critical_defects": [],
+      "page_count": {
+        "after": 2,
+        "before": 2,
+        "changed": false
+      },
+      "status": "warning",
+      "verification_summary": "warning for 16 check(s); 2 check(s) not checked"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "family": "multi_page_table",
+      "new_critical_defects": [],
+      "page_count": {
+        "after": 7,
+        "before": 8,
+        "changed": true
+      },
+      "status": "warning",
+      "verification_summary": "warning for 52 check(s); 15 check(s) not checked"
+    },
+    {
+      "case_id": "quotation-empty-lines",
+      "family": "empty_collection",
+      "new_critical_defects": [],
+      "page_count": {
+        "after": 2,
+        "before": 2,
+        "changed": false
+      },
+      "status": "passed",
+      "verification_summary": "passed for 17 check(s); 2 check(s) not checked"
+    },
+    {
+      "case_id": "quotation-conditional",
+      "family": "conditional_block",
+      "new_critical_defects": [],
+      "page_count": {
+        "after": 2,
+        "before": 2,
+        "changed": false
+      },
+      "status": "warning",
+      "verification_summary": "warning for 17 check(s); 2 check(s) not checked"
+    }
+  ],
+  "cases_failed": 0,
+  "cases_passed": 1,
+  "cases_warning": 3,
+  "checked_checks": 102,
+  "failed_checks": [],
+  "generated_at": "2026-11-04T10:44:31.930475Z",
+  "global_status": "warning",
+  "new_critical_defects": [],
+  "not_checked_checks": [
+    {
+      "case_id": "quotation-long-items",
+      "check": "vertical_overflow",
+      "page": 1,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-long-items",
+      "check": "vertical_overflow",
+      "page": 2,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 1,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 2,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 3,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 4,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 5,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 6,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 7,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "blank_page",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "horizontal_overflow",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "page_edge_ink",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "header_present",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "footer_present",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "footer_page_number",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "page_geometry",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-40-rows",
+      "check": "vertical_overflow",
+      "page": 8,
+      "reason": "the after document has no page at this position"
+    },
+    {
+      "case_id": "quotation-empty-lines",
+      "check": "vertical_overflow",
+      "page": 1,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-empty-lines",
+      "check": "vertical_overflow",
+      "page": 2,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-conditional",
+      "check": "vertical_overflow",
+      "page": 1,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    },
+    {
+      "case_id": "quotation-conditional",
+      "check": "vertical_overflow",
+      "page": 2,
+      "reason": "the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data"
+    }
+  ],
+  "not_checked_count": 21,
+  "renderer": {
+    "engine": "LibreOffice",
+    "label": "LibreOffice rendering (not Word fidelity)"
+  },
+  "schema": "visual-regression-summary/v1",
+  "unresolved_warning_counts": {
+    "horizontal_overflow": 8,
+    "page_count": 1
+  },
+  "unresolved_warnings": 9,
+  "verification_summary": "warning for 102 check(s); 21 check(s) not checked"
+}

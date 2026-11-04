@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual regression · quotation-long-items</title>
+<style>
+  body { margin: 0; padding: 30px 18px 60px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #172033; background: #f4f6fa; line-height: 1.45; }
+  main { max-width: 1180px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 27px; }
+  h2 { margin: 26px 0 10px; font-size: 19px; }
+  h3 { margin: 0 0 10px; font-size: 15px; }
+  .muted { color: #64748b; font-size: 13px; }
+  .badge { display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+  .ok { background: #dcfce7; color: #166534; }
+  .warn { background: #fef3c7; color: #92400e; }
+  .bad { background: #fee2e2; color: #991b1b; }
+  .muted.badge, .badge.muted { background: #e2e8f0; color: #475569; }
+  .note { background: #fff7ed; border: 1px solid #fed7aa; border-left: 5px solid #ea580c; padding: 12px 16px; border-radius: 8px; margin: 14px 0; }
+  .card, .page-card { background: #fff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 16px; margin: 14px 0; }
+  .page-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  figure { margin: 0; }
+  figcaption { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+  img { width: 100%; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 0; font-size: 13px; }
+  th, td { border-bottom: 1px solid #edf1f7; padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: #eef3fa; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; color: #475569; }
+  code { background: #eef2f7; padding: 1px 4px; border-radius: 3px; }
+  footer { color: #64748b; font-size: 12px; margin-top: 24px; }
+  @media (max-width: 760px) { .page-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Visual regression · quotation-long-items</h1>
+  <p class="muted">long_descriptions · generated 2026-11-04T10:45:01.812143Z</p>
+  <p><span class="badge warn">warning</span> <strong>warning for 16 check(s); 2 check(s) not checked</strong></p>
+  <p class="muted">New critical defects: 0 · not checked: 2</p>
+  <div class="note"><strong>Scope.</strong> LibreOffice rendering (not Word fidelity). This is not Microsoft Word fidelity and not a Docentric AX proof.
+  Checks marked <span class="badge muted">not_checked</span> were not performed; they are not passes. The report never claims “all passed”.</div>
+
+  <div class="card">
+    <h2>Summary</h2>
+    <p>Page count: <strong>2 → 2</strong> · IR digest before <code>933462042466c818…</code> · after <code>e5f759f3295d5c31…</code></p>
+    <p>Layout fixes: 2 · unresolved warnings: horizontal_overflow: 1 · new critical defects: 0 · not checked: vertical_overflow (page 1), vertical_overflow (page 2)</p>
+    <p>Quality before: <strong>warning</strong> · after: <strong>passed</strong></p>
+  </div>
+
+  <div class="card">
+    <h2>Layout fixes applied before the after render</h2>
+    <ul><li><code>fit_text_width</code> widened Description from 62.0 mm to 88.7 mm by rebalancing the other columns (62.0 → 88.7)</li><li><code>fit_text_font</code> reduced the table font from 9.5 pt to 9.0 pt (9.5 → 9.0)</li></ul>
+  </div>
+
+  <div class="card">
+    <h2>IR-level checks</h2>
+    <table><thead><tr><th>Check</th><th>Status</th><th>Observation</th></tr></thead><tbody><tr><td>page_count</td><td><span class="badge ok">passed</span></td><td>page count stayed at 2</td></tr><tr><td>text_fit</td><td><span class="badge ok">passed</span></td><td>text_fit improved from warning to passed</td></tr></tbody></table>
+  </div>
+
+  <h2>Pages</h2>
+  
+    <section class="page-card">
+      <h3>Page 1 <span class="badge warn">warning</span></h3>
+      <div class="page-grid">
+        <figure><figcaption>Before — LibreOffice rendering (not Word fidelity)</figcaption><img src='before/page-1.png' alt='before page 1'></figure>
+        <figure><figcaption>After — LibreOffice rendering (not Word fidelity)</figcaption><img src='after/page-1.png' alt='after page 1'></figure>
+      </div>
+      <table><thead><tr><th>Check</th><th>Status</th><th>Observation</th></tr></thead><tbody><tr><td>blank_page</td><td><span class="badge ok">passed</span></td><td>the page contains ink</td></tr><tr><td>horizontal_overflow</td><td><span class="badge warn">warning</span></td><td>ink extends 1.9 mm outside the left/right text box (within the 5 mm table-border tolerance)</td></tr><tr><td>page_edge_ink</td><td><span class="badge ok">passed</span></td><td>no ink within 2 mm of a page edge</td></tr><tr><td>header_present</td><td><span class="badge ok">passed</span></td><td>header text found in the top band</td></tr><tr><td>footer_present</td><td><span class="badge ok">passed</span></td><td>footer text found in the bottom band</td></tr><tr><td>footer_page_number</td><td><span class="badge ok">passed</span></td><td>the compiler page number is present</td></tr><tr><td>page_geometry</td><td><span class="badge ok">passed</span></td><td>page aspect 0.707 matches 210×297 mm</td></tr><tr><td>vertical_overflow</td><td><span class="badge muted">not_checked</span></td><td>vertical body overflow cannot be separated from running header/footer ink<br><span class='muted'>Reason: the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data</span></td></tr></tbody></table>
+    </section>
+    
+    <section class="page-card">
+      <h3>Page 2 <span class="badge ok">passed</span></h3>
+      <div class="page-grid">
+        <figure><figcaption>Before — LibreOffice rendering (not Word fidelity)</figcaption><img src='before/page-2.png' alt='before page 2'></figure>
+        <figure><figcaption>After — LibreOffice rendering (not Word fidelity)</figcaption><img src='after/page-2.png' alt='after page 2'></figure>
+      </div>
+      <table><thead><tr><th>Check</th><th>Status</th><th>Observation</th></tr></thead><tbody><tr><td>blank_page</td><td><span class="badge ok">passed</span></td><td>the page contains ink</td></tr><tr><td>horizontal_overflow</td><td><span class="badge ok">passed</span></td><td>no ink outside the left/right text box</td></tr><tr><td>page_edge_ink</td><td><span class="badge ok">passed</span></td><td>no ink within 2 mm of a page edge</td></tr><tr><td>header_present</td><td><span class="badge ok">passed</span></td><td>header text found in the top band</td></tr><tr><td>footer_present</td><td><span class="badge ok">passed</span></td><td>footer text found in the bottom band</td></tr><tr><td>footer_page_number</td><td><span class="badge ok">passed</span></td><td>the compiler page number is present</td></tr><tr><td>page_geometry</td><td><span class="badge ok">passed</span></td><td>page aspect 0.707 matches 210×297 mm</td></tr><tr><td>vertical_overflow</td><td><span class="badge muted">not_checked</span></td><td>vertical body overflow cannot be separated from running header/footer ink<br><span class='muted'>Reason: the compiler places headers and footers in the top/bottom margin; distinguishing body overflow from running content needs Word-level layout data</span></td></tr></tbody></table>
+    </section>
+    
+
+  <div class="card">
+    <h2>Limitations</h2>
+    <ul><li>LibreOffice rendering (not Word fidelity)</li><li>Not Microsoft Word fidelity; LibreOffice substitutes fonts and paginates independently.</li><li>Not a Docentric AX rendering or compatibility proof.</li><li>Vertical body overflow is not checked because running headers/footers occupy the margins.</li><li>The header/footer band heuristic is deterministic but approximate.</li></ul>
+  </div>
+  <footer>Generated by scripts/visual_regression.py · images are downscaled to 1100 px width.</footer>
+</main>
+</body>
+</html>

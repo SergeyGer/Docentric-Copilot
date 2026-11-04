@@ -1,0 +1,3586 @@
+{
+  "aggregate": {
+    "block_coverage": 0.902256,
+    "block_denominator": 133,
+    "block_numerator": 120,
+    "compilation_success_rate": 0.994413,
+    "cost_complete": false,
+    "cost_per_valid_template_status": "unavailable",
+    "cost_per_valid_template_usd": null,
+    "cost_status": "estimated",
+    "cost_usd": 4.589563,
+    "coverage_denominator": 559,
+    "coverage_numerator": 559,
+    "error_counts": {
+      "structured_output": 1,
+      "wrong_binding": 170,
+      "wrong_context": 26
+    },
+    "estimated_cost_usd": 0.207971,
+    "failed_runs": 1,
+    "latency_p50_ms": 11006.0,
+    "latency_p95_ms": 19675.0,
+    "latency_samples": 179,
+    "planned_runs": 179,
+    "precision": 0.211342,
+    "precision_denominator": 2645,
+    "precision_numerator": 559,
+    "primary_error_counts": {
+      "structured_output": 1,
+      "wrong_binding": 170
+    },
+    "recall": 1.0,
+    "recall_denominator": 516,
+    "recall_numerator": 516,
+    "requirement_coverage": 1.0,
+    "runs": 180,
+    "semantic_pass_rate": 0.666667,
+    "semantic_passes": 120,
+    "tokens": {
+      "completion": 296468,
+      "prompt": 985752
+    },
+    "type_context_correctness": 1.0,
+    "type_context_denominator": 1100,
+    "type_context_numerator": 1100,
+    "unknown_cost_runs": 1,
+    "valid_runs": 178,
+    "valid_template_rate": 0.988889,
+    "validation_pass_rate": 0.994413,
+    "verified_cost_usd": 4.381592
+  },
+  "budget": {
+    "abort_reason": "",
+    "aborted": false,
+    "allow_unpriced": true,
+    "estimated_spend_usd": 0.207971,
+    "known_spend_usd": 4.381592,
+    "max_spend_usd": 6.0,
+    "total_spend_usd": 4.589563,
+    "warn_spend_usd": 5.0,
+    "warned": false
+  },
+  "cost": {
+    "cost_per_valid_template_status": "unavailable",
+    "cost_per_valid_template_usd": null,
+    "estimated_usd": 0.207971,
+    "status": "estimated",
+    "total_usd": 4.589563,
+    "unknown_runs": 1,
+    "verified_usd": 4.381592
+  },
+  "dataset": {
+    "canonical_sha256": "e366100816bc53bf35ed19cc7caf33c7d762deb05118f0fbd3c7173e15d3564c",
+    "case_count": 20,
+    "families": {
+      "ambiguous": 2,
+      "amounts": 1,
+      "bank": 2,
+      "collections": 5,
+      "conditions": 2,
+      "customer_scope": 2,
+      "fields": 11,
+      "footer": 1,
+      "forbidden": 3,
+      "header": 2,
+      "identifiers": 1,
+      "images": 2,
+      "missing_requirement": 1,
+      "multilingual": 2,
+      "nested_lists": 1,
+      "table": 3,
+      "vat": 3,
+      "wide_table": 1
+    },
+    "file": "benchmarks/semantic_cases.json",
+    "file_sha256": "7949a00aa5f7e17a5f239e6fac68717dde2826ebec43c1b0029a262684291770",
+    "hash": "e366100816bc53bf",
+    "languages": {
+      "de": 1,
+      "en": 18,
+      "fr": 1
+    }
+  },
+  "error_taxonomy": {
+    "structured_output": 1,
+    "wrong_binding": 170,
+    "wrong_context": 26
+  },
+  "finished_at": "2026-11-04T10:41:40.872439Z",
+  "generated_at": "2026-11-04T10:41:40.880835Z",
+  "generated_by": "benchmarks/semantic_evaluation.py",
+  "leaders": [
+    {
+      "direction": "higher",
+      "leaders": [
+        "openai"
+      ],
+      "metric": "precision",
+      "value": 0.261411
+    },
+    {
+      "direction": "higher",
+      "leaders": [
+        "anthropic",
+        "gemini",
+        "openai"
+      ],
+      "metric": "recall",
+      "value": 1.0
+    },
+    {
+      "direction": "higher",
+      "leaders": [
+        "anthropic",
+        "gemini",
+        "openai"
+      ],
+      "metric": "requirement_coverage",
+      "value": 1.0
+    },
+    {
+      "direction": "higher",
+      "leaders": [
+        "anthropic",
+        "gemini",
+        "openai"
+      ],
+      "metric": "type_context_correctness",
+      "value": 1.0
+    },
+    {
+      "direction": "higher",
+      "leaders": [
+        "anthropic"
+      ],
+      "metric": "semantic_pass_rate",
+      "value": 0.733333
+    },
+    {
+      "direction": "higher",
+      "leaders": [
+        "anthropic",
+        "openai"
+      ],
+      "metric": "valid_template_rate",
+      "value": 1.0
+    },
+    {
+      "direction": "lower",
+      "leaders": [
+        "openai"
+      ],
+      "metric": "cost_per_valid_template_usd",
+      "value": 0.030363
+    },
+    {
+      "direction": "lower",
+      "leaders": [
+        "gemini"
+      ],
+      "metric": "latency_p50_ms",
+      "value": 3955.0
+    }
+  ],
+  "notes": [
+    "These are observations from a fixed, synthetic case set, not statistical significance. Repeats are not independent samples of a population; they show run-to-run variation for the same prompt. No single winner is declared: each metric has its own leader, and ties are shown.",
+    "valid_template_rate is the deterministic validation + compilation rate and is never folded into precision or recall.",
+    "Gemini 3.6-flash is unpriced; its cost is estimated with the named proxy and is never reported as $0.00.",
+    "Ground truth is authored for synthetic fixtures and reflects this project's judgement.",
+    "Verified Docentric AX compatibility is not tested by this harness."
+  ],
+  "observations_not_significance": "These are observations from a fixed, synthetic case set, not statistical significance. Repeats are not independent samples of a population; they show run-to-run variation for the same prompt. No single winner is declared: each metric has its own leader, and ties are shown.",
+  "per_case": [
+    {
+      "case_id": "flat-company-identity",
+      "labels": [
+        "fields",
+        "images",
+        "header"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.034887,
+          "cost_status": "verified",
+          "cost_usd": 0.10466,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 7896.0,
+          "latency_p95_ms": 8031.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.146341,
+          "precision_denominator": 41,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 4088,
+            "prompt": 31890
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.10466
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003907,
+          "cost_status": "estimated",
+          "cost_usd": 0.011722,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011722,
+          "failed_runs": 0,
+          "latency_p50_ms": 3800.0,
+          "latency_p95_ms": 4094.3,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.117647,
+          "precision_denominator": 51,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 2161,
+            "prompt": 4824
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.020387,
+          "cost_status": "verified",
+          "cost_usd": 0.06116,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 10523.0,
+          "latency_p95_ms": 12755.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.315789,
+          "precision_denominator": 19,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 3488,
+            "prompt": 13140
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.06116
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "flat-quotation-identifiers",
+      "labels": [
+        "fields",
+        "identifiers"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.027293,
+          "cost_status": "verified",
+          "cost_usd": 0.081878,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {},
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 4798.0,
+          "latency_p95_ms": 4806.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 1.0,
+          "precision_denominator": 9,
+          "precision_numerator": 9,
+          "primary_error_counts": {},
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1805,
+            "prompt": 31914
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.081878
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003986,
+          "cost_status": "estimated",
+          "cost_usd": 0.011959,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011959,
+          "failed_runs": 0,
+          "latency_p50_ms": 4154.0,
+          "latency_p95_ms": 4224.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.160714,
+          "precision_denominator": 56,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2222,
+            "prompt": 4836
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.024505,
+          "cost_status": "verified",
+          "cost_usd": 0.073514,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 12578.0,
+          "latency_p95_ms": 14690.3,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.375,
+          "precision_denominator": 24,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 4721,
+            "prompt": 13152
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.073514
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "flat-customer-contact",
+      "labels": [
+        "fields",
+        "forbidden",
+        "customer_scope"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.027543,
+          "cost_status": "verified",
+          "cost_usd": 0.08263,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {},
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 4462.0,
+          "latency_p95_ms": 4498.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 1.0,
+          "precision_denominator": 9,
+          "precision_numerator": 9,
+          "primary_error_counts": {},
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1882,
+            "prompt": 31905
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.08263
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.004015,
+          "cost_status": "estimated",
+          "cost_usd": 0.012046,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.012046,
+          "failed_runs": 0,
+          "latency_p50_ms": 5436.0,
+          "latency_p95_ms": 7217.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.166667,
+          "precision_denominator": 54,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 2239,
+            "prompt": 4866
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.032289,
+          "cost_status": "verified",
+          "cost_usd": 0.096868,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 16938.0,
+          "latency_p95_ms": 18140.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.2,
+          "precision_denominator": 45,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7057,
+            "prompt": 13149
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.096868
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "flat-quotation-totals",
+      "labels": [
+        "fields",
+        "amounts"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.05151,
+          "cost_status": "verified",
+          "cost_usd": 0.15453,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 14853.0,
+          "latency_p95_ms": 14856.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.095238,
+          "precision_denominator": 63,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 9072,
+            "prompt": 31905
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.15453
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.004033,
+          "cost_status": "estimated",
+          "cost_usd": 0.012098,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.012098,
+          "failed_runs": 0,
+          "latency_p50_ms": 4375.0,
+          "latency_p95_ms": 6852.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.109091,
+          "precision_denominator": 55,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2254,
+            "prompt": 4860
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.021725,
+          "cost_status": "verified",
+          "cost_usd": 0.065176,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 10438.0,
+          "latency_p95_ms": 13368.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.285714,
+          "precision_denominator": 21,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 3889,
+            "prompt": 13143
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.065176
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "image-logo-header",
+      "labels": [
+        "images",
+        "header"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.044444,
+          "cost_status": "verified",
+          "cost_usd": 0.133332,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 13325.0,
+          "latency_p95_ms": 14947.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.130435,
+          "precision_denominator": 46,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 6951,
+            "prompt": 31911
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.133332
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.00414,
+          "cost_status": "estimated",
+          "cost_usd": 0.01242,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.01242,
+          "failed_runs": 0,
+          "latency_p50_ms": 3992.0,
+          "latency_p95_ms": 11356.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.12,
+          "precision_denominator": 50,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 2314,
+            "prompt": 4991
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.034885,
+          "cost_status": "verified",
+          "cost_usd": 0.104656,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 17887.0,
+          "latency_p95_ms": 19123.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.139535,
+          "precision_denominator": 43,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7834,
+            "prompt": 13158
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.104656
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "collection-quotation-lines",
+      "labels": [
+        "collections",
+        "table"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.049145,
+          "cost_status": "verified",
+          "cost_usd": 0.147434,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 14458.0,
+          "latency_p95_ms": 14623.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.241935,
+          "precision_denominator": 62,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 8357,
+            "prompt": 31932
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.147434
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003871,
+          "cost_status": "estimated",
+          "cost_usd": 0.011614,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011614,
+          "failed_runs": 0,
+          "latency_p50_ms": 3676.0,
+          "latency_p95_ms": 7338.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.306122,
+          "precision_denominator": 49,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2112,
+            "prompt": 4925
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 0.5,
+          "block_denominator": 6,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.031769,
+          "cost_status": "verified",
+          "cost_usd": 0.095308,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 15647.0,
+          "latency_p95_ms": 21866.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.416667,
+          "precision_denominator": 36,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 6898,
+            "prompt": 13164
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.095308
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "collection-invoice-lines",
+      "labels": [
+        "collections",
+        "table"
+      ],
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.043009,
+          "cost_status": "verified",
+          "cost_usd": 0.129026,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 11985.0,
+          "latency_p95_ms": 12219.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.254237,
+          "precision_denominator": 59,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 6599,
+            "prompt": 31518
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.129026
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003253,
+          "cost_status": "estimated",
+          "cost_usd": 0.00976,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.00976,
+          "failed_runs": 0,
+          "latency_p50_ms": 3321.0,
+          "latency_p95_ms": 3503.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.3125,
+          "precision_denominator": 48,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1704,
+            "prompt": 4494
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 0.666667,
+          "block_denominator": 6,
+          "block_numerator": 4,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.033304,
+          "cost_status": "verified",
+          "cost_usd": 0.099912,
+          "coverage_denominator": 15,
+          "coverage_numerator": 15,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 2
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 16556.0,
+          "latency_p95_ms": 18001.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.333333,
+          "precision_denominator": 45,
+          "precision_numerator": 15,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 15,
+          "recall_numerator": 15,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.333333,
+          "semantic_passes": 1,
+          "tokens": {
+            "completion": 7422,
+            "prompt": 12846
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 30,
+          "type_context_numerator": 30,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.099912
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "collection-purchase-order-lines",
+      "labels": [
+        "collections",
+        "table",
+        "fields"
+      ],
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.041181,
+          "cost_status": "verified",
+          "cost_usd": 0.123542,
+          "coverage_denominator": 18,
+          "coverage_numerator": 18,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 10571.0,
+          "latency_p95_ms": 11109.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.461538,
+          "precision_denominator": 39,
+          "precision_numerator": 18,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 18,
+          "recall_numerator": 18,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 6191,
+            "prompt": 30816
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 36,
+          "type_context_numerator": 36,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.123542
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.002579,
+          "cost_status": "estimated",
+          "cost_usd": 0.007738,
+          "coverage_denominator": 18,
+          "coverage_numerator": 18,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0.007738,
+          "failed_runs": 0,
+          "latency_p50_ms": 4696.0,
+          "latency_p95_ms": 5203.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.439024,
+          "precision_denominator": 41,
+          "precision_numerator": 18,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 18,
+          "recall_numerator": 18,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1239,
+            "prompt": 4123
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 36,
+          "type_context_numerator": 36,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 0.5,
+          "block_denominator": 6,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.033395,
+          "cost_status": "verified",
+          "cost_usd": 0.100186,
+          "coverage_denominator": 18,
+          "coverage_numerator": 18,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 17304.0,
+          "latency_p95_ms": 18185.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.461538,
+          "precision_denominator": 39,
+          "precision_numerator": 18,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 18,
+          "recall_numerator": 18,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7528,
+            "prompt": 12453
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 36,
+          "type_context_numerator": 36,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.100186
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "nested-service-tasks",
+      "labels": [
+        "nested_lists",
+        "collections"
+      ],
+      "language": "en",
+      "package": "benchmarks/fixtures/field-service.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 9,
+          "block_numerator": 9,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.054634,
+          "cost_status": "verified",
+          "cost_usd": 0.163902,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 20333.0,
+          "latency_p95_ms": 20791.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.222222,
+          "precision_denominator": 54,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 10044,
+            "prompt": 31731
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.163902
+        },
+        "gemini": {
+          "block_coverage": 0.666667,
+          "block_denominator": 9,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.002861,
+          "cost_status": "estimated",
+          "cost_usd": 0.008584,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0.008584,
+          "failed_runs": 0,
+          "latency_p50_ms": 5976.0,
+          "latency_p95_ms": 8741.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.24,
+          "precision_denominator": 50,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 1326,
+            "prompt": 4816
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 0.888889,
+          "block_denominator": 9,
+          "block_numerator": 8,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.034417,
+          "cost_status": "verified",
+          "cost_usd": 0.103252,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 1
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 18591.0,
+          "latency_p95_ms": 22911.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.266667,
+          "precision_denominator": 45,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.666667,
+          "semantic_passes": 2,
+          "tokens": {
+            "completion": 7744,
+            "prompt": 12906
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.103252
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "wide-line-table",
+      "labels": [
+        "collections",
+        "wide_table"
+      ],
+      "language": "en",
+      "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 6,
+          "block_numerator": 6,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.043478,
+          "cost_status": "verified",
+          "cost_usd": 0.130434,
+          "coverage_denominator": 24,
+          "coverage_numerator": 24,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 11657.0,
+          "latency_p95_ms": 11954.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.48,
+          "precision_denominator": 50,
+          "precision_numerator": 24,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 18,
+          "recall_numerator": 18,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 6699,
+            "prompt": 31722
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 48,
+          "type_context_numerator": 48,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.130434
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 4,
+          "block_numerator": 4,
+          "compilation_success_rate": 1.0,
+          "cost_complete": false,
+          "cost_per_valid_template_status": "unavailable",
+          "cost_per_valid_template_usd": null,
+          "cost_status": "estimated",
+          "cost_usd": 0.005845,
+          "coverage_denominator": 16,
+          "coverage_numerator": 16,
+          "error_counts": {
+            "structured_output": 1,
+            "wrong_binding": 2,
+            "wrong_context": 2
+          },
+          "estimated_cost_usd": 0.005845,
+          "failed_runs": 1,
+          "latency_p50_ms": 4135.0,
+          "latency_p95_ms": 5437.3,
+          "latency_samples": 2,
+          "planned_runs": 2,
+          "precision": 0.470588,
+          "precision_denominator": 34,
+          "precision_numerator": 16,
+          "primary_error_counts": {
+            "structured_output": 1,
+            "wrong_binding": 2
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.666667,
+          "semantic_passes": 2,
+          "tokens": {
+            "completion": 937,
+            "prompt": 3109
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 32,
+          "type_context_numerator": 32,
+          "unknown_cost_runs": 1,
+          "valid_runs": 2,
+          "valid_template_rate": 0.666667,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 0.833333,
+          "block_denominator": 6,
+          "block_numerator": 5,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.034517,
+          "cost_status": "verified",
+          "cost_usd": 0.103552,
+          "coverage_denominator": 24,
+          "coverage_numerator": 24,
+          "error_counts": {
+            "wrong_binding": 3,
+            "wrong_context": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 17798.0,
+          "latency_p95_ms": 20898.5,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.5,
+          "precision_denominator": 48,
+          "precision_numerator": 24,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 18,
+          "recall_numerator": 18,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.666667,
+          "semantic_passes": 2,
+          "tokens": {
+            "completion": 7750,
+            "prompt": 13026
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 48,
+          "type_context_numerator": 48,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.103552
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "conditional-eu-vat",
+      "labels": [
+        "conditions",
+        "vat"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.047271,
+          "cost_status": "verified",
+          "cost_usd": 0.141812,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 13298.0,
+          "latency_p95_ms": 15878.3,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.086957,
+          "precision_denominator": 69,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.666667,
+          "semantic_passes": 2,
+          "tokens": {
+            "completion": 7793,
+            "prompt": 31941
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.141812
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003508,
+          "cost_status": "estimated",
+          "cost_usd": 0.010523,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.010523,
+          "failed_runs": 0,
+          "latency_p50_ms": 6665.0,
+          "latency_p95_ms": 10103.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.1,
+          "precision_denominator": 60,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1786,
+            "prompt": 5100
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.039421,
+          "cost_status": "verified",
+          "cost_usd": 0.118264,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 22124.0,
+          "latency_p95_ms": 22176.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.133333,
+          "precision_denominator": 45,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 9193,
+            "prompt": 13167
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.118264
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "conditional-reverse-charge",
+      "labels": [
+        "conditions",
+        "vat"
+      ],
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.050403,
+          "cost_status": "verified",
+          "cost_usd": 0.151208,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 15196.0,
+          "latency_p95_ms": 15656.8,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.089552,
+          "precision_denominator": 67,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 8807,
+            "prompt": 31569
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.151208
+        },
+        "gemini": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003625,
+          "cost_status": "estimated",
+          "cost_usd": 0.010876,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.010876,
+          "failed_runs": 0,
+          "latency_p50_ms": 6928.0,
+          "latency_p95_ms": 10634.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.101695,
+          "precision_denominator": 59,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1967,
+            "prompt": 4665
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": 1.0,
+          "block_denominator": 3,
+          "block_numerator": 3,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.036868,
+          "cost_status": "verified",
+          "cost_usd": 0.110604,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 18580.0,
+          "latency_p95_ms": 19513.3,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.117647,
+          "precision_denominator": 51,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 8487,
+            "prompt": 12867
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.110604
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "multilingual-quotation-de",
+      "labels": [
+        "multilingual",
+        "fields"
+      ],
+      "language": "de",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.031055,
+          "cost_status": "verified",
+          "cost_usd": 0.093164,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 5931.0,
+          "latency_p95_ms": 6345.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.6,
+          "precision_denominator": 20,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2921,
+            "prompt": 31977
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.093164
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003723,
+          "cost_status": "estimated",
+          "cost_usd": 0.011168,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011168,
+          "failed_runs": 0,
+          "latency_p50_ms": 3754.0,
+          "latency_p95_ms": 7318.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.230769,
+          "precision_denominator": 52,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1994,
+            "prompt": 4920
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.034087,
+          "cost_status": "verified",
+          "cost_usd": 0.102262,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 19315.0,
+          "latency_p95_ms": 19389.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.285714,
+          "precision_denominator": 42,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 7594,
+            "prompt": 13161
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.102262
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "multilingual-invoice-fr",
+      "labels": [
+        "multilingual",
+        "fields"
+      ],
+      "language": "fr",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.030646,
+          "cost_status": "verified",
+          "cost_usd": 0.091938,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 5460.0,
+          "latency_p95_ms": 6568.8,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.666667,
+          "precision_denominator": 18,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2886,
+            "prompt": 31539
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.091938
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003402,
+          "cost_status": "estimated",
+          "cost_usd": 0.010207,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.010207,
+          "failed_runs": 0,
+          "latency_p50_ms": 3184.0,
+          "latency_p95_ms": 3319.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.230769,
+          "precision_denominator": 52,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1819,
+            "prompt": 4515
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.021176,
+          "cost_status": "verified",
+          "cost_usd": 0.063528,
+          "coverage_denominator": 12,
+          "coverage_numerator": 12,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 11006.0,
+          "latency_p95_ms": 11117.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.545455,
+          "precision_denominator": 22,
+          "precision_numerator": 12,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 12,
+          "recall_numerator": 12,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 3780,
+            "prompt": 12864
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 24,
+          "type_context_numerator": 24,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.063528
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "missing-requisition-number",
+      "labels": [
+        "missing_requirement",
+        "fields"
+      ],
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.046745,
+          "cost_status": "verified",
+          "cost_usd": 0.140234,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 14654.0,
+          "latency_p95_ms": 14927.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.076923,
+          "precision_denominator": 39,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 7865,
+            "prompt": 30792
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 6,
+          "type_context_numerator": 6,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.140234
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.00255,
+          "cost_status": "estimated",
+          "cost_usd": 0.007649,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.007649,
+          "failed_runs": 0,
+          "latency_p50_ms": 2769.0,
+          "latency_p95_ms": 5297.1,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.083333,
+          "precision_denominator": 36,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1239,
+            "prompt": 4005
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 6,
+          "type_context_numerator": 6,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.032744,
+          "cost_status": "verified",
+          "cost_usd": 0.098232,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 18143.0,
+          "latency_p95_ms": 21080.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.083333,
+          "precision_denominator": 36,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 7338,
+            "prompt": 12426
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 6,
+          "type_context_numerator": 6,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.098232
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "ambiguous-vat-number",
+      "labels": [
+        "ambiguous",
+        "vat"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.048659,
+          "cost_status": "verified",
+          "cost_usd": 0.145978,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 14172.0,
+          "latency_p95_ms": 14928.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.04918,
+          "precision_denominator": 61,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 8221,
+            "prompt": 31884
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.145978
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 0.666667,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.006041,
+          "cost_status": "estimated",
+          "cost_usd": 0.012083,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.012083,
+          "failed_runs": 0,
+          "latency_p50_ms": 3955.0,
+          "latency_p95_ms": 10453.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.057692,
+          "precision_denominator": 52,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2237,
+            "prompt": 4925
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 2,
+          "valid_template_rate": 0.666667,
+          "validation_pass_rate": 0.666667,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.035937,
+          "cost_status": "verified",
+          "cost_usd": 0.10781,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 17942.0,
+          "latency_p95_ms": 18311.9,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.069767,
+          "precision_denominator": 43,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 8156,
+            "prompt": 13125
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.10781
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "ambiguous-document-date",
+      "labels": [
+        "ambiguous",
+        "fields"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.053103,
+          "cost_status": "verified",
+          "cost_usd": 0.15931,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 16232.0,
+          "latency_p95_ms": 16817.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.050847,
+          "precision_denominator": 59,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 9556,
+            "prompt": 31875
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.15931
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003934,
+          "cost_status": "estimated",
+          "cost_usd": 0.011802,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011802,
+          "failed_runs": 0,
+          "latency_p50_ms": 3971.0,
+          "latency_p95_ms": 4401.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.0625,
+          "precision_denominator": 48,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 2186,
+            "prompt": 4806
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.028308,
+          "cost_status": "verified",
+          "cost_usd": 0.084924,
+          "coverage_denominator": 3,
+          "coverage_numerator": 3,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 15513.0,
+          "latency_p95_ms": 16474.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.107143,
+          "precision_denominator": 28,
+          "precision_numerator": 3,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 3,
+          "recall_numerator": 3,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 5868,
+            "prompt": 13122
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 3,
+          "type_context_numerator": 3,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.084924
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "forbidden-customer-bank",
+      "labels": [
+        "forbidden",
+        "customer_scope",
+        "bank"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.046105,
+          "cost_status": "verified",
+          "cost_usd": 0.138314,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 13863.0,
+          "latency_p95_ms": 13956.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.115385,
+          "precision_denominator": 52,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7454,
+            "prompt": 31887
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.138314
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003576,
+          "cost_status": "estimated",
+          "cost_usd": 0.010728,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.010728,
+          "failed_runs": 0,
+          "latency_p50_ms": 3268.0,
+          "latency_p95_ms": 7444.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.122449,
+          "precision_denominator": 49,
+          "precision_numerator": 6,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 1885,
+            "prompt": 4879
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.011999,
+          "cost_status": "verified",
+          "cost_usd": 0.035998,
+          "coverage_denominator": 6,
+          "coverage_numerator": 6,
+          "error_counts": {},
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 4402.0,
+          "latency_p95_ms": 4494.7,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 1.0,
+          "precision_denominator": 6,
+          "precision_numerator": 6,
+          "primary_error_counts": {},
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 973,
+            "prompt": 13134
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 12,
+          "type_context_numerator": 12,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.035998
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "flat-vendor-details",
+      "labels": [
+        "fields",
+        "forbidden"
+      ],
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.040809,
+          "cost_status": "verified",
+          "cost_usd": 0.122426,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 10480.0,
+          "latency_p95_ms": 11061.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.191489,
+          "precision_denominator": 47,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 6083,
+            "prompt": 30798
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.122426
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.002419,
+          "cost_status": "estimated",
+          "cost_usd": 0.007256,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.007256,
+          "failed_runs": 0,
+          "latency_p50_ms": 2373.0,
+          "latency_p95_ms": 2472.0,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.214286,
+          "precision_denominator": 42,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 1.0,
+          "semantic_passes": 3,
+          "tokens": {
+            "completion": 1140,
+            "prompt": 3975
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.032391,
+          "cost_status": "verified",
+          "cost_usd": 0.097172,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 16967.0,
+          "latency_p95_ms": 18842.6,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.219512,
+          "precision_denominator": 41,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 6,
+          "recall_numerator": 6,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7232,
+            "prompt": 12426
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.097172
+        }
+      },
+      "sample_size": 9
+    },
+    {
+      "case_id": "bank-details-footer",
+      "labels": [
+        "fields",
+        "footer",
+        "bank"
+      ],
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "providers": {
+        "anthropic": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.041351,
+          "cost_status": "verified",
+          "cost_usd": 0.124054,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 10681.0,
+          "latency_p95_ms": 19245.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.134328,
+          "precision_denominator": 67,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 5996,
+            "prompt": 32047
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.124054
+        },
+        "gemini": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "estimated",
+          "cost_per_valid_template_usd": 0.003964,
+          "cost_status": "estimated",
+          "cost_usd": 0.011893,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0.011893,
+          "failed_runs": 0,
+          "latency_p50_ms": 7637.0,
+          "latency_p95_ms": 8641.4,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.169811,
+          "precision_denominator": 53,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 2174,
+            "prompt": 4987
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0
+        },
+        "openai": {
+          "block_coverage": null,
+          "block_denominator": 0,
+          "block_numerator": 0,
+          "compilation_success_rate": 1.0,
+          "cost_complete": true,
+          "cost_per_valid_template_status": "verified",
+          "cost_per_valid_template_usd": 0.033136,
+          "cost_status": "verified",
+          "cost_usd": 0.099408,
+          "coverage_denominator": 9,
+          "coverage_numerator": 9,
+          "error_counts": {
+            "wrong_binding": 3
+          },
+          "estimated_cost_usd": 0,
+          "failed_runs": 0,
+          "latency_p50_ms": 17104.0,
+          "latency_p95_ms": 17579.2,
+          "latency_samples": 3,
+          "planned_runs": 3,
+          "precision": 0.204545,
+          "precision_denominator": 44,
+          "precision_numerator": 9,
+          "primary_error_counts": {
+            "wrong_binding": 3
+          },
+          "recall": 1.0,
+          "recall_denominator": 9,
+          "recall_numerator": 9,
+          "requirement_coverage": 1.0,
+          "runs": 3,
+          "semantic_pass_rate": 0.0,
+          "semantic_passes": 0,
+          "tokens": {
+            "completion": 7311,
+            "prompt": 13149
+          },
+          "type_context_correctness": 1.0,
+          "type_context_denominator": 18,
+          "type_context_numerator": 18,
+          "unknown_cost_runs": 0,
+          "valid_runs": 3,
+          "valid_template_rate": 1.0,
+          "validation_pass_rate": 1.0,
+          "verified_cost_usd": 0.099408
+        }
+      },
+      "sample_size": 9
+    }
+  ],
+  "primary_error_counts": {
+    "structured_output": 1,
+    "wrong_binding": 170
+  },
+  "providers": [
+    {
+      "compact_ir": false,
+      "compact_version": null,
+      "configured": true,
+      "cost": {
+        "estimated_usd": 0,
+        "per_valid_template_status": "verified",
+        "per_valid_template_usd": 0.030363,
+        "status": "verified",
+        "total_usd": 1.821786,
+        "unknown_runs": 0,
+        "verified_usd": 1.821786
+      },
+      "error_taxonomy": {
+        "primary_counts": {
+          "wrong_binding": 57
+        },
+        "runs_with_code": {
+          "wrong_binding": 57,
+          "wrong_context": 12
+        }
+      },
+      "metrics": {
+        "block_coverage": 0.777778,
+        "block_denominator": 45,
+        "block_numerator": 35,
+        "compilation_success_rate": 1.0,
+        "cost_complete": true,
+        "cost_per_valid_template_status": "verified",
+        "cost_per_valid_template_usd": 0.030363,
+        "cost_status": "verified",
+        "cost_usd": 1.821786,
+        "coverage_denominator": 189,
+        "coverage_numerator": 189,
+        "error_counts": {
+          "wrong_binding": 57,
+          "wrong_context": 12
+        },
+        "estimated_cost_usd": 0,
+        "failed_runs": 0,
+        "latency_p50_ms": 16952.5,
+        "latency_p95_ms": 22126.9,
+        "latency_samples": 60,
+        "planned_runs": 60,
+        "precision": 0.261411,
+        "precision_denominator": 723,
+        "precision_numerator": 189,
+        "primary_error_counts": {
+          "wrong_binding": 57
+        },
+        "recall": 1.0,
+        "recall_denominator": 174,
+        "recall_numerator": 174,
+        "requirement_coverage": 1.0,
+        "runs": 60,
+        "semantic_pass_rate": 0.583333,
+        "semantic_passes": 35,
+        "tokens": {
+          "completion": 130263,
+          "prompt": 259578
+        },
+        "type_context_correctness": 1.0,
+        "type_context_denominator": 372,
+        "type_context_numerator": 372,
+        "unknown_cost_runs": 0,
+        "valid_runs": 60,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0,
+        "verified_cost_usd": 1.821786
+      },
+      "model": "gpt-6-sol",
+      "observed_models": [
+        "gpt-6-sol"
+      ],
+      "provider": "openai",
+      "proxies": {},
+      "repair_attempts": 2,
+      "requested_model": "gpt-6-sol"
+    },
+    {
+      "compact_ir": false,
+      "compact_version": null,
+      "configured": true,
+      "cost": {
+        "estimated_usd": 0,
+        "per_valid_template_status": "verified",
+        "per_valid_template_usd": 0.042663,
+        "status": "verified",
+        "total_usd": 2.559806,
+        "unknown_runs": 0,
+        "verified_usd": 2.559806
+      },
+      "error_taxonomy": {
+        "primary_counts": {
+          "wrong_binding": 54
+        },
+        "runs_with_code": {
+          "wrong_binding": 54,
+          "wrong_context": 6
+        }
+      },
+      "metrics": {
+        "block_coverage": 1.0,
+        "block_denominator": 45,
+        "block_numerator": 45,
+        "compilation_success_rate": 1.0,
+        "cost_complete": true,
+        "cost_per_valid_template_status": "verified",
+        "cost_per_valid_template_usd": 0.042663,
+        "cost_status": "verified",
+        "cost_usd": 2.559806,
+        "coverage_denominator": 189,
+        "coverage_numerator": 189,
+        "error_counts": {
+          "wrong_binding": 54,
+          "wrong_context": 6
+        },
+        "estimated_cost_usd": 0,
+        "failed_runs": 0,
+        "latency_p50_ms": 12116.5,
+        "latency_p95_ms": 19557.65,
+        "latency_samples": 60,
+        "planned_runs": 60,
+        "precision": 0.203008,
+        "precision_denominator": 931,
+        "precision_numerator": 189,
+        "primary_error_counts": {
+          "wrong_binding": 54
+        },
+        "recall": 1.0,
+        "recall_denominator": 174,
+        "recall_numerator": 174,
+        "requirement_coverage": 1.0,
+        "runs": 60,
+        "semantic_pass_rate": 0.733333,
+        "semantic_passes": 44,
+        "tokens": {
+          "completion": 129270,
+          "prompt": 633553
+        },
+        "type_context_correctness": 1.0,
+        "type_context_denominator": 372,
+        "type_context_numerator": 372,
+        "unknown_cost_runs": 0,
+        "valid_runs": 60,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0,
+        "verified_cost_usd": 2.559806
+      },
+      "model": "claude-sonnet-5-5",
+      "observed_models": [
+        "claude-sonnet-5-5"
+      ],
+      "provider": "anthropic",
+      "proxies": {},
+      "repair_attempts": 2,
+      "requested_model": "claude-sonnet-5-5"
+    },
+    {
+      "compact_ir": true,
+      "compact_version": "v2",
+      "configured": true,
+      "cost": {
+        "estimated_usd": 0.207971,
+        "per_valid_template_status": "unavailable",
+        "per_valid_template_usd": null,
+        "status": "estimated",
+        "total_usd": 0.207971,
+        "unknown_runs": 1,
+        "verified_usd": 0
+      },
+      "error_taxonomy": {
+        "primary_counts": {
+          "structured_output": 1,
+          "wrong_binding": 59
+        },
+        "runs_with_code": {
+          "structured_output": 1,
+          "wrong_binding": 59,
+          "wrong_context": 8
+        }
+      },
+      "metrics": {
+        "block_coverage": 0.930233,
+        "block_denominator": 43,
+        "block_numerator": 40,
+        "compilation_success_rate": 0.983051,
+        "cost_complete": false,
+        "cost_per_valid_template_status": "unavailable",
+        "cost_per_valid_template_usd": null,
+        "cost_status": "estimated",
+        "cost_usd": 0.207971,
+        "coverage_denominator": 181,
+        "coverage_numerator": 181,
+        "error_counts": {
+          "structured_output": 1,
+          "wrong_binding": 59,
+          "wrong_context": 8
+        },
+        "estimated_cost_usd": 0.207971,
+        "failed_runs": 1,
+        "latency_p50_ms": 3955.0,
+        "latency_p95_ms": 10542.0,
+        "latency_samples": 59,
+        "planned_runs": 59,
+        "precision": 0.182644,
+        "precision_denominator": 991,
+        "precision_numerator": 181,
+        "primary_error_counts": {
+          "structured_output": 1,
+          "wrong_binding": 59
+        },
+        "recall": 1.0,
+        "recall_denominator": 168,
+        "recall_numerator": 168,
+        "requirement_coverage": 1.0,
+        "runs": 60,
+        "semantic_pass_rate": 0.683333,
+        "semantic_passes": 41,
+        "tokens": {
+          "completion": 36935,
+          "prompt": 92621
+        },
+        "type_context_correctness": 1.0,
+        "type_context_denominator": 356,
+        "type_context_numerator": 356,
+        "unknown_cost_runs": 1,
+        "valid_runs": 58,
+        "valid_template_rate": 0.966667,
+        "validation_pass_rate": 0.983051,
+        "verified_cost_usd": 0
+      },
+      "model": "gemini-3.6-flash",
+      "observed_models": [
+        "gemini-3.6-flash"
+      ],
+      "provider": "gemini",
+      "proxies": {
+        "gemini-3.6-flash": {
+          "as_of": "2026-11-03",
+          "input_per_mtok": 0.75,
+          "output_per_mtok": 3.75,
+          "proxy_for": "gemini-3.8-flash",
+          "source": "docs/PRICING.md (gemini-3.8-flash introductory rate)"
+        }
+      },
+      "repair_attempts": 2,
+      "requested_model": "gemini-3.6-flash"
+    }
+  ],
+  "runs_file": "benchmarks/semantic_runs.jsonl",
+  "runs_sha256": "6bae0e55ee7881b627c79544cd50d336615f34db78ea301e00df9b991e8befd4",
+  "sample_size": {
+    "cases": 20,
+    "completed_per_provider": {
+      "anthropic": 60,
+      "gemini": 60,
+      "openai": 60
+    },
+    "completed_runs": 180,
+    "planned_per_provider": {
+      "anthropic": 60,
+      "gemini": 60,
+      "openai": 60
+    },
+    "planned_runs": 180,
+    "providers": 3,
+    "repeats": 3
+  },
+  "schema": "semantic-report/v1",
+  "settings": {
+    "budget_per_call_usd": 0.5,
+    "compact_mode": "gemini-only",
+    "gemini_compact_version": "v2",
+    "max_output_tokens": 16000,
+    "max_repair_attempts": 2,
+    "models": [
+      {
+        "compact_ir": false,
+        "compact_version": null,
+        "provider": "openai",
+        "repair_attempts": 2,
+        "requested_model": "gpt-6-sol"
+      },
+      {
+        "compact_ir": false,
+        "compact_version": null,
+        "provider": "anthropic",
+        "repair_attempts": 2,
+        "requested_model": "claude-sonnet-5-5"
+      },
+      {
+        "compact_ir": true,
+        "compact_version": "v2",
+        "provider": "gemini",
+        "repair_attempts": 2,
+        "requested_model": "gemini-3.6-flash"
+      }
+    ],
+    "pricing": {
+      "as_of": "2026-11-03",
+      "pricing_as_of": "2026-11-03",
+      "pricing_source": "docs/PRICING.md",
+      "pricing_version": "2026-11-03"
+    },
+    "prompt_version": "planner-v1",
+    "proxy_pricing": {
+      "gemini-3.6-flash": {
+        "as_of": "2026-11-03",
+        "input_per_mtok": 0.75,
+        "output_per_mtok": 3.75,
+        "proxy_for": "gemini-3.8-flash",
+        "source": "docs/PRICING.md (gemini-3.8-flash introductory rate)"
+      }
+    },
+    "repeats": 3,
+    "temperature": 0.0,
+    "timeout_seconds": 60.0,
+    "transport_retries": 0
+  },
+  "started_at": "2026-11-04T10:08:41.652791Z"
+}

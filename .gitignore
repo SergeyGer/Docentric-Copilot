@@ -47,6 +47,7 @@ benchmark-results/
 .idea/
 .vscode/
 
-# Local smoke-test artefacts
+# Local smoke-test artefacts and visual-regression work directories
+.visual-work/
 apps/web/.smoke-browsers/
 apps/web/.smoke-artifacts/

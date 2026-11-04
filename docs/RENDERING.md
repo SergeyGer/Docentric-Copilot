@@ -88,3 +88,61 @@ claim.
 Reproduce the pair by compiling the demo package before and after optimisation and running the
 commands above. See [DOCX_OPENING.md](DOCX_OPENING.md) for where the artifact comes from and how to
 open it.
+
+## Full-document visual regression (P1)
+
+`scripts/visual_regression.py` turns the single-image evidence above into a
+repeatable before/after regression over **every page**:
+
+```bash
+python scripts/visual_regression.py \
+  --cases benchmarks/visual_cases.json \
+  --output docs/media/visual \
+  --image docentric-copilot-api-pdf:local
+```
+
+For each case it plans the template with the deterministic mock baseline,
+compiles DOCX **before** and **after** `optimize_layout`, renders both through
+`scripts/docx_to_pdf.py` inside the `api-pdf` image, and rasterises every page.
+The image is built from the `api-pdf` Docker target when it is missing. Page
+images are downscaled to 1100 px width and saved as 32-colour PNGs; the four
+committed cases total under 3 MB.
+
+### Checks
+
+| Check | Method | Honest limit |
+| --- | --- | --- |
+| Blank page | pixel ink fraction and variance | a header/footer makes a page non-blank |
+| Horizontal overflow | ink outside `margin_left`/`margin_right` plus 1.5 mm tolerance | 5 mm warning band absorbs LibreOffice table-border overhang |
+| Page-edge ink | ink within 2 mm of a page edge | catches gross vertical overflow only |
+| Page count change | before/after page counts | a change is a warning, not proof of content loss |
+| Header/footer text | `pdftotext -bbox-layout`, top/bottom 18% bands | band heuristic, not Word layout |
+| Footer page number | `pdftotext`, regex `Page N of M` | the compiler adds it on every page |
+| `text_fit` | IR quality analysis before/after | deterministic estimate, not measured wrapping |
+| Vertical body overflow | — | **`not_checked`**: headers/footers occupy the margins |
+
+`not_checked` is a first-class status. The summary reports
+`checked_checks`, `not_checked_count`, unresolved warnings per type and
+`new_critical_defects`; `all_checks_passed` is false while any check is
+`not_checked`. A global status of `passed` therefore never claims that every
+possible check was performed.
+
+### Committed cases
+
+| Case | Family | Before → after pages | Status | Observations |
+| --- | --- | --- | --- | --- |
+| [quotation-long-items](media/visual/quotation-long-items/report.html) | long descriptions | 2 → 2 | warning | `text_fit` warning became passed; one ~1.7 mm table-border overhang remains in the warning band |
+| [quotation-40-rows](media/visual/quotation-40-rows/report.html) | multi-page table | 8 → 7 | warning | repeated header on every page; smaller font reduced the page count by one; one page position exists only before |
+| [quotation-empty-lines](media/visual/quotation-empty-lines/report.html) | empty collection | 2 → 2 | passed (2 not checked) | no phantom rows; vertical overflow is `not_checked` |
+| [quotation-conditional](media/visual/quotation-conditional/report.html) | conditional block | 2 → 2 | warning | EU VAT notice renders; the same table-border warning applies |
+
+Aggregate reports: [summary.html](media/visual/summary.html) and
+[summary.json](media/visual/summary.json). The committed run reports zero new
+critical defects; the unresolved warnings are table-border overhang on table
+pages and the 40-row page-count change. The HTML reports link every before/after
+page image and list each check with its status and reason.
+
+The fixtures are regenerated deterministically by
+`python benchmarks/build_visual_fixtures.py`; `--check` verifies the committed
+bytes. The cases are declared in
+[benchmarks/visual_cases.json](../benchmarks/visual_cases.json).

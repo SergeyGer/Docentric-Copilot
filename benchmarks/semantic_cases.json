@@ -1,0 +1,1074 @@
+[
+  {
+    "id": "flat-company-identity",
+    "prompt": "Add the company name and the company logo to the document header.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "company_name",
+        "concept": "company_name",
+        "expected_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "header"
+      },
+      {
+        "id": "company_logo",
+        "concept": "company_logo",
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "image",
+        "expected_context": "header"
+      }
+    ],
+    "forbidden_paths": [
+      "MainData.Quotation.Customer.Name"
+    ],
+    "expected_blocks": [
+      {
+        "kind": "image",
+        "path": "GeneralData.Company.CompanyLogo",
+        "required": true
+      }
+    ],
+    "labels": [
+      "fields",
+      "images",
+      "header"
+    ]
+  },
+  {
+    "id": "flat-quotation-identifiers",
+    "prompt": "Show the quotation number, the quotation date and the validity date in the document body.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "quotation_number",
+        "concept": "quotation_number",
+        "expected_paths": [
+          "MainData.Quotation.QuotationId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "quotation_date",
+        "concept": "quotation_date",
+        "expected_paths": [
+          "MainData.Quotation.QuotationDate"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "date",
+        "expected_context": "body"
+      },
+      {
+        "id": "validity_date",
+        "concept": "validity_date",
+        "expected_paths": [
+          "MainData.Quotation.ValidUntil"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "date",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "fields",
+      "identifiers"
+    ]
+  },
+  {
+    "id": "flat-customer-contact",
+    "prompt": "Add the customer account number, customer name and customer address to the document body.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "customer_account",
+        "concept": "customer_account_number",
+        "expected_paths": [
+          "MainData.Quotation.Customer.AccountNum"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "customer_name",
+        "concept": "customer_name",
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "customer_address",
+        "concept": "customer_address",
+        "expected_paths": [
+          "MainData.Quotation.Customer.Address"
+        ],
+        "allowed_alternatives": [],
+        "required": false,
+        "expected_type": "string",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [
+      "GeneralData.Company.Name",
+      "GeneralData.Company.Address"
+    ],
+    "expected_blocks": [],
+    "labels": [
+      "fields",
+      "forbidden",
+      "customer_scope"
+    ]
+  },
+  {
+    "id": "flat-quotation-totals",
+    "prompt": "Show the quotation total amount and the tax amount in the document body.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "total_amount",
+        "concept": "total_amount",
+        "expected_paths": [
+          "MainData.Quotation.TotalAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "body"
+      },
+      {
+        "id": "tax_amount",
+        "concept": "tax_amount",
+        "expected_paths": [
+          "MainData.Quotation.TaxAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": false,
+        "expected_type": "number",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "fields",
+      "amounts"
+    ]
+  },
+  {
+    "id": "image-logo-header",
+    "prompt": "Place the company logo in the page header and the company name directly below it in the header.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "header_logo",
+        "concept": "company_logo",
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "image",
+        "expected_context": "header"
+      },
+      {
+        "id": "header_company_name",
+        "concept": "company_name",
+        "expected_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "header"
+      }
+    ],
+    "forbidden_paths": [
+      "MainData.Quotation.Customer.Name"
+    ],
+    "expected_blocks": [
+      {
+        "kind": "image",
+        "path": "GeneralData.Company.CompanyLogo",
+        "required": true
+      }
+    ],
+    "labels": [
+      "images",
+      "header"
+    ]
+  },
+  {
+    "id": "collection-quotation-lines",
+    "prompt": "Add a table of quotation lines with the item number, description, quantity, unit price and line amount.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "line_item",
+        "concept": "line_item",
+        "expected_paths": [
+          "MainData.QuotationLines.Line.ItemId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "line_description",
+        "concept": "line_description",
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "line_quantity",
+        "concept": "line_quantity",
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Quantity"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "line_unit_price",
+        "concept": "line_unit_price",
+        "expected_paths": [
+          "MainData.QuotationLines.Line.UnitPrice"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "line_amount",
+        "concept": "line_amount",
+        "expected_paths": [
+          "MainData.QuotationLines.Line.LineAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "repeat",
+        "path": "MainData.QuotationLines.Line",
+        "required": true
+      },
+      {
+        "kind": "table",
+        "path": "MainData.QuotationLines.Line",
+        "required": true
+      }
+    ],
+    "labels": [
+      "collections",
+      "table"
+    ]
+  },
+  {
+    "id": "collection-invoice-lines",
+    "prompt": "Add a table of invoice lines with the item number, description, quantity, unit price and line amount.",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "required_bindings": [
+      {
+        "id": "invoice_line_item",
+        "concept": "line_item",
+        "expected_paths": [
+          "MainData.InvoiceLines.Line.ItemId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "invoice_line_description",
+        "concept": "line_description",
+        "expected_paths": [
+          "MainData.InvoiceLines.Line.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "invoice_line_quantity",
+        "concept": "line_quantity",
+        "expected_paths": [
+          "MainData.InvoiceLines.Line.Quantity"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "invoice_line_unit_price",
+        "concept": "line_unit_price",
+        "expected_paths": [
+          "MainData.InvoiceLines.Line.UnitPrice"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "invoice_line_amount",
+        "concept": "line_amount",
+        "expected_paths": [
+          "MainData.InvoiceLines.Line.LineAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "repeat",
+        "path": "MainData.InvoiceLines.Line",
+        "required": true
+      },
+      {
+        "kind": "table",
+        "path": "MainData.InvoiceLines.Line",
+        "required": true
+      }
+    ],
+    "labels": [
+      "collections",
+      "table"
+    ]
+  },
+  {
+    "id": "collection-purchase-order-lines",
+    "prompt": "Add a table of ordered items with item number, description, quantity, unit price and line amount, plus the order total.",
+    "package": "examples/purchase-order/purchase-order.ddsp",
+    "required_bindings": [
+      {
+        "id": "po_line_item",
+        "concept": "line_item",
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.ItemId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "po_line_description",
+        "concept": "line_description",
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "po_line_quantity",
+        "concept": "line_quantity",
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.Quantity"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "po_line_unit_price",
+        "concept": "line_unit_price",
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.UnitPrice"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "po_line_amount",
+        "concept": "line_amount",
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.LineAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "po_total",
+        "concept": "total_amount",
+        "expected_paths": [
+          "MainData.PurchaseOrder.TotalAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "repeat",
+        "path": "MainData.PurchaseOrderLines.Line",
+        "required": true
+      },
+      {
+        "kind": "table",
+        "path": "MainData.PurchaseOrderLines.Line",
+        "required": true
+      }
+    ],
+    "labels": [
+      "collections",
+      "table",
+      "fields"
+    ]
+  },
+  {
+    "id": "nested-service-tasks",
+    "prompt": "Create a service order with a table of service lines and, under each line, a nested list of tasks showing the task id, task description and hours.",
+    "package": "benchmarks/fixtures/field-service.ddsp",
+    "required_bindings": [
+      {
+        "id": "service_line_description",
+        "concept": "line_description",
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "task_id",
+        "concept": "task_id",
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "task_description",
+        "concept": "task_description",
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "task_hours",
+        "concept": "task_hours",
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "repeat",
+        "path": "MainData.ServiceOrderLines.Line",
+        "required": true
+      },
+      {
+        "kind": "table",
+        "path": "MainData.ServiceOrderLines.Line",
+        "required": true
+      },
+      {
+        "kind": "repeat",
+        "path": "MainData.ServiceOrderLines.Line.Tasks.Task",
+        "required": true
+      }
+    ],
+    "labels": [
+      "nested_lists",
+      "collections"
+    ]
+  },
+  {
+    "id": "wide-line-table",
+    "prompt": "Add a line table with item, description, quantity, unit, unit price, discount percent, net amount and line amount.",
+    "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+    "required_bindings": [
+      {
+        "id": "wide_item",
+        "concept": "line_item",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.ItemId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_description",
+        "concept": "line_description",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Description"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_quantity",
+        "concept": "line_quantity",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Quantity"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_unit",
+        "concept": "line_unit",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Unit"
+        ],
+        "allowed_alternatives": [],
+        "required": false,
+        "expected_type": "string",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_unit_price",
+        "concept": "line_unit_price",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.UnitPrice"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_discount",
+        "concept": "line_discount",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.DiscountPct"
+        ],
+        "allowed_alternatives": [],
+        "required": false,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_net_amount",
+        "concept": "line_net_amount",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.NetAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      },
+      {
+        "id": "wide_line_amount",
+        "concept": "line_amount",
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.LineAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "repeat"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "repeat",
+        "path": "MainData.SalesOrderLines.Line",
+        "required": true
+      },
+      {
+        "kind": "table",
+        "path": "MainData.SalesOrderLines.Line",
+        "required": true
+      }
+    ],
+    "labels": [
+      "collections",
+      "wide_table"
+    ]
+  },
+  {
+    "id": "conditional-eu-vat",
+    "prompt": "Create a quotation with the customer name and a VAT notice that only appears when the customer is in the EU.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "vat_customer_name",
+        "concept": "customer_name",
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "vat_eu_condition",
+        "concept": "customer_is_eu",
+        "expected_paths": [
+          "MainData.Quotation.Customer.IsEU"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "boolean",
+        "expected_context": "conditional"
+      }
+    ],
+    "forbidden_paths": [
+      "Parameters.ShowVatNotice"
+    ],
+    "expected_blocks": [
+      {
+        "kind": "conditional",
+        "required": true
+      }
+    ],
+    "labels": [
+      "conditions",
+      "vat"
+    ]
+  },
+  {
+    "id": "conditional-reverse-charge",
+    "prompt": "Create a tax invoice with a reverse-charge notice that appears only when the invoice is marked for reverse charge and the customer is in the EU.",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "required_bindings": [
+      {
+        "id": "reverse_charge_flag",
+        "concept": "reverse_charge",
+        "expected_paths": [
+          "MainData.Invoice.ReverseCharge"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "boolean",
+        "expected_context": "conditional"
+      },
+      {
+        "id": "reverse_charge_eu_flag",
+        "concept": "customer_is_eu",
+        "expected_paths": [
+          "MainData.Invoice.Customer.IsEU"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "boolean",
+        "expected_context": "conditional"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [
+      {
+        "kind": "conditional",
+        "required": true
+      }
+    ],
+    "labels": [
+      "conditions",
+      "vat"
+    ]
+  },
+  {
+    "id": "multilingual-quotation-de",
+    "prompt": "Erstelle ein Angebot mit Kundennummer, Kundenname, Angebotsnummer und Gesamtsumme.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "language": "de",
+    "required_bindings": [
+      {
+        "id": "de_customer_account",
+        "concept": "customer_account_number",
+        "expected_paths": [
+          "MainData.Quotation.Customer.AccountNum"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "de_customer_name",
+        "concept": "customer_name",
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "de_quotation_number",
+        "concept": "quotation_number",
+        "expected_paths": [
+          "MainData.Quotation.QuotationId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "de_total",
+        "concept": "total_amount",
+        "expected_paths": [
+          "MainData.Quotation.TotalAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "multilingual",
+      "fields"
+    ]
+  },
+  {
+    "id": "multilingual-invoice-fr",
+    "prompt": "Créez une facture avec le numéro de facture, la date d'échéance, le nom du client et le montant total.",
+    "package": "examples/invoice/sales-invoice.ddsp",
+    "language": "fr",
+    "required_bindings": [
+      {
+        "id": "fr_invoice_number",
+        "concept": "invoice_number",
+        "expected_paths": [
+          "MainData.Invoice.InvoiceId"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "fr_due_date",
+        "concept": "due_date",
+        "expected_paths": [
+          "MainData.Invoice.DueDate"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "date",
+        "expected_context": "body"
+      },
+      {
+        "id": "fr_customer_name",
+        "concept": "customer_name",
+        "expected_paths": [
+          "MainData.Invoice.Customer.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "fr_total",
+        "concept": "total_amount",
+        "expected_paths": [
+          "MainData.Invoice.GrossAmount"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "number",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "multilingual",
+      "fields"
+    ]
+  },
+  {
+    "id": "missing-requisition-number",
+    "prompt": "Create a purchase order with the vendor name and the internal purchase requisition number.",
+    "package": "examples/purchase-order/purchase-order.ddsp",
+    "required_bindings": [
+      {
+        "id": "missing_vendor_name",
+        "concept": "vendor_name",
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "missing_requisition",
+        "concept": "purchase_requisition_number",
+        "expected_paths": [],
+        "allowed_alternatives": [],
+        "required": true,
+        "satisfiable": false,
+        "expected_type": "string",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "missing_requirement",
+      "fields"
+    ]
+  },
+  {
+    "id": "ambiguous-vat-number",
+    "prompt": "Show the VAT number on the quotation.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "ambiguous_vat",
+        "concept": "vat_number",
+        "expected_paths": [
+          "MainData.Quotation.Customer.VatNumber"
+        ],
+        "allowed_alternatives": [
+          "GeneralData.Company.VatNumber"
+        ],
+        "required": true,
+        "expected_type": "string"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "ambiguous",
+      "vat"
+    ]
+  },
+  {
+    "id": "ambiguous-document-date",
+    "prompt": "Show the date on the quotation.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "ambiguous_date",
+        "concept": "document_date",
+        "expected_paths": [
+          "MainData.Quotation.QuotationDate"
+        ],
+        "allowed_alternatives": [
+          "MainData.Quotation.ValidUntil"
+        ],
+        "required": true,
+        "expected_type": "date"
+      }
+    ],
+    "forbidden_paths": [],
+    "expected_blocks": [],
+    "labels": [
+      "ambiguous",
+      "fields"
+    ]
+  },
+  {
+    "id": "forbidden-customer-bank",
+    "prompt": "Show the customer name and the customer account number only.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "only_customer_name",
+        "concept": "customer_name",
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "only_customer_account",
+        "concept": "customer_account_number",
+        "expected_paths": [
+          "MainData.Quotation.Customer.AccountNum"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [
+      "MainData.Quotation.BankDetails.BankName",
+      "MainData.Quotation.BankDetails.Iban",
+      "MainData.Quotation.BankDetails.Swift",
+      "GeneralData.Company.Name"
+    ],
+    "expected_blocks": [],
+    "labels": [
+      "forbidden",
+      "customer_scope",
+      "bank"
+    ]
+  },
+  {
+    "id": "flat-vendor-details",
+    "prompt": "Add the vendor name, vendor contact email and delivery terms to the purchase order.",
+    "package": "examples/purchase-order/purchase-order.ddsp",
+    "required_bindings": [
+      {
+        "id": "vendor_name",
+        "concept": "vendor_name",
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "vendor_email",
+        "concept": "vendor_contact_email",
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.ContactEmail"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "body"
+      },
+      {
+        "id": "delivery_terms",
+        "concept": "delivery_terms",
+        "expected_paths": [
+          "MainData.PurchaseOrder.DeliveryTerms"
+        ],
+        "allowed_alternatives": [],
+        "required": false,
+        "expected_type": "string",
+        "expected_context": "body"
+      }
+    ],
+    "forbidden_paths": [
+      "GeneralData.Company.Name"
+    ],
+    "expected_blocks": [],
+    "labels": [
+      "fields",
+      "forbidden"
+    ]
+  },
+  {
+    "id": "bank-details-footer",
+    "prompt": "Put the bank name, IBAN and SWIFT code in the document footer.",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "required_bindings": [
+      {
+        "id": "footer_bank_name",
+        "concept": "bank_name",
+        "expected_paths": [
+          "MainData.Quotation.BankDetails.BankName"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "footer"
+      },
+      {
+        "id": "footer_iban",
+        "concept": "bank_iban",
+        "expected_paths": [
+          "MainData.Quotation.BankDetails.Iban"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "footer"
+      },
+      {
+        "id": "footer_swift",
+        "concept": "bank_swift",
+        "expected_paths": [
+          "MainData.Quotation.BankDetails.Swift"
+        ],
+        "allowed_alternatives": [],
+        "required": true,
+        "expected_type": "string",
+        "expected_context": "footer"
+      }
+    ],
+    "forbidden_paths": [
+      "GeneralData.Company.Name"
+    ],
+    "expected_blocks": [],
+    "labels": [
+      "fields",
+      "footer",
+      "bank"
+    ]
+  }
+]

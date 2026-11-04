@@ -1,0 +1,37 @@
+[
+  {
+    "case_id": "quotation-long-items",
+    "family": "long_descriptions",
+    "package": "benchmarks/fixtures/quotation-long-items.ddsp",
+    "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+    "notes": "Two descriptions wrap over several lines; text_fit warns before optimize_layout and the widened column/font should resolve it."
+  },
+  {
+    "case_id": "quotation-40-rows",
+    "family": "multi_page_table",
+    "package": "benchmarks/fixtures/quotation-40-rows.ddsp",
+    "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+    "notes": "Forty line items force the repeated table header across several LibreOffice pages.",
+    "min_pages_before": 4
+  },
+  {
+    "case_id": "quotation-empty-lines",
+    "family": "empty_collection",
+    "package": "benchmarks/fixtures/quotation-empty-lines.ddsp",
+    "prompt": "Create a professional sales quotation with the company logo, customer details, quotation number and date, product lines with quantities and unit prices, line amounts, the final amount, the VAT number, bank details in the footer, and an EU VAT notice when the customer is in the EU.",
+    "notes": "QuotationLines has no Line elements; the table header must not break the document and no phantom rows may appear.",
+    "forbidden_text": [
+      "ITEM-"
+    ]
+  },
+  {
+    "case_id": "quotation-conditional",
+    "family": "conditional_block",
+    "package": "examples/quotation/sales-quotation.ddsp",
+    "prompt": "Create a professional sales quotation with a VAT notice that only appears when the customer is in the EU, plus the customer name and the bank details in the footer.",
+    "notes": "The sample customer is in the EU, so the conditional VAT notice must render exactly once.",
+    "expected_text": [
+      "VAT notice"
+    ]
+  }
+]

@@ -17,6 +17,7 @@ document at [`/openapi.json`](http://localhost:8000/openapi.json). A snapshot is
 | `POST` | `/api/v1/templates/compile` | IR → DOCX artifact |
 | `POST` | `/api/v1/templates/revise` | New IR version from an instruction |
 | `POST` | `/api/v1/templates/preview` | HTML preview |
+| `POST` | `/api/v1/reference/inspect` | Read-only reference template inspection (multipart file or confined corpus path) |
 | `GET` | `/api/v1/templates/{id}/versions` | Version history |
 | `GET` | `/api/v1/templates/{id}/export/{version}` | Export a version's IR and reports |
 | `GET` | `/api/v1/jobs/{id}` | Job record |
@@ -25,6 +26,11 @@ document at [`/openapi.json`](http://localhost:8000/openapi.json). A snapshot is
 | `GET` | `/api/v1/providers` | Provider catalogue and configuration state |
 | `GET` | `/api/v1/capabilities` | Compilers, features and limits |
 | `GET` | `/api/v1/health` | Service health |
+
+Reference inspection accepts a multipart `file` (`.docx`, `.zip`, `.axpp`) with an optional
+`ddsp`, or `?path=` inside `DC_REFERENCE_CORPUS_ROOTS`. It is read-only, defaults to no nested
+archive recursion over HTTP, and reports `runtime_compatibility: "not_tested"`. See
+[Reference Templates](Reference-Templates).
 
 ## Error envelope
 

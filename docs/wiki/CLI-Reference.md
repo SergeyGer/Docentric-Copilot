@@ -27,6 +27,17 @@ docentric-copilot inspect examples/quotation/sales-quotation.ddsp [--json] [--pa
 Prints schema id, sections, node/scalar/collection counts, depth, sample-data availability and the parser
 diagnostics. `--json` emits the normalized schema for automation.
 
+### `reference inspect`
+
+```bash
+docentric-copilot reference inspect template.docx --json report.json
+docentric-copilot reference inspect examples/corpus --max-depth 2 --json report.json
+```
+
+Read-only REF-00/REF-02 inspection of a DOCX, ZIP, AXPP or directory. `--json` takes an output
+path (`-` for stdout); `--ddsp` optionally supplies a schema for path validation. No macros or
+template expressions are executed. See [Reference Templates](Reference-Templates).
+
 ### `plan`
 
 ```bash

@@ -123,10 +123,11 @@ def create_app(
             },
         )
 
-    from .routes import demo, quality, review, sources, system, templates
+    from .routes import demo, quality, reference, review, sources, system, templates
 
     api_prefix = "/api/v1"
     app.include_router(sources.router, prefix=api_prefix)
+    app.include_router(reference.router, prefix=api_prefix)
     app.include_router(templates.router, prefix=api_prefix)
     app.include_router(demo.router, prefix=api_prefix)
     app.include_router(review.router, prefix=api_prefix)

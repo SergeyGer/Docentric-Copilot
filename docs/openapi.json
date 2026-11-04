@@ -1,6 +1,23 @@
 {
   "components": {
     "schemas": {
+      "ArtifactKind": {
+        "description": "Kind of one inventory artifact.",
+        "enum": [
+          "docx",
+          "ddsp",
+          "xml",
+          "xsd",
+          "axpp",
+          "zip",
+          "xpo",
+          "project",
+          "text",
+          "other"
+        ],
+        "title": "ArtifactKind",
+        "type": "string"
+      },
       "ArtifactView": {
         "additionalProperties": false,
         "properties": {
@@ -48,6 +65,38 @@
           "expires_at"
         ],
         "title": "ArtifactView",
+        "type": "object"
+      },
+      "Body_inspect_reference_endpoint_api_v1_reference_inspect_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional matching DDSP XML schema for path validation",
+            "title": "Ddsp"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reference DOCX, ZIP or AXPP package",
+            "title": "File"
+          }
+        },
+        "title": "Body_inspect_reference_endpoint_api_v1_reference_inspect_post",
         "type": "object"
       },
       "Body_upload_source_api_v1_sources_post": {
@@ -151,6 +200,16 @@
           "not_tested"
         ],
         "title": "CheckStatus",
+        "type": "string"
+      },
+      "Classification": {
+        "description": "How confidently the scanner recognized a Docentric marker.",
+        "enum": [
+          "recognized",
+          "ambiguous",
+          "unknown"
+        ],
+        "title": "Classification",
         "type": "string"
       },
       "CompareRequest": {
@@ -601,6 +660,329 @@
         "title": "ConfirmMappingResponse",
         "type": "object"
       },
+      "ControlEvidence": {
+        "additionalProperties": false,
+        "description": "A content control plus its REF-02 resolution evidence.",
+        "properties": {
+          "alias": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alias"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/Classification",
+            "default": "unknown"
+          },
+          "classification_reason": {
+            "default": "no_docentric_marker",
+            "maxLength": 80,
+            "title": "Classification Reason",
+            "type": "string"
+          },
+          "control_type": {
+            "$ref": "#/components/schemas/ControlType"
+          },
+          "data_binding": {
+            "$ref": "#/components/schemas/DataBinding"
+          },
+          "dc_namespaces": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Dc Namespaces",
+            "type": "array"
+          },
+          "depth": {
+            "minimum": 0.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "element_kind": {
+            "$ref": "#/components/schemas/ElementKind",
+            "default": "unknown"
+          },
+          "has_dc_namespace": {
+            "default": false,
+            "title": "Has Dc Namespace",
+            "type": "boolean"
+          },
+          "markers": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Markers",
+            "type": "array"
+          },
+          "ordinal": {
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "paragraph_index": {
+            "minimum": -1.0,
+            "title": "Paragraph Index",
+            "type": "integer"
+          },
+          "part": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Part",
+            "type": "string"
+          },
+          "placeholder": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placeholder"
+          },
+          "resolution": {
+            "$ref": "#/components/schemas/ControlResolution"
+          },
+          "sdt_id_signed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sdt Id Signed"
+          },
+          "sdt_id_unsigned": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sdt Id Unsigned"
+          },
+          "story": {
+            "$ref": "#/components/schemas/StoryPart"
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tag"
+          },
+          "text_preview": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Text Preview",
+            "type": "string"
+          }
+        },
+        "required": [
+          "part",
+          "story",
+          "paragraph_index",
+          "ordinal",
+          "depth",
+          "control_type",
+          "resolution"
+        ],
+        "title": "ControlEvidence",
+        "type": "object"
+      },
+      "ControlResolution": {
+        "additionalProperties": false,
+        "description": "Result of resolving one content control against ProjectData and a schema.",
+        "properties": {
+          "diagnostic_codes": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Diagnostic Codes",
+            "type": "array"
+          },
+          "element_id_unsigned": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Element Id Unsigned"
+          },
+          "element_type": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Element Type"
+          },
+          "link_status": {
+            "$ref": "#/components/schemas/LinkStatus"
+          },
+          "normalized_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalized Path"
+          },
+          "path_status": {
+            "$ref": "#/components/schemas/PathStatus",
+            "default": "not_checked"
+          },
+          "path_suggestions": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Path Suggestions",
+            "type": "array"
+          },
+          "schema_section": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Section"
+          },
+          "schema_source": {
+            "$ref": "#/components/schemas/SchemaSource",
+            "default": "none"
+          },
+          "source_binding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceBinding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_binding_raw": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceBinding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResolutionStatus"
+          }
+        },
+        "required": [
+          "status",
+          "link_status"
+        ],
+        "title": "ControlResolution",
+        "type": "object"
+      },
+      "ControlType": {
+        "description": "Word content-control flavour detected from ``w:sdtPr``.",
+        "enum": [
+          "text",
+          "date",
+          "dropdown",
+          "picture",
+          "rich_text",
+          "checkbox",
+          "group",
+          "building_block",
+          "citation",
+          "equation",
+          "repeating_section",
+          "unknown"
+        ],
+        "title": "ControlType",
+        "type": "string"
+      },
+      "DataBinding": {
+        "additionalProperties": false,
+        "description": "Word ``w:dataBinding`` attributes; never evaluated as an XPath expression.",
+        "properties": {
+          "prefix_mappings": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefix Mappings"
+          },
+          "store_item_id": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Item Id"
+          },
+          "xpath": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xpath"
+          }
+        },
+        "title": "DataBinding",
+        "type": "object"
+      },
       "DemoCase": {
         "properties": {
           "defect": {
@@ -816,6 +1198,175 @@
         "title": "DesignStyle",
         "type": "string"
       },
+      "DocumentEvidence": {
+        "additionalProperties": false,
+        "description": "Evidence collected for one distinct DOCX payload.",
+        "properties": {
+          "classification_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Classification Counts",
+            "type": "object"
+          },
+          "control_count": {
+            "minimum": 0.0,
+            "title": "Control Count",
+            "type": "integer"
+          },
+          "controls": {
+            "items": {
+              "$ref": "#/components/schemas/ControlEvidence"
+            },
+            "title": "Controls",
+            "type": "array"
+          },
+          "coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Coverage Ratio",
+            "type": "number"
+          },
+          "filename": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Filename",
+            "type": "string"
+          },
+          "has_active_x": {
+            "default": false,
+            "title": "Has Active X",
+            "type": "boolean"
+          },
+          "has_embedded_objects": {
+            "default": false,
+            "title": "Has Embedded Objects",
+            "type": "boolean"
+          },
+          "has_external_relationships": {
+            "default": false,
+            "title": "Has External Relationships",
+            "type": "boolean"
+          },
+          "has_macros": {
+            "default": false,
+            "title": "Has Macros",
+            "type": "boolean"
+          },
+          "join_coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Join Coverage Ratio",
+            "type": "number"
+          },
+          "joined_count": {
+            "minimum": 0.0,
+            "title": "Joined Count",
+            "type": "integer"
+          },
+          "link_status_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Link Status Counts",
+            "type": "object"
+          },
+          "path_status_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Path Status Counts",
+            "type": "object"
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 4096,
+            "minItems": 1,
+            "title": "Paths",
+            "type": "array"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/PlatformHint",
+            "default": "unknown"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "project_data": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectDataPart"
+            },
+            "title": "Project Data",
+            "type": "array"
+          },
+          "resolution_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Resolution Counts",
+            "type": "object"
+          },
+          "schema_paths": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Schema Paths",
+            "type": "integer"
+          },
+          "schema_sections": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Schema Sections",
+            "type": "array"
+          },
+          "schema_source": {
+            "$ref": "#/components/schemas/SchemaSource",
+            "default": "none"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sha256",
+          "paths",
+          "filename",
+          "size_bytes",
+          "control_count",
+          "joined_count",
+          "join_coverage_ratio",
+          "coverage_ratio"
+        ],
+        "title": "DocumentEvidence",
+        "type": "object"
+      },
       "DocumentRef": {
         "additionalProperties": false,
         "properties": {
@@ -864,6 +1415,59 @@
         "title": "DocumentRef",
         "type": "object"
       },
+      "DuplicateGroup": {
+        "additionalProperties": false,
+        "description": "Byte-identical artifacts; one logical payload, several occurrences.",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ArtifactKind"
+          },
+          "occurrences": {
+            "minimum": 2.0,
+            "title": "Occurrences",
+            "type": "integer"
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 4096,
+            "minItems": 2,
+            "title": "Paths",
+            "type": "array"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sha256",
+          "kind",
+          "occurrences",
+          "paths"
+        ],
+        "title": "DuplicateGroup",
+        "type": "object"
+      },
+      "ElementKind": {
+        "description": "Docentric element kind inferred from markers, never from execution.",
+        "enum": [
+          "field",
+          "list",
+          "if",
+          "image",
+          "label",
+          "barcode",
+          "summary_field",
+          "sub_document",
+          "group",
+          "unknown"
+        ],
+        "title": "ElementKind",
+        "type": "string"
+      },
       "Finding": {
         "additionalProperties": false,
         "properties": {
@@ -890,7 +1494,7 @@
             "type": "string"
           },
           "severity": {
-            "$ref": "#/components/schemas/Severity"
+            "$ref": "#/components/schemas/docentric_copilot__template_validator__models__Severity"
           }
         },
         "required": [
@@ -941,6 +1545,99 @@
           "docentric_ax_adapter_enabled"
         ],
         "title": "HealthView",
+        "type": "object"
+      },
+      "InventoryEntry": {
+        "additionalProperties": false,
+        "description": "One hashed artifact inside the inspected source.",
+        "properties": {
+          "expanded": {
+            "default": false,
+            "title": "Expanded",
+            "type": "boolean"
+          },
+          "is_archive": {
+            "default": false,
+            "title": "Is Archive",
+            "type": "boolean"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ArtifactKind"
+          },
+          "name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "nested_depth": {
+            "maximum": 8.0,
+            "minimum": 0.0,
+            "title": "Nested Depth",
+            "type": "integer"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "maxLength": 600,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          },
+          "path": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          },
+          "platform_hint": {
+            "$ref": "#/components/schemas/PlatformHint",
+            "default": "unknown"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "path",
+          "name",
+          "kind",
+          "size_bytes",
+          "sha256",
+          "nested_depth"
+        ],
+        "title": "InventoryEntry",
         "type": "object"
       },
       "JobView": {
@@ -1013,6 +1710,23 @@
         "title": "Level",
         "type": "string"
       },
+      "LinkStatus": {
+        "description": "How the OOXML control was linked to ProjectData metadata.",
+        "enum": [
+          "resolved_by_id",
+          "resolved_by_id_shared",
+          "no_sdt_id",
+          "no_project_data",
+          "missing_store_item",
+          "store_item_not_project_data",
+          "no_element_for_id",
+          "duplicate_id_collision",
+          "multiple_project_data_parts",
+          "type_mismatch"
+        ],
+        "title": "LinkStatus",
+        "type": "string"
+      },
       "OptimizeResponse": {
         "properties": {
           "after": {
@@ -1079,6 +1793,18 @@
         ],
         "title": "OptimizeResponse",
         "type": "object"
+      },
+      "PathStatus": {
+        "description": "How a binding path matched the supplied DDSP schema.",
+        "enum": [
+          "matched",
+          "not_checked",
+          "unknown",
+          "section_missing",
+          "ambiguous"
+        ],
+        "title": "PathStatus",
+        "type": "string"
       },
       "PlanOptionsRequest": {
         "additionalProperties": false,
@@ -1288,6 +2014,17 @@
         "title": "PlanResponse",
         "type": "object"
       },
+      "PlatformHint": {
+        "description": "Detected Docentric/Dynamics platform family.",
+        "enum": [
+          "ax2012",
+          "d365",
+          "mixed",
+          "unknown"
+        ],
+        "title": "PlatformHint",
+        "type": "string"
+      },
       "PreviewRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1338,6 +2075,79 @@
           "source_id"
         ],
         "title": "PreviewRequest",
+        "type": "object"
+      },
+      "ProjectDataPart": {
+        "additionalProperties": false,
+        "description": "Summary of one ProjectData part; raw metadata stays internal.",
+        "properties": {
+          "data_sources": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Data Sources",
+            "type": "array"
+          },
+          "duplicate_element_ids": {
+            "minimum": 0.0,
+            "title": "Duplicate Element Ids",
+            "type": "integer"
+          },
+          "element_count": {
+            "minimum": 0.0,
+            "title": "Element Count",
+            "type": "integer"
+          },
+          "part": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Part",
+            "type": "string"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "store_item_id": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Item Id"
+          }
+        },
+        "required": [
+          "part",
+          "element_count",
+          "duplicate_element_ids"
+        ],
+        "title": "ProjectDataPart",
         "type": "object"
       },
       "ProviderView": {
@@ -1395,6 +2205,421 @@
         ],
         "title": "QualityResponse",
         "type": "object"
+      },
+      "ReferenceCounts": {
+        "additionalProperties": false,
+        "description": "Deterministic aggregate counts with explicit denominators.",
+        "properties": {
+          "ambiguous": {
+            "minimum": 0.0,
+            "title": "Ambiguous",
+            "type": "integer"
+          },
+          "artifacts": {
+            "minimum": 0.0,
+            "title": "Artifacts",
+            "type": "integer"
+          },
+          "by_classification": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Classification",
+            "type": "object"
+          },
+          "by_element_kind": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Element Kind",
+            "type": "object"
+          },
+          "by_link_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Link Status",
+            "type": "object"
+          },
+          "by_part": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Part",
+            "type": "object"
+          },
+          "by_path_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Path Status",
+            "type": "object"
+          },
+          "by_resolution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Resolution",
+            "type": "object"
+          },
+          "by_story": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Story",
+            "type": "object"
+          },
+          "classification_ambiguous": {
+            "minimum": 0.0,
+            "title": "Classification Ambiguous",
+            "type": "integer"
+          },
+          "classification_recognized": {
+            "minimum": 0.0,
+            "title": "Classification Recognized",
+            "type": "integer"
+          },
+          "classification_unknown": {
+            "minimum": 0.0,
+            "title": "Classification Unknown",
+            "type": "integer"
+          },
+          "controls_total": {
+            "minimum": 0.0,
+            "title": "Controls Total",
+            "type": "integer"
+          },
+          "coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Coverage Ratio",
+            "type": "number"
+          },
+          "distinct_artifacts": {
+            "minimum": 0.0,
+            "title": "Distinct Artifacts",
+            "type": "integer"
+          },
+          "distinct_docx": {
+            "minimum": 0.0,
+            "title": "Distinct Docx",
+            "type": "integer"
+          },
+          "docx_artifacts": {
+            "minimum": 0.0,
+            "title": "Docx Artifacts",
+            "type": "integer"
+          },
+          "duplicate_groups": {
+            "minimum": 0.0,
+            "title": "Duplicate Groups",
+            "type": "integer"
+          },
+          "duplicate_occurrences": {
+            "minimum": 0.0,
+            "title": "Duplicate Occurrences",
+            "type": "integer"
+          },
+          "join_coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Join Coverage Ratio",
+            "type": "number"
+          },
+          "joined_by_id": {
+            "minimum": 0.0,
+            "title": "Joined By Id",
+            "type": "integer"
+          },
+          "missing_part": {
+            "minimum": 0.0,
+            "title": "Missing Part",
+            "type": "integer"
+          },
+          "nested_archives": {
+            "minimum": 0.0,
+            "title": "Nested Archives",
+            "type": "integer"
+          },
+          "resolved": {
+            "minimum": 0.0,
+            "title": "Resolved",
+            "type": "integer"
+          },
+          "unknown_path": {
+            "minimum": 0.0,
+            "title": "Unknown Path",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "artifacts",
+          "distinct_artifacts",
+          "docx_artifacts",
+          "distinct_docx",
+          "controls_total",
+          "classification_recognized",
+          "classification_ambiguous",
+          "classification_unknown",
+          "resolved",
+          "missing_part",
+          "unknown_path",
+          "ambiguous",
+          "joined_by_id",
+          "join_coverage_ratio",
+          "duplicate_groups",
+          "duplicate_occurrences",
+          "nested_archives",
+          "coverage_ratio"
+        ],
+        "title": "ReferenceCounts",
+        "type": "object"
+      },
+      "ReferenceDiagnostic": {
+        "additionalProperties": false,
+        "description": "One explicit, machine-readable inspection finding.",
+        "properties": {
+          "code": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Details",
+            "type": "object"
+          },
+          "document_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Sha256"
+          },
+          "message": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "ordinal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinal"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/docentric_copilot__reference__report__Severity"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "message"
+        ],
+        "title": "ReferenceDiagnostic",
+        "type": "object"
+      },
+      "ReferenceInventory": {
+        "additionalProperties": false,
+        "description": "JSON-serialisable inventory of one file or directory.",
+        "properties": {
+          "container": {
+            "$ref": "#/components/schemas/VersionHints"
+          },
+          "duplicates": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateGroup"
+            },
+            "title": "Duplicates",
+            "type": "array"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/InventoryEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "nested_archives": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Nested Archives",
+            "type": "array"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_size_bytes": {
+            "minimum": 0.0,
+            "title": "Source Size Bytes",
+            "type": "integer"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "source_type",
+          "source_name",
+          "source_sha256",
+          "source_size_bytes",
+          "container"
+        ],
+        "title": "ReferenceInventory",
+        "type": "object"
+      },
+      "ReferenceReport": {
+        "additionalProperties": false,
+        "description": "The complete reference inspection report.",
+        "properties": {
+          "container": {
+            "$ref": "#/components/schemas/VersionHints"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ReferenceCounts"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDiagnostic"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentEvidence"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "duplicates": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateGroup"
+            },
+            "title": "Duplicates",
+            "type": "array"
+          },
+          "inspector": {
+            "default": "reference-inspector/1.0",
+            "title": "Inspector",
+            "type": "string"
+          },
+          "inventory": {
+            "$ref": "#/components/schemas/ReferenceInventory"
+          },
+          "nested_archives": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Nested Archives",
+            "type": "array"
+          },
+          "reference_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Reference Version",
+            "type": "string"
+          },
+          "report_digest": {
+            "default": "0000000000000000000000000000000000000000000000000000000000000000",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Report Digest",
+            "type": "string"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "source_type",
+          "source_name",
+          "source_sha256",
+          "container",
+          "counts",
+          "inventory"
+        ],
+        "title": "ReferenceReport",
+        "type": "object"
+      },
+      "ResolutionStatus": {
+        "description": "Overall REF-02 resolution outcome.",
+        "enum": [
+          "resolved",
+          "missing_part",
+          "unknown_path",
+          "ambiguous"
+        ],
+        "title": "ResolutionStatus",
+        "type": "string"
       },
       "RevisionRequest": {
         "additionalProperties": false,
@@ -1660,6 +2885,15 @@
         "title": "RoutingExecutionTrace",
         "type": "object"
       },
+      "SchemaSource": {
+        "description": "Where the optional schema came from.",
+        "enum": [
+          "ddsp",
+          "none"
+        ],
+        "title": "SchemaSource",
+        "type": "string"
+      },
       "SchemaView": {
         "additionalProperties": false,
         "properties": {
@@ -1695,13 +2929,71 @@
         "title": "SchemaView",
         "type": "object"
       },
-      "Severity": {
+      "SourceBinding": {
+        "additionalProperties": false,
+        "description": "One typed ``ValueBinding`` from Docentric metadata.",
+        "properties": {
+          "data_kind": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Kind"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "result_data_type": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Data Type"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "title": "SourceBinding",
+        "type": "object"
+      },
+      "SourceType": {
+        "description": "Kind of the root input.",
         "enum": [
-          "error",
-          "warning",
-          "info"
+          "docx",
+          "zip",
+          "axpp",
+          "directory"
         ],
-        "title": "Severity",
+        "title": "SourceType",
         "type": "string"
       },
       "SourceView": {
@@ -1763,6 +3055,21 @@
         ],
         "title": "SourceView",
         "type": "object"
+      },
+      "StoryPart": {
+        "description": "Word story part that carries a content control.",
+        "enum": [
+          "document",
+          "header",
+          "footer",
+          "footnote",
+          "endnote",
+          "comment",
+          "glossary",
+          "other"
+        ],
+        "title": "StoryPart",
+        "type": "string"
       },
       "ValidateRequest": {
         "additionalProperties": false,
@@ -1937,13 +3244,60 @@
         },
         "title": "ValidationReport",
         "type": "object"
+      },
+      "VersionHints": {
+        "additionalProperties": false,
+        "description": "Version/platform evidence collected for the whole container.",
+        "properties": {
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 24,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/PlatformHint",
+            "default": "unknown"
+          },
+          "product_versions": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 32,
+            "title": "Product Versions",
+            "type": "array"
+          }
+        },
+        "title": "VersionHints",
+        "type": "object"
+      },
+      "docentric_copilot__reference__report__Severity": {
+        "description": "Diagnostic severity; unresolved is not necessarily an error.",
+        "enum": [
+          "info",
+          "warning",
+          "error"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "docentric_copilot__template_validator__models__Severity": {
+        "enum": [
+          "error",
+          "warning",
+          "info"
+        ],
+        "title": "Severity",
+        "type": "string"
       }
     }
   },
   "info": {
     "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
     "title": "Docentric Copilot API",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2225,6 +3579,82 @@
         "summary": "Providers",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/reference/inspect": {
+      "post": {
+        "description": "Inspect a reference template without executing or writing it.",
+        "operationId": "inspect_reference_endpoint_api_v1_reference_inspect_post",
+        "parameters": [
+          {
+            "description": "Path inside a configured reference corpus root",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Path inside a configured reference corpus root",
+              "title": "Path"
+            }
+          },
+          {
+            "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+            "in": "query",
+            "name": "max_depth",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+              "maximum": 3,
+              "minimum": 0,
+              "title": "Max Depth",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_inspect_reference_endpoint_api_v1_reference_inspect_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect Reference Endpoint",
+        "tags": [
+          "reference"
         ]
       }
     },

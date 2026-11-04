@@ -8,6 +8,23 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-04
+
+### Added
+- Reference Template Inspector (milestone A): safe inventory of DOCX/ZIP/AXPP containers,
+  SHA-256 deduplication, nested-archive guards, OOXML content-control extraction with
+  tag/alias/databinding/part, Docentric element classification (Field, List, If, Image, Label,
+  Barcode, SummaryField, SubDocument, Group) and metadata resolution with explicit
+  `resolved|ambiguous|unknown` outcomes.
+- CLI `docentric-copilot reference inspect` and `POST /api/v1/reference/inspect`, both read-only.
+- Reference report with per-kind counts, coverage ratio and `runtime_compatibility: not_tested`;
+  ADR-0010, `docs/REFERENCE_TEMPLATES.md` and the wiki page.
+- Docentric example archive is processed only from an ignored local corpus; nothing from it is
+  stored in the repository.
+
+### Changed
+- `docs/media` keeps a single current demo video; obsolete v1–v3 cuts were removed.
+
 ## [0.5.0] - 2026-11-04
 
 ### Added

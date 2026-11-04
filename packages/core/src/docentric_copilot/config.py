@@ -129,6 +129,11 @@ class Settings:
     artifact_ttl_seconds: int = 3600
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     enable_docentric_ax_adapter: bool = False
+    #: Directories the reference inspector may read through the HTTP ``path``
+    #: form of ``POST /api/v1/reference/inspect``. Relative entries resolve from
+    #: the process working directory; symlink escapes are rejected after
+    #: resolution. The default points at the git-ignored local corpus.
+    reference_corpus_roots: tuple[Path, ...] = (Path(".tools/reference-corpus"),)
     #: Sanitized auto-routing traces. Git-ignored: they are local run evidence,
     #: not source. Empty string disables writing.
     routing_trace_dir: Path = Path("docs/media/runs")
@@ -224,6 +229,10 @@ def _build_settings() -> Settings:
         artifact_ttl_seconds=_env_int("DC_ARTIFACT_TTL_SECONDS", 3600, minimum=60),
         cors_origins=tuple(origins),
         enable_docentric_ax_adapter=_env_bool("DC_ENABLE_AX_ADAPTER", False),
+        reference_corpus_roots=tuple(
+            Path(item).expanduser()
+            for item in (_env_list("DC_REFERENCE_CORPUS_ROOTS") or [".tools/reference-corpus"])
+        ),
         routing_trace_dir=Path(_env_str("DC_ROUTING_TRACE_DIR", "docs/media/runs")),
         providers=_build_providers(),
         llm_timeout_seconds=_env_float("DC_LLM_TIMEOUT_SECONDS", 60.0, minimum=1.0),

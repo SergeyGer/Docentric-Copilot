@@ -29,6 +29,12 @@ from docentric_copilot.ddsp_parser import ParsedSource, parse_ddsp
 from docentric_copilot.docx_compiler import CompileOptions
 from docentric_copilot.errors import CopilotError, NotFoundError
 from docentric_copilot.planner import PlanOptions, TemplatePlanner
+from docentric_copilot.reference import (
+    ReferenceLimits,
+    ReferenceReport,
+    inspect_reference,
+    report_json,
+)
 from docentric_copilot.template_ir import (
     CompileTarget,
     document_json_schema,
@@ -45,6 +51,14 @@ app = typer.Typer(
     # Never echo local variables: a traceback could contain sample business data.
     pretty_exceptions_enable=False,
 )
+
+reference_app = typer.Typer(
+    name="reference",
+    help="Read-only inspection of reference DOCX, ZIP, AXPP and directories.",
+    no_args_is_help=True,
+    add_completion=False,
+)
+app.add_typer(reference_app, name="reference")
 
 
 # --------------------------------------------------------------------------- #
@@ -153,6 +167,87 @@ def inspect(
             node = schema.node(path)
             marker = "[]" if node and node.collection else "  "
             typer.echo(f"  {marker} {path}  ({node.data_type if node else '?'})")
+
+
+def _reference_summary(report: ReferenceReport) -> str:
+    counts = report.counts
+    lines = [
+        f"Reference: {report.source_name} ({report.source_type.value})",
+        (
+            f"Artifacts: {counts.artifacts} ({counts.distinct_artifacts} distinct, "
+            f"{counts.distinct_docx} distinct DOCX)"
+        ),
+        (
+            f"Content controls: {counts.controls_total} "
+            f"(recognized {counts.classification_recognized}, "
+            f"ambiguous {counts.classification_ambiguous}, "
+            f"unknown {counts.classification_unknown})"
+        ),
+        (
+            f"Resolution: resolved {counts.resolved}, missing part {counts.missing_part}, "
+            f"unknown path {counts.unknown_path}, ambiguous {counts.ambiguous}"
+        ),
+        (
+            f"ID joins: {counts.joined_by_id}/{counts.controls_total} "
+            f"({counts.join_coverage_ratio:.1%}); coverage {counts.coverage_ratio:.1%}"
+        ),
+        (
+            f"Duplicates: {counts.duplicate_groups} groups "
+            f"({counts.duplicate_occurrences} extra occurrences); "
+            f"nested archives: {counts.nested_archives}"
+        ),
+        f"Runtime compatibility: {report.runtime_compatibility}",
+    ]
+    if report.warnings:
+        lines.append(f"Warnings: {len(report.warnings)}")
+    return "\n".join(lines)
+
+
+@reference_app.command("inspect")
+def reference_inspect(
+    path: Annotated[
+        str,
+        typer.Argument(help="DOCX, ZIP, AXPP or directory to inspect"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the JSON report to this path; use '-' for stdout",
+        ),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option("--ddsp", help="Optional matching DDSP XML schema for path validation"),
+    ] = None,
+    max_depth: Annotated[
+        int,
+        typer.Option(
+            "--max-depth",
+            min=0,
+            max=3,
+            help="Nested archive depth to expand (offline only; default 1)",
+        ),
+    ] = 1,
+) -> None:
+    """Inspect reference templates without executing them (REF-00, REF-02)."""
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
+        report = inspect_reference(path, limits=limits, max_depth=max_depth, ddsp_path=ddsp)
+    except CopilotError as exc:
+        _fail(exc, as_json=json_output is not None)
+        return
+    summary = _reference_summary(report)
+    if json_output is None:
+        typer.echo(summary)
+        return
+    if str(json_output) == "-":
+        typer.echo(report_json(report), nl=False)
+        return
+    json_output.parent.mkdir(parents=True, exist_ok=True)
+    json_output.write_text(report_json(report), encoding="utf-8")
+    typer.echo(summary)
+    typer.echo(f"Report written to {json_output}")
 
 
 @app.command()

@@ -25,6 +25,7 @@
 - [Template IR](Template-IR)
 - [Validation Model](Validation-Model)
 - [DDSP Compatibility](DDSP-Compatibility)
+- [Reference Templates](Reference-Templates)
 - [Docentric AX Compatibility](Docentric-AX-Compatibility)
 
 ---

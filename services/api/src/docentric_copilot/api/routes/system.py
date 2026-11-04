@@ -48,6 +48,7 @@ def capabilities(
             "template_ir": True,
             "generic_docx": True,
             "html_preview": True,
+            "reference_inspector": True,
             "pdf_preview": False,
             "docentric_ax_adapter": False,
             "verified_compatibility": False,

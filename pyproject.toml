@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docentric-copilot"
-version = "0.5.0"
+version = "0.6.0"
 description = "Schema-aware AI prompt-to-template engine for enterprise document automation"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -67,6 +67,7 @@ packages = [
   "docentric_copilot.planner",
   "docentric_copilot.preview",
   "docentric_copilot.evaluation",
+  "docentric_copilot.reference",
   "docentric_copilot.app",
   "docentric_copilot.api",
   "docentric_copilot.api.routes",
@@ -85,6 +86,7 @@ docentric_copilot = "packages/core/src/docentric_copilot"
 "docentric_copilot.planner" = "packages/planner/src/docentric_copilot/planner"
 "docentric_copilot.preview" = "packages/renderer/src/docentric_copilot/preview"
 "docentric_copilot.evaluation" = "packages/evaluation/src/docentric_copilot/evaluation"
+"docentric_copilot.reference" = "packages/reference-inspector/src/docentric_copilot/reference"
 "docentric_copilot.app" = "services/api/src/docentric_copilot/app"
 "docentric_copilot.api" = "services/api/src/docentric_copilot/api"
 "docentric_copilot.api.routes" = "services/api/src/docentric_copilot/api/routes"
@@ -143,6 +145,7 @@ mypy_path = [
   "packages/planner/src",
   "packages/renderer/src",
   "packages/evaluation/src",
+  "packages/reference-inspector/src",
   "services/api/src",
 ]
 explicit_package_bases = true

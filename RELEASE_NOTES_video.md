@@ -5,7 +5,7 @@ This release note accompanies `docs/media/demo-v4.mp4` (9.6 MiB),
 `docs/media/scene-manifest-v4.json`, `docs/media/auto-plan-response.json` and the live captures
 `docs/assets/auto-mode-selected.png` and `docs/assets/auto-routing-result.png`.
 Nothing is committed or pushed; the files are in the working tree. It supersedes the v3 video notes;
-`demo-v2.mp4`, `demo-v3.mp4` and their sidecars are left untouched.
+Older cuts were removed; `docs/media` keeps a single current video.
 
 ## What changed from v3
 

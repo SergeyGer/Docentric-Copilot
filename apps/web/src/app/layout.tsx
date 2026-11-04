@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className="min-h-screen bg-background font-sans text-foreground">
         <a href="#workspace" className="skip-link">
-          Skip to workspace
+          Skip to main content
         </a>
         <div className="flex min-h-screen flex-col">
           <WorkspaceProvider>

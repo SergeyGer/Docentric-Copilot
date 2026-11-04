@@ -676,3 +676,556 @@ export interface TemplateVersionDetail {
   validation: ValidationReport;
   canonical_ir: string;
 }
+
+/* ------------------------------------------------------- reference inspector */
+
+export type ReferenceRuntimeCompatibility = "not_tested";
+export type ReferenceSourceType = "docx" | "zip" | "axpp" | "directory";
+export type ReferencePlatformHint = "ax2012" | "d365" | "mixed" | "unknown";
+export type ReferenceArtifactKind =
+  | "docx"
+  | "ddsp"
+  | "xml"
+  | "xsd"
+  | "axpp"
+  | "zip"
+  | "xpo"
+  | "project"
+  | "text"
+  | "other";
+export type ReferenceSeverity = "info" | "warning" | "error";
+export type ReferenceStoryPart =
+  | "document"
+  | "header"
+  | "footer"
+  | "footnote"
+  | "endnote"
+  | "comment"
+  | "glossary"
+  | "other";
+export type ReferenceControlType =
+  | "text"
+  | "date"
+  | "dropdown"
+  | "picture"
+  | "rich_text"
+  | "checkbox"
+  | "group"
+  | "building_block"
+  | "citation"
+  | "equation"
+  | "repeating_section"
+  | "unknown";
+export type ReferenceElementKind =
+  | "field"
+  | "list"
+  | "if"
+  | "image"
+  | "label"
+  | "barcode"
+  | "summary_field"
+  | "sub_document"
+  | "group"
+  | "unknown";
+export type ReferenceClassification = "recognized" | "ambiguous" | "unknown";
+export type ReferenceResolutionStatus =
+  | "resolved"
+  | "missing_part"
+  | "unknown_path"
+  | "ambiguous";
+export type ReferenceLinkStatus =
+  | "resolved_by_id"
+  | "resolved_by_id_shared"
+  | "no_sdt_id"
+  | "no_project_data"
+  | "missing_store_item"
+  | "store_item_not_project_data"
+  | "no_element_for_id"
+  | "duplicate_id_collision"
+  | "multiple_project_data_parts"
+  | "type_mismatch";
+export type ReferencePathStatus =
+  | "matched"
+  | "not_checked"
+  | "unknown"
+  | "section_missing"
+  | "ambiguous";
+export type ReferenceSchemaSource = "ddsp" | "none";
+export type ReferenceGraphNodeKind = "control" | "element" | "source" | "schema_field";
+export type ReferenceGraphEdgeType = "bound_to" | "resolves_to" | "iterates" | "condition";
+export type ReferenceGraphStatus = "resolved" | "ambiguous" | "unknown";
+export type ReferenceDiffItemKind =
+  | "control"
+  | "element"
+  | "binding"
+  | "source"
+  | "schema_field";
+export type ReferenceChangeType = "added" | "removed" | "changed";
+export type ReferenceChangeDimension = "structural" | "semantic";
+
+export interface ReferenceVersionHints {
+  platform: ReferencePlatformHint;
+  product_versions: string[];
+  evidence: string[];
+}
+
+export interface ReferenceInventoryEntry {
+  path: string;
+  name: string;
+  parent: string | null;
+  kind: ReferenceArtifactKind;
+  size_bytes: number;
+  sha256: string;
+  nested_depth: number;
+  is_archive: boolean;
+  expanded: boolean;
+  platform_hint: ReferencePlatformHint;
+  product_version: string | null;
+  warnings: string[];
+}
+
+export interface ReferenceDuplicateGroup {
+  sha256: string;
+  kind: ReferenceArtifactKind;
+  occurrences: number;
+  paths: string[];
+}
+
+export interface ReferenceInventory {
+  source_type: ReferenceSourceType;
+  source_name: string;
+  source_sha256: string;
+  source_size_bytes: number;
+  container: ReferenceVersionHints;
+  entries: ReferenceInventoryEntry[];
+  duplicates: ReferenceDuplicateGroup[];
+  nested_archives: string[];
+  warnings: string[];
+}
+
+export interface ReferenceDataBinding {
+  xpath: string | null;
+  store_item_id: string | null;
+  prefix_mappings: string | null;
+}
+
+export interface ReferenceSourceBinding {
+  source: string | null;
+  path: string | null;
+  result_data_type: string | null;
+  data_kind: string | null;
+}
+
+export interface ReferenceControlResolution {
+  status: ReferenceResolutionStatus;
+  link_status: ReferenceLinkStatus;
+  path_status: ReferencePathStatus;
+  element_id_unsigned: string | null;
+  element_type: string | null;
+  source_binding: ReferenceSourceBinding | null;
+  source_binding_raw: ReferenceSourceBinding | null;
+  normalized_path: string | null;
+  schema_section: string | null;
+  schema_source: ReferenceSchemaSource;
+  diagnostic_codes: string[];
+  path_suggestions: string[];
+}
+
+export interface ReferenceControl {
+  part: string;
+  story: ReferenceStoryPart;
+  paragraph_index: number;
+  ordinal: number;
+  depth: number;
+  tag: string | null;
+  alias: string | null;
+  sdt_id_signed: number | null;
+  sdt_id_unsigned: string | null;
+  control_type: ReferenceControlType;
+  placeholder: string | null;
+  data_binding: ReferenceDataBinding;
+  text_preview: string;
+  has_dc_namespace: boolean;
+  dc_namespaces: string[];
+  markers: string[];
+  element_kind: ReferenceElementKind;
+  classification: ReferenceClassification;
+  classification_reason: string;
+  resolution: ReferenceControlResolution;
+}
+
+export interface ReferenceProjectDataPart {
+  part: string;
+  store_item_id: string | null;
+  product_id: string | null;
+  product_version: string | null;
+  data_sources: string[];
+  element_count: number;
+  duplicate_element_ids: number;
+}
+
+export interface ReferenceSchemaStats {
+  node_count: number;
+  scalar_count: number;
+  collection_count: number;
+  attribute_count: number;
+  max_depth: number;
+}
+
+export interface ReferenceDdspDataSectionEvidence {
+  name: string;
+  root_elements: string[];
+  field_count: number;
+  collection_count: number;
+  max_depth: number;
+  sample_values_present: boolean;
+  schema_present: boolean;
+}
+
+export interface ReferenceDdspSchemaEvidence {
+  schema_format: string;
+  schema_id: string;
+  schema_digest: string;
+  root_element: string | null;
+  namespace: string | null;
+  contract_version: string | null;
+  product_version: string | null;
+  flavour: string | null;
+  flavour_label: string | null;
+  language: string | null;
+  template_id: string | null;
+  docu_type_id: string | null;
+  locales: string[];
+  sections: string[];
+  data_sections: ReferenceDdspDataSectionEvidence[];
+  label_count: number;
+  field_count: number;
+  collection_count: number;
+  repeating_sections: string[];
+  sample_values_present: boolean;
+  unsupported_constructs: string[];
+  stats: ReferenceSchemaStats;
+}
+
+export interface ReferenceElementEvidence {
+  element_id_unsigned: string;
+  element_type: string;
+  element_kind: ReferenceElementKind;
+  project_data_part: string;
+  source_binding: ReferenceSourceBinding | null;
+  effective_binding: ReferenceSourceBinding | null;
+  binding_notes: string[];
+  child_element_ids: string[];
+  parent_element_ids: string[];
+  attributes: Record<string, string>;
+  properties: Record<string, string>;
+}
+
+export interface ReferenceDocumentEvidence {
+  sha256: string;
+  paths: string[];
+  filename: string;
+  size_bytes: number;
+  platform: ReferencePlatformHint;
+  product_version: string | null;
+  project_data: ReferenceProjectDataPart[];
+  schema_source: ReferenceSchemaSource;
+  schema_sections: string[];
+  schema_paths: number;
+  schema_evidence: ReferenceDdspSchemaEvidence | null;
+  metadata_elements: ReferenceElementEvidence[];
+  control_count: number;
+  classification_counts: Record<string, number>;
+  resolution_counts: Record<string, number>;
+  link_status_counts: Record<string, number>;
+  path_status_counts: Record<string, number>;
+  joined_count: number;
+  join_coverage_ratio: number;
+  coverage_ratio: number;
+  has_macros: boolean;
+  has_active_x: boolean;
+  has_embedded_objects: boolean;
+  has_external_relationships: boolean;
+  warnings: string[];
+  controls: ReferenceControl[];
+}
+
+export interface ReferenceCounts {
+  artifacts: number;
+  distinct_artifacts: number;
+  docx_artifacts: number;
+  distinct_docx: number;
+  controls_total: number;
+  by_element_kind: Record<string, number>;
+  by_classification: Record<string, number>;
+  by_resolution: Record<string, number>;
+  by_link_status: Record<string, number>;
+  by_path_status: Record<string, number>;
+  by_part: Record<string, number>;
+  by_story: Record<string, number>;
+  classification_recognized: number;
+  classification_ambiguous: number;
+  classification_unknown: number;
+  resolved: number;
+  missing_part: number;
+  unknown_path: number;
+  ambiguous: number;
+  joined_by_id: number;
+  join_coverage_ratio: number;
+  duplicate_groups: number;
+  duplicate_occurrences: number;
+  nested_archives: number;
+  coverage_ratio: number;
+}
+
+export interface ReferenceDiagnostic {
+  code: string;
+  severity: ReferenceSeverity;
+  message: string;
+  document_sha256: string | null;
+  part: string | null;
+  ordinal: number | null;
+  details: Record<string, string>;
+}
+
+export interface ReferenceReport {
+  reference_version: string;
+  inspector: string;
+  runtime_compatibility: ReferenceRuntimeCompatibility;
+  source_type: ReferenceSourceType;
+  source_name: string;
+  source_sha256: string;
+  container: ReferenceVersionHints;
+  counts: ReferenceCounts;
+  duplicates: ReferenceDuplicateGroup[];
+  nested_archives: string[];
+  documents: ReferenceDocumentEvidence[];
+  diagnostics: ReferenceDiagnostic[];
+  warnings: string[];
+  inventory: ReferenceInventory;
+  report_digest: string;
+}
+
+/* ----------------------------------------------------------- reference graph */
+
+export interface ReferenceGraphNode {
+  id: string;
+  kind: ReferenceGraphNodeKind;
+  label: string;
+  status: ReferenceGraphStatus;
+  document_sha256: string | null;
+  document_name: string | null;
+  part: string | null;
+  ordinal: number | null;
+  paragraph_index: number | null;
+  depth: number | null;
+  element_id: string | null;
+  element_kind: ReferenceElementKind | null;
+  source_name: string | null;
+  binding_path: string | null;
+  normalized_path: string | null;
+  schema_path: string | null;
+  data_type: string | null;
+  collection: boolean;
+  origin: string | null;
+  reason: string | null;
+  evidence: Record<string, string>;
+}
+
+export interface ReferenceGraphEdge {
+  id: string;
+  type: ReferenceGraphEdgeType;
+  source: string;
+  target: string;
+  status: ReferenceGraphStatus;
+  reason: string | null;
+  evidence: Record<string, string>;
+}
+
+export interface ReferenceGraphStructure {
+  node_id: string;
+  kind: ReferenceElementKind;
+  label: string;
+  binding_path: string | null;
+  source_name: string | null;
+  target_count: number;
+  status: ReferenceGraphStatus;
+  detail: string | null;
+}
+
+export interface ReferenceGraphStructures {
+  lists: ReferenceGraphStructure[];
+  conditions: ReferenceGraphStructure[];
+}
+
+export interface ReferenceGraphUnresolved {
+  node_id: string;
+  kind: ReferenceGraphNodeKind;
+  label: string;
+  status: ReferenceGraphStatus;
+  reason: string;
+}
+
+export interface ReferenceGraphSummary {
+  node_count: number;
+  edge_count: number;
+  by_node_kind: Record<string, number>;
+  by_node_status: Record<string, number>;
+  by_edge_type: Record<string, number>;
+  by_edge_status: Record<string, number>;
+  resolved_edges: number;
+  ambiguous_edges: number;
+  unknown_edges: number;
+  edge_coverage_ratio: number;
+  controls_total: number;
+  controls_resolved: number;
+  controls_ambiguous: number;
+  controls_unknown: number;
+  controls_bound: number;
+  elements_total: number;
+  sources_total: number;
+  schema_fields_total: number;
+  schema_fields_resolved: number;
+  lists_detected: number;
+  conditions_detected: number;
+  unresolved_total: number;
+}
+
+export interface ReferenceGraph {
+  graph_version: string;
+  reference_version: string;
+  runtime_compatibility: ReferenceRuntimeCompatibility;
+  ir_kind: "reference";
+  compilable: false;
+  note: string;
+  source_type: ReferenceSourceType;
+  source_name: string;
+  source_sha256: string;
+  platform: ReferencePlatformHint;
+  schema_source: ReferenceSchemaSource;
+  schema_ids: string[];
+  schema_sections: string[];
+  schema_digests: string[];
+  nodes: ReferenceGraphNode[];
+  edges: ReferenceGraphEdge[];
+  structures: ReferenceGraphStructures;
+  unresolved: ReferenceGraphUnresolved[];
+  summary: ReferenceGraphSummary;
+  diagnostics: ReferenceDiagnostic[];
+  graph_digest: string;
+}
+
+/* ------------------------------------------------------------ reference diff */
+
+export interface ReferenceDiffSnapshot {
+  kind: string | null;
+  binding_path: string | null;
+  status: ReferenceGraphStatus;
+  part: string | null;
+  paragraph_index: number | null;
+  source: string | null;
+  data_type: string | null;
+  collection: boolean | null;
+}
+
+export interface ReferenceDiffItem {
+  key: string;
+  kind: ReferenceDiffItemKind;
+  change: ReferenceChangeType;
+  dimension: ReferenceChangeDimension;
+  before: ReferenceDiffSnapshot | null;
+  after: ReferenceDiffSnapshot | null;
+  fields: string[];
+}
+
+export interface ReferenceDiffCountPair {
+  left: number;
+  right: number;
+  delta: number;
+}
+
+export interface ReferenceDiffCounts {
+  controls: ReferenceDiffCountPair;
+  elements: ReferenceDiffCountPair;
+  sources: ReferenceDiffCountPair;
+  schema_fields: ReferenceDiffCountPair;
+  edges: ReferenceDiffCountPair;
+  parts: ReferenceDiffCountPair;
+  parts_added: string[];
+  parts_removed: string[];
+}
+
+export interface ReferenceDiffDimension {
+  dimension: ReferenceChangeDimension;
+  added: number;
+  removed: number;
+  changed: number;
+  total: number;
+  by_kind: Record<string, number>;
+  keys: string[];
+}
+
+export interface ReferenceDiffSummary {
+  added: number;
+  removed: number;
+  changed: number;
+  total: number;
+  ambiguous: number;
+  structural: number;
+  semantic: number;
+  by_kind: Record<string, number>;
+  by_change: Record<string, number>;
+  status_transitions: Record<string, number>;
+  added_keys: string[];
+  removed_keys: string[];
+  changed_keys: string[];
+}
+
+export interface ReferenceCoverageDelta {
+  left_edge_coverage: number;
+  right_edge_coverage: number;
+  edge_delta: number;
+  delta: number;
+  left_control_coverage: number;
+  right_control_coverage: number;
+  control_delta: number;
+}
+
+export interface ReferenceUnresolvedDelta {
+  left: number;
+  right: number;
+  delta: number;
+  added_keys: string[];
+  removed_keys: string[];
+}
+
+export interface ReferenceDiffSide {
+  source_type: ReferenceSourceType;
+  source_name: string;
+  source_sha256: string;
+  graph_version: string;
+  graph_digest: string;
+  schema_source: ReferenceSchemaSource;
+  schema_ids: string[];
+  summary: ReferenceGraphSummary;
+}
+
+export interface ReferenceDiff {
+  diff_version: string;
+  reference_version: string;
+  runtime_compatibility: ReferenceRuntimeCompatibility;
+  ir_kind: "reference";
+  compilable: false;
+  note: string;
+  left: ReferenceDiffSide;
+  right: ReferenceDiffSide;
+  items: ReferenceDiffItem[];
+  structural: ReferenceDiffDimension;
+  semantic: ReferenceDiffDimension;
+  summary: ReferenceDiffSummary;
+  counts: ReferenceDiffCounts;
+  coverage_delta: ReferenceCoverageDelta;
+  unresolved_delta: number;
+  unresolved: ReferenceUnresolvedDelta;
+  diff_digest: string;
+}

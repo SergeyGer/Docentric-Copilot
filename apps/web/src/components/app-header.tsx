@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ExternalLink, FileText, FileType2, GitCompare, Loader2, Play } from "lucide-react";
 
 import { ApiStatusBadge } from "@/components/api-status-badge";
@@ -23,6 +25,8 @@ const FALLBACK_DEMO_CASE: DemoCase = {
 
 export function AppHeader() {
   const workspace = useWorkspaceContext();
+  const pathname = usePathname();
+  const onReference = pathname?.startsWith("/reference") ?? false;
   const [compareOpen, setCompareOpen] = useState(false);
   const closeCompare = useCallback(() => setCompareOpen(false), []);
   const demoCases =
@@ -51,9 +55,38 @@ export function AppHeader() {
               Docentric Copilot
             </p>
             <p className="truncate text-[11px] leading-4 text-muted-foreground">
-              Template engineering workspace
+              {onReference ? "Reference template inspector" : "Template engineering workspace"}
             </p>
           </div>
+          <nav
+            aria-label="Primary sections"
+            className="ml-1 hidden shrink-0 items-center gap-1 rounded-lg border border-border/70 bg-muted/40 p-0.5 sm:flex"
+          >
+            <Link
+              href="/"
+              aria-current={onReference ? undefined : "page"}
+              className={cn(
+                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                onReference
+                  ? "text-muted-foreground hover:text-foreground"
+                  : "bg-card text-foreground shadow-sm",
+              )}
+            >
+              Workspace
+            </Link>
+            <Link
+              href="/reference"
+              aria-current={onReference ? "page" : undefined}
+              className={cn(
+                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                onReference
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Reference
+            </Link>
+          </nav>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">

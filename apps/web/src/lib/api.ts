@@ -7,6 +7,7 @@
  */
 
 import { isRecord } from "@/lib/guards";
+import type { ReferenceDiff, ReferenceGraph, ReferenceReport } from "@/lib/types";
 
 // Same origin by default: Next.js proxies /api/v1/* to the backend, so the
 // browser only needs the web port. Set NEXT_PUBLIC_API_BASE_URL to call a
@@ -239,6 +240,78 @@ export function postJson<T>(
     },
     options,
   );
+}
+
+/**
+ * Reference inspection can walk large ZIP/AXPP containers, so it gets a longer
+ * timeout than ordinary JSON calls. The endpoint is strictly read-only.
+ */
+const REFERENCE_REQUEST_TIMEOUT_MS = 180_000;
+
+function appendUpload(formData: FormData, field: string, file: File): void {
+  formData.append(field, file, file.name);
+}
+
+/** POST a multipart body; Content-Type is left to the browser boundary. */
+export function postMultipart<T>(
+  path: string,
+  formData: FormData,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  return apiRequest<T>(path, { method: "POST", body: formData }, options);
+}
+
+/** `POST /api/v1/reference/inspect` — read-only reference report. */
+export function inspectReference(
+  file: File,
+  ddsp: File | null = null,
+  options: ApiRequestOptions = {},
+): Promise<ReferenceReport> {
+  const body = new FormData();
+  appendUpload(body, "file", file);
+  if (ddsp) {
+    appendUpload(body, "ddsp", ddsp);
+  }
+  return postMultipart<ReferenceReport>("/api/v1/reference/inspect", body, {
+    timeoutMs: REFERENCE_REQUEST_TIMEOUT_MS,
+    ...options,
+  });
+}
+
+/** `POST /api/v1/reference/graph` — read-only ReferenceGraph. */
+export function buildReferenceGraph(
+  file: File,
+  ddsp: File | null = null,
+  options: ApiRequestOptions = {},
+): Promise<ReferenceGraph> {
+  const body = new FormData();
+  appendUpload(body, "file", file);
+  if (ddsp) {
+    appendUpload(body, "ddsp", ddsp);
+  }
+  return postMultipart<ReferenceGraph>("/api/v1/reference/graph", body, {
+    timeoutMs: REFERENCE_REQUEST_TIMEOUT_MS,
+    ...options,
+  });
+}
+
+/** `POST /api/v1/reference/diff` — read-only structural/semantic comparison. */
+export function diffReferences(
+  left: File,
+  right: File,
+  ddsp: File | null = null,
+  options: ApiRequestOptions = {},
+): Promise<ReferenceDiff> {
+  const body = new FormData();
+  appendUpload(body, "left", left);
+  appendUpload(body, "right", right);
+  if (ddsp) {
+    appendUpload(body, "ddsp", ddsp);
+  }
+  return postMultipart<ReferenceDiff>("/api/v1/reference/diff", body, {
+    timeoutMs: REFERENCE_REQUEST_TIMEOUT_MS,
+    ...options,
+  });
 }
 
 /**

@@ -8,6 +8,14 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-04
+
+### Added
+- REF-06 reference inspector in the web app: `/reference` with upload of DOCX/ZIP/AXPP and an
+  optional DDSP, overview counters, searchable controls table with a detail drawer (unknown and
+  ambiguous rows are never hidden), graph view with edge statuses, and a two-file structural /
+  semantic diff view. The AX runtime notice is permanently visible.
+
 ## [0.8.0] - 2026-11-04
 
 ### Added

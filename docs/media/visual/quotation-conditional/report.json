@@ -2,7 +2,7 @@
   "all_checks_passed": false,
   "case_id": "quotation-conditional",
   "family": "conditional_block",
-  "generated_at": "2026-11-04T10:44:31.923333Z",
+  "generated_at": "2026-11-04T10:45:52.274222Z",
   "header_footer": {
     "footer_expected": true,
     "footer_fragments": [

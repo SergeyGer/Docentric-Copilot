@@ -2,7 +2,7 @@
   "all_checks_passed": false,
   "case_id": "quotation-empty-lines",
   "family": "empty_collection",
-  "generated_at": "2026-11-04T10:44:21.332602Z",
+  "generated_at": "2026-11-04T10:45:41.686153Z",
   "header_footer": {
     "footer_expected": true,
     "footer_fragments": [

@@ -9,6 +9,7 @@ template.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Final, Literal
@@ -17,6 +18,7 @@ from docentric_copilot.errors import CopilotError, InvalidInputError, Unsupporte
 from docentric_copilot.serialization import digest, digest_bytes
 from pydantic import BaseModel, ConfigDict, Field
 
+from .ddsp_real import DdspSchemaEvidence, SchemaArtifact, parse_ddsp_schema
 from .docx_controls import (
     Classification,
     DocxControl,
@@ -39,15 +41,19 @@ from .inventory import (
 from .metadata import (
     ControlResolution,
     LinkStatus,
+    ParsedProjectData,
     PathStatus,
     ProjectDataBundle,
     ProjectDataPart,
+    ProjectElement,
     ResolutionStatus,
     SchemaIndex,
     SchemaSource,
+    SourceBinding,
+    effective_binding,
+    element_kind_from_type,
     load_project_data,
     resolve_controls,
-    schema_from_ddsp,
 )
 from .safety import ReferenceLimits
 
@@ -110,6 +116,24 @@ class ReferenceCounts(BaseModel):
     coverage_ratio: float = Field(ge=0.0, le=1.0)
 
 
+class ElementEvidence(BaseModel):
+    """One Docentric ProjectData element, preserved as reference evidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    element_id_unsigned: str = Field(pattern=r"^[0-9]+$", max_length=20)
+    element_type: str = Field(min_length=1, max_length=80)
+    element_kind: ElementKind
+    project_data_part: str = Field(min_length=1, max_length=240)
+    source_binding: SourceBinding | None = None
+    effective_binding: SourceBinding | None = None
+    binding_notes: list[str] = Field(default_factory=list, max_length=20)
+    child_element_ids: list[str] = Field(default_factory=list, max_length=500)
+    parent_element_ids: list[str] = Field(default_factory=list, max_length=50)
+    attributes: dict[str, str] = Field(default_factory=dict)
+    properties: dict[str, str] = Field(default_factory=dict)
+
+
 class ControlEvidence(DocxControl):
     """A content control plus its REF-02 resolution evidence."""
 
@@ -133,6 +157,8 @@ class DocumentEvidence(BaseModel):
     schema_source: SchemaSource = SchemaSource.NONE
     schema_sections: list[str] = Field(default_factory=list, max_length=20)
     schema_paths: int = Field(default=0, ge=0)
+    schema_evidence: DdspSchemaEvidence | None = None
+    metadata_elements: list[ElementEvidence] = Field(default_factory=list, max_length=5_000)
     control_count: int = Field(ge=0)
     classification_counts: dict[str, int] = Field(default_factory=dict)
     resolution_counts: dict[str, int] = Field(default_factory=dict)
@@ -255,17 +281,18 @@ def _parse_schema(
     limits: ReferenceLimits,
     explicit: bool,
     warnings: set[str],
-) -> SchemaIndex | None:
+) -> SchemaArtifact | None:
     try:
-        schema = schema_from_ddsp(payload, name=name, limits=limits)
+        artifact = parse_ddsp_schema(payload, name=name, limits=limits)
     except CopilotError:
         if explicit:
             raise
         warnings.add(f"ddsp_unreadable:{name}")
         return None
-    if schema is None:
+    if artifact.index.is_empty:
         warnings.add(f"ddsp_schema_unrecognized:{name}")
-    return schema
+        return None
+    return artifact
 
 
 def _stems_match(document_name: str, schema_name: str) -> bool:
@@ -298,10 +325,10 @@ def _select_schema(
     document: InventoryEntry,
     scan: InventoryScan,
     explicit_ddsp: tuple[bytes, str] | None,
-    schema_cache: dict[str, SchemaIndex | None],
+    schema_cache: dict[str, SchemaArtifact | None],
     limits: ReferenceLimits,
     warnings: set[str],
-) -> tuple[SchemaIndex | None, bytes | None, str | None]:
+) -> SchemaArtifact | None:
     entries = scan.inventory.entries
     candidates: list[tuple[bytes, str, bool]] = []
     if explicit_ddsp is not None:
@@ -319,14 +346,14 @@ def _select_schema(
             continue
         candidates.append((payload, sibling.name, False))
     if not candidates:
-        return None, None, None
+        return None
     payload, name, explicit = candidates[0]
     key = digest_bytes(payload)
     if key not in schema_cache:
         schema_cache[key] = _parse_schema(
             payload, name=name, limits=limits, explicit=explicit, warnings=warnings
         )
-    return schema_cache[key], payload, name
+    return schema_cache[key]
 
 
 def _document_diagnostics(
@@ -415,17 +442,73 @@ def _document_diagnostics(
     return diagnostics
 
 
+def _build_metadata_elements(bundle: ProjectDataBundle) -> list[ElementEvidence]:
+    """Flatten ProjectData elements into bounded, deterministic evidence."""
+    elements: list[ElementEvidence] = []
+    seen: set[tuple[str, str, str]] = set()
+    for part in sorted(bundle.parts, key=lambda item: item.summary.part):
+        for element_id in sorted(part.by_id, key=lambda value: (int(value), value)):
+            for element in sorted(part.by_id[element_id], key=_element_sort_key):
+                key = (part.summary.part, element_id, repr(_element_sort_key(element)))
+                if key in seen:
+                    continue
+                seen.add(key)
+                elements.append(_element_evidence(part.summary.part, element, bundle, part))
+                if len(elements) >= 5_000:
+                    return elements
+    return elements
+
+
+def _element_sort_key(element: ProjectElement) -> tuple[str, str, str, str, str]:
+    binding = element.value_binding
+    return (
+        element.element_type,
+        binding.source if binding and binding.source else "",
+        binding.path if binding and binding.path else "",
+        binding.result_data_type if binding and binding.result_data_type else "",
+        ",".join(element.child_ids),
+    )
+
+
+def _bounded_mapping(values: dict[str, str], limit: int = 20) -> dict[str, str]:
+    return {key: values[key] for key in sorted(values)[:limit]}
+
+
+def _element_evidence(
+    part_name: str,
+    element: ProjectElement,
+    bundle: ProjectDataBundle,
+    part: ParsedProjectData,
+) -> ElementEvidence:
+    binding, notes = effective_binding(part, element)
+    parents = sorted(part.parent_ids.get(element.id_unsigned, []), key=int)
+    return ElementEvidence(
+        element_id_unsigned=element.id_unsigned,
+        element_type=element.element_type,
+        element_kind=element_kind_from_type(element.element_type),
+        project_data_part=part_name,
+        source_binding=element.value_binding,
+        effective_binding=binding,
+        binding_notes=sorted(set(notes)),
+        child_element_ids=list(element.child_ids)[:500],
+        parent_element_ids=parents[:50],
+        attributes=_bounded_mapping(element.attributes),
+        properties=_bounded_mapping(element.properties),
+    )
+
+
 def _build_document(
     *,
     sha256: str,
     paths: list[str],
     entry: InventoryEntry,
     data: bytes,
-    schema: SchemaIndex | None,
+    artifact: SchemaArtifact | None,
     limits: ReferenceLimits,
 ) -> tuple[DocumentEvidence, ProjectDataBundle, DocxScan]:
     docx_scan = scan_docx(data, limits)
     bundle = load_project_data(data, limits)
+    schema: SchemaIndex | None = artifact.index if artifact is not None else None
     resolutions = resolve_controls(docx_scan.controls, bundle, schema)
     controls = [
         ControlEvidence.model_validate(
@@ -436,19 +519,16 @@ def _build_document(
         )
         for control, resolution in zip(docx_scan.controls, resolutions, strict=True)
     ]
-    schema_sections = schema.section_names if schema is not None else []
-    schema_paths = schema.path_count() if schema is not None else 0
+    schema_sections = artifact.schema.section_names if artifact is not None else []
+    schema_paths = artifact.index.path_count() if artifact is not None else 0
     product_version = entry.product_version
     for part in bundle.parts:
         if part.summary.product_version:
             product_version = product_version or part.summary.product_version
+    contract_version = artifact.evidence.product_version if artifact is not None else None
+    product_version = product_version or contract_version
     platform = entry.platform_hint
-    if (
-        platform is PlatformHint.UNKNOWN
-        and schema is not None
-        and schema.product_version
-        and schema.product_version.startswith("1.4")
-    ):
+    if platform is PlatformHint.UNKNOWN and contract_version and contract_version.startswith("1.4"):
         platform = PlatformHint.AX_2012
     document = DocumentEvidence(
         sha256=sha256,
@@ -461,6 +541,8 @@ def _build_document(
         schema_source=SchemaSource.DDSP if schema is not None else SchemaSource.NONE,
         schema_sections=schema_sections,
         schema_paths=schema_paths,
+        schema_evidence=artifact.evidence if artifact is not None else None,
+        metadata_elements=_build_metadata_elements(bundle),
         control_count=len(controls),
         classification_counts=_classification_counts(controls),
         resolution_counts=_resolution_counts(controls),
@@ -479,16 +561,30 @@ def _build_document(
     return document, bundle, docx_scan
 
 
-def build_report(
+@dataclass(frozen=True, slots=True)
+class ReferenceInspection:
+    """The report plus the per-document schema artifacts used to build it.
+
+    The graph and projection need the normalized schema, while the public JSON
+    report intentionally stores only bounded evidence. Keeping the artifacts in
+    this side-channel avoids embedding a 5,000-node schema in every report.
+    """
+
+    report: ReferenceReport
+    schemas: dict[str, SchemaArtifact] = field(default_factory=dict)
+
+
+def build_inspection(
     scan: InventoryScan,
     *,
     limits: ReferenceLimits,
     explicit_ddsp: tuple[bytes, str] | None = None,
-) -> ReferenceReport:
-    """Build the report from an already bounded inventory scan."""
+) -> ReferenceInspection:
+    """Build the report and schema artifacts from a bounded inventory scan."""
     inventory = scan.inventory
     warnings: set[str] = set(inventory.warnings)
-    schema_cache: dict[str, SchemaIndex | None] = {}
+    schema_cache: dict[str, SchemaArtifact | None] = {}
+    schemas_by_sha: dict[str, SchemaArtifact] = {}
     documents: list[DocumentEvidence] = []
     all_controls: list[ControlEvidence] = []
     diagnostics: list[ReferenceDiagnostic] = []
@@ -499,7 +595,7 @@ def build_report(
             warnings.add(f"docx_payload_missing:{entry.sha256[:12]}")
             continue
         paths = scan.paths_by_sha.get(entry.sha256, [entry.path])
-        schema, _schema_payload, _schema_name = _select_schema(
+        schema_artifact = _select_schema(
             document=entry,
             scan=scan,
             explicit_ddsp=explicit_ddsp,
@@ -512,10 +608,12 @@ def build_report(
             paths=paths,
             entry=entry,
             data=data,
-            schema=schema,
+            artifact=schema_artifact,
             limits=limits,
         )
         documents.append(document)
+        if schema_artifact is not None:
+            schemas_by_sha[entry.sha256] = schema_artifact
         all_controls.extend(document.controls)
         diagnostics.extend(_document_diagnostics(document, bundle, docx_scan))
     documents.sort(key=lambda item: (item.paths[0], item.sha256))
@@ -596,7 +694,18 @@ def build_report(
         inventory=inventory,
     )
     report_digest = digest(base.model_dump(mode="json", exclude={"report_digest"}))
-    return base.model_copy(update={"report_digest": report_digest})
+    report = base.model_copy(update={"report_digest": report_digest})
+    return ReferenceInspection(report=report, schemas=schemas_by_sha)
+
+
+def build_report(
+    scan: InventoryScan,
+    *,
+    limits: ReferenceLimits,
+    explicit_ddsp: tuple[bytes, str] | None = None,
+) -> ReferenceReport:
+    """Build the report from an already bounded inventory scan."""
+    return build_inspection(scan, limits=limits, explicit_ddsp=explicit_ddsp).report
 
 
 def report_json(report: ReferenceReport, *, indent: int = 2) -> str:
@@ -616,14 +725,14 @@ def _limits_for(limits: ReferenceLimits | None, max_depth: int) -> ReferenceLimi
     return limits or ReferenceLimits.from_limits(max_depth=max_depth)
 
 
-def inspect_reference(
+def inspect_reference_bundle(
     source: str | Path,
     *,
     limits: ReferenceLimits | None = None,
     max_depth: int = 1,
     ddsp_path: str | Path | None = None,
-) -> ReferenceReport:
-    """Inspect a local DOCX/ZIP/AXPP/directory entirely in memory."""
+) -> ReferenceInspection:
+    """Inspect locally and keep the parsed schema artifacts for graph building."""
     resolved_limits = _limits_for(limits, max_depth)
     scan = scan_path(source, limits=resolved_limits, max_depth=max_depth)
     explicit: tuple[bytes, str] | None = None
@@ -641,7 +750,41 @@ def inspect_reference(
                 code="reference_input_too_large",
             )
         explicit = (ddsp_target.read_bytes(), ddsp_target.name)
-    return build_report(scan, limits=resolved_limits, explicit_ddsp=explicit)
+    return build_inspection(scan, limits=resolved_limits, explicit_ddsp=explicit)
+
+
+def inspect_reference(
+    source: str | Path,
+    *,
+    limits: ReferenceLimits | None = None,
+    max_depth: int = 1,
+    ddsp_path: str | Path | None = None,
+) -> ReferenceReport:
+    """Inspect a local DOCX/ZIP/AXPP/directory entirely in memory."""
+    return inspect_reference_bundle(
+        source, limits=limits, max_depth=max_depth, ddsp_path=ddsp_path
+    ).report
+
+
+def inspect_reference_bytes_bundle(
+    data: bytes,
+    *,
+    filename: str,
+    limits: ReferenceLimits | None = None,
+    max_depth: int = 1,
+    ddsp_data: bytes | None = None,
+    ddsp_name: str = "source.ddsp",
+) -> ReferenceInspection:
+    """Inspect an uploaded payload and keep the schema artifacts."""
+    resolved_limits = _limits_for(limits, max_depth)
+    if ddsp_data is not None and len(ddsp_data) > resolved_limits.max_file_bytes:
+        raise UnsupportedInputError(
+            "Supplied DDSP schema exceeds the configured maximum size",
+            code="reference_input_too_large",
+        )
+    scan = scan_bytes(data, filename=filename, limits=resolved_limits, max_depth=max_depth)
+    explicit = (ddsp_data, ddsp_name) if ddsp_data is not None else None
+    return build_inspection(scan, limits=resolved_limits, explicit_ddsp=explicit)
 
 
 def inspect_reference_bytes(
@@ -654,15 +797,14 @@ def inspect_reference_bytes(
     ddsp_name: str = "source.ddsp",
 ) -> ReferenceReport:
     """Inspect an uploaded payload without writing it to disk."""
-    resolved_limits = _limits_for(limits, max_depth)
-    if ddsp_data is not None and len(ddsp_data) > resolved_limits.max_file_bytes:
-        raise UnsupportedInputError(
-            "Supplied DDSP schema exceeds the configured maximum size",
-            code="reference_input_too_large",
-        )
-    scan = scan_bytes(data, filename=filename, limits=resolved_limits, max_depth=max_depth)
-    explicit = (ddsp_data, ddsp_name) if ddsp_data is not None else None
-    return build_report(scan, limits=resolved_limits, explicit_ddsp=explicit)
+    return inspect_reference_bytes_bundle(
+        data,
+        filename=filename,
+        limits=limits,
+        max_depth=max_depth,
+        ddsp_data=ddsp_data,
+        ddsp_name=ddsp_name,
+    ).report
 
 
 __all__ = [
@@ -670,12 +812,17 @@ __all__ = [
     "RUNTIME_COMPATIBILITY",
     "ControlEvidence",
     "DocumentEvidence",
+    "ElementEvidence",
     "ReferenceCounts",
     "ReferenceDiagnostic",
+    "ReferenceInspection",
     "ReferenceReport",
     "Severity",
+    "build_inspection",
     "build_report",
     "inspect_reference",
+    "inspect_reference_bundle",
     "inspect_reference_bytes",
+    "inspect_reference_bytes_bundle",
     "report_json",
 ]

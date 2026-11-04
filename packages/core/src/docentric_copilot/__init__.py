@@ -16,7 +16,7 @@ This package is the shared namespace for every layer of the system:
 
 from __future__ import annotations
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 #: Version of the Template IR contract produced by this build.
 IR_VERSION = "1.0"

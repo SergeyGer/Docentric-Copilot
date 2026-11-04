@@ -18,10 +18,14 @@ from docentric_copilot.errors import (
     UnsupportedInputError,
 )
 from docentric_copilot.reference import (
+    ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    build_reference_graph,
     inspect_reference,
+    inspect_reference_bundle,
     inspect_reference_bytes,
+    inspect_reference_bytes_bundle,
 )
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 
@@ -148,6 +152,68 @@ async def inspect_reference_endpoint(
         )
     target = _resolve_corpus_path(path or "", settings)
     return inspect_reference(target, limits=limits, max_depth=max_depth)
+
+
+@router.post("/graph", response_model=ReferenceGraph)
+async def graph_reference_endpoint(
+    file: UploadFile | None = File(
+        default=None,
+        description="Reference DOCX, ZIP or AXPP package",
+    ),
+    path: str | None = Query(
+        default=None,
+        max_length=1024,
+        description="Path inside a configured reference corpus root",
+    ),
+    ddsp_file: UploadFile | None = File(
+        default=None,
+        alias="ddsp",
+        description="Optional matching DDSP XML schema for binding resolution",
+    ),
+    max_depth: int = Query(
+        default=0,
+        ge=0,
+        le=3,
+        description=(
+            "Nested archive depth. Default 0 keeps public uploads non-recursive; "
+            "the root container is still enumerated."
+        ),
+    ),
+    settings: Settings = Depends(get_settings),
+) -> ReferenceGraph:
+    """Build a read-only ReferenceGraph; nothing is executed or written."""
+    if file is not None and path is not None:
+        raise InvalidInputError("Provide either an uploaded file or a corpus path, not both")
+    if file is None and path is None:
+        raise InvalidInputError("Provide a template file or a corpus path")
+    limits = ReferenceLimits.from_limits(settings.limits, max_depth=max_depth)
+    if file is not None:
+        payload = await _read_upload(
+            file, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_INPUTS
+        )
+        ddsp_data: bytes | None = None
+        ddsp_name = "source.ddsp"
+        if ddsp_file is not None:
+            ddsp_data = await _read_upload(
+                ddsp_file, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_SCHEMAS
+            )
+            ddsp_name = Path(ddsp_file.filename or "source.ddsp").name
+        bundle = inspect_reference_bytes_bundle(
+            payload,
+            filename=Path(file.filename or "upload.docx").name,
+            limits=limits,
+            max_depth=max_depth,
+            ddsp_data=ddsp_data,
+            ddsp_name=ddsp_name,
+        )
+        return build_reference_graph(bundle.report, bundle.schemas)
+    if ddsp_file is not None:
+        raise InvalidInputError(
+            "A DDSP upload is only supported together with an uploaded template file"
+        )
+    target = _resolve_corpus_path(path or "", settings)
+    bundle = inspect_reference_bundle(target, limits=limits, max_depth=max_depth)
+    return build_reference_graph(bundle.report, bundle.schemas)
 
 
 __all__ = ["router"]

@@ -159,6 +159,7 @@ class ElementSpec:
     result_data_type: str | None = "System.String"
     child_ids: tuple[int | str, ...] = ()
     attributes: dict[str, str] = field(default_factory=dict)
+    properties: dict[str, str] = field(default_factory=dict)
 
 
 def build_project_data(
@@ -178,6 +179,11 @@ def build_project_data(
         if element.child_ids:
             refs = "".join(f'<ElementRef Id="{escape(str(item))}"/>' for item in element.child_ids)
             children.append(f"<ChildElements>{refs}</ChildElements>")
+        if element.properties:
+            rendered_properties = " ".join(
+                f'{key}="{escape(value)}"' for key, value in sorted(element.properties.items())
+            )
+            children.append(f"<Value {rendered_properties}/>")
         if element.source is not None and element.path is not None:
             children.append(
                 "<ValueBinding "
@@ -297,6 +303,152 @@ def build_axpp(
     return _zip(files)
 
 
+_REFERENCE_DDSP_TEMPLATE: Final = """<?xml version="1.0" encoding="utf-8"?>
+<dsp:dataSourcePackage xmlns:dsp="{ddsp_ns}" xmlns:xse="{xse_ns}">
+  <dsp:design>
+    <dsp:languages>
+      <dsp:language dsp:value="EN-US"/>
+      <dsp:language dsp:value="de"/>
+    </dsp:languages>
+  </dsp:design>
+  <dsp:systemInfo dsp:productVersion="1.4.9.0" dsp:flavour="Mail Merge"
+      dsp:flavourLabel="Synthetic Mail Merge" dsp:language="EN-US">
+    <dsp:mailMerge dsp:templateId="SyntheticTemplate" dsp:docuTypeId="SyntheticDocType"/>
+  </dsp:systemInfo>
+  <dsp:labels>
+    <dsp:label dsp:code="@SYN001">
+      <dsp:text dsp:language="EN-US" dsp:value="Order lines"/>
+      <dsp:text dsp:language="de" dsp:value="Auftragszeilen"/>
+    </dsp:label>
+    <dsp:label dsp:code="@SYN002">
+      <dsp:text dsp:language="EN-US" dsp:value="Order number"/>
+    </dsp:label>
+  </dsp:labels>
+  <dsp:dataSections>
+    <dsp:dataSection dsp:type="GeneralData">
+      <dsp:schema>
+        <xs:schema xmlns:xs="{xsd_ns}" xmlns:xse="{xse_ns}">
+          <xs:element name="GeneralData">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Company">
+                  <xs:complexType>
+                    <xs:attribute name="Name" type="xs:string" use="required">
+                      <xs:annotation><xs:appinfo>
+                        <xse:label xse:text="Company name"/>
+                      </xs:appinfo></xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Logo" type="xs:base64Binary"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+      </dsp:schema>
+      <dsp:data>
+        <dsp:GeneralData>
+          <dsp:Company Name="Synthetic Company" Logo="U1lOVEhFVElD"/>
+        </dsp:GeneralData>
+      </dsp:data>
+    </dsp:dataSection>
+    <dsp:dataSection dsp:type="MainData">
+      <dsp:schema>
+        <xs:schema xmlns:xs="{xsd_ns}" xmlns:xse="{xse_ns}">
+          <xs:complexType name="TaxRecord">
+            <xs:attribute name="Code" type="xs:string" use="optional"/>
+            <xs:attribute name="Rate" type="xs:decimal" use="optional"/>
+          </xs:complexType>
+          <xs:element name="Order">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Lines">
+                  <xs:complexType>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                      <xs:element name="Line">
+                        <xs:annotation><xs:appinfo>
+                          <xse:label xse:text="Order lines" xse:refCode="@SYN001"/>
+                        </xs:appinfo></xs:annotation>
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="Taxes" minOccurs="0">
+                              <xs:complexType>
+                                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                  <xs:element name="Tax" type="TaxRecord"/>
+                                </xs:choice>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="Sku" type="xs:string" use="required"/>
+                          <xs:attribute name="Quantity" type="xs:long"/>
+                          <xs:attribute name="Price" type="xs:decimal"/>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:choice>
+                  </xs:complexType>
+                </xs:element>
+                <xs:any minOccurs="0"/>
+              </xs:sequence>
+              <xs:attribute name="Number" type="xs:string" use="required"/>
+              <xs:attribute name="IssuedOn" type="xs:date"/>
+              <xs:attribute name="UpdatedAt" type="xs:dateTime"/>
+              <xs:attribute name="NetAmount" type="xs:decimal"/>
+              <xs:attribute name="IsPaid" type="xs:boolean"/>
+              <xs:attribute name="Logo" type="xs:base64Binary"/>
+              <xs:attribute name="Website" type="xs:anyURI"/>
+              <xs:attribute name="CopyCount" type="xs:integer"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+      </dsp:schema>
+      <dsp:data>
+        <dsp:Order Number="SO-1" IssuedOn="2026-01-15" UpdatedAt="2026-01-15T10:00:00Z"
+            NetAmount="123.45" IsPaid="true" Logo="U1lOVEhFVElD"
+            Website="https://example.invalid" CopyCount="2">
+          <dsp:Lines>
+            <dsp:Line Sku="A-1" Quantity="2" Price="10.50">
+              <dsp:Taxes><dsp:Tax Code="VAT" Rate="20"/></dsp:Taxes>
+            </dsp:Line>
+            <dsp:Line Sku="B-2" Quantity="1" Price="99.00">
+              <dsp:Taxes><dsp:Tax Code="VAT" Rate="20"/><dsp:Tax Code="LOCAL" Rate="5"/></dsp:Taxes>
+            </dsp:Line>
+          </dsp:Lines>
+        </dsp:Order>
+      </dsp:data>
+    </dsp:dataSection>
+    <dsp:dataSection dsp:type="Parameters">
+      <dsp:schema>
+        <xs:schema xmlns:xs="{xsd_ns}">
+          <xs:element name="Parameters">
+            <xs:complexType>
+              <xs:attribute name="IncludeDraft" type="xs:boolean"/>
+              <xs:attribute name="CopyCount" type="xs:integer"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+      </dsp:schema>
+      <dsp:data>
+        <dsp:Parameters IncludeDraft="false" CopyCount="2"/>
+      </dsp:data>
+    </dsp:dataSection>
+  </dsp:dataSections>
+</dsp:dataSourcePackage>
+"""
+
+
+def build_reference_ddsp() -> bytes:
+    """Build a synthetic, realistic bare DDSP with nested collections and labels.
+
+    This is entirely fixture code: no fragment, label text or value from the
+    Docentric example archive is used.
+    """
+    return _REFERENCE_DDSP_TEMPLATE.format(
+        ddsp_ns=DDSP_NS,
+        xse_ns="http://schemas.docentric.com/xml-schema-extensions",
+        xsd_ns=XSD_NS,
+    ).encode("utf-8")
+
+
 def build_story_part(root: str, controls: tuple[ControlSpec, ...]) -> bytes:
     """Build a minimal Word story part containing synthetic content controls."""
     from lxml import etree
@@ -322,6 +474,7 @@ __all__ = [
     "build_ddsp",
     "build_docx",
     "build_project_data",
+    "build_reference_ddsp",
     "build_story_part",
     "build_zip",
     "project_data_parts",

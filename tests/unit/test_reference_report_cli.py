@@ -209,6 +209,58 @@ def test_cli_writes_json_report(tmp_path: Path) -> None:
     assert "Runtime compatibility: not_tested" in result.stdout
 
 
+def test_cli_schema_report_shows_real_ddsp_evidence(tmp_path: Path) -> None:
+    from tests.reference_fixtures import build_reference_ddsp
+
+    docx, _ddsp = _report_fixture()
+    source = tmp_path / "Synthetic.Report.docx"
+    schema = tmp_path / "Synthetic.Report.ddsp"
+    source.write_bytes(docx)
+    schema.write_bytes(build_reference_ddsp())
+    result = runner.invoke(
+        app,
+        [
+            "reference",
+            "inspect",
+            str(source),
+            "--ddsp",
+            str(schema),
+            "--schema-report",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert "Schema:" in result.stdout
+    assert "Root: dataSourcePackage" in result.stdout
+    assert "Sections:" in result.stdout
+    assert "Unsupported: xsd:any" in result.stdout
+
+
+def test_cli_schema_report_is_not_emitted_with_stdout_json(tmp_path: Path) -> None:
+    from tests.reference_fixtures import build_reference_ddsp
+
+    docx, _ddsp = _report_fixture()
+    source = tmp_path / "Synthetic.Report.docx"
+    schema = tmp_path / "Synthetic.Report.ddsp"
+    source.write_bytes(docx)
+    schema.write_bytes(build_reference_ddsp())
+    result = runner.invoke(
+        app,
+        [
+            "reference",
+            "inspect",
+            str(source),
+            "--ddsp",
+            str(schema),
+            "--schema-report",
+            "--json",
+            "-",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["documents"][0]["schema_evidence"]["schema_format"] == "bare-ddsp"
+
+
 def test_cli_json_to_stdout(tmp_path: Path) -> None:
     docx, _ddsp = _report_fixture()
     source = tmp_path / "Synthetic.Report.docx"

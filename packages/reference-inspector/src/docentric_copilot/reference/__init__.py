@@ -1,12 +1,23 @@
-"""Read-only reference template intelligence (v0.6 milestone A).
+"""Read-only reference template intelligence (v0.6 milestone B).
 
-The package inspects OOXML, AXPP/ZIP containers and Docentric ``ProjectData``
-metadata without executing anything. It reports structure, duplicates, joins and
-coverage; it does **not** claim Docentric AX runtime compatibility.
+The package inspects OOXML, AXPP/ZIP containers, real and synthetic DDSP XML and
+Docentric ``ProjectData`` metadata without executing anything. It reports
+structure, duplicates, joins, schema coverage, a read-only ReferenceGraph and a
+separate Reference IR projection. It does **not** claim Docentric AX runtime
+compatibility and it never enables ``target=docentric-ax``.
 """
 
 from __future__ import annotations
 
+from .ddsp_real import (
+    DdspDataSectionEvidence,
+    DdspSchemaEvidence,
+    SchemaArtifact,
+    is_real_ddsp_root,
+    parse_ddsp_schema,
+    parse_real_ddsp,
+    schema_index_from_schema,
+)
 from .docx_controls import (
     Classification,
     ControlType,
@@ -16,6 +27,20 @@ from .docx_controls import (
     ElementKind,
     StoryPart,
     scan_docx,
+)
+from .graph import (
+    EdgeType,
+    GraphEdge,
+    GraphNode,
+    GraphStatus,
+    GraphStructure,
+    GraphStructures,
+    GraphSummary,
+    GraphUnresolved,
+    NodeKind,
+    ReferenceGraph,
+    build_reference_graph,
+    graph_json,
 )
 from .inventory import (
     ArtifactKind,
@@ -46,16 +71,31 @@ from .metadata import (
     resolve_controls,
     schema_from_ddsp,
 )
+from .projection import (
+    ProjectionElement,
+    ProjectionSection,
+    ProjectionSummary,
+    ReferenceCapability,
+    ReferenceDocument,
+    SourceLocation,
+    project_graph,
+    projection_json,
+)
 from .report import (
     ControlEvidence,
     DocumentEvidence,
+    ElementEvidence,
     ReferenceCounts,
     ReferenceDiagnostic,
+    ReferenceInspection,
     ReferenceReport,
     Severity,
+    build_inspection,
     build_report,
     inspect_reference,
+    inspect_reference_bundle,
     inspect_reference_bytes,
+    inspect_reference_bytes_bundle,
     report_json,
 )
 from .safety import ReferenceLimits
@@ -67,42 +107,74 @@ __all__ = [
     "ControlResolution",
     "ControlType",
     "DataBinding",
+    "DdspDataSectionEvidence",
+    "DdspSchemaEvidence",
     "DocumentEvidence",
     "DocxControl",
     "DocxScan",
     "DuplicateGroup",
+    "EdgeType",
+    "ElementEvidence",
     "ElementKind",
+    "GraphEdge",
+    "GraphNode",
+    "GraphStatus",
+    "GraphStructure",
+    "GraphStructures",
+    "GraphSummary",
+    "GraphUnresolved",
     "InventoryEntry",
     "InventoryScan",
     "LinkStatus",
+    "NodeKind",
     "PathStatus",
     "PlatformHint",
     "ProjectDataBundle",
     "ProjectDataPart",
+    "ProjectionElement",
+    "ProjectionSection",
+    "ProjectionSummary",
+    "ReferenceCapability",
     "ReferenceCounts",
     "ReferenceDiagnostic",
+    "ReferenceDocument",
+    "ReferenceGraph",
+    "ReferenceInspection",
     "ReferenceInventory",
     "ReferenceLimits",
     "ReferenceReport",
     "ResolutionStatus",
+    "SchemaArtifact",
     "SchemaIndex",
     "SchemaSource",
     "Severity",
     "SourceBinding",
+    "SourceLocation",
     "SourceType",
     "StoryPart",
     "VersionHints",
+    "build_inspection",
+    "build_reference_graph",
     "build_report",
+    "graph_json",
     "inspect_bytes",
     "inspect_path",
     "inspect_reference",
+    "inspect_reference_bundle",
     "inspect_reference_bytes",
+    "inspect_reference_bytes_bundle",
+    "is_real_ddsp_root",
     "load_project_data",
     "normalize_store_item_id",
+    "parse_ddsp_schema",
+    "parse_real_ddsp",
+    "project_graph",
+    "projection_json",
     "report_json",
     "resolve_controls",
     "scan_bytes",
     "scan_docx",
     "scan_path",
     "schema_from_ddsp",
+    "schema_index_from_schema",
 ]

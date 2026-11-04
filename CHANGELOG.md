@@ -8,6 +8,20 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-04
+
+### Added
+- REF-01 real DDSP adapter: parses Docentric DDSP XML into the existing NormalizedSchema
+  (fields, nested repeating groups, parameters, locales) with explicit unsupported-construct
+  diagnostics and bounded, entity-safe parsing.
+- REF-03 ReferenceGraph: control → element → source → schema-field graph with `bound_to`,
+  `resolves_to`, `iterates` and `condition` edges, resolved/ambiguous/unknown statuses and
+  stable serialization.
+- Read-only Reference IR projection (`ReferenceDocument`), explicitly separate from Template IR
+  and non-compilable; graph coverage report with unresolved reasons.
+- CLI `docentric-copilot reference graph PATH [--ddsp] [--json]` and
+  `POST /api/v1/reference/graph`; ADR-0011 and documentation updates.
+
 ## [0.6.0] - 2026-11-04
 
 ### Added

@@ -30,9 +30,16 @@ from docentric_copilot.docx_compiler import CompileOptions
 from docentric_copilot.errors import CopilotError, NotFoundError
 from docentric_copilot.planner import PlanOptions, TemplatePlanner
 from docentric_copilot.reference import (
+    DdspSchemaEvidence,
+    ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    build_reference_graph,
+    graph_json,
     inspect_reference,
+    inspect_reference_bundle,
+    project_graph,
+    projection_json,
     report_json,
 )
 from docentric_copilot.template_ir import (
@@ -203,6 +210,43 @@ def _reference_summary(report: ReferenceReport) -> str:
     return "\n".join(lines)
 
 
+def _schema_summary(evidence: DdspSchemaEvidence) -> list[str]:
+    lines = [
+        (
+            f"Schema: {evidence.schema_id} ({evidence.schema_format}); "
+            f"fields {evidence.field_count}, collections {evidence.collection_count}"
+        ),
+        (
+            f"Root: {evidence.root_element or 'n/a'}; "
+            f"version: {evidence.contract_version or 'unknown'}; "
+            f"flavour: {evidence.flavour_label or evidence.flavour or 'unknown'}"
+        ),
+        f"Locales: {', '.join(evidence.locales) or 'none'}",
+        (
+            "Sections: "
+            + (
+                ", ".join(
+                    f"{section.name} ({section.field_count} fields"
+                    + (
+                        f", {section.collection_count} collections"
+                        if section.collection_count
+                        else ""
+                    )
+                    + ")"
+                    for section in evidence.data_sections
+                )
+                or "none"
+            )
+        ),
+        f"Sample values: {'present' if evidence.sample_values_present else 'none'}",
+    ]
+    if evidence.repeating_sections:
+        lines.append("Repeating: " + ", ".join(evidence.repeating_sections[:12]))
+    if evidence.unsupported_constructs:
+        lines.append("Unsupported: " + ", ".join(evidence.unsupported_constructs[:20]))
+    return lines
+
+
 @reference_app.command("inspect")
 def reference_inspect(
     path: Annotated[
@@ -220,6 +264,13 @@ def reference_inspect(
         str | None,
         typer.Option("--ddsp", help="Optional matching DDSP XML schema for path validation"),
     ] = None,
+    schema_report: Annotated[
+        bool,
+        typer.Option(
+            "--schema-report",
+            help="Show REF-01 DDSP schema evidence for every inspected document",
+        ),
+    ] = False,
     max_depth: Annotated[
         int,
         typer.Option(
@@ -230,7 +281,7 @@ def reference_inspect(
         ),
     ] = 1,
 ) -> None:
-    """Inspect reference templates without executing them (REF-00, REF-02)."""
+    """Inspect reference templates without executing them (REF-00, REF-01, REF-02)."""
     try:
         limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
         report = inspect_reference(path, limits=limits, max_depth=max_depth, ddsp_path=ddsp)
@@ -238,8 +289,11 @@ def reference_inspect(
         _fail(exc, as_json=json_output is not None)
         return
     summary = _reference_summary(report)
+    schema_lines = _schema_lines(report) if schema_report else []
     if json_output is None:
         typer.echo(summary)
+        for line in schema_lines:
+            typer.echo(line)
         return
     if str(json_output) == "-":
         typer.echo(report_json(report), nl=False)
@@ -247,7 +301,126 @@ def reference_inspect(
     json_output.parent.mkdir(parents=True, exist_ok=True)
     json_output.write_text(report_json(report), encoding="utf-8")
     typer.echo(summary)
+    for line in schema_lines:
+        typer.echo(line)
     typer.echo(f"Report written to {json_output}")
+
+
+def _schema_lines(report: ReferenceReport) -> list[str]:
+    documents = [document for document in report.documents if document.schema_evidence]
+    if not documents:
+        return ["Schema evidence: none (no DDSP schema matched any document)"]
+    lines: list[str] = []
+    for document in documents:
+        evidence = document.schema_evidence
+        if evidence is None:
+            continue
+        lines.append(f"[{document.filename}]")
+        lines.extend(f"  {line}" for line in _schema_summary(evidence))
+    return lines
+
+
+@reference_app.command("graph")
+def reference_graph(
+    path: Annotated[
+        str,
+        typer.Argument(help="DOCX, ZIP, AXPP or directory to project into ReferenceGraph"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option("--json", help="Write the ReferenceGraph JSON to this path; '-' for stdout"),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option("--ddsp", help="Optional matching DDSP XML schema for binding resolution"),
+    ] = None,
+    projection_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--projection",
+            help="Also write the read-only Reference IR projection to this path",
+        ),
+    ] = None,
+    max_depth: Annotated[
+        int,
+        typer.Option(
+            "--max-depth",
+            min=0,
+            max=3,
+            help="Nested archive depth to expand (offline only; default 1)",
+        ),
+    ] = 1,
+) -> None:
+    """Build a read-only ReferenceGraph and optional Reference IR projection (REF-03)."""
+    as_json = json_output is not None and str(json_output) == "-"
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
+        bundle = inspect_reference_bundle(path, limits=limits, max_depth=max_depth, ddsp_path=ddsp)
+        graph = build_reference_graph(bundle.report, bundle.schemas)
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    summary = _graph_summary(graph)
+    if json_output is None:
+        typer.echo(summary)
+    elif str(json_output) == "-":
+        typer.echo(graph_json(graph), nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(graph_json(graph), encoding="utf-8")
+        typer.echo(summary)
+        typer.echo(f"ReferenceGraph written to {json_output}")
+    if projection_output is not None:
+        projection = project_graph(graph)
+        if str(projection_output) == "-":
+            if str(json_output) == "-":
+                raise typer.BadParameter("--projection - and --json - cannot be combined")
+            typer.echo(projection_json(projection), nl=False)
+        else:
+            projection_output.parent.mkdir(parents=True, exist_ok=True)
+            projection_output.write_text(projection_json(projection), encoding="utf-8")
+            typer.echo(
+                f"Reference projection written to {projection_output} "
+                f"({projection.summary.elements} elements, "
+                f"not compilable)"
+            )
+
+
+def _graph_summary(graph: ReferenceGraph) -> str:
+    summary = graph.summary
+    return "\n".join(
+        [
+            f"ReferenceGraph: {graph.source_name} ({graph.source_type.value})",
+            (
+                f"Nodes: {summary.node_count} "
+                f"(control {summary.by_node_kind.get('control', 0)}, "
+                f"element {summary.elements_total}, "
+                f"source {summary.sources_total}, "
+                f"schema_field {summary.schema_fields_total})"
+            ),
+            (
+                f"Edges: {summary.edge_count} "
+                f"(resolved {summary.resolved_edges}, "
+                f"ambiguous {summary.ambiguous_edges}, "
+                f"unknown {summary.unknown_edges}); "
+                f"coverage {summary.edge_coverage_ratio:.1%}"
+            ),
+            (
+                f"Controls: {summary.controls_total} total, "
+                f"{summary.controls_resolved} resolved, "
+                f"{summary.controls_ambiguous} ambiguous, "
+                f"{summary.controls_unknown} unknown"
+            ),
+            (
+                f"Structures: {summary.lists_detected} list(s), "
+                f"{summary.conditions_detected} condition(s); "
+                f"unresolved nodes: {summary.unresolved_total}"
+            ),
+            f"Schema: {graph.schema_source.value}"
+            + (f" ({', '.join(graph.schema_ids)})" if graph.schema_ids else ""),
+            f"Runtime compatibility: {graph.runtime_compatibility}",
+        ]
+    )
 
 
 @app.command()

@@ -4,19 +4,28 @@
 | --- | --- |
 | Scope | How the system reads a DDSP data source package, what is known, what is assumed, what is rejected |
 | Parser | [packages/ddsp-parser/src/docentric_copilot/ddsp_parser/](../packages/ddsp-parser/src/docentric_copilot/ddsp_parser/) |
-| Status | Evidence-based parser; exercised on synthetic fixtures only |
+| Status | Evidence-based parser; synthetic fixtures in CI plus a private, untracked reference corpus |
 
 ## 1. What "DDSP" means here
 
-A DDSP is the **data source package** consumed by the template pipeline. In this repository it is
-treated as a ZIP container holding some combination of:
+A DDSP is the **data source package** consumed by the template pipeline. Two layouts are supported:
+
+1. The reference adapter (`packages/reference-inspector/src/docentric_copilot/reference/ddsp_real.py`)
+   recognises the real bare AX 2012 document: root `dsp:dataSourcePackage` in
+   `http://schemas.docentric.com/dynamics-ax/data-source-packages`, with `design`, `systemInfo`,
+   `labels` and `dataSections`. Each `dataSection` carries an `xs:schema` and optional `dsp:data`
+   sample. The adapter maps that layout into the same `NormalizedSchema`; attributes become
+   `@Name` leaves, `GeneralData`/`MainData` stay separate sections and unsupported constructs are
+   listed explicitly. It is selected by root/namespace, not by file extension.
+2. The v0.5 synthetic parser below treats a DDSP as a ZIP container holding some combination of:
 
 - a JSON manifest (`manifest.json`, `ddsp.json` or `metadata.json`);
 - one or more XML Schema (XSD) documents;
 - one or more sample data XML documents.
 
-That description is derived from the synthetic packages the project generates, not from an
-authoritative published specification.
+The synthetic ZIP description is derived from the packages the project generates, not from an
+authoritative published specification. The bare XML layout is observed evidence from a private
+reference corpus; no vendor specification was used and no Docentric component was executed.
 
 ## 2. Known, assumed and unknown
 
@@ -224,7 +233,7 @@ parsing and a warning when it concerns a manifest).
 | `XML004` | error (exception) | `safety.enforce_tree_limits` | Nesting depth above `max_xml_depth` |
 | `SCHEMA001` | error | `_select_sections`, `xsd.build_sections_from_xsd` | No usable XSD section could be built |
 | `SCHEMA002` | warning | `xsd.map_builtin_type`, `xsd._build_node` | Unsupported XSD type → `string`; nameless element skipped |
-| `SCHEMA003` | — | — | **Reserved, never emitted in this build** (duplicate path detection not implemented) |
+| `SCHEMA003` | warning | `reference.ddsp_real._RealSchemaBuilder._unique_name` | Duplicate declaration path was renamed, never dropped; the synthetic XSD builder does not emit it |
 | `SCHEMA004` | warning | `xsd._build_node` | Recursive type not expanded |
 | `SCHEMA005` | error | `xsd.XsdToSchema.build` | Schema node budget exhausted |
 | `SCHEMA006` | info | `sampledata.infer_sections_from_sample` | Schema inferred from sample data, no XSD |
@@ -261,8 +270,10 @@ model, 2,000 characters per sample value.
 
 ## 9. Compatibility statement
 
-- The parser is **not** a certified DDSP reader. No real-world DDSP package from Docentric, Microsoft
-  or a customer has been tested in this repository.
+- The synthetic parser is **not** a certified DDSP reader. It is covered by synthetic fixtures.
+- The reference adapter was exercised statically against six real AX 2012 DDSP documents in a
+  private, git-ignored corpus. That is format evidence only: it does not prove runtime behaviour,
+  and no Docentric component was installed or executed.
 - A successful parse proves only that the bytes matched the rules in this document. It does **not**
   prove that the package is a valid DDSP for any third-party product.
 - The `source` field is the literal string `"docentric-ax-ddsp"` for labelling. It is not evidence of

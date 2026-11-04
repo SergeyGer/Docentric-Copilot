@@ -127,6 +127,9 @@ class ProjectElement:
     value_binding: SourceBinding | None
     child_ids: tuple[str, ...]
     attributes: dict[str, str]
+    #: Typed child facts such as ``Value/LabelName``, ``AggregateBinding/Path``
+    #: and ``GroupByBinding/Path``. These are evidence, never evaluated.
+    properties: dict[str, str] = field(default_factory=dict)
 
     def fingerprint(self) -> tuple[object, ...]:
         binding = self.value_binding
@@ -347,12 +350,22 @@ def _parse_project_element(element: etree._Element) -> ProjectElement | None:
         if name.casefold() in {"id", "type"}:
             continue
         attributes[name] = str(value)[:200]
+    properties: dict[str, str] = {}
+    for child in element:
+        child_tag = local_name(child.tag)
+        if child_tag == "Value":
+            for key, value in sorted(child.attrib.items(), key=lambda item: local_name(item[0])):
+                properties[local_name(key)] = str(value)[:200]
+        elif child_tag in {"AggregateBinding", "GroupByBinding", "SortDescriptor"}:
+            for key, value in sorted(child.attrib.items(), key=lambda item: local_name(item[0])):
+                properties[f"{child_tag}.{local_name(key)}"] = str(value)[:200]
     return ProjectElement(
         id_unsigned=str(canonical),
         element_type=truncated(_attr(element, "Type"), 80) or "Unknown",
         value_binding=value_binding,
         child_ids=tuple(child_ids),
         attributes=attributes,
+        properties=properties,
     )
 
 
@@ -1060,6 +1073,23 @@ def resolve_controls(
     return [_resolve_one(control, bundle, schema) for control in controls]
 
 
+def effective_binding(
+    part: ParsedProjectData, element: ProjectElement
+) -> tuple[SourceBinding | None, list[str]]:
+    """Return the binding after resolving list-relative ``Source="."`` scopes."""
+    return _effective_binding(part, element)
+
+
+def element_kind_from_type(element_type: str | None) -> ElementKind:
+    """Map a ProjectData ``Type`` string onto the public element-kind enum."""
+    return _element_kind(element_type)
+
+
+def looks_like_expression(path: str | None) -> bool:
+    """True when a binding path contains expression syntax that is not evaluated."""
+    return _looks_like_expression(path)
+
+
 __all__ = [
     "ControlResolution",
     "LinkStatus",
@@ -1072,7 +1102,10 @@ __all__ = [
     "SchemaMatch",
     "SchemaSource",
     "SourceBinding",
+    "effective_binding",
+    "element_kind_from_type",
     "load_project_data",
+    "looks_like_expression",
     "normalize_store_item_id",
     "resolve_controls",
     "schema_from_ddsp",

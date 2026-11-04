@@ -47,6 +47,7 @@ class ReferenceLimits:
     max_text_preview: int = 160
     max_controls: int = 20_000
     max_xml_documents: int = 64
+    max_schema_nodes: int = 5_000
 
     @classmethod
     def from_limits(
@@ -64,6 +65,7 @@ class ReferenceLimits:
             max_compression_ratio=base.max_compression_ratio,
             max_xml_nodes=base.max_xml_nodes,
             max_xml_depth=base.max_xml_depth,
+            max_schema_nodes=base.max_schema_nodes,
         )
         if max_depth is None:
             return values
@@ -80,6 +82,7 @@ class ReferenceLimits:
             max_text_preview=values.max_text_preview,
             max_controls=values.max_controls,
             max_xml_documents=values.max_xml_documents,
+            max_schema_nodes=values.max_schema_nodes,
         )
 
 

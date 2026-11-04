@@ -70,6 +70,19 @@ def _upload(client: TestClient, payload: bytes, name: str = "Synthetic.Report.do
     )
 
 
+def _graph_upload(client: TestClient, payload: bytes, *, with_ddsp: bool = True):
+    files = {
+        "file": (
+            "Synthetic.Report.docx",
+            payload,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+    }
+    if with_ddsp:
+        files["ddsp"] = ("Synthetic.Report.ddsp", build_ddsp(), "application/xml")
+    return client.post("/api/v1/reference/graph", files=files)
+
+
 def test_upload_returns_report_and_never_claims_runtime(client: TestClient) -> None:
     response = _upload(client, _docx())
     assert response.status_code == 200, response.text
@@ -211,8 +224,74 @@ def test_response_contains_no_absolute_paths(client: TestClient, corpus: Path) -
     assert "/home/" not in serialized
 
 
+def test_graph_upload_returns_a_read_only_graph(client: TestClient) -> None:
+    response = _graph_upload(client, _docx())
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["graph_version"] == "1.0"
+    assert payload["reference_version"] == "1.0"
+    assert payload["runtime_compatibility"] == "not_tested"
+    assert payload["ir_kind"] == "reference"
+    assert payload["compilable"] is False
+    assert payload["summary"]["controls_total"] == 3
+    assert payload["summary"]["controls_resolved"] >= 1
+    assert payload["summary"]["controls_unknown"] >= 1
+    assert payload["schema_source"] == "ddsp"
+    assert {edge["type"] for edge in payload["edges"]} >= {"bound_to", "resolves_to"}
+    assert all(edge["status"] in {"resolved", "ambiguous", "unknown"} for edge in payload["edges"])
+    assert payload["graph_digest"] != "0" * 64
+
+
+def test_graph_path_inside_allowed_root(client: TestClient, corpus: Path) -> None:
+    response = client.post(
+        "/api/v1/reference/graph",
+        params={"path": "Synthetic.Report.docx"},
+    )
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["source_name"] == "Synthetic.Report.docx"
+    assert payload["summary"]["controls_total"] == 3
+
+
+def test_graph_path_outside_allowed_root_is_rejected(client: TestClient, tmp_path: Path) -> None:
+    outside = tmp_path / "outside.docx"
+    outside.write_bytes(_docx())
+    response = client.post(
+        "/api/v1/reference/graph",
+        params={"path": str(outside)},
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "reference_path_forbidden"
+
+
+def test_graph_requires_exactly_one_source(client: TestClient) -> None:
+    missing = client.post("/api/v1/reference/graph")
+    assert missing.status_code == 400
+    assert missing.json()["error"]["code"] == "input_invalid"
+    both = client.post(
+        "/api/v1/reference/graph",
+        params={"path": "Synthetic.Report.docx"},
+        files={"file": ("Synthetic.Report.docx", _docx(), "application/octet-stream")},
+    )
+    assert both.status_code == 400
+    assert both.json()["error"]["code"] == "input_invalid"
+
+
+def test_graph_never_returns_absolute_paths(client: TestClient, corpus: Path) -> None:
+    response = client.post(
+        "/api/v1/reference/graph",
+        params={"path": str(corpus / "Synthetic.Report.docx")},
+    )
+    assert response.status_code == 200, response.text
+    serialized = json.dumps(response.json())
+    assert str(corpus) not in serialized
+    assert "/root/" not in serialized
+    assert "/home/" not in serialized
+
+
 def test_capabilities_advertise_the_read_only_inspector(client: TestClient) -> None:
     payload = client.get("/api/v1/capabilities").json()
     assert payload["features"]["reference_inspector"] is True
+    assert payload["features"]["reference_graph"] is True
     ax = next(item for item in payload["compilers"] if item["target"] == "docentric-ax")
     assert ax["available"] is False and ax["verified"] is False

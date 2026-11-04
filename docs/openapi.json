@@ -67,6 +67,38 @@
         "title": "ArtifactView",
         "type": "object"
       },
+      "Body_graph_reference_endpoint_api_v1_reference_graph_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional matching DDSP XML schema for binding resolution",
+            "title": "Ddsp"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reference DOCX, ZIP or AXPP package",
+            "title": "File"
+          }
+        },
+        "title": "Body_graph_reference_endpoint_api_v1_reference_graph_post",
+        "type": "object"
+      },
       "Body_inspect_reference_endpoint_api_v1_reference_inspect_post": {
         "properties": {
           "ddsp": {
@@ -983,6 +1015,262 @@
         "title": "DataBinding",
         "type": "object"
       },
+      "DdspDataSectionEvidence": {
+        "additionalProperties": false,
+        "description": "One ``dsp:dataSection`` and its contribution to the normalized schema.",
+        "properties": {
+          "collection_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Collection Count",
+            "type": "integer"
+          },
+          "field_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "max_depth": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Max Depth",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "root_elements": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Root Elements",
+            "type": "array"
+          },
+          "sample_values_present": {
+            "default": false,
+            "title": "Sample Values Present",
+            "type": "boolean"
+          },
+          "schema_present": {
+            "default": true,
+            "title": "Schema Present",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "DdspDataSectionEvidence",
+        "type": "object"
+      },
+      "DdspSchemaEvidence": {
+        "additionalProperties": false,
+        "description": "Non-executing evidence about a parsed DDSP schema contract.",
+        "properties": {
+          "collection_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Collection Count",
+            "type": "integer"
+          },
+          "contract_version": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contract Version"
+          },
+          "data_sections": {
+            "items": {
+              "$ref": "#/components/schemas/DdspDataSectionEvidence"
+            },
+            "maxItems": 20,
+            "title": "Data Sections",
+            "type": "array"
+          },
+          "docu_type_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Docu Type Id"
+          },
+          "field_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "flavour": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flavour"
+          },
+          "flavour_label": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flavour Label"
+          },
+          "label_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Label Count",
+            "type": "integer"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "locales": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Locales",
+            "type": "array"
+          },
+          "namespace": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namespace"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "repeating_sections": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 200,
+            "title": "Repeating Sections",
+            "type": "array"
+          },
+          "root_element": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Element"
+          },
+          "sample_values_present": {
+            "default": false,
+            "title": "Sample Values Present",
+            "type": "boolean"
+          },
+          "schema_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Schema Digest",
+            "type": "string"
+          },
+          "schema_format": {
+            "default": "bare-ddsp",
+            "maxLength": 40,
+            "title": "Schema Format",
+            "type": "string"
+          },
+          "schema_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Sections",
+            "type": "array"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/SchemaStats"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id"
+          },
+          "unsupported_constructs": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 80,
+            "title": "Unsupported Constructs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schema_id",
+          "schema_digest"
+        ],
+        "title": "DdspSchemaEvidence",
+        "type": "object"
+      },
       "DemoCase": {
         "properties": {
           "defect": {
@@ -1271,6 +1559,14 @@
             "title": "Link Status Counts",
             "type": "object"
           },
+          "metadata_elements": {
+            "items": {
+              "$ref": "#/components/schemas/ElementEvidence"
+            },
+            "maxItems": 5000,
+            "title": "Metadata Elements",
+            "type": "array"
+          },
           "path_status_counts": {
             "additionalProperties": {
               "type": "integer"
@@ -1316,6 +1612,16 @@
             },
             "title": "Resolution Counts",
             "type": "object"
+          },
+          "schema_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DdspSchemaEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "schema_paths": {
             "default": 0,
@@ -1451,6 +1757,110 @@
         "title": "DuplicateGroup",
         "type": "object"
       },
+      "EdgeType": {
+        "description": "ReferenceGraph edge category.",
+        "enum": [
+          "bound_to",
+          "resolves_to",
+          "iterates",
+          "condition"
+        ],
+        "title": "EdgeType",
+        "type": "string"
+      },
+      "ElementEvidence": {
+        "additionalProperties": false,
+        "description": "One Docentric ProjectData element, preserved as reference evidence.",
+        "properties": {
+          "attributes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Attributes",
+            "type": "object"
+          },
+          "binding_notes": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Binding Notes",
+            "type": "array"
+          },
+          "child_element_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "title": "Child Element Ids",
+            "type": "array"
+          },
+          "effective_binding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceBinding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "element_id_unsigned": {
+            "maxLength": 20,
+            "pattern": "^[0-9]+$",
+            "title": "Element Id Unsigned",
+            "type": "string"
+          },
+          "element_kind": {
+            "$ref": "#/components/schemas/ElementKind"
+          },
+          "element_type": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Element Type",
+            "type": "string"
+          },
+          "parent_element_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Parent Element Ids",
+            "type": "array"
+          },
+          "project_data_part": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Project Data Part",
+            "type": "string"
+          },
+          "properties": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Properties",
+            "type": "object"
+          },
+          "source_binding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceBinding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "element_id_unsigned",
+          "element_type",
+          "element_kind",
+          "project_data_part"
+        ],
+        "title": "ElementEvidence",
+        "type": "object"
+      },
       "ElementKind": {
         "description": "Docentric element kind inferred from markers, never from execution.",
         "enum": [
@@ -1503,6 +1913,580 @@
           "message"
         ],
         "title": "Finding",
+        "type": "object"
+      },
+      "GraphEdge": {
+        "additionalProperties": false,
+        "description": "One typed, directed relation between two graph nodes.",
+        "properties": {
+          "evidence": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "object"
+          },
+          "id": {
+            "maxLength": 900,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GraphStatus"
+          },
+          "target": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Target",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EdgeType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "source",
+          "target",
+          "status"
+        ],
+        "title": "GraphEdge",
+        "type": "object"
+      },
+      "GraphNode": {
+        "additionalProperties": false,
+        "description": "One control, metadata element, data source or schema field.",
+        "properties": {
+          "binding_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Path"
+          },
+          "collection": {
+            "default": false,
+            "title": "Collection",
+            "type": "boolean"
+          },
+          "data_type": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Type"
+          },
+          "depth": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depth"
+          },
+          "document_name": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Name"
+          },
+          "document_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Sha256"
+          },
+          "element_id": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "pattern": "^[0-9]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Element Id"
+          },
+          "element_kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ElementKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "object"
+          },
+          "id": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/NodeKind"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "normalized_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalized Path"
+          },
+          "ordinal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinal"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "paragraph_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paragraph Index"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "schema_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Path"
+          },
+          "source_name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GraphStatus"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "status"
+        ],
+        "title": "GraphNode",
+        "type": "object"
+      },
+      "GraphStatus": {
+        "description": "Resolution status shared by nodes and edges.",
+        "enum": [
+          "resolved",
+          "ambiguous",
+          "unknown"
+        ],
+        "title": "GraphStatus",
+        "type": "string"
+      },
+      "GraphStructure": {
+        "additionalProperties": false,
+        "description": "A detected list, group or conditional with its child targets.",
+        "properties": {
+          "binding_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Path"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ElementKind"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "node_id": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Node Id",
+            "type": "string"
+          },
+          "source_name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GraphStatus"
+          },
+          "target_count": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Target Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "node_id",
+          "kind",
+          "label",
+          "status"
+        ],
+        "title": "GraphStructure",
+        "type": "object"
+      },
+      "GraphStructures": {
+        "additionalProperties": false,
+        "description": "All detected list/group and conditional structures.",
+        "properties": {
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/GraphStructure"
+            },
+            "maxItems": 1000,
+            "title": "Conditions",
+            "type": "array"
+          },
+          "lists": {
+            "items": {
+              "$ref": "#/components/schemas/GraphStructure"
+            },
+            "maxItems": 1000,
+            "title": "Lists",
+            "type": "array"
+          }
+        },
+        "title": "GraphStructures",
+        "type": "object"
+      },
+      "GraphSummary": {
+        "additionalProperties": false,
+        "description": "Deterministic aggregate counts with explicit denominators.",
+        "properties": {
+          "ambiguous_edges": {
+            "minimum": 0.0,
+            "title": "Ambiguous Edges",
+            "type": "integer"
+          },
+          "by_edge_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Edge Status",
+            "type": "object"
+          },
+          "by_edge_type": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Edge Type",
+            "type": "object"
+          },
+          "by_node_kind": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Node Kind",
+            "type": "object"
+          },
+          "by_node_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Node Status",
+            "type": "object"
+          },
+          "conditions_detected": {
+            "minimum": 0.0,
+            "title": "Conditions Detected",
+            "type": "integer"
+          },
+          "controls_ambiguous": {
+            "minimum": 0.0,
+            "title": "Controls Ambiguous",
+            "type": "integer"
+          },
+          "controls_bound": {
+            "minimum": 0.0,
+            "title": "Controls Bound",
+            "type": "integer"
+          },
+          "controls_resolved": {
+            "minimum": 0.0,
+            "title": "Controls Resolved",
+            "type": "integer"
+          },
+          "controls_total": {
+            "minimum": 0.0,
+            "title": "Controls Total",
+            "type": "integer"
+          },
+          "controls_unknown": {
+            "minimum": 0.0,
+            "title": "Controls Unknown",
+            "type": "integer"
+          },
+          "edge_count": {
+            "minimum": 0.0,
+            "title": "Edge Count",
+            "type": "integer"
+          },
+          "edge_coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Edge Coverage Ratio",
+            "type": "number"
+          },
+          "elements_total": {
+            "minimum": 0.0,
+            "title": "Elements Total",
+            "type": "integer"
+          },
+          "lists_detected": {
+            "minimum": 0.0,
+            "title": "Lists Detected",
+            "type": "integer"
+          },
+          "node_count": {
+            "minimum": 0.0,
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "resolved_edges": {
+            "minimum": 0.0,
+            "title": "Resolved Edges",
+            "type": "integer"
+          },
+          "schema_fields_resolved": {
+            "minimum": 0.0,
+            "title": "Schema Fields Resolved",
+            "type": "integer"
+          },
+          "schema_fields_total": {
+            "minimum": 0.0,
+            "title": "Schema Fields Total",
+            "type": "integer"
+          },
+          "sources_total": {
+            "minimum": 0.0,
+            "title": "Sources Total",
+            "type": "integer"
+          },
+          "unknown_edges": {
+            "minimum": 0.0,
+            "title": "Unknown Edges",
+            "type": "integer"
+          },
+          "unresolved_total": {
+            "minimum": 0.0,
+            "title": "Unresolved Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "node_count",
+          "edge_count",
+          "resolved_edges",
+          "ambiguous_edges",
+          "unknown_edges",
+          "edge_coverage_ratio",
+          "controls_total",
+          "controls_resolved",
+          "controls_ambiguous",
+          "controls_unknown",
+          "controls_bound",
+          "elements_total",
+          "sources_total",
+          "schema_fields_total",
+          "schema_fields_resolved",
+          "lists_detected",
+          "conditions_detected",
+          "unresolved_total"
+        ],
+        "title": "GraphSummary",
+        "type": "object"
+      },
+      "GraphUnresolved": {
+        "additionalProperties": false,
+        "description": "An unresolved node with its explicit reason.",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/NodeKind"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "node_id": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Node Id",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GraphStatus"
+          }
+        },
+        "required": [
+          "node_id",
+          "kind",
+          "label",
+          "status",
+          "reason"
+        ],
+        "title": "GraphUnresolved",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -1725,6 +2709,17 @@
           "type_mismatch"
         ],
         "title": "LinkStatus",
+        "type": "string"
+      },
+      "NodeKind": {
+        "description": "ReferenceGraph node category.",
+        "enum": [
+          "control",
+          "element",
+          "source",
+          "schema_field"
+        ],
+        "title": "NodeKind",
         "type": "string"
       },
       "OptimizeResponse": {
@@ -2446,6 +3441,144 @@
         "title": "ReferenceDiagnostic",
         "type": "object"
       },
+      "ReferenceGraph": {
+        "additionalProperties": false,
+        "description": "Read-only ReferenceGraph v1.0 contract.",
+        "properties": {
+          "compilable": {
+            "const": false,
+            "default": false,
+            "title": "Compilable",
+            "type": "boolean"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDiagnostic"
+            },
+            "maxItems": 500,
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/GraphEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "graph_digest": {
+            "default": "0000000000000000000000000000000000000000000000000000000000000000",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Digest",
+            "type": "string"
+          },
+          "graph_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Graph Version",
+            "type": "string"
+          },
+          "ir_kind": {
+            "const": "reference",
+            "default": "reference",
+            "title": "Ir Kind",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/GraphNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "note": {
+            "default": "read-only reference graph; not Template IR and not compilable",
+            "maxLength": 300,
+            "title": "Note",
+            "type": "string"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/PlatformHint",
+            "default": "unknown"
+          },
+          "reference_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Reference Version",
+            "type": "string"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "schema_digests": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Schema Digests",
+            "type": "array"
+          },
+          "schema_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Schema Ids",
+            "type": "array"
+          },
+          "schema_sections": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Schema Sections",
+            "type": "array"
+          },
+          "schema_source": {
+            "$ref": "#/components/schemas/SchemaSource",
+            "default": "none"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "structures": {
+            "$ref": "#/components/schemas/GraphStructures"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/GraphSummary"
+          },
+          "unresolved": {
+            "items": {
+              "$ref": "#/components/schemas/GraphUnresolved"
+            },
+            "maxItems": 500,
+            "title": "Unresolved",
+            "type": "array"
+          }
+        },
+        "required": [
+          "source_type",
+          "source_name",
+          "source_sha256",
+          "summary"
+        ],
+        "title": "ReferenceGraph",
+        "type": "object"
+      },
       "ReferenceInventory": {
         "additionalProperties": false,
         "description": "JSON-serialisable inventory of one file or directory.",
@@ -2894,6 +4027,38 @@
         "title": "SchemaSource",
         "type": "string"
       },
+      "SchemaStats": {
+        "additionalProperties": false,
+        "properties": {
+          "attribute_count": {
+            "default": 0,
+            "title": "Attribute Count",
+            "type": "integer"
+          },
+          "collection_count": {
+            "default": 0,
+            "title": "Collection Count",
+            "type": "integer"
+          },
+          "max_depth": {
+            "default": 0,
+            "title": "Max Depth",
+            "type": "integer"
+          },
+          "node_count": {
+            "default": 0,
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "scalar_count": {
+            "default": 0,
+            "title": "Scalar Count",
+            "type": "integer"
+          }
+        },
+        "title": "SchemaStats",
+        "type": "object"
+      },
       "SchemaView": {
         "additionalProperties": false,
         "properties": {
@@ -3297,7 +4462,7 @@
   "info": {
     "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
     "title": "Docentric Copilot API",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -3579,6 +4744,82 @@
         "summary": "Providers",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/reference/graph": {
+      "post": {
+        "description": "Build a read-only ReferenceGraph; nothing is executed or written.",
+        "operationId": "graph_reference_endpoint_api_v1_reference_graph_post",
+        "parameters": [
+          {
+            "description": "Path inside a configured reference corpus root",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Path inside a configured reference corpus root",
+              "title": "Path"
+            }
+          },
+          {
+            "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+            "in": "query",
+            "name": "max_depth",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+              "maximum": 3,
+              "minimum": 0,
+              "title": "Max Depth",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_graph_reference_endpoint_api_v1_reference_graph_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceGraph"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Graph Reference Endpoint",
+        "tags": [
+          "reference"
         ]
       }
     },

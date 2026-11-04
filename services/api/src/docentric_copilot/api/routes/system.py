@@ -49,6 +49,7 @@ def capabilities(
             "generic_docx": True,
             "html_preview": True,
             "reference_inspector": True,
+            "reference_graph": True,
             "pdf_preview": False,
             "docentric_ax_adapter": False,
             "verified_compatibility": False,

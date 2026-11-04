@@ -15,6 +15,7 @@ ADRs are immutable once accepted; a changed decision is superseded, never rewrit
 | [ADR-0008](0008-ir-level-quality-engine.md) | Quality checks on the IR, not on pixels | Accepted |
 | [ADR-0009](0009-ax-adapter-gate.md) | The AX adapter is a gated interface, not an implementation | Accepted |
 | [ADR-0010](0010-reference-inspector.md) | A read-only reference inspector before any Docentric AX writer | Accepted |
+| [ADR-0011](0011-reference-graph.md) | A separate ReferenceGraph and read-only Reference IR | Accepted |
 
 New ADRs start from [TEMPLATE.md](TEMPLATE.md) and are reviewed in the pull request that needs
 the decision. `scripts/check_docs_links.py` verifies the structure and this index in CI.

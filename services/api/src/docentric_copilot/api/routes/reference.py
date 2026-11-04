@@ -18,9 +18,11 @@ from docentric_copilot.errors import (
     UnsupportedInputError,
 )
 from docentric_copilot.reference import (
+    ReferenceDiff,
     ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    build_reference_diff,
     build_reference_graph,
     inspect_reference,
     inspect_reference_bundle,
@@ -214,6 +216,100 @@ async def graph_reference_endpoint(
     target = _resolve_corpus_path(path or "", settings)
     bundle = inspect_reference_bundle(target, limits=limits, max_depth=max_depth)
     return build_reference_graph(bundle.report, bundle.schemas)
+
+
+@router.post("/diff", response_model=ReferenceDiff)
+async def diff_reference_endpoint(
+    left: UploadFile | None = File(
+        default=None,
+        description="Left reference DOCX, ZIP or AXPP package",
+    ),
+    right: UploadFile | None = File(
+        default=None,
+        description="Right reference DOCX, ZIP or AXPP package",
+    ),
+    left_path: str | None = Query(
+        default=None,
+        max_length=1024,
+        description="Left path inside a configured reference corpus root",
+    ),
+    right_path: str | None = Query(
+        default=None,
+        max_length=1024,
+        description="Right path inside a configured reference corpus root",
+    ),
+    ddsp_file: UploadFile | None = File(
+        default=None,
+        alias="ddsp",
+        description="Optional DDSP schema applied to both uploaded templates",
+    ),
+    max_depth: int = Query(
+        default=0,
+        ge=0,
+        le=3,
+        description=(
+            "Nested archive depth. Default 0 keeps public uploads non-recursive; "
+            "the root container is still enumerated."
+        ),
+    ),
+    settings: Settings = Depends(get_settings),
+) -> ReferenceDiff:
+    """Compare two references read-only (REF-04); nothing is executed or written."""
+    uploaded = left is not None or right is not None
+    pathed = left_path is not None or right_path is not None
+    if uploaded and pathed:
+        raise InvalidInputError("Provide either two uploaded files or two corpus paths, not both")
+    if not uploaded and not pathed:
+        raise InvalidInputError("Provide two template files or two corpus paths")
+    if uploaded and (left is None or right is None):
+        raise InvalidInputError("Both left and right files are required")
+    if pathed and (left_path is None or right_path is None):
+        raise InvalidInputError("Both left_path and right_path are required")
+    limits = ReferenceLimits.from_limits(settings.limits, max_depth=max_depth)
+    if pathed:
+        if ddsp_file is not None:
+            raise InvalidInputError(
+                "A DDSP upload is only supported together with uploaded templates"
+            )
+        left_target = _resolve_corpus_path(left_path or "", settings)
+        right_target = _resolve_corpus_path(right_path or "", settings)
+        return build_reference_diff(
+            left_target,
+            right_target,
+            limits=limits,
+            max_depth=max_depth,
+        )
+    assert left is not None and right is not None
+    left_payload = await _read_upload(
+        left, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_INPUTS
+    )
+    right_payload = await _read_upload(
+        right, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_INPUTS
+    )
+    ddsp_data: bytes | None = None
+    ddsp_name = "source.ddsp"
+    if ddsp_file is not None:
+        ddsp_data = await _read_upload(
+            ddsp_file, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_SCHEMAS
+        )
+        ddsp_name = Path(ddsp_file.filename or "source.ddsp").name
+    left_bundle = inspect_reference_bytes_bundle(
+        left_payload,
+        filename=Path(left.filename or "left.docx").name,
+        limits=limits,
+        max_depth=max_depth,
+        ddsp_data=ddsp_data,
+        ddsp_name=ddsp_name,
+    )
+    right_bundle = inspect_reference_bytes_bundle(
+        right_payload,
+        filename=Path(right.filename or "right.docx").name,
+        limits=limits,
+        max_depth=max_depth,
+        ddsp_data=ddsp_data,
+        ddsp_name=ddsp_name,
+    )
+    return build_reference_diff(left_bundle, right_bundle)
 
 
 __all__ = ["router"]

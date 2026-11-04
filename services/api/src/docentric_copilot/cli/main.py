@@ -31,10 +31,13 @@ from docentric_copilot.errors import CopilotError, NotFoundError
 from docentric_copilot.planner import PlanOptions, TemplatePlanner
 from docentric_copilot.reference import (
     DdspSchemaEvidence,
+    ReferenceDiff,
     ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    build_reference_diff,
     build_reference_graph,
+    diff_json,
     graph_json,
     inspect_reference,
     inspect_reference_bundle,
@@ -318,6 +321,90 @@ def _schema_lines(report: ReferenceReport) -> list[str]:
         lines.append(f"[{document.filename}]")
         lines.extend(f"  {line}" for line in _schema_summary(evidence))
     return lines
+
+
+@reference_app.command("diff")
+def reference_diff(
+    left: Annotated[
+        str,
+        typer.Argument(help="Left DOCX, ZIP, AXPP or directory to compare"),
+    ],
+    right: Annotated[
+        str,
+        typer.Argument(help="Right DOCX, ZIP, AXPP or directory to compare"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option("--json", help="Write the ReferenceDiff JSON to this path; '-' for stdout"),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option("--ddsp", help="Optional DDSP schema applied to both sides"),
+    ] = None,
+    max_depth: Annotated[
+        int,
+        typer.Option(
+            "--max-depth",
+            min=0,
+            max=3,
+            help="Nested archive depth to expand (offline only; default 1)",
+        ),
+    ] = 1,
+) -> None:
+    """Compare two read-only references (REF-04); nothing is executed."""
+    as_json = json_output is not None and str(json_output) == "-"
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
+        diff = build_reference_diff(
+            left,
+            right,
+            ddsp=ddsp,
+            limits=limits,
+            max_depth=max_depth,
+        )
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    summary = _diff_summary(diff)
+    if json_output is None:
+        typer.echo(summary)
+    elif str(json_output) == "-":
+        typer.echo(diff_json(diff), nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(diff_json(diff), encoding="utf-8")
+        typer.echo(summary)
+        typer.echo(f"ReferenceDiff written to {json_output}")
+
+
+def _diff_summary(diff: ReferenceDiff) -> str:
+    summary = diff.summary
+    coverage = diff.coverage_delta
+    return "\n".join(
+        [
+            f"ReferenceDiff: {diff.left.source_name} → {diff.right.source_name}",
+            (
+                f"Changes: {summary.total} "
+                f"(added {summary.added}, removed {summary.removed}, "
+                f"changed {summary.changed}; ambiguous {summary.ambiguous})"
+            ),
+            (f"Dimensions: structural {summary.structural}, semantic {summary.semantic}"),
+            (
+                "Coverage: "
+                f"edges {coverage.left_edge_coverage:.1%} → "
+                f"{coverage.right_edge_coverage:.1%} "
+                f"(delta {coverage.edge_delta:+.1%}); "
+                f"controls {coverage.left_control_coverage:.1%} → "
+                f"{coverage.right_control_coverage:.1%} "
+                f"(delta {coverage.control_delta:+.1%})"
+            ),
+            (
+                f"Unresolved: {diff.unresolved.left} → {diff.unresolved.right} "
+                f"(delta {diff.unresolved_delta:+d})"
+            ),
+            f"Runtime compatibility: {diff.runtime_compatibility}",
+        ]
+    )
 
 
 @reference_app.command("graph")

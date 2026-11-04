@@ -1,0 +1,746 @@
+{
+  "cases": [
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        }
+      ],
+      "family": "field",
+      "forbidden_paths": [],
+      "id": "ref-field-scalar",
+      "labels": [
+        "field",
+        "header"
+      ],
+      "patterns": [
+        "scalar"
+      ],
+      "prompt": "Create an invoice showing the company name and the order number.",
+      "reference": "benchmarks/fixtures/reference/ref-field-scalar.docx",
+      "schema": "benchmarks/fixtures/reference/ref-field-scalar.ddsp",
+      "title": "Field: scalar company and order identity"
+    },
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderDate"
+          ],
+          "expected_type": "date",
+          "id": "scalar:MainData.Order.OrderDate",
+          "kind": "field",
+          "path": "MainData.Order.OrderDate",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.DueDate"
+          ],
+          "expected_type": "date",
+          "id": "scalar:MainData.Order.DueDate",
+          "kind": "field",
+          "path": "MainData.Order.DueDate",
+          "required": true
+        }
+      ],
+      "family": "field",
+      "forbidden_paths": [],
+      "id": "ref-field-date",
+      "labels": [
+        "field",
+        "dates"
+      ],
+      "patterns": [
+        "scalar"
+      ],
+      "prompt": "Create an invoice with its issue date and due date.",
+      "reference": "benchmarks/fixtures/reference/ref-field-date.docx",
+      "schema": "benchmarks/fixtures/reference/ref-field-date.ddsp",
+      "title": "Field: issue and due dates"
+    },
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        },
+        {
+          "concept": "collection",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line"
+          ],
+          "expected_type": "collection",
+          "id": "collection:MainData.OrderLines.Line",
+          "kind": "list",
+          "path": "MainData.OrderLines.Line",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.OrderLines.Line.ItemId",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.ItemId",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.OrderLines.Line.Description",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.Description",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.Quantity",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.Quantity",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.UnitPrice"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.UnitPrice",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.UnitPrice",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.LineAmount",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.LineAmount",
+          "required": true
+        }
+      ],
+      "family": "list",
+      "forbidden_paths": [],
+      "id": "ref-list-collection",
+      "labels": [
+        "list",
+        "collection"
+      ],
+      "patterns": [
+        "scalar",
+        "collection"
+      ],
+      "prompt": "Create an invoice with a line-item table for the order lines.",
+      "reference": "benchmarks/fixtures/reference/ref-list-collection.docx",
+      "schema": "benchmarks/fixtures/reference/ref-list-collection.ddsp",
+      "title": "List: repeated line-item collection"
+    },
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        },
+        {
+          "concept": "condition",
+          "contexts": [
+            "conditional"
+          ],
+          "expected_paths": [
+            "MainData.Order.Customer.IsEU"
+          ],
+          "expected_type": "boolean",
+          "id": "condition:MainData.Order.Customer.IsEU",
+          "kind": "if",
+          "path": "MainData.Order.Customer.IsEU",
+          "required": true
+        }
+      ],
+      "family": "if",
+      "forbidden_paths": [],
+      "id": "ref-if-condition",
+      "labels": [
+        "if",
+        "conditional"
+      ],
+      "patterns": [
+        "scalar",
+        "condition"
+      ],
+      "prompt": "Create an invoice with a VAT notice for EU customers.",
+      "reference": "benchmarks/fixtures/reference/ref-if-condition.docx",
+      "schema": "benchmarks/fixtures/reference/ref-if-condition.ddsp",
+      "title": "If: conditional VAT notice"
+    },
+    {
+      "expected": [
+        {
+          "concept": "image",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Logo"
+          ],
+          "expected_type": "image",
+          "id": "image:MainData.Company.Logo",
+          "kind": "image",
+          "path": "MainData.Company.Logo",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        }
+      ],
+      "family": "image",
+      "forbidden_paths": [],
+      "id": "ref-image-logo",
+      "labels": [
+        "image",
+        "header"
+      ],
+      "patterns": [
+        "image",
+        "scalar"
+      ],
+      "prompt": "Create an invoice with the company logo in the header.",
+      "reference": "benchmarks/fixtures/reference/ref-image-logo.docx",
+      "schema": "benchmarks/fixtures/reference/ref-image-logo.ddsp",
+      "title": "Image: company logo in the header"
+    },
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "text",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.PaymentTerms"
+          ],
+          "expected_type": "string",
+          "id": "text:MainData.Order.PaymentTerms",
+          "kind": "label",
+          "path": "MainData.Order.PaymentTerms",
+          "required": true
+        }
+      ],
+      "family": "label",
+      "forbidden_paths": [],
+      "id": "ref-label-text",
+      "labels": [
+        "label",
+        "text"
+      ],
+      "patterns": [
+        "scalar",
+        "text"
+      ],
+      "prompt": "Create an invoice with the payment terms label.",
+      "reference": "benchmarks/fixtures/reference/ref-label-text.docx",
+      "schema": "benchmarks/fixtures/reference/ref-label-text.ddsp",
+      "title": "Label: localized payment terms text"
+    },
+    {
+      "expected": [
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Address"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Address",
+          "kind": "field",
+          "path": "MainData.Company.Address",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "footer"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderDate"
+          ],
+          "expected_type": "date",
+          "id": "scalar:MainData.Order.OrderDate",
+          "kind": "field",
+          "path": "MainData.Order.OrderDate",
+          "required": true
+        }
+      ],
+      "family": "context",
+      "forbidden_paths": [],
+      "id": "ref-header-footer",
+      "labels": [
+        "field",
+        "context"
+      ],
+      "patterns": [
+        "scalar"
+      ],
+      "prompt": "Create an invoice with the company name in the header and the order number in the footer.",
+      "reference": "benchmarks/fixtures/reference/ref-header-footer.docx",
+      "schema": "benchmarks/fixtures/reference/ref-header-footer.ddsp",
+      "title": "Context: header, body and footer placement"
+    },
+    {
+      "expected": [
+        {
+          "concept": "image",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Logo"
+          ],
+          "expected_type": "image",
+          "id": "image:MainData.Company.Logo",
+          "kind": "image",
+          "path": "MainData.Company.Logo",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "header"
+          ],
+          "expected_paths": [
+            "MainData.Company.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Company.Name",
+          "kind": "field",
+          "path": "MainData.Company.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.OrderId",
+          "kind": "field",
+          "path": "MainData.Order.OrderId",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.OrderDate"
+          ],
+          "expected_type": "date",
+          "id": "scalar:MainData.Order.OrderDate",
+          "kind": "field",
+          "path": "MainData.Order.OrderDate",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.Customer.Name"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.Order.Customer.Name",
+          "kind": "field",
+          "path": "MainData.Order.Customer.Name",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.NetAmount"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.Order.NetAmount",
+          "kind": "field",
+          "path": "MainData.Order.NetAmount",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.TaxAmount"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.Order.TaxAmount",
+          "kind": "field",
+          "path": "MainData.Order.TaxAmount",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.TotalAmount"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.Order.TotalAmount",
+          "kind": "field",
+          "path": "MainData.Order.TotalAmount",
+          "required": true
+        },
+        {
+          "concept": "text",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.Order.PaymentTerms"
+          ],
+          "expected_type": "string",
+          "id": "text:MainData.Order.PaymentTerms",
+          "kind": "label",
+          "path": "MainData.Order.PaymentTerms",
+          "required": true
+        },
+        {
+          "concept": "condition",
+          "contexts": [
+            "conditional"
+          ],
+          "expected_paths": [
+            "MainData.Order.Customer.IsEU"
+          ],
+          "expected_type": "boolean",
+          "id": "condition:MainData.Order.Customer.IsEU",
+          "kind": "if",
+          "path": "MainData.Order.Customer.IsEU",
+          "required": true
+        },
+        {
+          "concept": "collection",
+          "contexts": [
+            "body"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line"
+          ],
+          "expected_type": "collection",
+          "id": "collection:MainData.OrderLines.Line",
+          "kind": "list",
+          "path": "MainData.OrderLines.Line",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.OrderLines.Line.ItemId",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.ItemId",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "id": "scalar:MainData.OrderLines.Line.Description",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.Description",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.Quantity",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.Quantity",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.UnitPrice"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.UnitPrice",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.UnitPrice",
+          "required": true
+        },
+        {
+          "concept": "scalar",
+          "contexts": [
+            "repeat"
+          ],
+          "expected_paths": [
+            "MainData.OrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "id": "scalar:MainData.OrderLines.Line.LineAmount",
+          "kind": "field",
+          "path": "MainData.OrderLines.Line.LineAmount",
+          "required": true
+        }
+      ],
+      "family": "mixed",
+      "forbidden_paths": [
+        "MainData.Company.InternalNote"
+      ],
+      "id": "ref-mixed-invoice",
+      "labels": [
+        "field",
+        "list",
+        "if",
+        "image",
+        "label",
+        "mixed"
+      ],
+      "patterns": [
+        "image",
+        "scalar",
+        "text",
+        "condition",
+        "collection"
+      ],
+      "prompt": "Create a tax invoice with a logo, customer, line items, an EU VAT notice, payment terms and totals.",
+      "reference": "benchmarks/fixtures/reference/ref-mixed-invoice.docx",
+      "schema": "benchmarks/fixtures/reference/ref-mixed-invoice.ddsp",
+      "title": "Mixed: Field, List, If, Image and Label patterns"
+    }
+  ],
+  "description": "Human-reviewed synthetic gold set for reference-based evaluation. Expected bindings are authored from generic Field, List, If, Image and Label patterns; no Docentric corpus content is used.",
+  "patterns": [
+    "field",
+    "list",
+    "if",
+    "image",
+    "label"
+  ],
+  "provenance": "synthetic",
+  "version": "1.0"
+}

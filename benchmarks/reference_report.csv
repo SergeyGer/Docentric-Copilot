@@ -1,0 +1,10 @@
+scope,case_id,provider,model,provenance,case_count,runs,completed_runs,valid_runs,valid_template_rate,precision,recall,coverage,f1,type_context_correctness,semantic_pass_rate,concept_total,cost_usd,cost_status
+aggregate,,mock,mock-planner-v1,synthetic,8,8,8,8,1.0,0.891304,1.0,1.0,0.942529,1.0,0.375,41,0.0,verified
+case,ref-field-scalar,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2,0.0,verified
+case,ref-field-date,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,0.75,1.0,1.0,0.857143,1.0,0.0,3,0.0,verified
+case,ref-list-collection,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,1.0,1.0,1.0,1.0,1.0,1.0,8,0.0,verified
+case,ref-if-condition,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,0.75,1.0,1.0,0.857143,1.0,0.0,3,0.0,verified
+case,ref-image-logo,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,1.0,1.0,1.0,1.0,1.0,1.0,3,0.0,verified
+case,ref-label-text,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,0.666667,1.0,1.0,0.8,1.0,0.0,2,0.0,verified
+case,ref-header-footer,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,0.8,1.0,1.0,0.888889,1.0,0.0,4,0.0,verified
+case,ref-mixed-invoice,mock,mock-planner-v1,synthetic,1,1,1,1,1.0,0.941176,1.0,1.0,0.969697,1.0,0.0,16,0.0,verified

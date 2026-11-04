@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference-based evaluation</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; padding: 32px 20px 64px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #172033; background: #f5f7fb; line-height: 1.45; }
+  main { max-width: 1120px; margin: 0 auto; }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 { font-size: 19px; margin: 28px 0 8px; }
+  .muted { color: #64748b; font-weight: 400; font-size: 13px; }
+  .note { background: #fff7ed; border: 1px solid #fed7aa; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+  .card { background: #fff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dfe5ef; border-radius: 8px; overflow: hidden; margin: 12px 0 24px; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #e8edf5; text-align: left; vertical-align: top; }
+  th { background: #f8fafc; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #475569; }
+  code { background: #eef2f7; padding: 1px 5px; border-radius: 4px; }
+  .metric { font-size: 26px; font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Reference-based evaluation</h1>
+  <p class="muted">Provenance: <strong>synthetic</strong> ·
+     Mode: <code>cases</code> ·
+     Provider: <code>mock</code>
+     mock-planner-v1 · Cases: 8 ·
+     Runs: 8/8</p>
+
+  <div class="note">
+    <strong>Valid template rate is reported separately.</strong>
+    Validation and compilation say the plan is technically usable; they do not say it reproduced
+    the reference patterns. Precision, recall and coverage come from the reference comparison.
+  </div>
+
+  <section class="card">
+    <div class="metric">37.5%</div>
+    <p class="muted">Semantic pass rate · precision 0.891 ·
+       recall 1.000 · coverage 1.000 ·
+       type/context 1.000</p>
+    <p>Valid template rate <strong>100.0%</strong>
+       (8/8) — separate from the semantic metrics.</p>
+  </section>
+
+  <h2>Sample and provenance</h2>
+  <table><tbody>
+    <tr><th>Reference concepts</th><td>41</td></tr>
+    <tr><th>Unsupported / unbound</th><td>0 / 0</td></tr>
+    <tr><th>Corpus content included</th><td>no</td></tr>
+    <tr><th>References</th><td><ul><li>ref-field-scalar.docx <span class='muted'>c6550363ac9472ae</span></li><li>ref-field-date.docx <span class='muted'>65beab1565cc9356</span></li><li>ref-list-collection.docx <span class='muted'>be93cc227a30f708</span></li><li>ref-if-condition.docx <span class='muted'>df3d1e71f484a4e1</span></li><li>ref-image-logo.docx <span class='muted'>aff43add470a4cb8</span></li><li>ref-label-text.docx <span class='muted'>de903d35fc3b4c39</span></li><li>ref-header-footer.docx <span class='muted'>3fe5e18db4eaaa97</span></li><li>ref-mixed-invoice.docx <span class='muted'>49cdc412baf99c24</span></li></ul></td></tr>
+    <tr><th>Cost</th><td>verified · 0.0 USD</td></tr>
+  </tbody></table>
+
+  <h2>Per-case results</h2>
+  <table>
+    <thead><tr><th>Case / patterns</th><th>Concepts</th><th>Precision</th><th>Recall</th>
+      <th>Coverage</th><th>Type/context</th><th>Semantic pass</th><th>Valid template</th></tr></thead>
+    <tbody><tr><td><strong>ref-field-scalar</strong><br><span class='muted'>scalar</span></td><td>2</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-field-date</strong><br><span class='muted'>scalar</span></td><td>3</td><td>0.750</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-list-collection</strong><br><span class='muted'>scalar, collection</span></td><td>8</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-if-condition</strong><br><span class='muted'>scalar, condition</span></td><td>3</td><td>0.750</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-image-logo</strong><br><span class='muted'>image, scalar</span></td><td>3</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-label-text</strong><br><span class='muted'>scalar, text</span></td><td>2</td><td>0.667</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-header-footer</strong><br><span class='muted'>scalar</span></td><td>4</td><td>0.800</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td><strong>100.0%</strong></td></tr><tr><td><strong>ref-mixed-invoice</strong><br><span class='muted'>image, scalar, text, condition, collection</span></td><td>16</td><td>0.941</td><td>1.000</td><td>1.000</td><td>1.000</td><td>0.0%</td><td><strong>100.0%</strong></td></tr></tbody>
+  </table>
+
+  <h2>Error taxonomy</h2>
+  <table><thead><tr><th>Code</th><th>Runs with code</th><th>Primary</th></tr></thead>
+    <tbody><tr><td>wrong_binding</td><td>5</td><td>5</td></tr></tbody></table>
+
+  <h2>Notes</h2>
+  <ul><li>Synthetic gold set: 8 Field/List/If/Image/Label pattern cases authored in this repository.</li><li>Expected bindings were hand-authored; the evaluator also derives concepts from the reference and reports any consistency gap.</li><li>No paid provider calls are needed: the default provider is the deterministic mock.</li><li>Semantic metrics and valid_template_rate are reported separately.</li></ul>
+  <h2>Limitations</h2>
+  <ul><li>The synthetic set is small (8 patterns) and is not a population sample.</li><li>The mock provider is a deterministic baseline, not an LLM quality claim.</li><li>Static reference inspection cannot prove Docentric runtime compatibility.</li><li>AXPP references with several DOCX documents are evaluated as one concept inventory.</li></ul>
+</main>
+</body>
+</html>

@@ -64,6 +64,31 @@ The harness compares planner output against a hand-written ground truth for the 
   quality signal; it is a status.
 - **Cost 0.000** — the baseline is offline. Hosted providers report estimated cost from a pricing table.
 
+## Reference-based evaluation (REF-05)
+
+```bash
+.venv/bin/python benchmarks/reference_evaluation.py --provider mock
+```
+
+Scores a generated plan against reference template patterns rather than only against a prompt:
+Field→scalar, List→collection, If→condition, Image→image and Label→text. The committed synthetic set
+has 8 cases and 41 expected concepts; no Docentric corpus content is used.
+
+| Metric | Synthetic mock run |
+| --- | --- |
+| Precision | **0.891** |
+| Recall | **1.000** |
+| Coverage | **1.000** |
+| Type/context correctness | **1.000** |
+| Valid template rate (separate) | **1.000** |
+| Cost | verified, $0.00 |
+
+`valid_template_rate` is deliberately reported separately: a plan can be schema-valid and compile
+while binding the wrong reference pattern. The report writes JSON, CSV and self-contained HTML with
+sample size, provenance, error taxonomy and cost status. `--reference PATH --ddsp PATH` evaluates a
+real DOCX/AXPP from the ignored corpus at runtime; those reports stay private. A non-mock provider
+requires `--allow-paid`.
+
 ## Why two separate metrics
 
 Compilation success and verified compatibility measure different things. A document can compile perfectly
@@ -79,7 +104,7 @@ page.
 | Data | the three committed synthetic fixtures |
 | Provider | `mock` (no network) |
 | Command | `make bench && make eval` |
-| Outputs | `benchmarks/results.json`, `benchmarks/evaluation.json` |
+| Outputs | `benchmarks/results.json`, `benchmarks/evaluation.json`, `benchmarks/reference_report.{json,csv,html}` |
 
 Hosted-provider runs are supported (`--provider openai --model …`) but are not part of the committed
 baseline, because model versions and network conditions change.

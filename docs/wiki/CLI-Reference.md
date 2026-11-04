@@ -38,6 +38,29 @@ Read-only REF-00/REF-02 inspection of a DOCX, ZIP, AXPP or directory. `--json` t
 path (`-` for stdout); `--ddsp` optionally supplies a schema for path validation. No macros or
 template expressions are executed. See [Reference Templates](Reference-Templates).
 
+### `reference graph`
+
+```bash
+docentric-copilot reference graph template.docx --ddsp schema.ddsp \
+  --json graph.json --projection reference.json
+```
+
+Builds the read-only ReferenceGraph (REF-03) and, optionally, the separate non-compilable Reference
+IR projection.
+
+### `reference diff`
+
+```bash
+docentric-copilot reference diff left.docx right.docx --json diff.json
+docentric-copilot reference diff older.docx newer.docx --ddsp schema.ddsp --json diff.json
+```
+
+Compares two references (REF-04) and writes `ReferenceDiff` v1.0: added/removed/changed control,
+element, binding, source and schema-field items with stable keys. Structural (presence, parts,
+counts) and semantic (binding path, status, kind) changes are separated; coverage and unresolved
+deltas and a deterministic digest are included. The command is read-only and never enables the AX
+target.
+
 ### `plan`
 
 ```bash

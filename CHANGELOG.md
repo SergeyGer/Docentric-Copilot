@@ -8,6 +8,17 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-04
+
+### Added
+- REF-04 reference diff: structural and semantic comparison of two reference graphs/templates
+  (added/removed/changed controls, elements, bindings, sources), coverage and unresolved deltas,
+  deterministic digest; CLI `reference diff` and `POST /api/v1/reference/diff`.
+- REF-05 reference-based evaluation: gold set derived from reference element patterns (Field, List,
+  If, Image, Label), synthetic committed cases plus a local-corpus mode, precision/recall/coverage
+  separate from valid-template rate, JSON/CSV/HTML reports with provenance and cost status.
+- ADR-0012, reference documentation and wiki updates.
+
 ## [0.7.0] - 2026-11-04
 
 ### Added

@@ -67,6 +67,51 @@
         "title": "ArtifactView",
         "type": "object"
       },
+      "Body_diff_reference_endpoint_api_v1_reference_diff_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional DDSP schema applied to both uploaded templates",
+            "title": "Ddsp"
+          },
+          "left": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Left reference DOCX, ZIP or AXPP package",
+            "title": "Left"
+          },
+          "right": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Right reference DOCX, ZIP or AXPP package",
+            "title": "Right"
+          }
+        },
+        "title": "Body_diff_reference_endpoint_api_v1_reference_diff_post",
+        "type": "object"
+      },
       "Body_graph_reference_endpoint_api_v1_reference_graph_post": {
         "properties": {
           "ddsp": {
@@ -179,6 +224,25 @@
         ],
         "title": "CapabilitiesView",
         "type": "object"
+      },
+      "ChangeDimension": {
+        "description": "Structural placement versus semantic meaning.",
+        "enum": [
+          "structural",
+          "semantic"
+        ],
+        "title": "ChangeDimension",
+        "type": "string"
+      },
+      "ChangeType": {
+        "description": "Whether a stable key appeared, disappeared or persisted.",
+        "enum": [
+          "added",
+          "removed",
+          "changed"
+        ],
+        "title": "ChangeType",
+        "type": "string"
       },
       "CheckResult": {
         "additionalProperties": false,
@@ -971,6 +1035,59 @@
         "title": "ControlType",
         "type": "string"
       },
+      "CoverageDelta": {
+        "additionalProperties": false,
+        "description": "Coverage ratios before and after, with explicit deltas.",
+        "properties": {
+          "control_delta": {
+            "title": "Control Delta",
+            "type": "number"
+          },
+          "delta": {
+            "title": "Delta",
+            "type": "number"
+          },
+          "edge_delta": {
+            "title": "Edge Delta",
+            "type": "number"
+          },
+          "left_control_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Left Control Coverage",
+            "type": "number"
+          },
+          "left_edge_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Left Edge Coverage",
+            "type": "number"
+          },
+          "right_control_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Right Control Coverage",
+            "type": "number"
+          },
+          "right_edge_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Right Edge Coverage",
+            "type": "number"
+          }
+        },
+        "required": [
+          "left_edge_coverage",
+          "right_edge_coverage",
+          "edge_delta",
+          "delta",
+          "left_control_coverage",
+          "right_control_coverage",
+          "control_delta"
+        ],
+        "title": "CoverageDelta",
+        "type": "object"
+      },
       "DataBinding": {
         "additionalProperties": false,
         "description": "Word ``w:dataBinding`` attributes; never evaluated as an XPath expression.",
@@ -1485,6 +1602,453 @@
         ],
         "title": "DesignStyle",
         "type": "string"
+      },
+      "DiffCountPair": {
+        "additionalProperties": false,
+        "description": "Before/after/delta triple for one structural count.",
+        "properties": {
+          "delta": {
+            "title": "Delta",
+            "type": "integer"
+          },
+          "left": {
+            "minimum": 0.0,
+            "title": "Left",
+            "type": "integer"
+          },
+          "right": {
+            "minimum": 0.0,
+            "title": "Right",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "left",
+          "right",
+          "delta"
+        ],
+        "title": "DiffCountPair",
+        "type": "object"
+      },
+      "DiffCounts": {
+        "additionalProperties": false,
+        "description": "Structural count deltas between left and right.",
+        "properties": {
+          "controls": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          },
+          "edges": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          },
+          "elements": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          },
+          "parts": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          },
+          "parts_added": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "title": "Parts Added",
+            "type": "array"
+          },
+          "parts_removed": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "title": "Parts Removed",
+            "type": "array"
+          },
+          "schema_fields": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          },
+          "sources": {
+            "$ref": "#/components/schemas/DiffCountPair"
+          }
+        },
+        "required": [
+          "controls",
+          "elements",
+          "sources",
+          "schema_fields",
+          "edges",
+          "parts"
+        ],
+        "title": "DiffCounts",
+        "type": "object"
+      },
+      "DiffDimension": {
+        "additionalProperties": false,
+        "description": "The structural or semantic partition of the change list.",
+        "properties": {
+          "added": {
+            "minimum": 0.0,
+            "title": "Added",
+            "type": "integer"
+          },
+          "by_kind": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Kind",
+            "type": "object"
+          },
+          "changed": {
+            "minimum": 0.0,
+            "title": "Changed",
+            "type": "integer"
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/ChangeDimension"
+          },
+          "keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Keys",
+            "type": "array"
+          },
+          "removed": {
+            "minimum": 0.0,
+            "title": "Removed",
+            "type": "integer"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dimension",
+          "added",
+          "removed",
+          "changed",
+          "total"
+        ],
+        "title": "DiffDimension",
+        "type": "object"
+      },
+      "DiffItem": {
+        "additionalProperties": false,
+        "description": "One added, removed or changed reference item with a stable key.",
+        "properties": {
+          "after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiffSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "before": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiffSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "change": {
+            "$ref": "#/components/schemas/ChangeType"
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/ChangeDimension"
+          },
+          "fields": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Fields",
+            "type": "array"
+          },
+          "key": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DiffItemKind"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "change",
+          "dimension"
+        ],
+        "title": "DiffItem",
+        "type": "object"
+      },
+      "DiffItemKind": {
+        "description": "The reference object category a diff item describes.",
+        "enum": [
+          "control",
+          "element",
+          "binding",
+          "source",
+          "schema_field"
+        ],
+        "title": "DiffItemKind",
+        "type": "string"
+      },
+      "DiffSide": {
+        "additionalProperties": false,
+        "description": "One side of the comparison, without timestamps or absolute paths.",
+        "properties": {
+          "graph_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Digest",
+            "type": "string"
+          },
+          "graph_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Graph Version",
+            "type": "string"
+          },
+          "schema_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Schema Ids",
+            "type": "array"
+          },
+          "schema_source": {
+            "$ref": "#/components/schemas/SchemaSource",
+            "default": "none"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/GraphSummary"
+          }
+        },
+        "required": [
+          "source_type",
+          "source_name",
+          "source_sha256",
+          "graph_digest",
+          "summary"
+        ],
+        "title": "DiffSide",
+        "type": "object"
+      },
+      "DiffSnapshot": {
+        "additionalProperties": false,
+        "description": "Before/after evidence for one item at one side of the comparison.",
+        "properties": {
+          "binding_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Path"
+          },
+          "collection": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection"
+          },
+          "data_type": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Type"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "paragraph_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paragraph Index"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GraphStatus"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "DiffSnapshot",
+        "type": "object"
+      },
+      "DiffSummary": {
+        "additionalProperties": false,
+        "description": "Aggregate change counts, independent of the structural/semantic split.",
+        "properties": {
+          "added": {
+            "minimum": 0.0,
+            "title": "Added",
+            "type": "integer"
+          },
+          "added_keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Added Keys",
+            "type": "array"
+          },
+          "ambiguous": {
+            "minimum": 0.0,
+            "title": "Ambiguous",
+            "type": "integer"
+          },
+          "by_change": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Change",
+            "type": "object"
+          },
+          "by_kind": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Kind",
+            "type": "object"
+          },
+          "changed": {
+            "minimum": 0.0,
+            "title": "Changed",
+            "type": "integer"
+          },
+          "changed_keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Changed Keys",
+            "type": "array"
+          },
+          "removed": {
+            "minimum": 0.0,
+            "title": "Removed",
+            "type": "integer"
+          },
+          "removed_keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Removed Keys",
+            "type": "array"
+          },
+          "semantic": {
+            "minimum": 0.0,
+            "title": "Semantic",
+            "type": "integer"
+          },
+          "status_transitions": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Status Transitions",
+            "type": "object"
+          },
+          "structural": {
+            "minimum": 0.0,
+            "title": "Structural",
+            "type": "integer"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "added",
+          "removed",
+          "changed",
+          "total",
+          "ambiguous",
+          "structural",
+          "semantic"
+        ],
+        "title": "DiffSummary",
+        "type": "object"
       },
       "DocumentEvidence": {
         "additionalProperties": false,
@@ -3441,6 +4005,103 @@
         "title": "ReferenceDiagnostic",
         "type": "object"
       },
+      "ReferenceDiff": {
+        "additionalProperties": false,
+        "description": "Read-only ReferenceDiff v1.0 contract.",
+        "properties": {
+          "compilable": {
+            "const": false,
+            "default": false,
+            "title": "Compilable",
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/DiffCounts"
+          },
+          "coverage_delta": {
+            "$ref": "#/components/schemas/CoverageDelta"
+          },
+          "diff_digest": {
+            "default": "0000000000000000000000000000000000000000000000000000000000000000",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Diff Digest",
+            "type": "string"
+          },
+          "diff_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Diff Version",
+            "type": "string"
+          },
+          "ir_kind": {
+            "const": "reference",
+            "default": "reference",
+            "title": "Ir Kind",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DiffItem"
+            },
+            "maxItems": 20000,
+            "title": "Items",
+            "type": "array"
+          },
+          "left": {
+            "$ref": "#/components/schemas/DiffSide"
+          },
+          "note": {
+            "default": "read-only reference comparison; not Template IR, not compilable and not a runtime check",
+            "maxLength": 300,
+            "title": "Note",
+            "type": "string"
+          },
+          "reference_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Reference Version",
+            "type": "string"
+          },
+          "right": {
+            "$ref": "#/components/schemas/DiffSide"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "semantic": {
+            "$ref": "#/components/schemas/DiffDimension"
+          },
+          "structural": {
+            "$ref": "#/components/schemas/DiffDimension"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DiffSummary"
+          },
+          "unresolved": {
+            "$ref": "#/components/schemas/UnresolvedDelta"
+          },
+          "unresolved_delta": {
+            "title": "Unresolved Delta",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "left",
+          "right",
+          "structural",
+          "semantic",
+          "summary",
+          "counts",
+          "coverage_delta",
+          "unresolved_delta",
+          "unresolved"
+        ],
+        "title": "ReferenceDiff",
+        "type": "object"
+      },
       "ReferenceGraph": {
         "additionalProperties": false,
         "description": "Read-only ReferenceGraph v1.0 contract.",
@@ -4236,6 +4897,49 @@
         "title": "StoryPart",
         "type": "string"
       },
+      "UnresolvedDelta": {
+        "additionalProperties": false,
+        "description": "Unresolved-node counts and the stable keys that appeared or disappeared.",
+        "properties": {
+          "added_keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Added Keys",
+            "type": "array"
+          },
+          "delta": {
+            "title": "Delta",
+            "type": "integer"
+          },
+          "left": {
+            "minimum": 0.0,
+            "title": "Left",
+            "type": "integer"
+          },
+          "removed_keys": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20000,
+            "title": "Removed Keys",
+            "type": "array"
+          },
+          "right": {
+            "minimum": 0.0,
+            "title": "Right",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "left",
+          "right",
+          "delta"
+        ],
+        "title": "UnresolvedDelta",
+        "type": "object"
+      },
       "ValidateRequest": {
         "additionalProperties": false,
         "properties": {
@@ -4462,7 +5166,7 @@
   "info": {
     "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
     "title": "Docentric Copilot API",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -4744,6 +5448,101 @@
         "summary": "Providers",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/reference/diff": {
+      "post": {
+        "description": "Compare two references read-only (REF-04); nothing is executed or written.",
+        "operationId": "diff_reference_endpoint_api_v1_reference_diff_post",
+        "parameters": [
+          {
+            "description": "Left path inside a configured reference corpus root",
+            "in": "query",
+            "name": "left_path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Left path inside a configured reference corpus root",
+              "title": "Left Path"
+            }
+          },
+          {
+            "description": "Right path inside a configured reference corpus root",
+            "in": "query",
+            "name": "right_path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Right path inside a configured reference corpus root",
+              "title": "Right Path"
+            }
+          },
+          {
+            "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+            "in": "query",
+            "name": "max_depth",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+              "maximum": 3,
+              "minimum": 0,
+              "title": "Max Depth",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_diff_reference_endpoint_api_v1_reference_diff_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceDiff"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Diff Reference Endpoint",
+        "tags": [
+          "reference"
         ]
       }
     },

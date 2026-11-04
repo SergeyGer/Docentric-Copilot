@@ -18,6 +18,8 @@ document at [`/openapi.json`](http://localhost:8000/openapi.json). A snapshot is
 | `POST` | `/api/v1/templates/revise` | New IR version from an instruction |
 | `POST` | `/api/v1/templates/preview` | HTML preview |
 | `POST` | `/api/v1/reference/inspect` | Read-only reference template inspection (multipart file or confined corpus path) |
+| `POST` | `/api/v1/reference/graph` | Read-only ReferenceGraph and optional reference projection |
+| `POST` | `/api/v1/reference/diff` | ReferenceDiff v1.0 from two uploads or two confined corpus paths |
 | `GET` | `/api/v1/templates/{id}/versions` | Version history |
 | `GET` | `/api/v1/templates/{id}/export/{version}` | Export a version's IR and reports |
 | `GET` | `/api/v1/jobs/{id}` | Job record |
@@ -28,9 +30,10 @@ document at [`/openapi.json`](http://localhost:8000/openapi.json). A snapshot is
 | `GET` | `/api/v1/health` | Service health |
 
 Reference inspection accepts a multipart `file` (`.docx`, `.zip`, `.axpp`) with an optional
-`ddsp`, or `?path=` inside `DC_REFERENCE_CORPUS_ROOTS`. It is read-only, defaults to no nested
-archive recursion over HTTP, and reports `runtime_compatibility: "not_tested"`. See
-[Reference Templates](Reference-Templates).
+`ddsp`, or `?path=` inside `DC_REFERENCE_CORPUS_ROOTS`. The diff endpoint accepts multipart
+`left`/`right` files (optional shared `ddsp`) or `left_path`/`right_path` query parameters. All
+reference endpoints are read-only, default to no nested archive recursion over HTTP, and report
+`runtime_compatibility: "not_tested"`. See [Reference Templates](Reference-Templates).
 
 ## Error envelope
 

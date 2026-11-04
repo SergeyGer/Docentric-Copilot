@@ -1,0 +1,2049 @@
+{
+  "case_count": 8,
+  "cost": {
+    "assumptions": [
+      "The deterministic mock provider reports zero token usage and zero cost.",
+      "No paid provider call was made for this report."
+    ],
+    "paid_calls": false,
+    "per_semantically_correct_result_usd": 0.0,
+    "status": "verified",
+    "total_usd": 0.0
+  },
+  "dataset": {
+    "canonical_sha256": "3cdf9400c7701ff586013bab4e99d6d62efc28a44f8668bed5ab711c1f301619",
+    "case_count": 8,
+    "families": {
+      "context": 1,
+      "field": 2,
+      "if": 1,
+      "image": 1,
+      "label": 1,
+      "list": 1,
+      "mixed": 1
+    },
+    "file": "benchmarks/reference_cases.json",
+    "file_sha256": "e3610e922fc2ac845ff7a1674ea4f244429f05bf85dd81001e865471f4819fde",
+    "patterns": {
+      "collection": 2,
+      "condition": 2,
+      "image": 2,
+      "scalar": 8,
+      "text": 2
+    }
+  },
+  "error_taxonomy": {
+    "wrong_binding": 5
+  },
+  "generated_at": "2026-11-04T18:55:31.487239Z",
+  "limitations": [
+    "The synthetic set is small (8 patterns) and is not a population sample.",
+    "The mock provider is a deterministic baseline, not an LLM quality claim.",
+    "Static reference inspection cannot prove Docentric runtime compatibility.",
+    "AXPP references with several DOCX documents are evaluated as one concept inventory."
+  ],
+  "metrics": {
+    "compilation_success_rate": 1.0,
+    "completed_runs": 8,
+    "concept_total": 41,
+    "context_checks": 39,
+    "context_correct": 39,
+    "cost_status": "verified",
+    "cost_usd": 0.0,
+    "coverage": 1.0,
+    "coverage_denominator": 41,
+    "coverage_numerator": 41,
+    "error_counts": {
+      "wrong_binding": 5
+    },
+    "f1": 0.942529,
+    "failed_runs": 0,
+    "false_negatives": 0,
+    "false_positives": 5,
+    "forbidden_hits": [],
+    "matched_concepts": 41,
+    "matched_required": 41,
+    "precision": 0.891304,
+    "precision_denominator": 46,
+    "precision_numerator": 41,
+    "primary_error_counts": {
+      "wrong_binding": 5
+    },
+    "recall": 1.0,
+    "recall_denominator": 41,
+    "recall_numerator": 41,
+    "required_total": 41,
+    "runs": 8,
+    "semantic_pass_rate": 0.375,
+    "true_positives": 41,
+    "type_checks": 41,
+    "type_context_correctness": 1.0,
+    "type_correct": 41,
+    "valid_runs": 8,
+    "valid_template_rate": 1.0,
+    "validation_pass_rate": 1.0
+  },
+  "mode": "cases",
+  "notes": [
+    "Synthetic gold set: 8 Field/List/If/Image/Label pattern cases authored in this repository.",
+    "Expected bindings were hand-authored; the evaluator also derives concepts from the reference and reports any consistency gap.",
+    "No paid provider calls are needed: the default provider is the deterministic mock.",
+    "Semantic metrics and valid_template_rate are reported separately."
+  ],
+  "per_case": [
+    {
+      "case_id": "ref-field-scalar",
+      "concept_total": 2,
+      "consistency": {
+        "derived_concept_count": 2,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "field",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 2,
+        "context_checks": 2,
+        "context_correct": 2,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 2,
+        "coverage_numerator": 2,
+        "error_counts": {},
+        "f1": 1.0,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "forbidden_hits": [],
+        "matched_concepts": 2,
+        "matched_required": 2,
+        "precision": 1.0,
+        "precision_denominator": 2,
+        "precision_numerator": 2,
+        "primary_error_counts": {},
+        "recall": 1.0,
+        "recall_denominator": 2,
+        "recall_numerator": 2,
+        "required_total": 2,
+        "runs": 1,
+        "semantic_pass_rate": 1.0,
+        "true_positives": 2,
+        "type_checks": 2,
+        "type_context_correctness": 1.0,
+        "type_correct": 2,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-field-scalar",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": null,
+          "error_codes": [],
+          "failures": [],
+          "ir_digest": "8049f7b37605ff4af9e9940bbe268236c594aee3cd33837a7b433292d17a0157",
+          "latency_ms": 119,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "scalar"
+          ],
+          "primary_error": null,
+          "produced_paths": [
+            "MainData.Company.Name",
+            "MainData.Order.OrderId"
+          ],
+          "prompt_sha256": "38551989f1e7f913d919ca0c189ea8baf0e2f642ae2818ce184ce63f181a0ecb",
+          "reference_consistency": {
+            "derived_concept_count": 2,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 2,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 2,
+            "context_correct": 2,
+            "coverage": 1.0,
+            "error_codes": [],
+            "extra_paths": [],
+            "f1": 1.0,
+            "false_negatives": 0,
+            "false_positives": 0,
+            "forbidden_hits": [],
+            "matched_concepts": 2,
+            "matched_required": 2,
+            "precision": 1.0,
+            "produced_paths": [
+              "MainData.Company.Name",
+              "MainData.Order.OrderId"
+            ],
+            "recall": 1.0,
+            "required_total": 2,
+            "semantic_pass": true,
+            "true_positives": 2,
+            "type_checks": 2,
+            "type_context_correctness": 1.0,
+            "type_correct": 2
+          },
+          "title": "Field: scalar company and order identity",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Field: scalar company and order identity"
+    },
+    {
+      "case_id": "ref-field-date",
+      "concept_total": 3,
+      "consistency": {
+        "derived_concept_count": 3,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "field",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 3,
+        "context_checks": 3,
+        "context_correct": 3,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 3,
+        "coverage_numerator": 3,
+        "error_counts": {
+          "wrong_binding": 1
+        },
+        "f1": 0.857143,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "forbidden_hits": [],
+        "matched_concepts": 3,
+        "matched_required": 3,
+        "precision": 0.75,
+        "precision_denominator": 4,
+        "precision_numerator": 3,
+        "primary_error_counts": {
+          "wrong_binding": 1
+        },
+        "recall": 1.0,
+        "recall_denominator": 3,
+        "recall_numerator": 3,
+        "required_total": 3,
+        "runs": 1,
+        "semantic_pass_rate": 0.0,
+        "true_positives": 3,
+        "type_checks": 3,
+        "type_context_correctness": 1.0,
+        "type_correct": 3,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-field-date",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": {
+            "code": "wrong_binding",
+            "message": "reference patterns matched with issues"
+          },
+          "error_codes": [
+            "wrong_binding"
+          ],
+          "failures": [],
+          "ir_digest": "b36073f953ae343eb877a3cfe45b7b1c4cd298dbb77a0c092818b6cb509615e2",
+          "latency_ms": 118,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "scalar"
+          ],
+          "primary_error": "wrong_binding",
+          "produced_paths": [
+            "MainData.Company.Name",
+            "MainData.Order.DueDate",
+            "MainData.Order.OrderDate",
+            "MainData.Order.OrderId"
+          ],
+          "prompt_sha256": "103ff16fac5fa5d6641d323939a725ea471c51a954c1c125a498507adb4f5c3f",
+          "reference_consistency": {
+            "derived_concept_count": 3,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 3,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderDate"
+                ],
+                "id": "scalar:MainData.Order.OrderDate",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderDate",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.DueDate"
+                ],
+                "id": "scalar:MainData.Order.DueDate",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.DueDate",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 3,
+            "context_correct": 3,
+            "coverage": 1.0,
+            "error_codes": [
+              "wrong_binding"
+            ],
+            "extra_paths": [
+              "MainData.Company.Name"
+            ],
+            "f1": 0.857143,
+            "false_negatives": 0,
+            "false_positives": 1,
+            "forbidden_hits": [],
+            "matched_concepts": 3,
+            "matched_required": 3,
+            "precision": 0.75,
+            "produced_paths": [
+              "MainData.Company.Name",
+              "MainData.Order.DueDate",
+              "MainData.Order.OrderDate",
+              "MainData.Order.OrderId"
+            ],
+            "recall": 1.0,
+            "required_total": 3,
+            "semantic_pass": false,
+            "true_positives": 3,
+            "type_checks": 3,
+            "type_context_correctness": 1.0,
+            "type_correct": 3
+          },
+          "title": "Field: issue and due dates",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Field: issue and due dates"
+    },
+    {
+      "case_id": "ref-list-collection",
+      "concept_total": 8,
+      "consistency": {
+        "derived_concept_count": 8,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "list",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 8,
+        "context_checks": 7,
+        "context_correct": 7,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 8,
+        "coverage_numerator": 8,
+        "error_counts": {},
+        "f1": 1.0,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "forbidden_hits": [],
+        "matched_concepts": 8,
+        "matched_required": 8,
+        "precision": 1.0,
+        "precision_denominator": 8,
+        "precision_numerator": 8,
+        "primary_error_counts": {},
+        "recall": 1.0,
+        "recall_denominator": 8,
+        "recall_numerator": 8,
+        "required_total": 8,
+        "runs": 1,
+        "semantic_pass_rate": 1.0,
+        "true_positives": 8,
+        "type_checks": 8,
+        "type_context_correctness": 1.0,
+        "type_correct": 8,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar",
+        "collection"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-list-collection",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": null,
+          "error_codes": [],
+          "failures": [],
+          "ir_digest": "20b1c6cfaa31884a475e43e0f02de7dd3b5a6e66ea72fa87dc4e946e20f163a9",
+          "latency_ms": 114,
+          "mapping_only": 1,
+          "ok": true,
+          "patterns": [
+            "scalar",
+            "collection"
+          ],
+          "primary_error": null,
+          "produced_paths": [
+            "MainData.Company.Name",
+            "MainData.Order.OrderId",
+            "MainData.OrderLines.Line",
+            "MainData.OrderLines.Line.Description",
+            "MainData.OrderLines.Line.ItemId",
+            "MainData.OrderLines.Line.LineAmount",
+            "MainData.OrderLines.Line.Quantity",
+            "MainData.OrderLines.Line.UnitPrice"
+          ],
+          "prompt_sha256": "1df9d2f795a220411abf4e47e8955eeb85c030e8d6213f3a8b5a0b0a463f3b98",
+          "reference_consistency": {
+            "derived_concept_count": 8,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 8,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "collection",
+                "context_checked": false,
+                "context_ok": null,
+                "expected_paths": [
+                  "MainData.OrderLines.Line"
+                ],
+                "id": "collection:MainData.OrderLines.Line",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line",
+                "matched_role": "collection",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.ItemId"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.ItemId",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.ItemId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.Description"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.Description",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.Description",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.Quantity"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.Quantity",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.Quantity",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.UnitPrice"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.UnitPrice",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.UnitPrice",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.LineAmount"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.LineAmount",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.LineAmount",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 7,
+            "context_correct": 7,
+            "coverage": 1.0,
+            "error_codes": [],
+            "extra_paths": [],
+            "f1": 1.0,
+            "false_negatives": 0,
+            "false_positives": 0,
+            "forbidden_hits": [],
+            "matched_concepts": 8,
+            "matched_required": 8,
+            "precision": 1.0,
+            "produced_paths": [
+              "MainData.Company.Name",
+              "MainData.Order.OrderId",
+              "MainData.OrderLines.Line",
+              "MainData.OrderLines.Line.Description",
+              "MainData.OrderLines.Line.ItemId",
+              "MainData.OrderLines.Line.LineAmount",
+              "MainData.OrderLines.Line.Quantity",
+              "MainData.OrderLines.Line.UnitPrice"
+            ],
+            "recall": 1.0,
+            "required_total": 8,
+            "semantic_pass": true,
+            "true_positives": 8,
+            "type_checks": 8,
+            "type_context_correctness": 1.0,
+            "type_correct": 8
+          },
+          "title": "List: repeated line-item collection",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "List: repeated line-item collection"
+    },
+    {
+      "case_id": "ref-if-condition",
+      "concept_total": 3,
+      "consistency": {
+        "derived_concept_count": 3,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "if",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 3,
+        "context_checks": 3,
+        "context_correct": 3,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 3,
+        "coverage_numerator": 3,
+        "error_counts": {
+          "wrong_binding": 1
+        },
+        "f1": 0.857143,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "forbidden_hits": [],
+        "matched_concepts": 3,
+        "matched_required": 3,
+        "precision": 0.75,
+        "precision_denominator": 4,
+        "precision_numerator": 3,
+        "primary_error_counts": {
+          "wrong_binding": 1
+        },
+        "recall": 1.0,
+        "recall_denominator": 3,
+        "recall_numerator": 3,
+        "required_total": 3,
+        "runs": 1,
+        "semantic_pass_rate": 0.0,
+        "true_positives": 3,
+        "type_checks": 3,
+        "type_context_correctness": 1.0,
+        "type_correct": 3,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar",
+        "condition"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-if-condition",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": {
+            "code": "wrong_binding",
+            "message": "reference patterns matched with issues"
+          },
+          "error_codes": [
+            "wrong_binding"
+          ],
+          "failures": [],
+          "ir_digest": "33077615ceeed70afa4bce16319ff6bc38d8fadc8b0b15b81b313ed045642ee7",
+          "latency_ms": 100,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "scalar",
+            "condition"
+          ],
+          "primary_error": "wrong_binding",
+          "produced_paths": [
+            "MainData.Company.Name",
+            "MainData.Order.Customer.IsEU",
+            "MainData.Order.Customer.Name",
+            "MainData.Order.OrderId"
+          ],
+          "prompt_sha256": "13a8615ea6974f314e93b47819729f15c41e8f9cad544f007386e62590c3a941",
+          "reference_consistency": {
+            "derived_concept_count": 3,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 3,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "condition",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.Customer.IsEU"
+                ],
+                "id": "condition:MainData.Order.Customer.IsEU",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.Customer.IsEU",
+                "matched_role": "condition",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 3,
+            "context_correct": 3,
+            "coverage": 1.0,
+            "error_codes": [
+              "wrong_binding"
+            ],
+            "extra_paths": [
+              "MainData.Order.Customer.Name"
+            ],
+            "f1": 0.857143,
+            "false_negatives": 0,
+            "false_positives": 1,
+            "forbidden_hits": [],
+            "matched_concepts": 3,
+            "matched_required": 3,
+            "precision": 0.75,
+            "produced_paths": [
+              "MainData.Company.Name",
+              "MainData.Order.Customer.IsEU",
+              "MainData.Order.Customer.Name",
+              "MainData.Order.OrderId"
+            ],
+            "recall": 1.0,
+            "required_total": 3,
+            "semantic_pass": false,
+            "true_positives": 3,
+            "type_checks": 3,
+            "type_context_correctness": 1.0,
+            "type_correct": 3
+          },
+          "title": "If: conditional VAT notice",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "If: conditional VAT notice"
+    },
+    {
+      "case_id": "ref-image-logo",
+      "concept_total": 3,
+      "consistency": {
+        "derived_concept_count": 3,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "image",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 3,
+        "context_checks": 3,
+        "context_correct": 3,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 3,
+        "coverage_numerator": 3,
+        "error_counts": {},
+        "f1": 1.0,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "forbidden_hits": [],
+        "matched_concepts": 3,
+        "matched_required": 3,
+        "precision": 1.0,
+        "precision_denominator": 3,
+        "precision_numerator": 3,
+        "primary_error_counts": {},
+        "recall": 1.0,
+        "recall_denominator": 3,
+        "recall_numerator": 3,
+        "required_total": 3,
+        "runs": 1,
+        "semantic_pass_rate": 1.0,
+        "true_positives": 3,
+        "type_checks": 3,
+        "type_context_correctness": 1.0,
+        "type_correct": 3,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "image",
+        "scalar"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-image-logo",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": null,
+          "error_codes": [],
+          "failures": [],
+          "ir_digest": "b67fe90e22d1ceb14ddc04854ef313145abacbbf0284cb9761f3f4bac4dba52b",
+          "latency_ms": 146,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "image",
+            "scalar"
+          ],
+          "primary_error": null,
+          "produced_paths": [
+            "MainData.Company.Logo",
+            "MainData.Company.Name",
+            "MainData.Order.OrderId"
+          ],
+          "prompt_sha256": "d6ced5ff449ab2ce644203289a3abc52ff9f941689cae385344f602d2353c6ae",
+          "reference_consistency": {
+            "derived_concept_count": 3,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 3,
+            "concepts": [
+              {
+                "concept": "image",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Logo"
+                ],
+                "id": "image:MainData.Company.Logo",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Logo",
+                "matched_role": "image",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 3,
+            "context_correct": 3,
+            "coverage": 1.0,
+            "error_codes": [],
+            "extra_paths": [],
+            "f1": 1.0,
+            "false_negatives": 0,
+            "false_positives": 0,
+            "forbidden_hits": [],
+            "matched_concepts": 3,
+            "matched_required": 3,
+            "precision": 1.0,
+            "produced_paths": [
+              "MainData.Company.Logo",
+              "MainData.Company.Name",
+              "MainData.Order.OrderId"
+            ],
+            "recall": 1.0,
+            "required_total": 3,
+            "semantic_pass": true,
+            "true_positives": 3,
+            "type_checks": 3,
+            "type_context_correctness": 1.0,
+            "type_correct": 3
+          },
+          "title": "Image: company logo in the header",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Image: company logo in the header"
+    },
+    {
+      "case_id": "ref-label-text",
+      "concept_total": 2,
+      "consistency": {
+        "derived_concept_count": 2,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "label",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 2,
+        "context_checks": 2,
+        "context_correct": 2,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 2,
+        "coverage_numerator": 2,
+        "error_counts": {
+          "wrong_binding": 1
+        },
+        "f1": 0.8,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "forbidden_hits": [],
+        "matched_concepts": 2,
+        "matched_required": 2,
+        "precision": 0.666667,
+        "precision_denominator": 3,
+        "precision_numerator": 2,
+        "primary_error_counts": {
+          "wrong_binding": 1
+        },
+        "recall": 1.0,
+        "recall_denominator": 2,
+        "recall_numerator": 2,
+        "required_total": 2,
+        "runs": 1,
+        "semantic_pass_rate": 0.0,
+        "true_positives": 2,
+        "type_checks": 2,
+        "type_context_correctness": 1.0,
+        "type_correct": 2,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar",
+        "text"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-label-text",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": {
+            "code": "wrong_binding",
+            "message": "reference patterns matched with issues"
+          },
+          "error_codes": [
+            "wrong_binding"
+          ],
+          "failures": [],
+          "ir_digest": "ff682e3bb5d1a5123a6c09ae6a033f55aae2cad3e3ca8b26c0de5e5ddbbbb4dc",
+          "latency_ms": 100,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "scalar",
+            "text"
+          ],
+          "primary_error": "wrong_binding",
+          "produced_paths": [
+            "MainData.Company.Name",
+            "MainData.Order.OrderId",
+            "MainData.Order.PaymentTerms"
+          ],
+          "prompt_sha256": "0fc0fc4c0427ea64ef85d41c713aa749c2766dd354d6786ba26fc317e3340432",
+          "reference_consistency": {
+            "derived_concept_count": 2,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 2,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "text",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.PaymentTerms"
+                ],
+                "id": "text:MainData.Order.PaymentTerms",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.PaymentTerms",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 2,
+            "context_correct": 2,
+            "coverage": 1.0,
+            "error_codes": [
+              "wrong_binding"
+            ],
+            "extra_paths": [
+              "MainData.Order.OrderId"
+            ],
+            "f1": 0.8,
+            "false_negatives": 0,
+            "false_positives": 1,
+            "forbidden_hits": [],
+            "matched_concepts": 2,
+            "matched_required": 2,
+            "precision": 0.666667,
+            "produced_paths": [
+              "MainData.Company.Name",
+              "MainData.Order.OrderId",
+              "MainData.Order.PaymentTerms"
+            ],
+            "recall": 1.0,
+            "required_total": 2,
+            "semantic_pass": false,
+            "true_positives": 2,
+            "type_checks": 2,
+            "type_context_correctness": 1.0,
+            "type_correct": 2
+          },
+          "title": "Label: localized payment terms text",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Label: localized payment terms text"
+    },
+    {
+      "case_id": "ref-header-footer",
+      "concept_total": 4,
+      "consistency": {
+        "derived_concept_count": 4,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "context",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 4,
+        "context_checks": 4,
+        "context_correct": 4,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 4,
+        "coverage_numerator": 4,
+        "error_counts": {
+          "wrong_binding": 1
+        },
+        "f1": 0.888889,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "forbidden_hits": [],
+        "matched_concepts": 4,
+        "matched_required": 4,
+        "precision": 0.8,
+        "precision_denominator": 5,
+        "precision_numerator": 4,
+        "primary_error_counts": {
+          "wrong_binding": 1
+        },
+        "recall": 1.0,
+        "recall_denominator": 4,
+        "recall_numerator": 4,
+        "required_total": 4,
+        "runs": 1,
+        "semantic_pass_rate": 0.0,
+        "true_positives": 4,
+        "type_checks": 4,
+        "type_context_correctness": 1.0,
+        "type_correct": 4,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "scalar"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-header-footer",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": {
+            "code": "wrong_binding",
+            "message": "reference patterns matched with issues"
+          },
+          "error_codes": [
+            "wrong_binding"
+          ],
+          "failures": [],
+          "ir_digest": "60134bace185a32de74ca379d64a14e7562f9cba3514036695095708377c97fe",
+          "latency_ms": 93,
+          "mapping_only": 0,
+          "ok": true,
+          "patterns": [
+            "scalar"
+          ],
+          "primary_error": "wrong_binding",
+          "produced_paths": [
+            "MainData.Company.Address",
+            "MainData.Company.Name",
+            "MainData.Order.DueDate",
+            "MainData.Order.OrderDate",
+            "MainData.Order.OrderId"
+          ],
+          "prompt_sha256": "dfda8acbb766314efbee6224c542f759180802b6aba229e1db97e0939be200ca",
+          "reference_consistency": {
+            "derived_concept_count": 4,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 4,
+            "concepts": [
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Address"
+                ],
+                "id": "scalar:MainData.Company.Address",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Address",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderDate"
+                ],
+                "id": "scalar:MainData.Order.OrderDate",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderDate",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 4,
+            "context_correct": 4,
+            "coverage": 1.0,
+            "error_codes": [
+              "wrong_binding"
+            ],
+            "extra_paths": [
+              "MainData.Order.DueDate"
+            ],
+            "f1": 0.888889,
+            "false_negatives": 0,
+            "false_positives": 1,
+            "forbidden_hits": [],
+            "matched_concepts": 4,
+            "matched_required": 4,
+            "precision": 0.8,
+            "produced_paths": [
+              "MainData.Company.Address",
+              "MainData.Company.Name",
+              "MainData.Order.DueDate",
+              "MainData.Order.OrderDate",
+              "MainData.Order.OrderId"
+            ],
+            "recall": 1.0,
+            "required_total": 4,
+            "semantic_pass": false,
+            "true_positives": 4,
+            "type_checks": 4,
+            "type_context_correctness": 1.0,
+            "type_correct": 4
+          },
+          "title": "Context: header, body and footer placement",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Context: header, body and footer placement"
+    },
+    {
+      "case_id": "ref-mixed-invoice",
+      "concept_total": 16,
+      "consistency": {
+        "derived_concept_count": 16,
+        "extra_in_reference": [],
+        "matches": true,
+        "missing_from_reference": [],
+        "unbound_reference_count": 0,
+        "unsupported_reference_count": 0
+      },
+      "family": "mixed",
+      "metrics": {
+        "compilation_success_rate": 1.0,
+        "completed_runs": 1,
+        "concept_total": 16,
+        "context_checks": 15,
+        "context_correct": 15,
+        "cost_status": "verified",
+        "cost_usd": 0.0,
+        "coverage": 1.0,
+        "coverage_denominator": 16,
+        "coverage_numerator": 16,
+        "error_counts": {
+          "wrong_binding": 1
+        },
+        "f1": 0.969697,
+        "failed_runs": 0,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "forbidden_hits": [],
+        "matched_concepts": 16,
+        "matched_required": 16,
+        "precision": 0.941176,
+        "precision_denominator": 17,
+        "precision_numerator": 16,
+        "primary_error_counts": {
+          "wrong_binding": 1
+        },
+        "recall": 1.0,
+        "recall_denominator": 16,
+        "recall_numerator": 16,
+        "required_total": 16,
+        "runs": 1,
+        "semantic_pass_rate": 0.0,
+        "true_positives": 16,
+        "type_checks": 16,
+        "type_context_correctness": 1.0,
+        "type_correct": 16,
+        "valid_runs": 1,
+        "valid_template_rate": 1.0,
+        "validation_pass_rate": 1.0
+      },
+      "patterns": [
+        "image",
+        "scalar",
+        "text",
+        "condition",
+        "collection"
+      ],
+      "runs": [
+        {
+          "actual_model": "mock-planner-v1",
+          "actual_provider": "mock",
+          "case_id": "ref-mixed-invoice",
+          "compile_error": null,
+          "compiled": true,
+          "cost_status": "verified",
+          "cost_usd": 0.0,
+          "error": {
+            "code": "wrong_binding",
+            "message": "reference patterns matched with issues"
+          },
+          "error_codes": [
+            "wrong_binding"
+          ],
+          "failures": [],
+          "ir_digest": "32f6631fbd2004050348b5316c295e4b5fbc1e3dd9cd431e10b7a8e75450bfcd",
+          "latency_ms": 170,
+          "mapping_only": 1,
+          "ok": true,
+          "patterns": [
+            "image",
+            "scalar",
+            "text",
+            "condition",
+            "collection"
+          ],
+          "primary_error": "wrong_binding",
+          "produced_paths": [
+            "MainData.Company.Logo",
+            "MainData.Company.Name",
+            "MainData.Order.Customer.IsEU",
+            "MainData.Order.Customer.Name",
+            "MainData.Order.DueDate",
+            "MainData.Order.NetAmount",
+            "MainData.Order.OrderDate",
+            "MainData.Order.OrderId",
+            "MainData.Order.PaymentTerms",
+            "MainData.Order.TaxAmount",
+            "MainData.Order.TotalAmount",
+            "MainData.OrderLines.Line",
+            "MainData.OrderLines.Line.Description",
+            "MainData.OrderLines.Line.ItemId",
+            "MainData.OrderLines.Line.LineAmount",
+            "MainData.OrderLines.Line.Quantity",
+            "MainData.OrderLines.Line.UnitPrice"
+          ],
+          "prompt_sha256": "003bfcd8c03121c1e79a5ff9b4fa377fd3dc02586c7e116427dd2641c33c7edf",
+          "reference_consistency": {
+            "derived_concept_count": 16,
+            "extra_in_reference": [],
+            "matches": true,
+            "missing_from_reference": [],
+            "unbound_reference_count": 0,
+            "unsupported_reference_count": 0
+          },
+          "repeat": 0,
+          "score": {
+            "concept_total": 16,
+            "concepts": [
+              {
+                "concept": "image",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Logo"
+                ],
+                "id": "image:MainData.Company.Logo",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Logo",
+                "matched_role": "image",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Company.Name"
+                ],
+                "id": "scalar:MainData.Company.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Company.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderId"
+                ],
+                "id": "scalar:MainData.Order.OrderId",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.OrderDate"
+                ],
+                "id": "scalar:MainData.Order.OrderDate",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.OrderDate",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.Customer.Name"
+                ],
+                "id": "scalar:MainData.Order.Customer.Name",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.Customer.Name",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.NetAmount"
+                ],
+                "id": "scalar:MainData.Order.NetAmount",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.NetAmount",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.TaxAmount"
+                ],
+                "id": "scalar:MainData.Order.TaxAmount",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.TaxAmount",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.TotalAmount"
+                ],
+                "id": "scalar:MainData.Order.TotalAmount",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.TotalAmount",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "text",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.PaymentTerms"
+                ],
+                "id": "text:MainData.Order.PaymentTerms",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.PaymentTerms",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "condition",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.Order.Customer.IsEU"
+                ],
+                "id": "condition:MainData.Order.Customer.IsEU",
+                "kind_ok": true,
+                "matched_path": "MainData.Order.Customer.IsEU",
+                "matched_role": "condition",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "collection",
+                "context_checked": false,
+                "context_ok": null,
+                "expected_paths": [
+                  "MainData.OrderLines.Line"
+                ],
+                "id": "collection:MainData.OrderLines.Line",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line",
+                "matched_role": "collection",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.ItemId"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.ItemId",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.ItemId",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.Description"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.Description",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.Description",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.Quantity"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.Quantity",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.Quantity",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.UnitPrice"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.UnitPrice",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.UnitPrice",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              },
+              {
+                "concept": "scalar",
+                "context_checked": true,
+                "context_ok": true,
+                "expected_paths": [
+                  "MainData.OrderLines.Line.LineAmount"
+                ],
+                "id": "scalar:MainData.OrderLines.Line.LineAmount",
+                "kind_ok": true,
+                "matched_path": "MainData.OrderLines.Line.LineAmount",
+                "matched_role": "field",
+                "reason": "",
+                "required": true,
+                "status": "matched",
+                "type_checked": true,
+                "type_ok": true
+              }
+            ],
+            "context_checks": 15,
+            "context_correct": 15,
+            "coverage": 1.0,
+            "error_codes": [
+              "wrong_binding"
+            ],
+            "extra_paths": [
+              "MainData.Order.DueDate"
+            ],
+            "f1": 0.969697,
+            "false_negatives": 0,
+            "false_positives": 1,
+            "forbidden_hits": [],
+            "matched_concepts": 16,
+            "matched_required": 16,
+            "precision": 0.941176,
+            "produced_paths": [
+              "MainData.Company.Logo",
+              "MainData.Company.Name",
+              "MainData.Order.Customer.IsEU",
+              "MainData.Order.Customer.Name",
+              "MainData.Order.DueDate",
+              "MainData.Order.NetAmount",
+              "MainData.Order.OrderDate",
+              "MainData.Order.OrderId",
+              "MainData.Order.PaymentTerms",
+              "MainData.Order.TaxAmount",
+              "MainData.Order.TotalAmount",
+              "MainData.OrderLines.Line",
+              "MainData.OrderLines.Line.Description",
+              "MainData.OrderLines.Line.ItemId",
+              "MainData.OrderLines.Line.LineAmount",
+              "MainData.OrderLines.Line.Quantity",
+              "MainData.OrderLines.Line.UnitPrice"
+            ],
+            "recall": 1.0,
+            "required_total": 16,
+            "semantic_pass": false,
+            "true_positives": 16,
+            "type_checks": 16,
+            "type_context_correctness": 1.0,
+            "type_correct": 16
+          },
+          "title": "Mixed: Field, List, If, Image and Label patterns",
+          "valid_template": true,
+          "validation": {
+            "docentric_compatibility": "not_tested",
+            "logical": "passed",
+            "semantic": "passed",
+            "structural": "passed",
+            "visual": "passed"
+          },
+          "validation_codes": [],
+          "validation_passed": true
+        }
+      ],
+      "title": "Mixed: Field, List, If, Image and Label patterns"
+    }
+  ],
+  "primary_error_counts": {
+    "wrong_binding": 5
+  },
+  "provenance": {
+    "committed": true,
+    "corpus_content_included": false,
+    "corpus_paths_included": false,
+    "kind": "synthetic",
+    "notes": [
+      "All references and schemas are synthetic fixtures committed with the repository.",
+      "No Docentric archive file, fragment, schema, text or screenshot was used."
+    ],
+    "references": [
+      {
+        "kind": "synthetic",
+        "name": "ref-field-scalar.docx",
+        "schema_sha256": "b357ceb68ff7c2ea9c457e5bbca73260e8a46c2382620d4f0d4c410e191eb41b",
+        "sha256": "c6550363ac9472aea42a6671e77984fefe8f882d38d6cd1c4281c9ccd6d588a8"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-field-date.docx",
+        "schema_sha256": "6a973c9949a10a74e9b18dd192c2913b18dd0efa0ba6d75ca563b718060059fa",
+        "sha256": "65beab1565cc9356b813e7ae1f6484e315e311b471cc039e3aeb29198767e29c"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-list-collection.docx",
+        "schema_sha256": "6d9bfdaef97a7b1ad515a88948761ac2b720bfc3647905f25016d23ef863afea",
+        "sha256": "be93cc227a30f70899c30152b9f3289578c5fda7ae44366d00dd5c63ac6c7507"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-if-condition.docx",
+        "schema_sha256": "3c82e42f53c98e6aad5f98ff369d356affa34b6e020796c5c50703b9501af421",
+        "sha256": "df3d1e71f484a4e1577c27adfb3cbf4ecf64a1f413f9552e394a5fb616efcd42"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-image-logo.docx",
+        "schema_sha256": "2d68ab5298ceb1c95bdd547009f2c1d3e597b9e1b7d3b71c30129b98d872d9c0",
+        "sha256": "aff43add470a4cb8c4e30be42fa3c724432fa8a551e6fd0af33cc1ff38e85492"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-label-text.docx",
+        "schema_sha256": "26a44e2942c69cf2c18563f88e726c41074fbf63599f94d10b7abf134479b53c",
+        "sha256": "de903d35fc3b4c39c2b43547a47bd78e17104c57be1de697ecee7033deeda655"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-header-footer.docx",
+        "schema_sha256": "0fb9b7b36aa9f11b2260a20c4ca4e3d89aad45a64fb3730b8db8f75dddd1a281",
+        "sha256": "3fe5e18db4eaaa9784f7ffd248445183c1f006bb3542b695e4f6ea78407bb691"
+      },
+      {
+        "kind": "synthetic",
+        "name": "ref-mixed-invoice.docx",
+        "schema_sha256": "d250aef12727484d2adff64b19fdd7e9061b2cae56717f3a85cd9fe901ff93bd",
+        "sha256": "49cdc412baf99c24ece3e393ad770fa315ad110316713562dc5336c169e3d61e"
+      }
+    ]
+  },
+  "provider": {
+    "live": false,
+    "model": "mock-planner-v1",
+    "provider": "mock"
+  },
+  "sample_size": {
+    "cases": 8,
+    "completed_runs": 8,
+    "reference_concepts": 41,
+    "runs": 8,
+    "unbound_concepts": 0,
+    "unsupported_concepts": 0
+  },
+  "schema": "reference-evaluation/v1",
+  "valid_template_rate": 1.0,
+  "valid_templates": {
+    "note": "Reported separately from precision/recall/coverage: a schema-valid, compilable template can still bind the wrong reference pattern.",
+    "rate": 1.0,
+    "runs": 8,
+    "valid": 8
+  }
+}

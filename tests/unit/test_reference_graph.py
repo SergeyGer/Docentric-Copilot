@@ -408,9 +408,7 @@ def test_label_data_xpath_is_preserved_without_guessing_scope() -> None:
     )
     graph = build_reference_graph(bundle.report, bundle.schemas)
     element = next(
-        node
-        for node in graph.nodes
-        if node.kind is NodeKind.ELEMENT and node.element_id == "4000"
+        node for node in graph.nodes if node.kind is NodeKind.ELEMENT and node.element_id == "4000"
     )
     assert element.binding_path == "Customer/@Name"
     assert element.status is GraphStatus.UNKNOWN

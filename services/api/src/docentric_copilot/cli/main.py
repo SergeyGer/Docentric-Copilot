@@ -34,6 +34,7 @@ from docentric_copilot.reference import (
     DdspSchemaEvidence,
     ReferenceDiff,
     ReferenceGraph,
+    ReferenceIRImport,
     ReferenceLimits,
     ReferenceReport,
     analyze_d365_path,
@@ -42,9 +43,12 @@ from docentric_copilot.reference import (
     build_reference_graph,
     diff_json,
     graph_json,
+    import_ir_json,
+    import_summary_lines,
     inspect_reference,
     inspect_reference_bundle,
     project_graph,
+    project_to_template_ir,
     projection_json,
     report_json,
 )
@@ -512,7 +516,7 @@ def reference_graph(
     try:
         limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
         bundle = inspect_reference_bundle(path, limits=limits, max_depth=max_depth, ddsp_path=ddsp)
-        graph = build_reference_graph(bundle.report, bundle.schemas)
+        graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
     except CopilotError as exc:
         _fail(exc, as_json=as_json)
         return
@@ -540,6 +544,58 @@ def reference_graph(
                 f"({projection.summary.elements} elements, "
                 f"not compilable)"
             )
+
+
+@reference_app.command("import-ir")
+def reference_import_ir(
+    path: Annotated[
+        str,
+        typer.Argument(help="DOCX, ZIP, AXPP or directory with reference constructs"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the safe Generic Template IR import JSON to this path; '-' for stdout",
+        ),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option("--ddsp", help="Optional DDSP schema applied to the reference"),
+    ] = None,
+    allow_unsupported: Annotated[
+        bool,
+        typer.Option(
+            "--allow-unsupported",
+            help=(
+                "Best-effort mode: keep the supported subset and list every unsupported or "
+                "unresolved construct in skipped[]. Never guesses."
+            ),
+        ),
+    ] = False,
+) -> None:
+    """Project resolved reference constructs into Generic Template IR (v0.11 P1)."""
+    as_json = json_output is not None and str(json_output) == "-"
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits)
+        bundle = inspect_reference_bundle(path, limits=limits, ddsp_path=ddsp)
+        graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
+        result: ReferenceIRImport = project_to_template_ir(
+            graph, allow_unsupported=allow_unsupported
+        )
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    lines = import_summary_lines(result)
+    if json_output is None:
+        typer.echo("\n".join(lines))
+    elif str(json_output) == "-":
+        typer.echo(import_ir_json(result), nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(import_ir_json(result), encoding="utf-8")
+        typer.echo("\n".join(lines))
+        typer.echo(f"Generic IR import written to {json_output}")
 
 
 def _graph_summary(graph: ReferenceGraph) -> str:

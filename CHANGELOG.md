@@ -31,12 +31,40 @@ version (`1.0`) independent of the distribution version.
 - `scripts/assess_d365_corpus.py` for a bounded local corpus assessment; it writes counts, hashes and
   statuses only under the git-ignored `.tools/` directory.
 - ADR-0013 and the D365 section of `docs/REFERENCE_TEMPLATES.md`.
+- v0.10 PR-04 gold semantic dataset (`benchmarks/gold_cases.json`, schema `gold-cases/v1`, version
+  `1.0.0`): 32 synthetic cases across ten families (flat fields, images, collections, nested lists,
+  conditions, missing, ambiguous, multilingual, long tables, forbidden scope) and four specification
+  categories. Each case declares concept-level `required_bindings` (expected paths, allowed
+  alternatives, required, type/context, satisfiability), `forbidden_paths`, `expected_blocks`,
+  `family`, `category`, `difficulty`, `split`, `language` and a rationale. The canonical cases
+  SHA-256 is recorded in reports; no Docentric corpus content is used.
+- `benchmarks/gold_dataset.py`: deterministic rule pass for the gold dataset (schema paths, types,
+  contexts, forbidden scope, block kinds, family invariants, exact 20/12 split and stratified family
+  coverage, private-corpus exclusion) plus version/hash/split metadata.
+- `benchmarks/gold_evaluation.py`: live gold runner with the requested `--providers`, `--repeats`,
+  `--split`, `--max-spend`, `--warn-spend` and `--allow-unpriced` flags; per-case/per-provider
+  precision, recall, F1, requirement coverage, type/context correctness, block coverage and a separate
+  `valid_template_rate`; error taxonomy; latency p50/p95; token usage; verified/estimated/unavailable
+  cost. It writes JSON, CSV and self-contained HTML with dataset hash, split, model versions,
+  prompt version, settings, sample sizes and calibration/holdout sections; per-run records go to the
+  git-ignored `benchmarks/gold_runs.jsonl`.
+- Ambiguous-concept scoring: when a run produces more than one annotated acceptable path for a
+  matched requirement, the duplicates are marked used rather than charged as false positives; they
+  are not extra true positives and forbidden paths are never exempted.
+- `docs/GOLD_LABELS.md` (annotation guide, split policy, versioning, honest single-annotator
+  adjudication record), ADR-0014 and the gold benchmark sections of `docs/EVALUATION.md`,
+  `docs/BENCHMARKS.md` and the wiki.
 
 ### Changed
 - Documentation baseline consistency for v0.10: README and ROADMAP state the current release as
-  0.9.0 and describe the v0.10 P0 work as partial; SRS/PRD/ARCHITECTURE/THREAT_MODEL version headers
+  0.9.0 and describe the v0.10 P0 work truthfully; SRS/PRD/ARCHITECTURE/THREAT_MODEL version headers
   and OpenAPI examples were aligned. The package version is intentionally **not** bumped yet; the
-  release changelog entry will be written when PR-04/PR-05 are complete.
+  release changelog entry will be written at release time.
+- README, ROADMAP, EVALUATION, BENCHMARKS and the wiki now report PR-04/PR-05 as complete and point
+  to the committed gold report. The dataset labels remain single-annotator; AT-07 is reported as
+  partial, not passed.
+- `.gitignore` excludes `benchmarks/gold_runs.jsonl`; only aggregates and the annotation guide are
+  committed, never raw provider traces.
 
 ### Notes
 - Docentric AX runtime compatibility remains `not_tested`. The adapter reads static schema evidence

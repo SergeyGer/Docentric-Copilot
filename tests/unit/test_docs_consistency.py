@@ -47,6 +47,9 @@ def test_changelog_keeps_v010_under_unreleased_without_bumping() -> None:
     unreleased = changelog.split("## [0.9.0]", 1)[0]
     assert "D365 embedded schema" in unreleased
     assert "binding resolver" in unreleased
+    assert "gold semantic dataset" in unreleased.lower()
+    assert "gold_evaluation.py" in unreleased
+    assert "AT-07" in unreleased
     assert "not_tested" in unreleased
 
 
@@ -55,14 +58,54 @@ def test_readme_and_roadmap_state_the_partial_v010_scope_truthfully() -> None:
     assert "v0.10 P0 status" in readme
     assert "PR-02 D365 embedded schema extraction" in readme
     assert "PR-03 canonical schema and binding resolver" in readme
+    assert "PR-04 gold semantic dataset" in readme
+    assert "PR-05 live gold benchmark" in readme
+    assert "single-annotator" in readme
     assert "not_tested" in readme
-    assert "Not started in this increment" in readme
+    assert "Not started in this increment" not in readme
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M6 — Reference Template Intelligence completion (v0.10, in progress)" in roadmap
     assert "PR-02 D365 embedded schema extraction" in roadmap
+    assert "PR-04 gold semantic dataset" in roadmap
+    assert "PR-05 live benchmark runner and report" in roadmap
     assert "PR-04/PR-05" in roadmap
+    assert "AT-07" in roadmap
     assert "not_tested" in roadmap
+
+
+def test_gold_dataset_labels_are_versioned_and_documented() -> None:
+    from benchmarks.gold_dataset import load_gold_dataset
+
+    dataset = load_gold_dataset(ROOT / "benchmarks" / "gold_cases.json")
+    guide = _read("docs/GOLD_LABELS.md")
+    assert "gold-cases/v1" in guide
+    assert "1.0.0" in guide
+    assert "20 calibration / 12 holdout" in guide
+    assert dataset.canonical_sha256 in guide
+    assert "No independent human double review" in guide
+    assert "AT-07" in guide
+    assert "ADR-0014" in guide
+    evaluation = _read("docs/EVALUATION.md")
+    assert "Gold semantic benchmark (v0.10 PR-05)" in evaluation
+    assert "benchmarks/gold_evaluation.py" in evaluation
+    assert "20 calibration / 12 holdout" in evaluation
+    assert (
+        "observations, not significance"
+        in _read("docs/wiki/Benchmarks-and-Evaluation.md").casefold()
+    )
+
+
+def test_adr_0014_is_complete_and_indexed() -> None:
+    adr = ROOT / "docs" / "adr" / "0014-gold-dataset-and-reference-benchmark.md"
+    assert adr.exists()
+    body = adr.read_text(encoding="utf-8")
+    for required in ("Status", "Context", "Decision", "Consequences"):
+        assert required in body
+    assert "single-annotator" in body or "No independent human double review" in body
+    assert "not_tested" in body
+    index = _read("docs/adr/README.md")
+    assert "0014-gold-dataset-and-reference-benchmark.md" in index
 
 
 def test_reference_templates_documents_the_d365_adapter_and_taxonomy() -> None:

@@ -133,7 +133,7 @@ verification below 1024 px. Both are tracked under M5.
 | Frontend delivery optimisation | Not started | Evaluate Next.js standalone output and a slimmer runtime image (currently the full dependency tree is copied because `next.config.ts` is loaded at runtime) |
 | Docentric AX adapter | **Blocked** | Complete the evidence in [DOCENTRIC_AX_COMPATIBILITY §7](DOCENTRIC_AX_COMPATIBILITY.md#7-evidence-required-to-change-the-status) |
 | Real DDSP compatibility testing | **Blocked** | Obtain a permitted representative package |
-| Live provider verification | **Blocked** | Provide credentials and a repeatable test protocol; record results in [EVALUATION](EVALUATION.md) |
+| Live provider verification | Done for the gold benchmark (PR-05); model drift remains | Rerun on model updates and record the new dataset/report hashes; no paid calls in CI |
 | 100-run benchmark with published environment | Done for the mock provider; hosted-provider latency still open | Record hosted-provider results in [BENCHMARKS §4.1](BENCHMARKS.md#41-reference-run-100-runs) |
 
 ## M6 — Reference Template Intelligence completion (v0.10, in progress)
@@ -146,8 +146,8 @@ workstreams below are in scope for this branch; nothing else is presented as don
 | PR-01 corpus baseline and documentation freeze | Version strings, README/roadmap status, CHANGELOG under `[Unreleased]`, ADR-0013, bounded corpus assessment script | Done (baseline frozen; package version not bumped) |
 | PR-02 D365 embedded schema extraction | `ProjectData`/`DataSource`/`Schema`/`PreviewData`/field-metadata extraction with part + XPath + source-id provenance; `schema_source = projectdata \| ddsp \| unavailable` | Done — static, read-only |
 | PR-03 canonical schema and binding resolver | Canonical fields/collections/scopes/types; exact six-status taxonomy; evidence on every `resolved`; CLI and API | Done — partial semantics by design |
-| PR-04 gold semantic dataset | ≥30 reviewed cases, annotation guide, calibration/holdout split | Not started |
-| PR-05 live benchmark runner and report | ≥3 runs per case and model, cost and error taxonomy | Not started |
+| PR-04 gold semantic dataset | 32 versioned cases, ten families, annotation guide, 20/12 calibration/holdout split, deterministic rule pass | Done — single-annotator labels; AT-07 partial (no independent human double review) |
+| PR-05 live benchmark runner and report | 288 live runs (32 cases × 3 providers × 3 repeats), calibration/holdout, cost and error taxonomy, JSON/CSV/HTML | Done — see [EVALUATION §2.7](EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05) |
 | PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss | Not started |
 | PR-07 visual reference diff | Page-level rendering and failure-safe status | Not started |
 | PR-08 report persistence/export and browser E2E | Durable reports, reopen workflow, E2E | Not started |
@@ -161,7 +161,9 @@ gate is unchanged and no native output is produced.
 
 **Exit criteria:** P0 acceptance tests pass and the corpus counts are reproducible with
 `python scripts/assess_d365_corpus.py` (outputs stay under the ignored `.tools/`). PR-04/PR-05
-remain required before calling the v0.10 release complete.
+are complete for P0: the 32-case dataset and the 288-run report are committed, with calibration and
+holdout shown separately. The only open annotation item is independent double review (AT-07 stays
+partial); no runtime compatibility is claimed.
 
 ## Next steps (ordered)
 
@@ -171,8 +173,9 @@ remain required before calling the v0.10 release complete.
    reverse proxy example. *(Documented; proxy configuration still missing.)*
 2. ~~Fix the evaluation collector so alias-resolved bindings are counted~~ — done (`absolute_bindings`, precision 0.932, recall 0.965). Remaining:
    [EVALUATION §5.1](EVALUATION.md#51-committed-baseline-run-measured).
-3. Provide credentials and a repeatable protocol for the hosted-provider comparison (currently no
-   LLM result is recorded).
+3. ~~Provide credentials and a repeatable protocol for the hosted-provider comparison~~ — done for
+   the gold benchmark (three providers, three repeats, bounded spend). Remaining: an independent
+   label reviewer and a rerun when a provider changes its model id or price.
 4. Add a committed browser E2E suite and responsive checks (< 1024 px), and wire them into CI.
 
 ### P1 — quality and evidence
@@ -210,7 +213,7 @@ remain required before calling the v0.10 release complete.
 
 | Initiative | Status | Evidence |
 | --- | --- | --- |
-| Adaptive multi-LLM architecture | Router, policy, budgets and deterministic fallback implemented; live per-provider benchmark pending | `docs/ROUTING.md`, `tests/unit/test_routing_and_quality.py` |
+| Adaptive multi-LLM architecture | Router, policy, budgets and deterministic fallback implemented; 288-run live gold benchmark recorded | `docs/ROUTING.md`, `benchmarks/gold_report.json`, `tests/unit/test_routing_and_quality.py` |
 | AI document quality and visual optimisation | IR-level quality checks and typed optimisation shipped; PDF renderer optional and not enabled | `docs/QUALITY.md`, ADR-0008 |
 | Docentric AX compatibility engine | Interface and capability matrix only, gated and `experimental` | ADR-0009, `docs/DOCENTRIC_AX_COMPATIBILITY.md` |
 

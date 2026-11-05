@@ -149,7 +149,8 @@ deliberately partial and is reported as such:
 | PR-01 baseline docs, corpus manifest and consistency | Done — version strings, feature matrix and changelog now agree |
 | PR-02 D365 embedded schema extraction | Done — reads `ProjectData` XSD, `PreviewData` and field metadata with OOXML provenance |
 | PR-03 canonical schema and binding resolver | Done — six exact statuses; every `resolved` carries source, path, scope, type and evidence |
-| PR-04 gold semantic dataset / PR-05 live benchmark | Not started in this increment |
+| PR-04 gold semantic dataset | Done — 32 versioned cases, ten families, 20/12 calibration/holdout split, deterministic rule pass; single-annotator labels, no independent human double review |
+| PR-05 live gold benchmark | Done — 288-run matrix (32 cases × 3 providers × 3 repeats), calibration/holdout separated, cost and error taxonomy; see the [gold report](benchmarks/gold_report.json) |
 | Reference → generic Template IR, visual diff, persistence | Planned P1; not implemented |
 | Docentric AX runtime compatibility | `not_tested` — unchanged |
 
@@ -158,6 +159,12 @@ schema. Absence of evidence is returned as `schema_unavailable`; an unknown or u
 construction is never reported as resolved. See
 [Reference Templates](docs/REFERENCE_TEMPLATES.md#d365-embedded-schema-and-binding-resolution-v010-p0)
 and [ADR-0013](docs/adr/0013-d365-embedded-schema-and-binding-resolution.md).
+
+The gold dataset and its annotation rules are in [GOLD_LABELS](docs/GOLD_LABELS.md); the measured
+run is in [EVALUATION §2.7](docs/EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05). The labels
+were authored by the implementer and checked by a deterministic rule pass. There is no independent
+human double review, so the annotation gate is reported as partial, not passed. The benchmark is
+synthetic; it is not Docentric corpus content and it does not change the AX `not_tested` status.
 
 ---
 

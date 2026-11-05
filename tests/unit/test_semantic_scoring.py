@@ -146,6 +146,32 @@ def test_allowed_alternative_is_a_true_positive() -> None:
     assert score.semantic_pass is True
 
 
+def test_two_acceptable_variants_are_not_a_false_positive() -> None:
+    case = _case(
+        requirements=[
+            {
+                "id": "vat",
+                "concept": "vat_number",
+                "expected_paths": ["MainData.Quotation.Customer.VatNumber"],
+                "allowed_alternatives": ["GeneralData.Company.VatNumber"],
+                "required": True,
+            }
+        ]
+    )
+    score = score_run(
+        case,
+        [
+            _binding("MainData.Quotation.Customer.VatNumber", concept="vat_number"),
+            _binding("GeneralData.Company.VatNumber", concept="vat_number"),
+        ],
+    )
+    # Producing both acceptable answers is redundant, not wrong.
+    assert score.true_positives == 1
+    assert score.false_positives == 0
+    assert score.precision == 1.0
+    assert score.semantic_pass is True
+
+
 def test_forbidden_path_reduces_precision_and_fails_semantics() -> None:
     case = _case(forbidden=["MainData.Quotation.BankDetails.BankName"])
     score = score_run(

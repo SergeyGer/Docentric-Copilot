@@ -212,6 +212,8 @@ class SemanticScore:
     semantic_pass: bool
     outcomes: tuple[RequirementOutcome, ...]
     block_outcomes: tuple[BlockOutcome, ...]
+    label_status: str = "verified"
+    excluded_from_semantic: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -237,6 +239,8 @@ class SemanticScore:
             "false_positive_paths": list(self.false_positive_paths),
             "error_codes": list(self.error_codes),
             "semantic_pass": self.semantic_pass,
+            "label_status": self.label_status,
+            "excluded_from_semantic": self.excluded_from_semantic,
             "requirements": [outcome.as_dict() for outcome in self.outcomes],
             "blocks": [outcome.as_dict() for outcome in self.block_outcomes],
         }
@@ -844,6 +848,8 @@ def score_run(
         semantic_pass=semantic_pass,
         outcomes=tuple(outcomes),
         block_outcomes=tuple(block_outcomes),
+        label_status=str(case.get("label_status") or "verified"),
+        excluded_from_semantic=str(case.get("label_status") or "verified") == "gap",
     )
 
 

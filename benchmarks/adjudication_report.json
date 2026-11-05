@@ -1,0 +1,3645 @@
+{
+  "adjudicator_version": "1.0.0",
+  "at07": {
+    "deterministic_adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+    "note": "AT-07 is partial: the deterministic adjudicator is documented as a proxy and must not be described as human double review.",
+    "second_human_annotator": false,
+    "status": "partial"
+  },
+  "cases": [
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-flat-order-identity",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "flat_fields",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "concept": "purchase_order_number",
+          "note": "same acceptable set",
+          "requirement_id": "order_number"
+        },
+        {
+          "adjudicator_concept": "date",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "concept": "purchase_order_date",
+          "note": "same acceptable set",
+          "requirement_id": "order_date"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-flat-vendor-identity",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "account_number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.AccountNum"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "address",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "flat_fields",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "GeneralData.Company.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "account_number",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.AccountNum"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.AccountNum"
+          ],
+          "concept": "vendor_account_number",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_account"
+        },
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "concept": "vendor_name",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_name"
+        },
+        {
+          "adjudicator_concept": "address",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "concept": "vendor_address",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_address"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-flat-commercial-terms",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "contact_email",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "terms",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "currency",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.CurrencyCode"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "total",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.TotalAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "flat_fields",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "contact_email",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "concept": "vendor_contact_email",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_email"
+        },
+        {
+          "adjudicator_concept": "terms",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "concept": "delivery_terms",
+          "note": "same acceptable set",
+          "requirement_id": "delivery_terms"
+        },
+        {
+          "adjudicator_concept": "currency",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.CurrencyCode"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.CurrencyCode"
+          ],
+          "concept": "currency_code",
+          "note": "same acceptable set",
+          "requirement_id": "currency_code"
+        },
+        {
+          "adjudicator_concept": "total",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.TotalAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.TotalAmount"
+          ],
+          "concept": "purchase_order_total",
+          "note": "same acceptable set",
+          "requirement_id": "order_total"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "po-image-logo-header",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "logo",
+          "expected_context": "header",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "expected_type": "image",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "header",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "images",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: MainData.PurchaseOrder.Vendor.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "logo",
+          "adjudicator_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "concept": "company_logo",
+          "note": "same acceptable set",
+          "requirement_id": "company_logo"
+        },
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "concept": "company_name",
+          "note": "same acceptable set",
+          "requirement_id": "company_name"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.PurchaseOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.PurchaseOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.PurchaseOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.PurchaseOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "po-collection-line-items",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "quantity",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "unit_price",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.UnitPrice"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "collections",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "quantity",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.Quantity"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.Quantity"
+          ],
+          "concept": "line_quantity",
+          "note": "same acceptable set",
+          "requirement_id": "line_quantity"
+        },
+        {
+          "adjudicator_concept": "unit_price",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.UnitPrice"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.UnitPrice"
+          ],
+          "concept": "line_unit_price",
+          "note": "same acceptable set",
+          "requirement_id": "line_unit_price"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.PurchaseOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.PurchaseOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.PurchaseOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.PurchaseOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "po-collection-line-summary",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "collections",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-multilingual-de",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "multilingual",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "GeneralData.Company.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "concept": "purchase_order_number",
+          "note": "same acceptable set",
+          "requirement_id": "order_number"
+        },
+        {
+          "adjudicator_concept": "date",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "concept": "purchase_order_date",
+          "note": "same acceptable set",
+          "requirement_id": "order_date"
+        },
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "concept": "vendor_name",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_name"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-multilingual-fr",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "address",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "terms",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "multilingual",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "GeneralData.Company.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "concept": "vendor_name",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_name"
+        },
+        {
+          "adjudicator_concept": "address",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "concept": "vendor_address",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_address"
+        },
+        {
+          "adjudicator_concept": "terms",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "concept": "delivery_terms",
+          "note": "same acceptable set",
+          "requirement_id": "delivery_terms"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-footer-vendor-scope",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "footer",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "address",
+          "expected_context": "footer",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "forbidden_scope",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "GeneralData.Company.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "concept": "vendor_name",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_name"
+        },
+        {
+          "adjudicator_concept": "address",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "concept": "vendor_address",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_address"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "po-ambiguous-supplier-contact",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "contact_email",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "address",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "ambiguous",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "address,contact_email",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Address",
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Address",
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "concept": "supplier_contact",
+          "note": "same acceptable set",
+          "requirement_id": "supplier_contact"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "so-flat-quotation-identity",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "valid_until",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.ValidUntil"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "flat_fields",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "concept": "quotation_number",
+          "note": "same acceptable set",
+          "requirement_id": "quotation_number"
+        },
+        {
+          "adjudicator_concept": "date",
+          "adjudicator_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "concept": "quotation_date",
+          "note": "same acceptable set",
+          "requirement_id": "quotation_date"
+        },
+        {
+          "adjudicator_concept": "valid_until",
+          "adjudicator_paths": [
+            "MainData.Quotation.ValidUntil"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.ValidUntil"
+          ],
+          "concept": "validity_date",
+          "note": "same acceptable set",
+          "requirement_id": "validity_date"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "so-flat-invoice-identity",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "due_date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.DueDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "flat_fields",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "concept": "invoice_number",
+          "note": "same acceptable set",
+          "requirement_id": "invoice_number"
+        },
+        {
+          "adjudicator_concept": "date",
+          "adjudicator_paths": [
+            "MainData.Invoice.InvoiceDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.InvoiceDate"
+          ],
+          "concept": "invoice_date",
+          "note": "same acceptable set",
+          "requirement_id": "invoice_date"
+        },
+        {
+          "adjudicator_concept": "due_date",
+          "adjudicator_paths": [
+            "MainData.Invoice.DueDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.DueDate"
+          ],
+          "concept": "due_date",
+          "note": "same acceptable set",
+          "requirement_id": "due_date"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-image-logo-footer",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "logo",
+          "expected_context": "footer",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "expected_type": "image",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "footer",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "address",
+          "expected_context": "footer",
+          "expected_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "images",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "MainData.Quotation.Customer.Address",
+          "MainData.Quotation.Customer.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Address, MainData.Quotation.Customer.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "logo",
+          "adjudicator_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "concept": "company_logo",
+          "note": "same acceptable set",
+          "requirement_id": "company_logo"
+        },
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "concept": "company_name",
+          "note": "same acceptable set",
+          "requirement_id": "company_name"
+        },
+        {
+          "adjudicator_concept": "address",
+          "adjudicator_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "concept": "company_address",
+          "note": "same acceptable set",
+          "requirement_id": "company_address"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "image",
+            "GeneralData.Company.CompanyLogo"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-image-logo-header-invoice",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "logo",
+          "expected_context": "header",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "expected_type": "image",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "header",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "images",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "MainData.Invoice.Customer.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: MainData.Invoice.Customer.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "logo",
+          "adjudicator_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "concept": "company_logo",
+          "note": "same acceptable set",
+          "requirement_id": "company_logo"
+        },
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "concept": "invoice_number",
+          "note": "same acceptable set",
+          "requirement_id": "invoice_number"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-collection-wide-lines",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "quantity",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "net",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "collections",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "quantity",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "concept": "line_quantity",
+          "note": "same acceptable set",
+          "requirement_id": "line_quantity"
+        },
+        {
+          "adjudicator_concept": "net",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "concept": "line_net_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_net_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-long-table-all-columns",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "quantity",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "unit",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Unit"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "unit_price",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.UnitPrice"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "discount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.DiscountPct"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "net",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "tax",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.TaxAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "warehouse",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Warehouse"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "delivery_date",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.DeliveryDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "note",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.LineNote"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "long_tables",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "quantity",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "concept": "line_quantity",
+          "note": "same acceptable set",
+          "requirement_id": "line_quantity"
+        },
+        {
+          "adjudicator_concept": "unit",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Unit"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Unit"
+          ],
+          "concept": "line_unit",
+          "note": "same acceptable set",
+          "requirement_id": "line_unit"
+        },
+        {
+          "adjudicator_concept": "unit_price",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.UnitPrice"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.UnitPrice"
+          ],
+          "concept": "line_unit_price",
+          "note": "same acceptable set",
+          "requirement_id": "line_unit_price"
+        },
+        {
+          "adjudicator_concept": "discount",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.DiscountPct"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.DiscountPct"
+          ],
+          "concept": "line_discount",
+          "note": "same acceptable set",
+          "requirement_id": "line_discount"
+        },
+        {
+          "adjudicator_concept": "net",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "concept": "line_net_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_net_amount"
+        },
+        {
+          "adjudicator_concept": "tax",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.TaxAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.TaxAmount"
+          ],
+          "concept": "line_tax_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_tax_amount"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        },
+        {
+          "adjudicator_concept": "warehouse",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Warehouse"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Warehouse"
+          ],
+          "concept": "line_warehouse",
+          "note": "same acceptable set",
+          "requirement_id": "line_warehouse"
+        },
+        {
+          "adjudicator_concept": "delivery_date",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.DeliveryDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.DeliveryDate"
+          ],
+          "concept": "line_delivery_date",
+          "note": "same acceptable set",
+          "requirement_id": "line_delivery_date"
+        },
+        {
+          "adjudicator_concept": "note",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.LineNote"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.LineNote"
+          ],
+          "concept": "line_note",
+          "note": "same acceptable set",
+          "requirement_id": "line_note"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.QuotationLines.Line"
+          ],
+          [
+            "table",
+            "MainData.QuotationLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.QuotationLines.Line"
+          ],
+          [
+            "table",
+            "MainData.QuotationLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-long-table-40-rows",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "quantity",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "long_tables",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "quantity",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.Quantity"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.Quantity"
+          ],
+          "concept": "line_quantity",
+          "note": "same acceptable set",
+          "requirement_id": "line_quantity"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.QuotationLines.Line"
+          ],
+          [
+            "table",
+            "MainData.QuotationLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.QuotationLines.Line"
+          ],
+          [
+            "table",
+            "MainData.QuotationLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "so-long-table-long-descriptions",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "long_tables",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "so-multilingual-de",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "date",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "expected_type": "date",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "total",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.TotalAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "multilingual",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "gold_additional",
+        "author": [
+          "MainData.Quotation.Customer.Name"
+        ]
+      },
+      "note": "The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "concept": "company_name",
+          "note": "same acceptable set",
+          "requirement_id": "company_name"
+        },
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "concept": "quotation_number",
+          "note": "same acceptable set",
+          "requirement_id": "quotation_number"
+        },
+        {
+          "adjudicator_concept": "date",
+          "adjudicator_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "concept": "quotation_date",
+          "note": "same acceptable set",
+          "requirement_id": "quotation_date"
+        },
+        {
+          "adjudicator_concept": "total",
+          "adjudicator_paths": [
+            "MainData.Quotation.TotalAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.TotalAmount"
+          ],
+          "concept": "total_amount",
+          "note": "same acceptable set",
+          "requirement_id": "total_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "so-ambiguous-vat-number",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [
+            "MainData.Quotation.Customer.VatNumber"
+          ],
+          "concept": "vat_number",
+          "expected_context": "body",
+          "expected_paths": [
+            "GeneralData.Company.VatNumber"
+          ],
+          "expected_type": "string",
+          "note": "ambiguous party attribute; both paths accepted",
+          "satisfiable": true
+        }
+      ],
+      "family": "ambiguous",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [
+          "MainData.Quotation.Customer.VatNumber"
+        ],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "Advisory counterpart guards (not applied): MainData.Quotation.Customer.VatNumber",
+      "requirements": [
+        {
+          "adjudicator_concept": "vat_number",
+          "adjudicator_paths": [
+            "GeneralData.Company.VatNumber",
+            "MainData.Quotation.Customer.VatNumber"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.VatNumber",
+            "MainData.Quotation.Customer.VatNumber"
+          ],
+          "concept": "vat_number",
+          "note": "same acceptable set",
+          "requirement_id": "vat_number"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-nested-service-tasks",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "id",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "hours",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "nested_lists",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "service_line_description"
+        },
+        {
+          "adjudicator_concept": "id",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "concept": "task_id",
+          "note": "same acceptable set",
+          "requirement_id": "task_id"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "concept": "task_description",
+          "note": "same acceptable set",
+          "requirement_id": "task_description"
+        },
+        {
+          "adjudicator_concept": "hours",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "concept": "task_hours",
+          "note": "same acceptable set",
+          "requirement_id": "task_hours"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-nested-task-effort",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "id",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "rate",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Rate"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "nested_lists",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "id",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "concept": "task_id",
+          "note": "same acceptable set",
+          "requirement_id": "task_id"
+        },
+        {
+          "adjudicator_concept": "rate",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Rate"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Rate"
+          ],
+          "concept": "task_rate",
+          "note": "same acceptable set",
+          "requirement_id": "task_rate"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+          ],
+          "concept": "task_amount",
+          "note": "same acceptable set",
+          "requirement_id": "task_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line"
+          ],
+          [
+            "repeat",
+            "MainData.ServiceOrderLines.Line.Tasks.Task"
+          ],
+          [
+            "table",
+            "MainData.ServiceOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-nested-service-amounts",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "amount",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.LineAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "hours",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "nested_lists",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "amount",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.LineAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.LineAmount"
+          ],
+          "concept": "line_amount",
+          "note": "same acceptable set",
+          "requirement_id": "line_amount"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "concept": "task_description",
+          "note": "same acceptable set",
+          "requirement_id": "task_description"
+        },
+        {
+          "adjudicator_concept": "hours",
+          "adjudicator_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "concept": "task_hours",
+          "note": "same acceptable set",
+          "requirement_id": "task_hours"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-conditional-eu-vat",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "eu_condition",
+          "expected_context": "conditional",
+          "expected_paths": [
+            "MainData.Quotation.Customer.IsEU"
+          ],
+          "expected_type": "boolean",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "conditions",
+      "forbidden": {
+        "adjudicator": [
+          "Parameters.ShowVatNotice"
+        ],
+        "advisory_counterparts": [
+          "GeneralData.Company.Name"
+        ],
+        "agreement": "agree",
+        "author": [
+          "Parameters.ShowVatNotice"
+        ]
+      },
+      "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "concept": "customer_name",
+          "note": "same acceptable set",
+          "requirement_id": "customer_name"
+        },
+        {
+          "adjudicator_concept": "eu_condition",
+          "adjudicator_paths": [
+            "MainData.Quotation.Customer.IsEU"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.Customer.IsEU"
+          ],
+          "concept": "customer_is_eu",
+          "note": "same acceptable set",
+          "requirement_id": "customer_is_eu"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-conditional-reverse-charge",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "reverse_charge",
+          "expected_context": "conditional",
+          "expected_paths": [
+            "MainData.Invoice.ReverseCharge"
+          ],
+          "expected_type": "boolean",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "tax",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.TaxAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "gross",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "conditions",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "reverse_charge",
+          "adjudicator_paths": [
+            "MainData.Invoice.ReverseCharge"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.ReverseCharge"
+          ],
+          "concept": "reverse_charge",
+          "note": "same acceptable set",
+          "requirement_id": "reverse_charge"
+        },
+        {
+          "adjudicator_concept": "tax",
+          "adjudicator_paths": [
+            "MainData.Invoice.TaxAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.TaxAmount"
+          ],
+          "concept": "tax_amount",
+          "note": "same acceptable set",
+          "requirement_id": "tax_amount"
+        },
+        {
+          "adjudicator_concept": "gross",
+          "adjudicator_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "concept": "gross_amount",
+          "note": "same acceptable set",
+          "requirement_id": "gross_amount"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "conditional",
+            null
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "cc-conditional-eu-vat-invoice",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "eu_condition",
+          "expected_context": "conditional",
+          "expected_paths": [
+            "MainData.Invoice.Customer.IsEU"
+          ],
+          "expected_type": "boolean",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "vat_number",
+          "expected_context": null,
+          "expected_paths": [],
+          "expected_type": "string",
+          "note": "the brief names a concept absent from the schema: notice",
+          "satisfiable": false
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "vat_number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.Customer.VatNumber"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "total",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "conditions",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [
+          "GeneralData.Company.VatNumber"
+        ],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "Advisory counterpart guards (not applied): GeneralData.Company.VatNumber",
+      "requirements": [
+        {
+          "adjudicator_concept": "eu_condition",
+          "adjudicator_paths": [
+            "MainData.Invoice.Customer.IsEU"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.Customer.IsEU"
+          ],
+          "concept": "customer_is_eu",
+          "note": "same acceptable set",
+          "requirement_id": "customer_is_eu"
+        },
+        {
+          "adjudicator_concept": "vat_number",
+          "adjudicator_paths": [
+            "MainData.Invoice.Customer.VatNumber"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.Customer.VatNumber"
+          ],
+          "concept": "customer_vat_number",
+          "note": "same acceptable set",
+          "requirement_id": "customer_vat_number"
+        },
+        {
+          "adjudicator_concept": "total",
+          "adjudicator_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "concept": "invoice_total",
+          "note": "same acceptable set",
+          "requirement_id": "invoice_total"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "adv-missing-requisition-number",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": null,
+          "expected_paths": [],
+          "expected_type": "string",
+          "note": "the brief names a concept absent from the schema: requisition",
+          "satisfiable": false
+        }
+      ],
+      "family": "missing",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [
+          "GeneralData.Company.Name"
+        ],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "concept": "vendor_name",
+          "note": "same acceptable set",
+          "requirement_id": "vendor_name"
+        },
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [],
+          "agreement": "agree",
+          "author_paths": [],
+          "concept": "purchase_requisition_number",
+          "note": "both passes agree that the schema cannot express this request",
+          "requirement_id": "requisition_number"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "adv-missing-customer-po-reference",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "reference",
+          "expected_context": null,
+          "expected_paths": [],
+          "expected_type": "string",
+          "note": "the brief names a concept absent from the schema: reference",
+          "satisfiable": false
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "number",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "missing",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "number",
+          "adjudicator_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "concept": "invoice_number",
+          "note": "same acceptable set",
+          "requirement_id": "invoice_number"
+        },
+        {
+          "adjudicator_concept": "reference",
+          "adjudicator_paths": [],
+          "agreement": "agree",
+          "author_paths": [],
+          "concept": "customer_purchase_order_reference",
+          "note": "both passes agree that the schema cannot express this request",
+          "requirement_id": "customer_po_reference"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "adv-ambiguous-address",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [
+            "MainData.Quotation.Customer.Address"
+          ],
+          "concept": "address",
+          "expected_context": "header",
+          "expected_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "expected_type": "string",
+          "note": "ambiguous party attribute; both paths accepted",
+          "satisfiable": true
+        }
+      ],
+      "family": "ambiguous",
+      "forbidden": {
+        "adjudicator": [],
+        "advisory_counterparts": [
+          "MainData.Quotation.Customer.Address"
+        ],
+        "agreement": "agree",
+        "author": []
+      },
+      "note": "Advisory counterpart guards (not applied): MainData.Quotation.Customer.Address",
+      "requirements": [
+        {
+          "adjudicator_concept": "address",
+          "adjudicator_paths": [
+            "GeneralData.Company.Address",
+            "MainData.Quotation.Customer.Address"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "GeneralData.Company.Address",
+            "MainData.Quotation.Customer.Address"
+          ],
+          "concept": "document_address",
+          "note": "same acceptable set",
+          "requirement_id": "document_address"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "adv-forbidden-customer-bank",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "body",
+          "expected_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "bank_details",
+          "expected_context": null,
+          "expected_paths": [],
+          "expected_type": "string",
+          "note": "no schema path satisfies this concept; must not be invented",
+          "satisfiable": false
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "bank_details",
+          "expected_context": null,
+          "expected_paths": [],
+          "expected_type": "string",
+          "note": "no schema path satisfies this concept; must not be invented",
+          "satisfiable": false
+        }
+      ],
+      "family": "forbidden_scope",
+      "forbidden": {
+        "adjudicator": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.BankDetails.Iban",
+          "MainData.Quotation.BankDetails.Swift"
+        ],
+        "advisory_counterparts": [
+          "GeneralData.Company.Name"
+        ],
+        "agreement": "agree",
+        "author": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.BankDetails.Iban",
+          "MainData.Quotation.BankDetails.Swift"
+        ]
+      },
+      "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "concept": "customer_name",
+          "note": "same acceptable set",
+          "requirement_id": "customer_name"
+        },
+        {
+          "adjudicator_concept": "bank_details",
+          "adjudicator_paths": [],
+          "agreement": "agree",
+          "author_paths": [],
+          "concept": "customer_bank_iban",
+          "note": "both passes agree that the schema cannot express this request",
+          "requirement_id": "customer_bank_iban"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [],
+        "agreement": "agree",
+        "author": [],
+        "missing": []
+      },
+      "case_id": "adv-forbidden-company-as-customer",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "name",
+          "expected_context": "header",
+          "expected_paths": [
+            "MainData.SalesOrder.Customer.Name"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "account_number",
+          "expected_context": "header",
+          "expected_paths": [
+            "MainData.SalesOrder.Customer.AccountNum"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "forbidden_scope",
+      "forbidden": {
+        "adjudicator": [
+          "GeneralData.Company.Name"
+        ],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": [
+          "GeneralData.Company.Name"
+        ]
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "name",
+          "adjudicator_paths": [
+            "MainData.SalesOrder.Customer.Name"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrder.Customer.Name"
+          ],
+          "concept": "customer_name",
+          "note": "same acceptable set",
+          "requirement_id": "customer_name"
+        },
+        {
+          "adjudicator_concept": "account_number",
+          "adjudicator_paths": [
+            "MainData.SalesOrder.Customer.AccountNum"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrder.Customer.AccountNum"
+          ],
+          "concept": "customer_account_number",
+          "note": "same acceptable set",
+          "requirement_id": "customer_account"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    },
+    {
+      "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+      "agreement": "agree",
+      "author": "v0.10 single annotator (implementer)",
+      "blocks": {
+        "additional": [],
+        "adjudicator": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "agreement": "agree",
+        "author": [
+          [
+            "repeat",
+            "MainData.SalesOrderLines.Line"
+          ],
+          [
+            "table",
+            "MainData.SalesOrderLines.Line"
+          ]
+        ],
+        "missing": []
+      },
+      "case_id": "adv-collection-forbidden-columns",
+      "derived_notes": [],
+      "derived_requirements": [
+        {
+          "allowed_alternatives": [],
+          "concept": "item",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "description",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "expected_type": "string",
+          "note": "",
+          "satisfiable": true
+        },
+        {
+          "allowed_alternatives": [],
+          "concept": "quantity",
+          "expected_context": "repeat",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "expected_type": "number",
+          "note": "",
+          "satisfiable": true
+        }
+      ],
+      "family": "collections",
+      "forbidden": {
+        "adjudicator": [
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ],
+        "advisory_counterparts": [],
+        "agreement": "agree",
+        "author": [
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ]
+      },
+      "note": "",
+      "requirements": [
+        {
+          "adjudicator_concept": "item",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "concept": "line_item",
+          "note": "same acceptable set",
+          "requirement_id": "line_item"
+        },
+        {
+          "adjudicator_concept": "description",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "concept": "line_description",
+          "note": "same acceptable set",
+          "requirement_id": "line_description"
+        },
+        {
+          "adjudicator_concept": "quantity",
+          "adjudicator_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "agreement": "agree",
+          "author_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "concept": "line_quantity",
+          "note": "same acceptable set",
+          "requirement_id": "line_quantity"
+        }
+      ],
+      "review_status": "adjudicated_proxy"
+    }
+  ],
+  "dataset": {
+    "canonical_sha256": "a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed",
+    "case_count": 32,
+    "file": "benchmarks/gold_cases.json",
+    "version": "2.0.0"
+  },
+  "generated_at": "2026-11-05",
+  "generated_by": "benchmarks/adjudicate_labels.py",
+  "human_review": false,
+  "image_family": {
+    "cases": [
+      {
+        "case_id": "po-image-logo-header",
+        "decision": "labels_verified",
+        "family": "images",
+        "image_block_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_subtype": "company_logo",
+        "label_status": "verified",
+        "rationale": "The prompt asks for the company logo and the schema exposes that exact top-level image path, including the image block. The v0.10 0% semantic pass was a forbidden-scope/precision failure, not an inexpressible image label; the candidate filter is the remedy. No label gap."
+      },
+      {
+        "case_id": "so-image-logo-footer",
+        "decision": "labels_verified",
+        "family": "images",
+        "image_block_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_subtype": "company_logo",
+        "label_status": "verified",
+        "rationale": "The prompt asks for the company logo and the schema exposes that exact top-level image path, including the image block. The v0.10 0% semantic pass was a forbidden-scope/precision failure, not an inexpressible image label; the candidate filter is the remedy. No label gap."
+      },
+      {
+        "case_id": "so-image-logo-header-invoice",
+        "decision": "labels_verified",
+        "family": "images",
+        "image_block_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "image_subtype": "company_logo",
+        "label_status": "verified",
+        "rationale": "The prompt asks for the company logo and the schema exposes that exact top-level image path, including the image block. The v0.10 0% semantic pass was a forbidden-scope/precision failure, not an inexpressible image label; the candidate filter is the remedy. No label gap."
+      }
+    ],
+    "decision": "no_label_gap",
+    "gap_cases": 0
+  },
+  "limitations": [
+    "Deterministic proxy, not a second human annotator.",
+    "The lexicon covers the committed English/German/French fixtures, not arbitrary prose.",
+    "Advisory counterpart guards are reported but not applied to the dataset.",
+    "AT-07 remains partial until a real second human review exists."
+  ],
+  "method": "Independent bounded lexicon plus schema-evidence rules. The script parses each committed DDSP and re-derives concepts, paths, alternatives, forbidden guards and blocks from the prompt and schema; it never reads the author's expected paths to derive an answer. It is deterministic and makes no model calls.",
+  "schema": "gold-adjudication/v1",
+  "summary": {
+    "agreement_rate": 1.0,
+    "case_agreement": {
+      "agree": 32,
+      "disagree": 0,
+      "partial": 0
+    },
+    "cases": 32,
+    "requirement_agreement": {
+      "agree": 98,
+      "author_missing": 0,
+      "disagree": 0,
+      "partial": 0
+    }
+  }
+}

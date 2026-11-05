@@ -18,7 +18,7 @@ def _read(relative: str) -> str:
 
 def test_versions_agree_across_the_distribution_and_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == __version__ == "0.9.0"
+    assert pyproject["project"]["version"] == __version__ == "0.10.0"
     assert json.loads(_read("apps/web/package.json"))["version"] == __version__
 
     readme = _read("README.md")
@@ -40,17 +40,17 @@ def test_versions_agree_across_the_distribution_and_docs() -> None:
         assert __version__ in _read(document), document
 
 
-def test_changelog_keeps_v010_under_unreleased_without_bumping() -> None:
+def test_changelog_documents_v010_release() -> None:
     changelog = _read("CHANGELOG.md")
     assert "## [Unreleased]" in changelog
-    assert "## [0.10.0]" not in changelog
-    unreleased = changelog.split("## [0.9.0]", 1)[0]
-    assert "D365 embedded schema" in unreleased
-    assert "binding resolver" in unreleased
-    assert "gold semantic dataset" in unreleased.lower()
-    assert "gold_evaluation.py" in unreleased
-    assert "AT-07" in unreleased
-    assert "not_tested" in unreleased
+    assert "## [0.10.0]" in changelog
+    released = changelog.split("## [0.10.0]", 1)[1].split("## [0.9.0]", 1)[0]
+    assert "D365 embedded schema" in released
+    assert "binding resolver" in released
+    assert "gold" in released.lower()
+    assert "gold_evaluation" in released
+    assert "AT-07" in released
+    assert "not_tested" in released
 
 
 def test_readme_and_roadmap_state_the_partial_v010_scope_truthfully() -> None:

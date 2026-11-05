@@ -8,6 +8,8 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-05
+
 ### Added
 - v0.10 P0 D365 embedded schema adapter (`d365_schema.py`): read-only extraction of
   `customXml/ProjectData` `DataSources`, embedded XSD (`Schema/XsdList/MainXsd`), `PreviewData`
@@ -86,6 +88,7 @@ version (`1.0`) independent of the distribution version.
   class-level errors) are met; AT-07 remains **partial** because the labels are single-annotator with
   no independent human double review. No Docentric corpus content is committed and
   `runtime_compatibility` remains `not_tested`.
+
 
 ## [0.9.0] - 2026-11-04
 

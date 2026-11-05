@@ -61,6 +61,7 @@ SCHEMA_FORMAT: Final[Literal["d365-embedded-schema/1.0"]] = "d365-embedded-schem
 _SCHEMA_VERSION: Final[Literal["1.0"]] = "1.0"
 
 _MAX_DATA_SOURCES: Final = 64
+_MAX_ELEMENT_FACTS: Final = 10_000
 _MAX_SCHEMA_DEPTH: Final = 24
 _MAX_PREVIEW_PATH_ENTRIES: Final = 200
 _MAX_DIAGNOSTICS: Final = 500
@@ -1231,6 +1232,7 @@ def _parse_project_elements(
     duplicate_ids = 0
     elements_truncated = False
     seen_ids: set[str] = set()
+    element_limit = min(limits.max_schema_nodes, _MAX_ELEMENT_FACTS)
     containers = [node for node in root.iter() if local_name(node.tag) == "Elements"]
     for container in containers[:1]:
         for element in container:
@@ -1281,7 +1283,7 @@ def _parse_project_elements(
                     binding_evidence=binding_evidence,
                 )
             )
-            if len(elements) >= limits.max_schema_nodes:
+            if len(elements) >= element_limit:
                 elements_truncated = True
                 break
     return elements, duplicate_ids, elements_truncated
@@ -1370,7 +1372,7 @@ def _parse_project_data_document(
                 message="ProjectData contains more Elements than the adapter can index",
                 part=part,
                 xpath=_xpath(root),
-                details={"max_elements": str(limits.max_schema_nodes)},
+                details={"max_elements": str(min(limits.max_schema_nodes, _MAX_ELEMENT_FACTS))},
             )
         )
     if duplicate_ids:

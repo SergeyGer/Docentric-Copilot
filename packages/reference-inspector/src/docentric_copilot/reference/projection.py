@@ -78,6 +78,19 @@ class ProjectionElement(BaseModel):
     data_type: str | None = Field(default=None, max_length=40)
     collection: bool = False
     reason: str | None = Field(default=None, max_length=240)
+    #: ProjectData element id this control resolves to, when joined by SDT id.
+    element_id: str | None = Field(default=None, pattern=r"^[0-9]+$", max_length=20)
+    #: ProjectData child element ids (list items / conditional content).
+    child_element_ids: list[str] = Field(default_factory=list, max_length=500)
+    #: Exact provider binding status (``resolved``, ``unknown_path`` ...).
+    binding_status: str | None = Field(default=None, max_length=40)
+    #: Schema evidence provider that produced the binding: ``ddsp`` or
+    #: ``d365_project_data``.
+    schema_source: str | None = Field(default=None, max_length=40)
+    #: Canonical schema source id (D365 ``DataSource`` or DDSP section id).
+    source_id: str | None = Field(default=None, max_length=300)
+    #: Exact provider evidence location, e.g. ``customXml/item1.xml#...``.
+    evidence_location: str | None = Field(default=None, max_length=2_000)
 
 
 class ProjectionSection(BaseModel):
@@ -197,12 +210,29 @@ def _project_control(
     if bound is not None:
         status = bound.status
     schema_node = None
+    schema_edge = None
+    binding_status: str | None = None
+    child_element_ids: list[str] = []
     if element is not None:
         for edge in outgoing.get(element.id, []):
-            if edge.type is EdgeType.RESOLVES_TO:
+            if edge.type is EdgeType.RESOLVES_TO and schema_edge is None:
+                schema_edge = edge
                 schema_node = nodes.get(edge.target)
-                if schema_node is not None:
-                    break
+                binding_status = edge.resolution_status
+                if edge.status is not GraphStatus.RESOLVED:
+                    status = edge.status
+                elif bound is not None and bound.status is GraphStatus.RESOLVED:
+                    status = GraphStatus.RESOLVED
+            elif edge.type in {EdgeType.ITERATES, EdgeType.CONDITION}:
+                target = nodes.get(edge.target)
+                if (
+                    target is not None
+                    and target.kind is NodeKind.ELEMENT
+                    and target.element_id is not None
+                ):
+                    child_element_ids.append(target.element_id)
+        if schema_edge is None and element.status is not GraphStatus.RESOLVED:
+            status = element.status
     schema_path = schema_node.schema_path if schema_node is not None else None
     binding_path = (
         schema_path
@@ -229,6 +259,16 @@ def _project_control(
         reason=control.reason
         if control.status is not GraphStatus.RESOLVED
         else (bound.reason if bound is not None else None),
+        element_id=element.element_id if element is not None else None,
+        child_element_ids=sorted(set(child_element_ids)),
+        binding_status=binding_status,
+        schema_source=(
+            schema_node.schema_source
+            if schema_node is not None
+            else (element.schema_source if element is not None else None)
+        ),
+        source_id=(schema_node.source_id if schema_node is not None else None),
+        evidence_location=(schema_node.evidence_location if schema_node is not None else None),
     )
 
 

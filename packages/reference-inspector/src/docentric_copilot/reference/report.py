@@ -572,6 +572,10 @@ class ReferenceInspection:
 
     report: ReferenceReport
     schemas: dict[str, SchemaArtifact] = field(default_factory=dict)
+    #: DOCX payloads keyed by document SHA-256. An internal side-channel used by
+    #: the graph builder to extract D365 embedded-schema evidence without
+    #: re-reading the source; it is never serialised into the public report.
+    payloads: dict[str, bytes] = field(default_factory=dict)
 
 
 def build_inspection(
@@ -585,6 +589,7 @@ def build_inspection(
     warnings: set[str] = set(inventory.warnings)
     schema_cache: dict[str, SchemaArtifact | None] = {}
     schemas_by_sha: dict[str, SchemaArtifact] = {}
+    payloads_by_sha: dict[str, bytes] = {}
     documents: list[DocumentEvidence] = []
     all_controls: list[ControlEvidence] = []
     diagnostics: list[ReferenceDiagnostic] = []
@@ -612,6 +617,7 @@ def build_inspection(
             limits=limits,
         )
         documents.append(document)
+        payloads_by_sha[entry.sha256] = data
         if schema_artifact is not None:
             schemas_by_sha[entry.sha256] = schema_artifact
         all_controls.extend(document.controls)
@@ -695,7 +701,7 @@ def build_inspection(
     )
     report_digest = digest(base.model_dump(mode="json", exclude={"report_digest"}))
     report = base.model_copy(update={"report_digest": report_digest})
-    return ReferenceInspection(report=report, schemas=schemas_by_sha)
+    return ReferenceInspection(report=report, schemas=schemas_by_sha, payloads=payloads_by_sha)
 
 
 def build_report(

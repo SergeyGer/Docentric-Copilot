@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { EmptyState } from "@/components/workspace/empty-state";
 import { formatNumber, truncateMiddle } from "@/lib/format";
 import {
+  BINDING_STATUS_LABELS,
   EDGE_TYPE_LABELS,
   NODE_KIND_LABELS,
   PLATFORM_LABELS,
@@ -85,6 +86,12 @@ function nodeMeta(node: ReferenceGraphNode): string[] {
   if (node.origin) {
     meta.push(node.origin);
   }
+  if (node.schema_source) {
+    meta.push(referenceEnumLabel(SCHEMA_SOURCE_LABELS, node.schema_source));
+  }
+  if (node.source_id) {
+    meta.push(`source id ${node.source_id}`);
+  }
   return meta;
 }
 
@@ -124,6 +131,12 @@ function GraphNodeRow({
         </code>
       ) : null}
 
+      {node.evidence_location ? (
+        <p className="mt-1 break-all font-mono text-[10px] text-muted-foreground">
+          evidence: {node.evidence_location}
+        </p>
+      ) : null}
+
       {node.reason ? (
         <p className="mt-1 break-words text-[10px] text-warning">Reason: {node.reason}</p>
       ) : null}
@@ -147,6 +160,19 @@ function GraphNodeRow({
                   </code>
                 )}
                 <GraphStatusBadge status={edge.status} />
+                {edge.resolution_status && edge.resolution_status !== edge.status ? (
+                  <Badge variant="outline" className="text-[10px]">
+                    {referenceEnumLabel(BINDING_STATUS_LABELS, edge.resolution_status)}
+                  </Badge>
+                ) : null}
+                {edge.evidence.evidence ? (
+                  <span
+                    className="max-w-[22rem] truncate font-mono text-[10px] text-muted-foreground"
+                    title={edge.evidence.evidence}
+                  >
+                    {edge.evidence.evidence}
+                  </span>
+                ) : null}
                 {edge.reason ? (
                   <span className="break-words text-[10px] text-muted-foreground">
                     ({edge.reason})
@@ -396,6 +422,10 @@ export function ReferenceGraphPanel({ graph }: { graph: ReferenceGraph }) {
           <div className="grid gap-3 lg:grid-cols-2">
             <div className="space-y-2">
               <ReferenceCoverageBar ratio={summary.edge_coverage_ratio} label="Edge coverage" />
+              <ReferenceCoverageBar
+                ratio={summary.evidence_coverage_ratio}
+                label={`Schema evidence coverage (${formatNumber(summary.resolves_to_with_evidence)}/${formatNumber(summary.resolves_to_edges)} resolves_to edges)`}
+              />
               <div>
                 <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                   Nodes by kind
@@ -428,7 +458,21 @@ export function ReferenceGraphPanel({ graph }: { graph: ReferenceGraph }) {
                   labels={{ resolved: "Resolved", ambiguous: "Ambiguous", unknown: "Unknown" }}
                 />
               </div>
+              <div>
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Unresolved binding statuses
+                </p>
+                <CountChips
+                  counts={summary.unresolved_by_status}
+                  labels={BINDING_STATUS_LABELS}
+                />
+              </div>
               <p className="text-[11px] leading-5 text-muted-foreground">{graph.note}</p>
+              {graph.schema_provider_types.length > 0 ? (
+                <p className="break-all font-mono text-[10px] text-muted-foreground">
+                  providers: {graph.schema_provider_types.join(", ")}
+                </p>
+              ) : null}
               {graph.schema_ids.length > 0 ? (
                 <p className="break-all font-mono text-[10px] text-muted-foreground">
                   schema ids: {graph.schema_ids.join(", ")}

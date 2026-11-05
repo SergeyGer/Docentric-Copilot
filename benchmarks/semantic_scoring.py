@@ -634,6 +634,15 @@ def score_run(
 
         if match is not None:
             used.add(match.path)
+            # The label deliberately accepts more than one path for an ambiguous
+            # concept. Producing two acceptable variants is redundant, not a
+            # false positive, so the other annotated paths are marked used too.
+            # They are not counted as additional true positives and forbidden
+            # paths are never exempted.
+            for acceptable_path in (*requirement.expected_paths, *requirement.allowed_alternatives):
+                variant = by_path.get(acceptable_path)
+                if variant is not None and variant.path not in forbidden:
+                    used.add(variant.path)
             matched_requirements += 1
             if requirement.required:
                 matched_required += 1

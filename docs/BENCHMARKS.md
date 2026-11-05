@@ -187,3 +187,39 @@ budgets:      parse 2000 ms (pass/fail), compile 5000 ms (pass/fail)
 caveats:      <any of §6 that apply>
 artifact:     benchmarks/results.json (or path)
 ```
+
+## 8. Gold semantic benchmark (v0.10 PR-05)
+
+The performance benchmark above (100 runs per fixture) measures latency. The gold benchmark measures
+**semantic correctness** on a versioned set of business requests and reports cost separately.
+
+| Item | Value |
+| --- | --- |
+| Dataset | [benchmarks/gold_cases.json](../benchmarks/gold_cases.json) — 32 cases, version `1.0.0`, `gold-cases/v1` |
+| Guide | [GOLD_LABELS.md](GOLD_LABELS.md) |
+| Runner | [benchmarks/gold_evaluation.py](../benchmarks/gold_evaluation.py) |
+| Reports | [gold_report.json](../benchmarks/gold_report.json), `.csv`, `.html` |
+| Raw per-run file | `benchmarks/gold_runs.jsonl` (git-ignored) |
+| Split | 20 calibration / 12 holdout, fixed before the first live run |
+| Providers | OpenAI `gpt-6-sol`, Anthropic `claude-sonnet-5-5`, Gemini `gemini-3.6-flash` |
+| Settings | Gemini compact v2 / repairs 2; other providers full IR / repairs 1; temperature 0 |
+| Budget | `--max-spend 10`, `--warn-spend 5`; unknown cost is never `$0.00` |
+
+Command:
+
+```bash
+.venv/bin/python benchmarks/gold_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.6-flash \
+  --repeats 3 --split all --max-spend 10 --warn-spend 5 --allow-unpriced
+```
+
+The report is not a latency load test: each observation is one provider call (plus allowed repairs)
+at temperature 0. It reports p50/p95 for context, not as an SLO. Compilation success is kept
+separate from semantic pass; a schema-valid template can still bind the wrong concept.
+
+The labels are single-annotator and validated by a deterministic rule pass; see
+[GOLD_LABELS](GOLD_LABELS.md). There is no independent human double review, so AT-07 is partial.
+Docentric AX runtime compatibility is `not_tested` and is not measured here.
+
+<!-- GOLD-BENCHMARK-RESULTS -->
+

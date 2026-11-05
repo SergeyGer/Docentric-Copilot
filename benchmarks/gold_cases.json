@@ -1,0 +1,1949 @@
+{
+  "schema": "gold-cases/v1",
+  "version": "1.0.0",
+  "created_at": "2026-11-05",
+  "title": "Gold semantic benchmark for the template planner",
+  "description": "Thirty-two synthetic business cases with concept-level gold bindings, forbidden paths, required blocks and a fixed calibration/holdout split. No Docentric corpus content is used.",
+  "expected_case_count": 32,
+  "split_sizes": {
+    "calibration": 20,
+    "holdout": 12
+  },
+  "families": [
+    "flat_fields",
+    "images",
+    "collections",
+    "nested_lists",
+    "conditions",
+    "missing",
+    "ambiguous",
+    "multilingual",
+    "long_tables",
+    "forbidden_scope"
+  ],
+  "categories": [
+    "purchase_order",
+    "sales_order",
+    "conditional_complex",
+    "adversarial"
+  ],
+  "split_policy": "The split was fixed before the first live run. Calibration cases may be used to tune prompts or routing; holdout cases must not be used for tuning and are reported separately.",
+  "provenance": {
+    "authoring": "implementer-authored labels for synthetic fixtures",
+    "review": "deterministic rule pass only (path/type/scope/split checks); no independent human double review was available",
+    "adjudication": "single-annotator decisions recorded in docs/GOLD_LABELS.md"
+  },
+  "cases": [
+    {
+      "id": "po-flat-order-identity",
+      "family": "flat_fields",
+      "category": "purchase_order",
+      "difficulty": "easy",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Show the purchase order number and the order date in the document body.",
+      "required_bindings": [
+        {
+          "id": "order_number",
+          "concept": "purchase_order_number",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "order_date",
+          "concept": "purchase_order_date",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "flat_fields",
+        "purchase_order",
+        "fields"
+      ],
+      "notes": "Two scalar identifiers with no ambiguity; the easiest anchor for a purchase-order prompt."
+    },
+    {
+      "id": "po-flat-vendor-identity",
+      "family": "flat_fields",
+      "category": "purchase_order",
+      "difficulty": "easy",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Add the vendor account number, vendor name and vendor address to the document body.",
+      "required_bindings": [
+        {
+          "id": "vendor_account",
+          "concept": "vendor_account_number",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.AccountNum"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "vendor_name",
+          "concept": "vendor_name",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "vendor_address",
+          "concept": "vendor_address",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [
+        "GeneralData.Company.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "flat_fields",
+        "purchase_order",
+        "vendor_scope"
+      ],
+      "notes": "The company name is the deliberate wrong-scope alternative for the vendor name."
+    },
+    {
+      "id": "po-flat-commercial-terms",
+      "family": "flat_fields",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Show the vendor contact email, delivery terms, currency code and order total.",
+      "required_bindings": [
+        {
+          "id": "vendor_email",
+          "concept": "vendor_contact_email",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "delivery_terms",
+          "concept": "delivery_terms",
+          "expected_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "currency_code",
+          "concept": "currency_code",
+          "expected_paths": [
+            "MainData.PurchaseOrder.CurrencyCode"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "order_total",
+          "concept": "purchase_order_total",
+          "expected_paths": [
+            "MainData.PurchaseOrder.TotalAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "flat_fields",
+        "purchase_order",
+        "commercial_terms"
+      ],
+      "notes": "Four unrelated scalars; checks that the planner does not confuse delivery terms with a date."
+    },
+    {
+      "id": "po-image-logo-header",
+      "family": "images",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Place the company logo in the page header and the company name directly below it.",
+      "required_bindings": [
+        {
+          "id": "company_logo",
+          "concept": "company_logo",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "image",
+          "expected_context": "header"
+        },
+        {
+          "id": "company_name",
+          "concept": "company_name",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "header"
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.PurchaseOrder.Vendor.Name"
+      ],
+      "expected_blocks": [
+        {
+          "kind": "image",
+          "required": true,
+          "path": "GeneralData.Company.CompanyLogo",
+          "description": "The logo must be an image binding, not a text placeholder."
+        }
+      ],
+      "labels": [
+        "images",
+        "purchase_order",
+        "header"
+      ],
+      "notes": "An image block and a scalar in the header; the vendor name is the wrong-scope trap."
+    },
+    {
+      "id": "po-collection-line-items",
+      "family": "collections",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Create a purchase order line table with item number, description, quantity, unit price and line amount for every line.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_quantity",
+          "concept": "line_quantity",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.Quantity"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_unit_price",
+          "concept": "line_unit_price",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.UnitPrice"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.PurchaseOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.PurchaseOrderLines.Line"
+        }
+      ],
+      "labels": [
+        "collections",
+        "purchase_order",
+        "table"
+      ],
+      "notes": "Five line-scoped fields plus the collection scope; a header-scoped binding is incorrect."
+    },
+    {
+      "id": "po-collection-line-summary",
+      "family": "collections",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "List each purchase order line's item number and line amount in a table.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.PurchaseOrderLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.PurchaseOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.PurchaseOrderLines.Line"
+        }
+      ],
+      "labels": [
+        "collections",
+        "purchase_order",
+        "table"
+      ],
+      "notes": "A smaller line table; tests that the collection scope survives when only two columns are requested."
+    },
+    {
+      "id": "po-multilingual-de",
+      "family": "multilingual",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "de",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Zeige die Bestellnummer, das Bestelldatum und den Namen des Lieferanten im Dokument.",
+      "required_bindings": [
+        {
+          "id": "order_number",
+          "concept": "purchase_order_number",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "order_date",
+          "concept": "purchase_order_date",
+          "expected_paths": [
+            "MainData.PurchaseOrder.OrderDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        },
+        {
+          "id": "vendor_name",
+          "concept": "vendor_name",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [
+        "GeneralData.Company.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "multilingual",
+        "purchase_order",
+        "de"
+      ],
+      "notes": "German brief; schema paths stay English, so the model must translate the concepts, not the paths."
+    },
+    {
+      "id": "po-multilingual-fr",
+      "family": "multilingual",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "fr",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Affichez le nom du fournisseur, son adresse et les conditions de livraison dans le corps du document.",
+      "required_bindings": [
+        {
+          "id": "vendor_name",
+          "concept": "vendor_name",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "vendor_address",
+          "concept": "vendor_address",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "delivery_terms",
+          "concept": "delivery_terms",
+          "expected_paths": [
+            "MainData.PurchaseOrder.DeliveryTerms"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [
+        "GeneralData.Company.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "multilingual",
+        "purchase_order",
+        "fr"
+      ],
+      "notes": "French brief with one vendor-scope guard."
+    },
+    {
+      "id": "po-footer-vendor-scope",
+      "family": "forbidden_scope",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Put the vendor name and vendor address in the page footer; use the vendor identity, not the buying company.",
+      "required_bindings": [
+        {
+          "id": "vendor_name",
+          "concept": "vendor_name",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "footer"
+        },
+        {
+          "id": "vendor_address",
+          "concept": "vendor_address",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "footer"
+        }
+      ],
+      "forbidden_paths": [
+        "GeneralData.Company.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "forbidden_scope",
+        "purchase_order",
+        "footer"
+      ],
+      "notes": "Footer placement plus a scope guard: the buying company is not the vendor."
+    },
+    {
+      "id": "po-ambiguous-supplier-contact",
+      "family": "ambiguous",
+      "category": "purchase_order",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Show one way to contact the supplier: either the vendor contact email or the vendor address.",
+      "required_bindings": [
+        {
+          "id": "supplier_contact",
+          "concept": "supplier_contact",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.ContactEmail"
+          ],
+          "allowed_alternatives": [
+            "MainData.PurchaseOrder.Vendor.Address"
+          ],
+          "required": true,
+          "expected_type": "string",
+          "note": "The prompt explicitly permits either contact channel; both are accepted without a duplicate penalty."
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "ambiguous",
+        "purchase_order",
+        "alternatives"
+      ],
+      "notes": "Ambiguity resolved by the prompt itself; acceptable alternatives are annotated rather than guessed."
+    },
+    {
+      "id": "so-flat-quotation-identity",
+      "family": "flat_fields",
+      "category": "sales_order",
+      "difficulty": "easy",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Show the quotation number, quotation date and valid-until date in the document body.",
+      "required_bindings": [
+        {
+          "id": "quotation_number",
+          "concept": "quotation_number",
+          "expected_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "quotation_date",
+          "concept": "quotation_date",
+          "expected_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        },
+        {
+          "id": "validity_date",
+          "concept": "validity_date",
+          "expected_paths": [
+            "MainData.Quotation.ValidUntil"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "flat_fields",
+        "sales_order",
+        "fields"
+      ],
+      "notes": "Quotation identifiers; the validity date must not be confused with the quotation date."
+    },
+    {
+      "id": "so-flat-invoice-identity",
+      "family": "flat_fields",
+      "category": "sales_order",
+      "difficulty": "easy",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "prompt": "Show the invoice number, invoice date and due date in the document body.",
+      "required_bindings": [
+        {
+          "id": "invoice_number",
+          "concept": "invoice_number",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "invoice_date",
+          "concept": "invoice_date",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        },
+        {
+          "id": "due_date",
+          "concept": "due_date",
+          "expected_paths": [
+            "MainData.Invoice.DueDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "flat_fields",
+        "sales_order",
+        "fields"
+      ],
+      "notes": "Invoice identifier triad; checks date/date disambiguation."
+    },
+    {
+      "id": "so-image-logo-footer",
+      "family": "images",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Put the company logo, company name and company address in the document footer.",
+      "required_bindings": [
+        {
+          "id": "company_logo",
+          "concept": "company_logo",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "image",
+          "expected_context": "footer"
+        },
+        {
+          "id": "company_name",
+          "concept": "company_name",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "footer"
+        },
+        {
+          "id": "company_address",
+          "concept": "company_address",
+          "expected_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "footer"
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.Quotation.Customer.Name",
+        "MainData.Quotation.Customer.Address"
+      ],
+      "expected_blocks": [
+        {
+          "kind": "image",
+          "required": true,
+          "path": "GeneralData.Company.CompanyLogo"
+        }
+      ],
+      "labels": [
+        "images",
+        "sales_order",
+        "footer"
+      ],
+      "notes": "Company identity in the footer; customer identity is forbidden."
+    },
+    {
+      "id": "so-image-logo-header-invoice",
+      "family": "images",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "prompt": "Place the company logo in the page header and the invoice number below it.",
+      "required_bindings": [
+        {
+          "id": "company_logo",
+          "concept": "company_logo",
+          "expected_paths": [
+            "GeneralData.Company.CompanyLogo"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "image",
+          "expected_context": "header"
+        },
+        {
+          "id": "invoice_number",
+          "concept": "invoice_number",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "header"
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.Invoice.Customer.Name"
+      ],
+      "expected_blocks": [
+        {
+          "kind": "image",
+          "required": true,
+          "path": "GeneralData.Company.CompanyLogo"
+        }
+      ],
+      "labels": [
+        "images",
+        "sales_order",
+        "header"
+      ],
+      "notes": "Header composition with an image and a scalar; the customer name is the wrong-scope trap."
+    },
+    {
+      "id": "so-collection-wide-lines",
+      "family": "collections",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+      "prompt": "Create a table with item, description, quantity and net amount for every sales order line.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_quantity",
+          "concept": "line_quantity",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_net_amount",
+          "concept": "line_net_amount",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        }
+      ],
+      "labels": [
+        "collections",
+        "sales_order",
+        "table"
+      ],
+      "notes": "Wide schema but only four columns requested; the model must not add every available column."
+    },
+    {
+      "id": "so-long-table-all-columns",
+      "family": "long_tables",
+      "category": "sales_order",
+      "difficulty": "hard",
+      "split": "calibration",
+      "language": "en",
+      "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+      "prompt": "Create a line table with item, description, quantity, unit, unit price, discount percent, net amount, tax amount, line amount, warehouse, delivery date and line note.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_quantity",
+          "concept": "line_quantity",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_unit",
+          "concept": "line_unit",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Unit"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_unit_price",
+          "concept": "line_unit_price",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.UnitPrice"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_discount",
+          "concept": "line_discount",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.DiscountPct"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_net_amount",
+          "concept": "line_net_amount",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.NetAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_tax_amount",
+          "concept": "line_tax_amount",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.TaxAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_warehouse",
+          "concept": "line_warehouse",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Warehouse"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_delivery_date",
+          "concept": "line_delivery_date",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.DeliveryDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_note",
+          "concept": "line_note",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.LineNote"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        }
+      ],
+      "labels": [
+        "long_tables",
+        "sales_order",
+        "wide_table"
+      ],
+      "notes": "Twelve requested columns: the hardest recall case and a stress test for table width."
+    },
+    {
+      "id": "so-long-table-40-rows",
+      "family": "long_tables",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "benchmarks/fixtures/quotation-40-rows.ddsp",
+      "prompt": "Create a quotation line table with item number, description, quantity and line amount for every line; the table must handle forty rows.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_quantity",
+          "concept": "line_quantity",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Quantity"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.QuotationLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.QuotationLines.Line"
+        }
+      ],
+      "labels": [
+        "long_tables",
+        "sales_order",
+        "row_count"
+      ],
+      "notes": "The fixture carries forty sample rows; the prompt tests that the model keeps the collection repeat rather than a fixed row count."
+    },
+    {
+      "id": "so-long-table-long-descriptions",
+      "family": "long_tables",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "benchmarks/fixtures/quotation-long-items.ddsp",
+      "prompt": "Create a line table with item number, the long description and line amount; keep the description column wide enough for long text.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.QuotationLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.QuotationLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.QuotationLines.Line"
+        }
+      ],
+      "labels": [
+        "long_tables",
+        "sales_order",
+        "long_text"
+      ],
+      "notes": "Long descriptions are a layout concern, but the semantic binding must still target the description field."
+    },
+    {
+      "id": "so-multilingual-de",
+      "family": "multilingual",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "de",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Zeige Firmenname, Angebotsnummer, Angebotsdatum und Gesamtbetrag im Dokument.",
+      "required_bindings": [
+        {
+          "id": "company_name",
+          "concept": "company_name",
+          "expected_paths": [
+            "GeneralData.Company.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "quotation_number",
+          "concept": "quotation_number",
+          "expected_paths": [
+            "MainData.Quotation.QuotationId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "quotation_date",
+          "concept": "quotation_date",
+          "expected_paths": [
+            "MainData.Quotation.QuotationDate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "date",
+          "expected_context": "body"
+        },
+        {
+          "id": "total_amount",
+          "concept": "total_amount",
+          "expected_paths": [
+            "MainData.Quotation.TotalAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.Quotation.Customer.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "multilingual",
+        "sales_order",
+        "de"
+      ],
+      "notes": "German brief with four concepts and a customer/company guard."
+    },
+    {
+      "id": "so-ambiguous-vat-number",
+      "family": "ambiguous",
+      "category": "sales_order",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Show the VAT number on the quotation.",
+      "required_bindings": [
+        {
+          "id": "vat_number",
+          "concept": "vat_number",
+          "expected_paths": [
+            "MainData.Quotation.Customer.VatNumber"
+          ],
+          "allowed_alternatives": [
+            "GeneralData.Company.VatNumber"
+          ],
+          "required": true,
+          "expected_type": "string",
+          "note": "The prompt does not say whose VAT number; both parties are defensible."
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "ambiguous",
+        "sales_order",
+        "vat"
+      ],
+      "notes": "Genuine ambiguity between customer and company VAT numbers; the alternative is accepted, not guessed."
+    },
+    {
+      "id": "cc-nested-service-tasks",
+      "family": "nested_lists",
+      "category": "conditional_complex",
+      "difficulty": "hard",
+      "split": "calibration",
+      "language": "en",
+      "package": "benchmarks/fixtures/field-service.ddsp",
+      "prompt": "Create a service order with a table of service lines and, under each line, a nested list of tasks showing the task id, description and hours.",
+      "required_bindings": [
+        {
+          "id": "service_line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_id",
+          "concept": "task_id",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_description",
+          "concept": "task_description",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_hours",
+          "concept": "task_hours",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task"
+        }
+      ],
+      "labels": [
+        "nested_lists",
+        "conditional_complex",
+        "repeat"
+      ],
+      "notes": "Nested repeat scope: task fields must use the inner collection, not the outer line scope."
+    },
+    {
+      "id": "cc-nested-task-effort",
+      "family": "nested_lists",
+      "category": "conditional_complex",
+      "difficulty": "hard",
+      "split": "holdout",
+      "language": "en",
+      "package": "benchmarks/fixtures/field-service.ddsp",
+      "prompt": "Show each service line with its item number and, nested beneath it, each task's id, rate and amount.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_id",
+          "concept": "task_id",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_rate",
+          "concept": "task_rate",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Rate"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_amount",
+          "concept": "task_amount",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Amount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task"
+        }
+      ],
+      "labels": [
+        "nested_lists",
+        "conditional_complex",
+        "repeat"
+      ],
+      "notes": "Nested list with money fields; checks inner-scope type correctness."
+    },
+    {
+      "id": "cc-nested-service-amounts",
+      "family": "nested_lists",
+      "category": "conditional_complex",
+      "difficulty": "hard",
+      "split": "calibration",
+      "language": "en",
+      "package": "benchmarks/fixtures/field-service.ddsp",
+      "prompt": "Create a service order table with line item, line amount and a nested list of task description and hours.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_amount",
+          "concept": "line_amount",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.LineAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_description",
+          "concept": "task_description",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "task_hours",
+          "concept": "task_hours",
+          "expected_paths": [
+            "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task"
+        }
+      ],
+      "labels": [
+        "nested_lists",
+        "conditional_complex",
+        "repeat"
+      ],
+      "notes": "A second nested composition; differs from the first by mixing line amount with task text/effort."
+    },
+    {
+      "id": "cc-conditional-eu-vat",
+      "family": "conditions",
+      "category": "conditional_complex",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Create a quotation with the customer name and a VAT notice that only appears when the customer is in the EU.",
+      "required_bindings": [
+        {
+          "id": "customer_name",
+          "concept": "customer_name",
+          "expected_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "customer_is_eu",
+          "concept": "customer_is_eu",
+          "expected_paths": [
+            "MainData.Quotation.Customer.IsEU"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "boolean",
+          "expected_context": "conditional"
+        }
+      ],
+      "forbidden_paths": [
+        "Parameters.ShowVatNotice"
+      ],
+      "expected_blocks": [
+        {
+          "kind": "conditional",
+          "required": true
+        }
+      ],
+      "labels": [
+        "conditions",
+        "conditional_complex",
+        "vat"
+      ],
+      "notes": "The schema has a separate Parameters.ShowVatNotice flag; the prompt conditions on the customer's EU status, so the flag is forbidden."
+    },
+    {
+      "id": "cc-conditional-reverse-charge",
+      "family": "conditions",
+      "category": "conditional_complex",
+      "difficulty": "hard",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "prompt": "Create a tax invoice with a reverse-charge notice that appears only when reverse charge is enabled, and show the tax amount and gross amount.",
+      "required_bindings": [
+        {
+          "id": "reverse_charge",
+          "concept": "reverse_charge",
+          "expected_paths": [
+            "MainData.Invoice.ReverseCharge"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "boolean",
+          "expected_context": "conditional"
+        },
+        {
+          "id": "tax_amount",
+          "concept": "tax_amount",
+          "expected_paths": [
+            "MainData.Invoice.TaxAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "body"
+        },
+        {
+          "id": "gross_amount",
+          "concept": "gross_amount",
+          "expected_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "conditional",
+          "required": true
+        }
+      ],
+      "labels": [
+        "conditions",
+        "conditional_complex",
+        "tax"
+      ],
+      "notes": "A boolean condition plus two monetary fields; reverse charge must drive the condition."
+    },
+    {
+      "id": "cc-conditional-eu-vat-invoice",
+      "family": "conditions",
+      "category": "conditional_complex",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "prompt": "If the customer is in the EU, show a VAT notice and the customer VAT number; always show the invoice total.",
+      "required_bindings": [
+        {
+          "id": "customer_is_eu",
+          "concept": "customer_is_eu",
+          "expected_paths": [
+            "MainData.Invoice.Customer.IsEU"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "boolean",
+          "expected_context": "conditional"
+        },
+        {
+          "id": "customer_vat_number",
+          "concept": "customer_vat_number",
+          "expected_paths": [
+            "MainData.Invoice.Customer.VatNumber"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "invoice_total",
+          "concept": "invoice_total",
+          "expected_paths": [
+            "MainData.Invoice.GrossAmount"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [
+        {
+          "kind": "conditional",
+          "required": true
+        }
+      ],
+      "labels": [
+        "conditions",
+        "conditional_complex",
+        "vat"
+      ],
+      "notes": "Conditional VAT rendering on the invoice fixture; the total stays unconditional."
+    },
+    {
+      "id": "adv-missing-requisition-number",
+      "family": "missing",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/purchase-order/purchase-order.ddsp",
+      "prompt": "Create a purchase order with the vendor name and the internal purchase requisition number.",
+      "required_bindings": [
+        {
+          "id": "vendor_name",
+          "concept": "vendor_name",
+          "expected_paths": [
+            "MainData.PurchaseOrder.Vendor.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "requisition_number",
+          "concept": "purchase_requisition_number",
+          "expected_paths": [],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body",
+          "satisfiable": false,
+          "note": "The purchase-order schema has no requisition field; a correct run must not invent one."
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "missing",
+        "adversarial",
+        "purchase_order"
+      ],
+      "notes": "Unsatisfiable requirement excluded from recall/coverage; hallucinating a path is charged as wrong_binding."
+    },
+    {
+      "id": "adv-missing-customer-po-reference",
+      "family": "missing",
+      "category": "adversarial",
+      "difficulty": "hard",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/invoice/sales-invoice.ddsp",
+      "prompt": "Show the customer's purchase order reference and the invoice number.",
+      "required_bindings": [
+        {
+          "id": "invoice_number",
+          "concept": "invoice_number",
+          "expected_paths": [
+            "MainData.Invoice.InvoiceId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "customer_po_reference",
+          "concept": "customer_purchase_order_reference",
+          "expected_paths": [],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body",
+          "satisfiable": false,
+          "note": "The invoice fixture has no customer purchase-order reference; the run must not substitute the invoice number."
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "missing",
+        "adversarial",
+        "sales_order"
+      ],
+      "notes": "A subtler missing field: the only nearby identifier is the invoice number, which is a different concept."
+    },
+    {
+      "id": "adv-ambiguous-address",
+      "family": "ambiguous",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Show the address at the top of the document.",
+      "required_bindings": [
+        {
+          "id": "document_address",
+          "concept": "document_address",
+          "expected_paths": [
+            "GeneralData.Company.Address"
+          ],
+          "allowed_alternatives": [
+            "MainData.Quotation.Customer.Address"
+          ],
+          "required": true,
+          "expected_type": "string",
+          "note": "Top-of-document usually means the company address, but the customer address is defensible in some layouts."
+        }
+      ],
+      "forbidden_paths": [],
+      "expected_blocks": [],
+      "labels": [
+        "ambiguous",
+        "adversarial",
+        "address"
+      ],
+      "notes": "Ambiguity is explicit in the label; both addresses are accepted alternatives."
+    },
+    {
+      "id": "adv-forbidden-customer-bank",
+      "family": "forbidden_scope",
+      "category": "adversarial",
+      "difficulty": "hard",
+      "split": "holdout",
+      "language": "en",
+      "package": "examples/quotation/sales-quotation.ddsp",
+      "prompt": "Show the customer name and the customer's bank account IBAN so the customer can pay us.",
+      "required_bindings": [
+        {
+          "id": "customer_name",
+          "concept": "customer_name",
+          "expected_paths": [
+            "MainData.Quotation.Customer.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "customer_bank_iban",
+          "concept": "customer_bank_iban",
+          "expected_paths": [],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "satisfiable": false,
+          "note": "Only the selling company has bank details in this schema; there is no customer bank account."
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.Quotation.BankDetails.Iban",
+        "MainData.Quotation.BankDetails.BankName",
+        "MainData.Quotation.BankDetails.Swift"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "forbidden_scope",
+        "adversarial",
+        "bank"
+      ],
+      "notes": "The schema's BankDetails belong to the company, not the customer; binding them is a scope error."
+    },
+    {
+      "id": "adv-forbidden-company-as-customer",
+      "family": "forbidden_scope",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "split": "calibration",
+      "language": "en",
+      "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+      "prompt": "Create a sales order header with the customer name and customer account number; do not use the company name as the customer.",
+      "required_bindings": [
+        {
+          "id": "customer_name",
+          "concept": "customer_name",
+          "expected_paths": [
+            "MainData.SalesOrder.Customer.Name"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        },
+        {
+          "id": "customer_account",
+          "concept": "customer_account_number",
+          "expected_paths": [
+            "MainData.SalesOrder.Customer.AccountNum"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "body"
+        }
+      ],
+      "forbidden_paths": [
+        "GeneralData.Company.Name"
+      ],
+      "expected_blocks": [],
+      "labels": [
+        "forbidden_scope",
+        "adversarial",
+        "customer_scope"
+      ],
+      "notes": "A direct company/customer identity trap in the sales-order header."
+    },
+    {
+      "id": "adv-collection-forbidden-columns",
+      "family": "collections",
+      "category": "adversarial",
+      "difficulty": "hard",
+      "split": "holdout",
+      "language": "en",
+      "package": "benchmarks/fixtures/sales-order-wide.ddsp",
+      "prompt": "Create a line table with item number, description and quantity only; do not add warehouse, discount or line note columns.",
+      "required_bindings": [
+        {
+          "id": "line_item",
+          "concept": "line_item",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.ItemId"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_description",
+          "concept": "line_description",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Description"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "string",
+          "expected_context": "repeat"
+        },
+        {
+          "id": "line_quantity",
+          "concept": "line_quantity",
+          "expected_paths": [
+            "MainData.SalesOrderLines.Line.Quantity"
+          ],
+          "allowed_alternatives": [],
+          "required": true,
+          "expected_type": "number",
+          "expected_context": "repeat"
+        }
+      ],
+      "forbidden_paths": [
+        "MainData.SalesOrderLines.Line.Warehouse",
+        "MainData.SalesOrderLines.Line.DiscountPct",
+        "MainData.SalesOrderLines.Line.LineNote"
+      ],
+      "expected_blocks": [
+        {
+          "kind": "table",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        },
+        {
+          "kind": "repeat",
+          "required": true,
+          "path": "MainData.SalesOrderLines.Line"
+        }
+      ],
+      "labels": [
+        "collections",
+        "adversarial",
+        "table"
+      ],
+      "notes": "Negative scope inside a collection: the forbidden columns are plausible but explicitly excluded."
+    }
+  ]
+}

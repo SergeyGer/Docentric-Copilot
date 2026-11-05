@@ -32,6 +32,7 @@ npm-debug.log*
 
 # Local execution traces (sanitized, but never published)
 docs/media/runs/
+benchmarks/gold_runs.jsonl
 
 # Test / tooling artifacts
 # Reference template corpus — vendor material, never commit or redistribute

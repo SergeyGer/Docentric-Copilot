@@ -9,8 +9,8 @@
 | Related | [BENCHMARKS](BENCHMARKS.md), [PRICING](PRICING.md), [ROUTING](ROUTING.md), [SRS](SRS.md), [DDSP_COMPATIBILITY](DDSP_COMPATIBILITY.md) |
 
 This document defines the metrics, describes the harness as implemented, and separates what has been
-measured from what is still `TBD`. It contains **no** invented numbers: every non-`TBD` value comes
-from a committed run of the harness, quoted with its command and caveats.
+measured from what is still open. It contains **no** invented numbers: every value comes from a
+committed run of the harness, quoted with its command and caveats.
 
 ## 1. What the evaluation is (and is not)
 
@@ -239,29 +239,23 @@ Interpretation with the limitations in §2.4:
 - **Compilation 1.0** means the three fixtures compile. Golden and integration tests assert the same.
 - **Compatibility 0.0** is the gate, not a failure of the compiler. No compatibility is claimed.
 
-### 5.2 Hosted-provider comparison (pending)
+### 5.2 Hosted-provider comparison (superseded by the gold benchmark)
 
-The mock baseline row is measured. No hosted-provider evaluation has been run in this repository, so
-the OpenAI/Anthropic/Gemini rows are `TBD` until a run is recorded with its command, model and commit.
-Latency is deliberately not part of this table: measure it separately with
-[`benchmarks/run_benchmarks.py`](BENCHMARKS.md).
+The three-case field-selection table was never run against hosted providers; only the mock row was
+measured. That comparison is superseded by the 32-case gold benchmark in
+[§2.7](#27-gold-semantic-benchmark-v010-pr-05), which reports precision, recall, F1, requirement
+coverage, type/context correctness, block coverage, a separate valid-template rate, cost and the
+error taxonomy for OpenAI, Anthropic and Gemini, with calibration and holdout shown separately.
 
-| Provider / model | Cases | Precision | Recall | Coverage | Compilation | Clarification | Correction | Cost / valid template | Evidence | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| mock (baseline) | 3 | 0.932 | 0.965 | 1.000 | 1.000 | 0.000 | 0.000 | $0.000 | `benchmarks/evaluation.json` | V1-V3 autonomous; no LLM cost |
-| openai / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
-| anthropic / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
-| gemini / `<model>` | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
+| Provider | Evidence |
+| --- | --- |
+| mock (3-case baseline) | `benchmarks/evaluation.json`; precision 0.932, recall 0.965, coverage 1.000, compilation 1.000 |
+| OpenAI `gpt-6-sol` | [gold_report.json](../benchmarks/gold_report.json), §2.7 |
+| Anthropic `claude-sonnet-5-5` | [gold_report.json](../benchmarks/gold_report.json), §2.7 |
+| Gemini `gemini-3.6-flash` | [gold_report.json](../benchmarks/gold_report.json), §2.7; cost estimated with the documented proxy |
 
-How each `TBD` will be measured:
-
-- **Metrics**: `benchmarks/evaluation.json` from the matching command; repeat ≥ 3 times and report
-  median and range.
-- **Cost / valid template**: `cost_usd` from `GenerationResult.usage.estimated_cost_usd`, divided by
-  compiled cases. Verify the model is in `llm/pricing.py`; otherwise record `unpriced`.
-- **Latency**: not measured by this harness; use `benchmarks/run_benchmarks.py --provider ...` and
-  record the result in [BENCHMARKS](BENCHMARKS.md).
-- **Commit**: the git commit of the run, so results are attributable.
+The old three-case harness remains useful as a deterministic smoke test and as the mock control. It
+is not a hosted-provider comparison, and its `TBD` rows were removed rather than left as stale text.
 
 ## 6. Reproducibility checklist
 
@@ -325,6 +319,10 @@ visible even when `valid_template_rate` is 1.0.
 | Providers | `openai:gpt-6-sol`, `anthropic:claude-sonnet-5-5`, `gemini:gemini-3.6-flash` |
 | Wire format | Gemini compact **v2**; other providers full IR; `max_repair_attempts=2` |
 | Repeats | 3 per case × provider (180 runs) |
+
+The 32-case gold benchmark in [§2.7](#27-gold-semantic-benchmark-v010-pr-05) is the larger,
+versioned successor. This 20-case set remains a compact regression harness and is not the source of
+the PR-05 product metrics.
 
 ### Ground truth
 
@@ -557,3 +555,106 @@ provider reports usage and the model has a versioned price, `estimated` when a d
 used, and `unavailable` otherwise. Unknown cost is never rendered as `$0.00`. The report writes
 JSON, CSV and self-contained HTML with sample size, provenance, pattern counts, error taxonomy and
 cost status.
+
+## 2.7 Gold semantic benchmark (v0.10 PR-05)
+
+The 20-case semantic harness above is useful for smoke tests but too small for a product claim.
+PR-05 adds a versioned 32-case gold dataset with a fixed calibration/holdout split and a live
+runner that reports per-family, per-split and per-provider metrics.
+
+| Item | Value |
+| --- | --- |
+| Dataset | [benchmarks/gold_cases.json](../benchmarks/gold_cases.json) — 32 cases, `gold-cases/v1`, version `1.0.0` |
+| Annotation guide | [GOLD_LABELS.md](GOLD_LABELS.md) |
+| Rule pass | [benchmarks/gold_dataset.py](../benchmarks/gold_dataset.py) |
+| Runner | [benchmarks/gold_evaluation.py](../benchmarks/gold_evaluation.py) |
+| Scoring | [benchmarks/semantic_scoring.py](../benchmarks/semantic_scoring.py) (pure functions) |
+| Per-run records | `benchmarks/gold_runs.jsonl` (git-ignored; no prompt text or raw output) |
+| Reports | [gold_report.json](../benchmarks/gold_report.json), `.csv`, `.html` |
+| Settings | Gemini compact v2, repairs 2; priced providers full IR, repairs 1; temperature 0 |
+| Budget | `--max-spend 10`, `--warn-spend 5`; running known + estimated spend printed per run |
+
+### Dataset
+
+The 32 cases cover ten families: flat fields (5), images (3), collections (4), nested lists (3),
+conditions (3), missing (2), ambiguous (3), multilingual (3), long tables (3) and forbidden scope
+(3). By specification category: 10 purchase order, 10 sales order, 6 conditional/complex and 6
+adversarial/negative. The split is 20 calibration / 12 holdout, stratified so both splits contain
+every family and every category. The canonical cases SHA-256 is recorded in the report.
+
+Every case declares concept-level `required_bindings` (expected paths, allowed alternatives,
+required, type/context, satisfiability), `forbidden_paths`, `expected_blocks`, `family`, `category`,
+`difficulty`, `split` and `language`. A missing requirement is marked `satisfiable: false` and is
+excluded from recall/coverage; inventing a binding for it is a `wrong_binding`. Ambiguous prompts
+list defensible alternatives; if a run produces more than one acceptable variant, the duplicate is
+not charged as a false positive. Forbidden paths are never exempt.
+
+**Annotation limitation.** The labels were authored by the implementer and validated by the
+deterministic rule pass. There was no independent human double review. The rule pass checks paths,
+types, contexts, block kinds, family invariants and split sizes; it cannot validate business
+judgement. AT-07 is therefore **partial**, and reports state this limitation.
+
+### Metrics
+
+Let `TP` be matched requirements, `FP` produced bindings that no requirement accepts (including
+forbidden paths), `FN` required requirements that remain unmatched, `R` required satisfiable
+requirements and `S` satisfiable requirements.
+
+| Metric | Definition |
+| --- | --- |
+| `precision` | `TP / (TP + FP)` |
+| `recall` | matched required / `R` |
+| `f1` | harmonic mean of precision and recall |
+| `requirement_coverage` | matched satisfiable / `S` |
+| `type_context_correctness` | correct type/context checks / checks performed |
+| `block_coverage` | satisfied `expected_blocks` / declared blocks |
+| `semantic_pass_rate` | runs where every required requirement and block is satisfied, no forbidden path is hit, and no type/context error is recorded |
+| `valid_template_rate` | deterministic validation + generic DOCX compilation, **reported separately** |
+| `cost_per_correct_result_usd` | total cost / runs that pass both semantics and compilation |
+| latency | p50 and p95 over planned runs, in milliseconds |
+
+The runner reports each metric overall, per provider, per split (calibration and holdout separately),
+per family, per category and per case. It never collapses semantic quality and compilation into one
+number. The HTML report includes the dataset hash, split, model versions, prompt version, settings,
+date, sample sizes and the explicit "observations, not significance" note.
+
+### Error taxonomy
+
+The shared taxonomy is `provider_api`, `quota`, `timeout`, `structured_output`, `missing_field`,
+`wrong_binding`, `wrong_context`, `unsupported_expression`, `compilation`, `renderer` and `harness`.
+A run may carry several semantic codes; the report shows both "runs with code" and one primary code
+per run that has at least one. Primary counts are not failed-run counts.
+
+### Cost
+
+Cost is `verified` (provider-reported usage and a published price), `estimated` (unpriced model with
+a documented proxy) or `unavailable`. Gemini 3.6-flash is unpriced: the runner uses the documented
+Gemini 3.8-flash proxy and keeps the `estimated` status. It is never displayed as `$0.00`. The
+budget guard warns at $5 and aborts before a call whose worst case could cross the $10 cap.
+
+### Reproduce
+
+```bash
+.venv/bin/python benchmarks/gold_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.6-flash \
+  --repeats 3 --split all --max-spend 10 --warn-spend 5 --allow-unpriced
+```
+
+A budget-constrained run can add `--paid-repeats 2`: Gemini keeps three repeats, priced providers
+use two, and the report records the difference instead of silently truncating the matrix. A provider
+without credentials is reported as `not_run`, never substituted with the mock.
+
+<!-- GOLD-RESULTS -->
+
+### What the numbers mean
+
+- Calibration and holdout are separate. A holdout result is not a confirmation of a prompt tuned on
+  calibration; it is the closest available out-of-sample check.
+- Precision and recall can move in opposite directions because the label set is strict: extra
+  unrequested bindings are false positives, while a missing required concept is a false negative.
+- A 100% `valid_template_rate` with a lower `semantic_pass_rate` is the expected signature of a
+  schema-valid but semantically wrong plan. That divergence is the reason both metric families
+  exist.
+- The sample is small and the repeats are not independent draws from a population. The report does
+  not declare a single winner and does not claim statistical significance.
+- Docentric AX runtime compatibility remains `not_tested`; no semantic score changes that gate.

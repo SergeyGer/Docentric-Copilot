@@ -400,6 +400,11 @@ not open the real corpus.
 `benchmarks/reference_evaluation.py` scores a generated or supplied plan against reference
 patterns. It maps inspected controls/elements as follows:
 
+> REF-05 is **not** the v0.10 P0 gold benchmark from PR-04/PR-05. REF-05 compares a plan with the
+> patterns observed in a reference template; the gold benchmark scores prompt-to-template business
+> semantics against a versioned 32-case dataset. See [GOLD_LABELS](GOLD_LABELS.md) and
+> [EVALUATION §2.7](EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05).
+
 | Reference pattern | Expected concept | Produced evidence |
 | --- | --- | --- |
 | Field | scalar | field binding |
@@ -606,6 +611,8 @@ curl -s -X POST \
 - [ADR-0010: Reference inspector](adr/0010-reference-inspector.md)
 - [ADR-0011: ReferenceGraph and read-only Reference IR](adr/0011-reference-graph.md)
 - [ADR-0012: Reference diff and reference-based evaluation](adr/0012-reference-diff-and-evaluation.md)
+- [ADR-0014: Gold dataset and reference benchmark](adr/0014-gold-dataset-and-reference-benchmark.md)
+- [Gold semantic labels](GOLD_LABELS.md)
 - [Docentric AX compatibility status](DOCENTRIC_AX_COMPATIBILITY.md)
 - [Threat model](THREAT_MODEL.md)
 - [Wiki: Reference Templates](wiki/Reference-Templates.md)

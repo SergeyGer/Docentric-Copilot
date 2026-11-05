@@ -89,6 +89,36 @@ sample size, provenance, error taxonomy and cost status. `--reference PATH --dds
 real DOCX/AXPP from the ignored corpus at runtime; those reports stay private. A non-mock provider
 requires `--allow-paid`.
 
+## Gold semantic benchmark (v0.10 PR-05)
+
+```bash
+.venv/bin/python benchmarks/gold_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.6-flash \
+  --repeats 3 --split all --max-spend 10 --warn-spend 5 --allow-unpriced
+```
+
+A versioned set of **32 synthetic cases** with concept-level gold labels:
+flat fields, images, collections, nested lists, conditions, missing requirements, ambiguity,
+multilingual briefs, long tables and forbidden scope. The split is **20 calibration / 12 holdout**,
+fixed before the first live run; both splits contain every family. The dataset hash, split, model
+versions, settings and sample sizes are written into every report.
+
+The labels were authored by the implementer and checked by a deterministic rule pass
+(`benchmarks/gold_dataset.py --check`). There was **no independent human double review**, so the
+annotation criterion is honestly partial. See
+[EVALUATION §2.7](../EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05) and
+[GOLD_LABELS](../GOLD_LABELS.md) for the rules and the adjudication record.
+
+Semantic precision, recall, F1, requirement coverage, type/context correctness and block coverage
+are reported separately from `valid_template_rate`. Calibration and holdout are shown separately, as
+are per-provider, per-family and per-case results. Costs are `verified`, `estimated` or `unavailable`;
+Gemini is unpriced and is reported as an estimate, never as $0.00. The runner warns at $5 and stops
+before a call whose worst case could cross the $10 cap. Per-run records stay in the git-ignored
+`benchmarks/gold_runs.jsonl`; only aggregates are committed. The report states explicitly that the
+numbers are **observations, not significance**, and it does not declare a single winner.
+
+<!-- GOLD-WIKI-RESULTS -->
+
 ## Why two separate metrics
 
 Compilation success and verified compatibility measure different things. A document can compile perfectly
@@ -101,10 +131,11 @@ page.
 | Requirement | Detail |
 | --- | --- |
 | Python | 3.12 |
-| Data | the three committed synthetic fixtures |
-| Provider | `mock` (no network) |
-| Command | `make bench && make eval` |
-| Outputs | `benchmarks/results.json`, `benchmarks/evaluation.json`, `benchmarks/reference_report.{json,csv,html}` |
+| Data | committed synthetic fixtures and the 32-case gold dataset |
+| Provider | `mock` for the deterministic baseline; three hosted providers for the gold report |
+| Command | `make bench && make eval`, then `benchmarks/gold_evaluation.py` (see above) |
+| Outputs | `benchmarks/results.json`, `benchmarks/evaluation.json`, `benchmarks/reference_report.{json,csv,html}`, `benchmarks/gold_report.{json,csv,html}` |
 
-Hosted-provider runs are supported (`--provider openai --model …`) but are not part of the committed
-baseline, because model versions and network conditions change.
+The three-case hosted-provider comparison is not part of the committed baseline; the committed
+hosted run is the gold benchmark. Model versions and network conditions still change, so every
+report records the model id, date, dataset hash and pricing version.

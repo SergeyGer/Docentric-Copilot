@@ -6,7 +6,7 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.10.0 (published); v0.10 in progress (Template IR 1.0) |
+| Current release | 0.11.0 (published); v0.10 in progress (Template IR 1.0) |
 | Overall status | M0–M4 implemented to the extent described below; M5 in progress; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
@@ -151,7 +151,7 @@ workstreams below are in scope for this branch; nothing else is presented as don
 | PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss; strict/best-effort; CLI/API; validation | Done — partial subset (#27): Field/Label/List→Repeat/If/Image; Table not inferred |
 | PR-07 visual reference diff | Page-level LibreOffice rendering and failure-safe status (#28) | Done — partial: LibreOffice, not Word fidelity; no real renderer in CI |
 | PR-08 report persistence/export and browser E2E | SQLite TTL reports, reopen/export, web `?id=` (#29) | Done — partial: no committed Playwright/browser E2E |
-| PR-09 release hardening | Docs, ADR-0016, version/feature consistency, OpenAPI, tests (#30) | Done for this branch — package version stays `0.10.0` under `[Unreleased]` |
+| PR-09 release hardening | Docs, ADR-0016, version/feature consistency, OpenAPI, tests (#30) | Done for this branch — package version stays `0.11.0` under `[Unreleased]` |
 
 **Truthful status for the matrix:** the D365 adapter and resolver are `partial`, not "D365
 validation complete". 11 of 11 local D365 DOCX documents yielded embedded `projectdata` schema
@@ -168,7 +168,7 @@ partial); no runtime compatibility is claimed.
 ## M7 — v0.11 P1 reference workflow (unreleased)
 
 **Goal:** make the read-only reference evidence usable without pretending it is a native Docentric
-or Word-fidelity result. The package version remains `0.10.0`; this work is under `[Unreleased]`.
+or Word-fidelity result. The package version remains `0.11.0`; this work is under `[Unreleased]`.
 
 | Item | Status | Notes / partial scope |
 | --- | --- | --- |

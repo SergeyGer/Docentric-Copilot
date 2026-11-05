@@ -18,7 +18,7 @@ def _read(relative: str) -> str:
 
 def test_versions_agree_across_the_distribution_and_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == __version__ == "0.10.0"
+    assert pyproject["project"]["version"] == __version__ == "0.11.0"
     assert json.loads(_read("apps/web/package.json"))["version"] == __version__
 
     readme = _read("README.md")
@@ -43,7 +43,7 @@ def test_versions_agree_across_the_distribution_and_docs() -> None:
 def test_changelog_documents_v010_release() -> None:
     changelog = _read("CHANGELOG.md")
     assert "## [Unreleased]" in changelog
-    assert "## [0.10.0]" in changelog
+    assert "## [0.11.0]" in changelog
     released = changelog.split("## [0.10.0]", 1)[1].split("## [0.9.0]", 1)[0]
     assert "D365 embedded schema" in released
     assert "binding resolver" in released
@@ -164,7 +164,7 @@ def test_cli_and_api_surfaces_are_documented() -> None:
 
 def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
     changelog = _read("CHANGELOG.md")
-    unreleased = changelog.split("## [Unreleased]", 1)[1].split("## [0.10.0]", 1)[0]
+    unreleased = changelog.split("## [0.11.0]", 1)[1].split("## [0.10.0]", 1)[0]
     for marker in ("#26", "#27", "#28", "#29", "#30"):
         assert marker in unreleased
     assert "partial" in unreleased.casefold()
@@ -189,7 +189,7 @@ def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
     assert "v0.11 P1 status (unreleased)" in readme
     assert "Docentric AX runtime compatibility | `not_tested`" in readme
     assert "ADR-0016" in readme
-    assert "0.11.0" not in readme
+    assert "0.11.0" in readme
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M7 — v0.11 P1 reference workflow (unreleased)" in roadmap

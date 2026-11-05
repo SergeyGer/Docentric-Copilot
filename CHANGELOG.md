@@ -8,6 +8,8 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-05
+
 ### Added
 - v0.11 P0 (#24) label adjudication: `benchmarks/adjudicate_labels.py` independently re-derives
   required paths, alternatives, forbidden guards and blocks from each prompt plus DDSP schema
@@ -120,6 +122,7 @@ version (`1.0`) independent of the distribution version.
   - #30: ADR-0016 is used because ADR-0015 was already assigned to label adjudication in this same
     v0.11 cycle. The distribution version stays `0.10.0`; these changes are `[Unreleased]`.
 - Docentric AX runtime compatibility remains `not_tested`; `target=docentric-ax` stays fail-closed.
+
 
 ## [0.10.0] - 2026-11-05
 

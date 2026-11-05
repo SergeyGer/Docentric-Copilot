@@ -20,6 +20,7 @@ ADRs are immutable once accepted; a changed decision is superseded, never rewrit
 | [ADR-0013](0013-d365-embedded-schema-and-binding-resolution.md) | D365 embedded schema and binding resolution | Accepted |
 | [ADR-0014](0014-gold-dataset-and-reference-benchmark.md) | Gold dataset and reference benchmark | Accepted |
 | [ADR-0015](0015-label-adjudication-and-candidate-filtering.md) | Independent label adjudication and evidence-backed candidate filtering | Accepted |
+| [ADR-0016](0016-ir-import-and-visual-diff.md) | Safe Reference → IR import and an independent visual diff | Accepted |
 
 New ADRs start from [TEMPLATE.md](TEMPLATE.md) and are reviewed in the pull request that needs
 the decision. `scripts/check_docs_links.py` verifies the structure and this index in CI.

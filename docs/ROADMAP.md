@@ -148,10 +148,10 @@ workstreams below are in scope for this branch; nothing else is presented as don
 | PR-03 canonical schema and binding resolver | Canonical fields/collections/scopes/types; exact six-status taxonomy; evidence on every `resolved`; CLI and API | Done — partial semantics by design |
 | PR-04 gold semantic dataset | 32 versioned cases, ten families, annotation guide, 20/12 calibration/holdout split, deterministic rule pass | Done — single-annotator labels; AT-07 partial (no independent human double review) |
 | PR-05 live benchmark runner and report | 288 live runs (32 cases × 3 providers × 3 repeats), calibration/holdout, cost and error taxonomy, JSON/CSV/HTML | Done — 288/288 runs, $6.8849 verified + $0.2910 estimated; see [EVALUATION §2.7](EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05) |
-| PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss | Not started |
-| PR-07 visual reference diff | Page-level rendering and failure-safe status | Not started |
-| PR-08 report persistence/export and browser E2E | Durable reports, reopen workflow, E2E | Not started |
-| PR-09 release hardening | Docs, fixture hashes, quality gates | Not started |
+| PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss; strict/best-effort; CLI/API; validation | Done — partial subset (#27): Field/Label/List→Repeat/If/Image; Table not inferred |
+| PR-07 visual reference diff | Page-level LibreOffice rendering and failure-safe status (#28) | Done — partial: LibreOffice, not Word fidelity; no real renderer in CI |
+| PR-08 report persistence/export and browser E2E | SQLite TTL reports, reopen/export, web `?id=` (#29) | Done — partial: no committed Playwright/browser E2E |
+| PR-09 release hardening | Docs, ADR-0016, version/feature consistency, OpenAPI, tests (#30) | Done for this branch — package version stays `0.10.0` under `[Unreleased]` |
 
 **Truthful status for the matrix:** the D365 adapter and resolver are `partial`, not "D365
 validation complete". 11 of 11 local D365 DOCX documents yielded embedded `projectdata` schema
@@ -164,6 +164,23 @@ gate is unchanged and no native output is produced.
 are complete for P0: the 32-case dataset and the 288-run report are committed, with calibration and
 holdout shown separately. The only open annotation item is independent double review (AT-07 stays
 partial); no runtime compatibility is claimed.
+
+## M7 — v0.11 P1 reference workflow (unreleased)
+
+**Goal:** make the read-only reference evidence usable without pretending it is a native Docentric
+or Word-fidelity result. The package version remains `0.10.0`; this work is under `[Unreleased]`.
+
+| Item | Status | Notes / partial scope |
+| --- | --- | --- |
+| #26 D365 evidence in ReferenceGraph | Done | `schema_source`/`source_id`/`part#xpath` on schema nodes; exact resolver status on `resolves_to`; evidence coverage and unresolved-by-status summary. Public tests are synthetic; corpus not re-run. |
+| #27 safe Reference → Generic Template IR | Done — partial | Field, Label, List→Repeat, If, Image; skips are explicit; strict/best-effort; no Table inference; generic DOCX only. |
+| #28 visual reference diff | Done — partial | LibreOffice rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; `renderer_unavailable` never pass/fail; not Word fidelity; no real renderer in CI. |
+| #29 persistence/reopen/export | Done — partial | Local SQLite TTL; `POST/GET /reports`; JSON/HTML export; web `?id=`; no committed Playwright E2E. |
+| #30 hardening/docs | Done for branch | ADR-0016 (ADR-0015 was already assigned), CHANGELOG/README/REFERENCE_TEMPLATES/EVALUATION/wiki updates, OpenAPI regenerated. |
+| Docentric AX runtime compatibility | **Not tested** | Unchanged; `target=docentric-ax` remains fail-closed. |
+
+Remaining gaps tracked: browser E2E, real-renderer CI evidence, Table/Group/SubDocument/Barcode
+import, corpus-wide D365 graph re-run, and a durable multi-process report store.
 
 ## Next steps (ordered)
 

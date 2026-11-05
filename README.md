@@ -151,7 +151,7 @@ deliberately partial and is reported as such:
 | PR-03 canonical schema and binding resolver | Done — six exact statuses; every `resolved` carries source, path, scope, type and evidence |
 | PR-04 gold semantic dataset | Done — 32 versioned cases, ten families, 20/12 calibration/holdout split, deterministic rule pass; single-annotator labels, no independent human double review |
 | PR-05 live gold benchmark | Done — 288-run matrix (32 cases × 3 providers × 3 repeats), calibration/holdout separated, cost and error taxonomy; see the [gold report](benchmarks/gold_report.json) |
-| Reference → generic Template IR, visual diff, persistence | Planned P1; not implemented |
+| Reference → generic Template IR, visual diff, persistence | Implemented P1, partial — see below |
 | Docentric AX runtime compatibility | `not_tested` — unchanged |
 
 The D365 adapter does not require a standalone DDSP when the document contains a usable embedded
@@ -168,6 +168,28 @@ Anthropic, 0.184 Gemini), and semantic pass was 55.2% / 69.8% / 64.6%. The label
 the implementer and checked by a deterministic rule pass. There is no independent human double
 review, so the annotation gate is reported as partial, not passed. The benchmark is synthetic; it is
 not Docentric corpus content and it does not change the AX `not_tested` status.
+
+### Reference workflow — v0.11 P1 status (unreleased)
+
+The v0.11 P1 increment is implemented on top of the same read-only inspector. The distribution
+version stays `0.10.0`; these changes are `[Unreleased]`.
+
+| Workstream | Status |
+| --- | --- |
+| #26 D365 evidence in the unified ReferenceGraph | Done — `schema_source`, `source_id`, `part#xpath` evidence, exact binding status on `resolves_to` edges, evidence coverage and unresolved-by-status summary; synthetic tests only in this branch |
+| #27 safe Reference → Generic Template IR | Partial — Field, Label, List→Repeat, If, Image; every skip listed; strict/`--allow-unsupported`; generic DOCX target only |
+| #28 independent visual reference diff | Partial — LibreOffice page rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; **not Word fidelity**; no LibreOffice in CI |
+| #29 persistence, reopen and export | Partial — local SQLite with TTL, `GET /reports/{id}`, JSON/HTML export, web `?id=` reopen; no committed browser E2E |
+| #30 hardening and docs | Done for this branch — ADR-0016 (ADR-0015 was already used), CHANGELOG/REFERENCE_TEMPLATES/EVALUATION/wiki/feature status |
+| Docentric AX runtime compatibility | `not_tested` — unchanged; `target=docentric-ax` remains fail-closed |
+
+The importer explicitly refuses to guess: unknown, ambiguous, type-mismatched, schema-unavailable
+and unsupported constructs become `skipped[]` entries instead of a wrong generic document. The
+visual diff reports `renderer_unavailable` rather than a pass or fail when LibreOffice/poppler is
+missing. Details and the full partial list:
+[Reference Templates](docs/REFERENCE_TEMPLATES.md#what-is-not-implemented-or-only-partial),
+[wiki: Safe IR import and visual diff](docs/wiki/Reference-IR-Import-and-Visual-Diff.md) and
+[ADR-0016](docs/adr/0016-ir-import-and-visual-diff.md).
 
 ---
 

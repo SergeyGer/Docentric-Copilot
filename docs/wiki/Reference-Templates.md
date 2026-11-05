@@ -197,15 +197,36 @@ git-ignored `.tools/reference-corpus/` directory. Public tests use synthetic fix
 test code, never the real corpus. Reports, graphs and projections from real templates can contain
 business-shaped text and metadata; keep them private and do not commit them.
 
+## v0.11 P1 workflow (partial)
+
+The v0.11 P1 increment adds:
+
+- **#26 D365 evidence in the unified ReferenceGraph**: `schema_field` nodes carry provider, source
+  id and `part#xpath` evidence; `resolves_to` edges carry the exact resolver status, and the graph
+  summary reports evidence coverage and unresolved statuses.
+- **#27 safe Reference → Generic Template IR**: Field, Label, List→Repeat, If and Image only.
+  Everything else is listed in `skipped[]`; strict mode refuses the import and
+  `--allow-unsupported` keeps the supported subset without guessing.
+- **#28 independent visual diff**: LibreOffice-rendered pages compared for page counts, blank
+  pages, ink/coverage and shifted regions. Labelled **LibreOffice rendering (not Word fidelity)**;
+  `renderer_unavailable` is never pass/fail.
+- **#29 persistence/reopen/export**: local SQLite with the artifact TTL,
+  `GET /api/v1/reference/reports/{id}`, JSON/HTML export and a `/reference?id=` reopen flow.
+
+The detailed partial list is on
+[Safe IR import and visual diff](Reference-IR-Import-and-Visual-Diff).
+
 ## What remains unverified
 
-- The web inspector (REF-06) does not render diff or evaluation reports yet; they are available
-  through Python, the CLI and the HTTP API. Licensed runtime testing (REF-07) remains out of scope.
+- The web inspector renders the report and graph, and can reopen/export a saved report; diff and
+  evaluation panels remain Python/CLI/API-only. Licensed runtime testing (REF-07) remains out of
+  scope.
 - The REF-05 synthetic set is small and uses the deterministic mock; it is a pattern-regression
   fixture, not a model-quality claim.
-- D365 documents without a standalone DDSP are checked by the separate D365 adapter; the
-  ReferenceGraph still needs a DDSP for `resolves_to` edges. Expressions, aggregates and relative
-  contexts without an enclosing `List` remain non-resolved and are listed explicitly.
+- D365 documents without a standalone DDSP are checked by the D365 adapter and, from v0.11 P1, can
+  contribute `resolves_to` edges directly; a standalone DDSP is still required for DDSP path
+  validation. Expressions, aggregates and relative contexts without an enclosing `List` remain
+  non-resolved and are listed explicitly.
 - Docentric AX runtime behaviour and native output are not tested. `target=docentric-ax` remains
   fail-closed with HTTP `409`, and compatibility is still `not_tested`.
 

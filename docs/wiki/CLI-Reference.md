@@ -76,6 +76,33 @@ counts) and semantic (binding path, status, kind) changes are separated; coverag
 deltas and a deterministic digest are included. The command is read-only and never enables the AX
 target.
 
+### `reference import-ir`
+
+```bash
+docentric-copilot reference import-ir template.docx --json import.json
+docentric-copilot reference import-ir template.docx --allow-unsupported --json import.json
+docentric-copilot reference import-ir template.docx --ddsp fallback.ddsp --json import.json
+```
+
+Projects the safe, fully resolved subset into Generic Template IR v1.0: Field, Label, List→Repeat,
+If and Image. Strict mode refuses the import if any construct is ambiguous, unresolved or
+unsupported; `--allow-unsupported` keeps the supported subset and lists everything in `skipped[]`.
+The output is always `target: generic-docx` with `runtime_compatibility: not_tested`; no native
+Docentric output is produced. See
+[Safe IR import and visual diff](Reference-IR-Import-and-Visual-Diff).
+
+### `reference visual-diff`
+
+```bash
+docentric-copilot reference visual-diff left.docx right.docx --json out/report.json
+```
+
+Renders both references through the existing LibreOffice path and compares page counts, blank
+pages, per-page ink/coverage and shifted regions. Writes `report.json` and a safe `report.html` in
+`--output-dir` (default: next to the JSON). This is **LibreOffice rendering, not Word fidelity**;
+structural/semantic statuses are not replaced. When `soffice` or `pdftoppm` is unavailable, the
+status is `renderer_unavailable` with exit code `0` — never a pass or a fail.
+
 ### `plan`
 
 ```bash

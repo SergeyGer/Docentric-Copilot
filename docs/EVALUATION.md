@@ -558,6 +558,12 @@ cost status.
 
 ## 2.7 Gold semantic benchmark (v0.10 PR-05)
 
+> **Historical artifact.** This section describes the v0.10 full 288-run report on dataset `1.0.0`.
+> The current dataset is `gold-cases/v2`, version `2.0.0`; the current measurement is the affected
+> 72-run subset in [§2.8](#28-v011-semantic-precision-and-adjudicated-labels-2425). Do not splice
+> the v0.10 aggregate with v0.11 subset numbers or compare them without the label/prompt changes
+> documented in [GOLD_LABELS](GOLD_LABELS.md).
+
 The 20-case semantic harness above is useful for smoke tests but too small for a product claim.
 PR-05 adds a versioned 32-case gold dataset with a fixed calibration/holdout split and a live
 runner that reports per-family, per-split and per-provider metrics.
@@ -748,3 +754,130 @@ generated from the same JSON.
 - The sample is small and the repeats are not independent draws from a population. The report does
   not declare a single winner and does not claim statistical significance.
 - Docentric AX runtime compatibility remains `not_tested`; no semantic score changes that gate.
+
+## 2.8 v0.11 semantic precision and adjudicated labels (#24/#25)
+
+### What changed
+
+The v0.10 gold benchmark had recall 0.996–1.000 and precision 0.184–0.226. The v0.11 P0 work
+addressed both sides of that result:
+
+- **Labels (#24).** `benchmarks/adjudicate_labels.py` is an independent deterministic second pass.
+  It re-derives paths from the prompt and schema with its own lexicon and does not import the
+  planner's retrieval. The dataset is now schema `gold-cases/v2`, version `2.0.0`, with per-label
+  provenance and `label_status`. The adjudicator reproduced 32/32 cases and 98/98 requirement labels;
+  two genuine prompt/label mismatches were fixed (the prompt now requests the line description and
+  the outer table it already required). AT-07 remains **partial**: this is a proxy, not a human
+  reviewer.
+- **Precision (#25).** The planner decomposes the brief into typed requirements, retrieves only
+  schema evidence that satisfies hard type/namespace/collection constraints, ranks it
+  deterministically and sends a bounded `<candidate_bindings>` list (24 total, 4 per requirement)
+  instead of the whole schema. After generation it re-validates every binding against candidate
+  evidence. An ambiguous requirement and a requirement with no supported binding become
+  `needs_review` rows; they are never filled with a guessed path. The system prompt also forbids
+  unrequested blocks and fixes the window where a header-only plan left an empty body.
+- **Image family.** The three image cases ask for the company logo; the annotated path exists, and
+  v0.10 produced it in 27/27 image runs. The 0% semantic pass was caused by forbidden-scope
+  contamination, not by an inexpressible image. All three stay `label_status: "verified"` and are
+  reported in a separate scorecard. Only company logo is covered; product image, image collection,
+  optional image and negative image cases remain gaps.
+
+### Counters
+
+`benchmarks/gold_evaluation.py` now publishes:
+
+| Counter | Definition |
+| --- | --- |
+| `planned_runs` | selected cases × configured providers × repeats |
+| `executed_runs` | per-run records actually attempted |
+| `skipped_runs` | planned minus executed (budget abort, provider not configured, stop) |
+| `succeeded_runs` / `failed_runs` | executed split by whether the run produced a result; `executed = succeeded + failed` |
+| `valid_template_runs` | subset of succeeded runs whose IR validates and compiles; not the same as succeeded |
+| `semantic_pass_runs` | successful semantic passes over non-gap runs |
+| `semantic_excluded_runs` | runs whose case is `label_status: "gap"`; excluded from semantic denominators |
+| `pass@k` | per `(provider, case)` group, fraction with at least one semantic pass among the first k repeats; groups with fewer than k runs are excluded from that k's denominator |
+| `abstention_rate` | executed runs with at least one `needs_review` requirement and no selected path, divided by executed runs |
+| `review_rate` / `review_requirements` | runs with any review row / total review rows; an accepted alternative is a review row but not an abstention |
+| `family_semantic_pass` | semantic pass and pass@k per family and provider |
+| `image_family` | per-case image scorecard with label status, image path, runs where the image binding was present and per-provider semantic pass |
+| `governance.at07_status` | `partial`; `second_human_annotator: false`; deterministic adjudicator named |
+| `comparison` | Before/after block written by `benchmarks/compare_subset.py`: v0.10 baseline per-case metrics vs the v0.11 subset, with the repeat-count difference stated. Baseline abstention is `not_measured`, never zero. |
+
+The two invariants are asserted in every report:
+`planned_runs = executed_runs + skipped_runs` and
+`executed_runs = succeeded_runs + failed_runs`. Retry attempts are recorded per run, not added to
+`planned_runs`.
+
+### Reproduce the affected subset
+
+```bash
+.venv/bin/python benchmarks/gold_evaluation.py \
+  --providers openai:gpt-6-sol,anthropic:claude-sonnet-5-5,gemini:gemini-3.6-flash \
+  --case-ids po-image-logo-header,so-image-logo-footer,so-image-logo-header-invoice,\
+po-ambiguous-supplier-contact,so-ambiguous-vat-number,adv-missing-requisition-number,\
+adv-missing-customer-po-reference,cc-nested-service-tasks,cc-nested-task-effort,\
+adv-forbidden-customer-bank,adv-forbidden-company-as-customer,adv-collection-forbidden-columns \
+  --repeats 2 --repair-attempts 1 --allow-unpriced --max-spend 4 --warn-spend 3 \
+  --runs-file benchmarks/gold_runs_v011_subset.jsonl \
+  --output-json benchmarks/gold_report_v011_subset.json
+.venv/bin/python benchmarks/compare_subset.py
+```
+
+The first command writes the run report. The second adds the reproducible before/after block by
+reading the committed v0.10 `per_case` metrics for the same 12 cases; it does not need the
+git-ignored v0.10 raw runs. The command uses Gemini compact v2 with its pinned two repair calls; the priced providers keep the
+product default of one repair call. This is a scoped 72-run before/after check, not a new 288-run
+ranking. The v0.10 full report remains the full-matrix artifact and is not spliced with this subset.
+
+### Subset results
+
+The affected-subset run is committed as
+[benchmarks/gold_report_v011_subset.json](../benchmarks/gold_report_v011_subset.json). It is
+72 planned runs, **72 executed, 0 skipped**, **70 valid templates**, **69 semantic passes** and
+**67 correct runs**, with spend **$0.9387** (verified
+$0.9055 + estimated $0.0332) under the **$4 cap**.
+The **$3 warning line did not fire**. There were no failed runs.
+The two validation misses are Anthropic's `cc-nested-task-effort` rows (duplicate repeat alias,
+`V3-002`); the three semantic misses are Gemini nested-list block-shape failures. Neither is a
+schema-evidence or label failure.
+
+**Before/after.** The baseline is the committed v0.10 full report read case-by-case for the same
+12 cases (dataset `1.0.0`, 3 repeats). The v0.11 subset has 2 repeats, so the table states both run
+counts and does not splice the two aggregate reports. Baseline abstention was **not measured**
+(v0.10 had no abstention signal), not zero.
+
+| Provider | Runs (before → after) | Precision before → after | Recall before → after | Semantic pass before → after | Image pass before → after | Abstention after | pass@2 after | Spend after |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| OpenAI | 36 → 24 | 0.161 → 0.962 | 1.000 → 1.000 | 41.7% → 100.0% | 0.0% → 100.0% | 25.0% | 100.0% | $0.2901 (verified) |
+| Anthropic | 36 → 24 | 0.135 → 0.962 | 1.000 → 1.000 | 44.4% → 100.0% | 0.0% → 100.0% | 25.0% | 100.0% | $0.6155 (verified) |
+| Gemini | 36 → 24 | 0.129 → 0.962 | 1.000 → 1.000 | 47.2% → 87.5% | 0.0% → 100.0% | 25.0% | 91.7% | $0.0332 (estimated) |
+| **All providers** | 108 → 72 | **0.141 → 0.962** | 1.000 → 1.000 | 44.4% → 95.8% | **0.0% → 100.0%** | **25.0%** | **97.2%** | **$0.9387** |
+
+**Observations.**
+
+- **Precision recovered from 0.141 to 0.962** on the affected subset, while **recall stayed 1.000**.
+  The gain is not from a looser scorer: it comes from sending only evidence-backed candidates and
+  from rejecting unrequested/forbidden bindings before they are accepted.
+- **The image family went from 0% to 100%** semantic pass for all three providers. The required
+  image binding was present in 18/18 image runs, there were no forbidden hits, and the image
+  scorecard reports each case separately. This confirms the v0.10 0% was a scope-precision failure,
+  not an image-recognition failure.
+- **`pass@2` is 0.972** overall (OpenAI 1.000, Anthropic 1.000, Gemini 0.917). Gemini's three
+  nested-list misses are the compact-v2 limitation: the format cannot express an outer `tbl` whose
+  rows contain a nested repeat/table, so Gemini emits an outer `rep` with an inner `tbl`. The label
+  is correct and stays unchanged; this is a wire-format gap, reported rather than hidden.
+- **Abstention is 25.0%** (18/72), all from the two missing-field cases and the unsatisfiable
+  customer-bank case. Those are exactly the runs whose requirements have no schema evidence; the
+  candidate rows say `NO SUPPORTED BINDING` and the planner does not invent a path. A bound
+  ambiguous alternative is a review row, not an abstention (`review_rate` is 41.7%, higher than
+  `abstention_rate`).
+- **Constraints remain separate.** The 70/72 valid-template rate is not folded into precision; the
+  two `V3-002` validation misses keep Anthropic's semantic pass at 100% but its valid-template rate
+  at 91.7%. This is the intended separation.
+- **Label state.** The dataset is `2.0.0` with 32 verified labels, 0 gap cases, and AT-07 still
+  **partial**. The independent deterministic adjudicator reproduced 32/32 cases and 98/98
+  requirement labels; it is a proxy, not a human reviewer.
+- **Scope.** This is not a new 288-run ranking. It is a 12-case before/after check on the families
+  affected by #24/#25. The v0.10 full report remains the full-matrix artifact and must not be
+  spliced with this subset.
+

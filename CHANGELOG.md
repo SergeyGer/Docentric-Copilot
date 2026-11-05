@@ -8,6 +8,65 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+### Added
+- v0.11 P0 (#24) label adjudication: `benchmarks/adjudicate_labels.py` independently re-derives
+  required paths, alternatives, forbidden guards and blocks from each prompt plus DDSP schema
+  evidence, and writes `benchmarks/adjudication_report.json` with per-case and per-label
+  `author` / `adjudicator` / `agreement` provenance. The pass reproduces 32/32 cases and 98/98
+  requirement labels; it is a deterministic proxy, not a second human annotator.
+- Gold dataset schema `gold-cases/v2`, version `2.0.0`: per-case `label_status`, case-level
+  provenance, per-binding/forbidden/block provenance, image subtype. `label_status: "gap"` cases are
+  excluded from semantic denominators rather than silently dropped.
+- v0.11 P0 (#25) evidence-backed candidate filtering in the planner
+  (`packages/planner/src/docentric_copilot/planner/candidates.py`): requirement decomposition
+  (entity, attribute, repetition, condition, format, source), hard type/namespace/collection
+  constraints, deterministic ranking, explicit exclusions and a bounded candidate list (24 total,
+  4 per requirement). The provider prompt receives `<candidate_bindings>` instead of the full schema
+  when evidence exists.
+- Post-generation binding review: every emitted binding is re-checked for existence, type and
+  collection scope against candidate evidence. A schema-valid but unsupported path becomes a
+  `needs_review` mapping row; ambiguous candidates and unsatisfiable requirements produce explicit
+  review/abstention rows instead of a guessed path.
+- Candidate-mode prompt rules: bind only listed paths, keep the body non-empty, use a table when the
+  brief asks for one, omit `NO SUPPORTED BINDING` requirements and choose one `AMBIGUOUS` path.
+- Report counters: `pass@k`, `abstention_rate`, `review_rate`, `review_requirements`,
+  `family_semantic_pass`, an image-family scorecard and `governance.at07_status` with explicit
+  planned/executed/skipped/succeeded/failed invariants.
+- `benchmarks/gold_report_v011_subset.json` for the affected 12 cases × 3 providers × 2 repeats
+  (72 runs, $4 cap, $3 warning line) and `benchmarks/compare_subset.py`, which adds a reproducible
+  v0.10 → v0.11 before/after block from the committed per-case metrics. The v0.10 288-run report is
+  retained as a historical artifact for dataset `1.0.0`.
+- ADR-0015 and updates to `docs/GOLD_LABELS.md`, `docs/EVALUATION.md`, `docs/BENCHMARKS.md` and the
+  ADR index.
+
+### Changed
+- Gold label version `2.0.0` fixes two genuine annotation errors by making the prompt state what the
+  label already required: `cc-nested-service-tasks` now asks for the line description, and
+  `cc-nested-task-effort` now asks for a table. No required path or block was weakened to make a
+  model pass.
+- `.gitignore` excludes the v0.11 subset per-run records; only aggregates are committed.
+
+### Notes
+- v0.11 affected-subset measurement (2026-11-05, dataset `2.0.0`, 12 cases × 3 providers × 2
+  repeats = 72 runs, $4 cap): 72 executed, 0 skipped, 70 valid templates, 69 semantic passes,
+  67 correct. Precision on the affected subset improved from **0.141** (v0.10, same 12 cases,
+  3 repeats) to **0.962** with recall 1.000; semantic pass 44.4% → 95.8%; `pass@2` 97.2%;
+  image-family semantic pass **0% → 100%** for all three providers. Abstention rate is **25.0%**
+  (18/72), all from the two missing-field cases and the unsatisfiable customer-bank case; v0.10 had
+  no abstention signal (N/A, not zero). Spend was **$0.9387** (verified $0.9055 + estimated
+  $0.0332), below the $3 warning line and $4 cap. Three Gemini nested-list runs miss the required
+  outer table because compact v2 cannot express an outer `tbl` with a nested repeat/table; the
+  labels stay unchanged and the limitation is reported. Two Anthropic `cc-nested-task-effort` runs
+  fail validation with a duplicate repeat alias (`V3-002`), kept separate from semantic pass.
+- Image-family decision: all three image cases annotate the existing top-level company-logo path.
+  v0.10 raw runs produced that image binding in 27/27 image runs; the 0% semantic pass came from
+  forbidden-scope/unrequested bindings, not an inexpressible label. The cases stay
+  `label_status: "verified"` and are reported in a separate image scorecard. Product image, image
+  collection, optional image and missing/wrong-scope image remain gaps.
+- AT-07 remains **partial**. The deterministic adjudicator is documented as a proxy, not human
+  double review, and `governance.second_human_annotator` is `false`.
+- Docentric AX runtime compatibility remains `not_tested`.
+
 ## [0.10.0] - 2026-11-05
 
 ### Added

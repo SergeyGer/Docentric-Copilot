@@ -248,3 +248,35 @@ Raw per-run records are in the git-ignored `benchmarks/gold_runs.jsonl`; the com
 aggregates only. Verified Docentric AX compatibility remains `not_tested`.
 
 
+## 9. v0.11 affected subset (#24/#25)
+
+The v0.11 P0 work did not rerun the full 288-run matrix. It reran the affected 12 cases — the three
+image cases plus nine hard/adversarial cases covering ambiguity, missing fields, nested lists and
+forbidden scope — with 3 providers and 2 repeats: **72 planned runs**, budget cap **$4**, warning
+line **$3**. Gemini used compact v2 with two repair calls; the priced providers used one.
+
+The goal was a controlled before/after check on the families that drove the v0.10 result, not a new
+ranking. The v0.10 full report is retained as a historical artifact for dataset `1.0.0`; the v0.11
+subset report is [gold_report_v011_subset.json](../benchmarks/gold_report_v011_subset.json).
+
+What the subset adds beyond the v0.10 table:
+
+- `counters` with explicit planned/executed/skipped/succeeded/failed invariants;
+- `pass@k` per provider, plus per-family semantic pass;
+- `abstention_rate` and `review_rate`, derived from the mapping report's `needs_review` rows;
+- a separate `image_family` scorecard with per-case label status and image-binding presence;
+- `governance.at07_status: partial` and `second_human_annotator: false`;
+- `settings.candidate_filter` and the candidate-list bounds.
+
+The committed subset result: **72/72 executed**, 70 valid templates, 69 semantic passes,
+precision **0.141 → 0.962** on the affected cases with recall 1.000, semantic pass **44.4% →
+95.8%**, image family **0% → 100%**, abstention **25.0%**, `pass@2` **97.2%**, spend **$0.9387**
+(below the $3 warning line and $4 cap). The three Gemini nested-list misses are a compact-v2
+wire-format limitation (outer table plus nested repeat is not expressible), not a label change.
+The detailed table and caveats are in
+[EVALUATION §2.8](EVALUATION.md#28-v011-semantic-precision-and-adjudicated-labels-2425), generated
+from the committed JSON rather than retyped.
+
+The dataset to quote with these numbers is `2.0.0`, canonical SHA-256
+`a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed`. Do not combine this 72-run
+subset with the 288-run v0.10 aggregate.

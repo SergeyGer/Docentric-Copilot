@@ -6,7 +6,7 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.4.1 (Template IR 1.0) |
+| Current release | 0.9.0 (published); v0.10 in progress (Template IR 1.0) |
 | Overall status | M0–M4 implemented to the extent described below; M5 in progress; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
@@ -135,6 +135,33 @@ verification below 1024 px. Both are tracked under M5.
 | Real DDSP compatibility testing | **Blocked** | Obtain a permitted representative package |
 | Live provider verification | **Blocked** | Provide credentials and a repeatable test protocol; record results in [EVALUATION](EVALUATION.md) |
 | 100-run benchmark with published environment | Done for the mock provider; hosted-provider latency still open | Record hosted-provider results in [BENCHMARKS §4.1](BENCHMARKS.md#41-reference-run-100-runs) |
+
+## M6 — Reference Template Intelligence completion (v0.10, in progress)
+
+**Goal:** complete the v0.10 P0 evidence work without claiming a Docentric AX runtime. Only the
+workstreams below are in scope for this branch; nothing else is presented as done.
+
+| Workstream | What is in the repository | Status |
+| --- | --- | --- |
+| PR-01 corpus baseline and documentation freeze | Version strings, README/roadmap status, CHANGELOG under `[Unreleased]`, ADR-0013, bounded corpus assessment script | Done (baseline frozen; package version not bumped) |
+| PR-02 D365 embedded schema extraction | `ProjectData`/`DataSource`/`Schema`/`PreviewData`/field-metadata extraction with part + XPath + source-id provenance; `schema_source = projectdata \| ddsp \| unavailable` | Done — static, read-only |
+| PR-03 canonical schema and binding resolver | Canonical fields/collections/scopes/types; exact six-status taxonomy; evidence on every `resolved`; CLI and API | Done — partial semantics by design |
+| PR-04 gold semantic dataset | ≥30 reviewed cases, annotation guide, calibration/holdout split | Not started |
+| PR-05 live benchmark runner and report | ≥3 runs per case and model, cost and error taxonomy | Not started |
+| PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss | Not started |
+| PR-07 visual reference diff | Page-level rendering and failure-safe status | Not started |
+| PR-08 report persistence/export and browser E2E | Durable reports, reopen workflow, E2E | Not started |
+| PR-09 release hardening | Docs, fixture hashes, quality gates | Not started |
+
+**Truthful status for the matrix:** the D365 adapter and resolver are `partial`, not "D365
+validation complete". 11 of 11 local D365 DOCX documents yielded embedded `projectdata` schema
+evidence; 233 of 246 observed bindings resolved with full evidence, while 4 were `unknown_path`, 8
+`unsupported_expression` and 1 `type_mismatch`. Runtime compatibility remains `not_tested`; the AX
+gate is unchanged and no native output is produced.
+
+**Exit criteria:** P0 acceptance tests pass and the corpus counts are reproducible with
+`python scripts/assess_d365_corpus.py` (outputs stay under the ignored `.tools/`). PR-04/PR-05
+remain required before calling the v0.10 release complete.
 
 ## Next steps (ordered)
 

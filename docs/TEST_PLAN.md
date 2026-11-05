@@ -23,7 +23,7 @@ adapters are tested with injected HTTP transports.
 | Level | Location | Purpose | Pass/fail |
 | --- | --- | --- | --- |
 | Unit | `tests/unit/` | Pure functions, models, parser, planner, validator, compiler, preview, LLM adapters with mocked transports, CLI via `typer.testing.CliRunner` | Yes |
-| Integration | `tests/integration/test_api.py` | FastAPI app through `TestClient`: upload, plan, validate, compile, revise, preview, artifacts, errors | Yes |
+| Integration | `tests/integration/test_api.py`, `tests/integration/test_reference_api.py`, `tests/integration/test_d365_api.py` | FastAPI app through `TestClient`: upload, plan, validate, compile, revise, preview, artifacts, reference inspection and D365 binding resolution, errors | Yes |
 | Golden | `tests/unit/test_golden_files.py` + `tests/golden_files/` | Frozen normalized IR/mapping/schema/validation/DOCX projections for eight synthetic fixtures | Yes |
 | Edge cases | `tests/unit/test_edge_paths.py` | VAT conditional branch, missing data, malformed inputs, unusual-but-valid documents | Yes |
 | Benchmarks | `benchmarks/run_benchmarks.py` | Latency measurement, not an assertion of correctness | No (informational; budgets displayed only) |
@@ -47,6 +47,7 @@ adapters are tested with injected HTTP transports.
 | Edge paths | VAT conditional, missing data, unusual documents | `tests/unit/test_edge_paths.py` |
 | CLI | Version, inspect text/JSON, missing file exit code, invalid file exit code, full pipeline, AX target rejection, missing prompt file, providers listing, IR schema output, invalid IR | `tests/unit/test_cli.py` |
 | API | Health/root, OpenAPI availability, providers, capabilities honesty, upload + schema, extension rejection, hostile XML, unknown source envelope, request-validation shape, full flow, revision flow, AX 409, artifact view sandboxing, missing artifact, unknown provider | `tests/integration/test_api.py` |
+| Reference / D365 | Inventory and metadata joins, DDSP evidence, graph/diff, embedded ProjectData extraction, canonical schema provenance, six-status taxonomy, negative fixtures, corpus counts only, CLI/API surfaces, docs consistency | `tests/unit/test_d365_*.py`, `tests/unit/test_reference_*.py`, `tests/integration/test_d365_api.py`, `tests/integration/test_reference_api.py` |
 
 Counts are deliberately not frozen here: the suite is growing. Use
 `pytest --collect-only -q` for the current inventory.

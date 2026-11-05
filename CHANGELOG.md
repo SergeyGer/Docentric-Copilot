@@ -8,6 +8,44 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+### Added
+- v0.10 P0 D365 embedded schema adapter (`d365_schema.py`): read-only extraction of
+  `customXml/ProjectData` `DataSources`, embedded XSD (`Schema/XsdList/MainXsd`), `PreviewData`
+  sample instances and `xse:label`/`xse:refCode` field metadata. Every fact keeps its OOXML part,
+  XPath-like location and stable source id; documents are classified as
+  `schema_source = projectdata | ddsp | unavailable`.
+- Canonical schema model with fields, collections, scopes, XSD types, type families, namespaces and
+  raw/canonical paths; a caller-supplied DDSP is a fallback only when the embedded schema is not
+  usable.
+- Canonical binding resolver (`binding_resolver.py`) with the exact six-status taxonomy
+  `resolved | ambiguous | unknown_path | type_mismatch | schema_unavailable |
+  unsupported_expression`. Every `resolved` binding carries source, canonical path, collection
+  scope, schema type and `part#xpath` evidence; duplicate sources/paths and unsupported expressions
+  are diagnostics and never a success.
+- CLI `docentric-copilot reference d365 PATH --json OUT [--ddsp PATH]` and
+  `POST /api/v1/reference/d365` (multipart or a path confined to the configured corpus roots), plus
+  the `reference_d365_bindings` capability flag.
+- Synthetic negative fixtures for duplicate sources, wrong context path, missing field, type
+  mismatch, corrupted ProjectData, ambiguous source and unsupported expression; each asserts its
+  exact status and that no negative fixture becomes `resolved`.
+- `scripts/assess_d365_corpus.py` for a bounded local corpus assessment; it writes counts, hashes and
+  statuses only under the git-ignored `.tools/` directory.
+- ADR-0013 and the D365 section of `docs/REFERENCE_TEMPLATES.md`.
+
+### Changed
+- Documentation baseline consistency for v0.10: README and ROADMAP state the current release as
+  0.9.0 and describe the v0.10 P0 work as partial; SRS/PRD/ARCHITECTURE/THREAT_MODEL version headers
+  and OpenAPI examples were aligned. The package version is intentionally **not** bumped yet; the
+  release changelog entry will be written when PR-04/PR-05 are complete.
+
+### Notes
+- Docentric AX runtime compatibility remains `not_tested`. The adapter reads static schema evidence
+  only: it does not execute X++/.axpp, macros or expressions, and it makes no native-output claim.
+- Local corpus result (counts only): 11/11 D365 DOCX with `projectdata` schema evidence, 246
+  bindings — 233 resolved with evidence, 4 `unknown_path`, 8 `unsupported_expression`,
+  1 `type_mismatch`, 0 `ambiguous`, 0 `schema_unavailable`. The official archive itself remains
+  uncommitted under `.tools/reference-corpus/`.
+
 ## [0.9.0] - 2026-11-04
 
 ### Added

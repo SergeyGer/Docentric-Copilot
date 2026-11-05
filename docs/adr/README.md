@@ -17,6 +17,7 @@ ADRs are immutable once accepted; a changed decision is superseded, never rewrit
 | [ADR-0010](0010-reference-inspector.md) | A read-only reference inspector before any Docentric AX writer | Accepted |
 | [ADR-0011](0011-reference-graph.md) | A separate ReferenceGraph and read-only Reference IR | Accepted |
 | [ADR-0012](0012-reference-diff-and-evaluation.md) | Reference diff and reference-based evaluation | Accepted |
+| [ADR-0013](0013-d365-embedded-schema-and-binding-resolution.md) | D365 embedded schema and binding resolution | Accepted |
 
 New ADRs start from [TEMPLATE.md](TEMPLATE.md) and are reviewed in the pull request that needs
 the decision. `scripts/check_docs_links.py` verifies the structure and this index in CI.

@@ -13,7 +13,9 @@ Inspector** provides that evidence as a read-only report, a graph and a projecti
 
 It implements REF-00 inventory/deduplication, REF-01 real DDSP schema evidence, REF-02 metadata
 resolution, REF-03 ReferenceGraph/read-only Reference IR, REF-04 reference diff and REF-05
-reference-based evaluation.
+reference-based evaluation. The v0.10 P0 increment adds a D365 embedded-schema adapter and a
+canonical binding resolver, so a document with an embedded `ProjectData` schema does not need a
+standalone DDSP.
 
 ## What you can inspect
 
@@ -25,6 +27,7 @@ reference-based evaluation.
 | Directory | The same manifest for every file, with duplicate groups |
 | `.ddsp` | Real DDSP root/version/locales/labels, per-section fields, types, collections and unsupported constructs |
 | Optional `.ddsp` with a DOCX | ValueBinding paths validated against the DDSP schema |
+| D365 DOCX / single-template AXPP | Embedded `ProjectData` schema, field metadata, canonical binding statuses |
 
 The report distinguishes:
 
@@ -46,6 +49,51 @@ deep documents are rejected by the shared safety layer.
 
 `reference inspect ... --schema-report` prints the evidence. The same statistics are embedded in
 `documents[*].schema_evidence` in the JSON report.
+
+## D365 embedded schema (v0.10 P0)
+
+D365 templates embed the schema in `customXml/itemN.xml` under Docentric `ProjectData`:
+`DataSources/DataSource/Schema/XsdList/MainXsd` plus `PreviewData`. The adapter reads those parts
+read-only and records the OOXML part, an XPath-like location and a source id for every fact. It also
+reads the `Elements/Element/ValueBinding` facts so the canonical resolver can check source, path,
+type and collection scope.
+
+The document is classified as `schema_source = projectdata | ddsp | unavailable`. A supplied DDSP
+is only a fallback; absence of a DDSP is not itself a failure.
+
+### Binding statuses
+
+| Status | Meaning |
+| --- | --- |
+| `resolved` | Exact source, path, scope and type verified; `source_id` + `part#xpath` evidence stored |
+| `ambiguous` | Duplicate source/path or more than one admissible binding |
+| `unknown_path` | Schema present, but path/source/scope absent or invalid in this context |
+| `type_mismatch` | Path found, but declared result type or element role conflicts with the schema |
+| `schema_unavailable` | Neither embedded schema nor a usable DDSP is present |
+| `unsupported_expression` | Functions, comparisons, predicates, aggregates or unverified namespace prefixes |
+
+Duplicates and conflicts are diagnostics, never `resolved`. Relative `Source="."` needs an enclosing
+`List` with a resolvable collection binding. Every `resolved` result carries reproducible evidence,
+so no success depends on similarity, a fuzzy match or an LLM call.
+
+```bash
+docentric-copilot reference d365 template.docx --json .tools/d365.json
+docentric-copilot reference d365 template.docx --ddsp fallback.ddsp --json .tools/d365.json
+```
+
+```text
+POST /api/v1/reference/d365
+```
+
+The endpoint accepts a multipart `file` (plus optional `ddsp`) or a confined `?path=`. A package
+with several DOCX templates is rejected instead of partially analysed.
+
+On the maintainer's local 11-document D365 corpus (counts only): 11/11 had embedded `projectdata`
+schema evidence, 246 bindings were found, 233 resolved with full evidence, 4 were `unknown_path`,
+8 `unsupported_expression`, 1 `type_mismatch`, 0 `ambiguous`, 0 `schema_unavailable`. Runtime
+compatibility stays `not_tested`. See
+[Reference Templates — D365](../REFERENCE_TEMPLATES.md#d365-embedded-schema-and-binding-resolution-v010-p0)
+and [ADR-0013](../adr/0013-d365-embedded-schema-and-binding-resolution.md).
 
 ## ReferenceGraph and projection (REF-03)
 
@@ -122,10 +170,12 @@ success, `3` invalid input, `6` missing input.
 ```
 POST /api/v1/reference/inspect
 POST /api/v1/reference/graph
+POST /api/v1/reference/d365
 POST /api/v1/reference/diff
 ```
 
 Upload a multipart `file` (with optional `ddsp`), or use `?path=` inside a configured corpus root.
+The D365 endpoint uses the same source rules.
 The endpoints never execute or write the template. Public HTTP inspection defaults to
 `max_depth=0`, so nested archives are recorded but not expanded.
 
@@ -153,11 +203,13 @@ business-shaped text and metadata; keep them private and do not commit them.
   through Python, the CLI and the HTTP API. Licensed runtime testing (REF-07) remains out of scope.
 - The REF-05 synthetic set is small and uses the deterministic mock; it is a pattern-regression
   fixture, not a model-quality claim.
-- D365 documents without a standalone DDSP have joined controls and metadata but no schema-path
-  validation; that remaining REF-01 adapter is future work.
+- D365 documents without a standalone DDSP are checked by the separate D365 adapter; the
+  ReferenceGraph still needs a DDSP for `resolves_to` edges. Expressions, aggregates and relative
+  contexts without an enclosing `List` remain non-resolved and are listed explicitly.
 - Docentric AX runtime behaviour and native output are not tested. `target=docentric-ax` remains
   fail-closed with HTTP `409`, and compatibility is still `not_tested`.
 
 Full details: [Reference Template Intelligence](../REFERENCE_TEMPLATES.md) ·
+[ADR-0013](../adr/0013-d365-embedded-schema-and-binding-resolution.md) ·
 [ADR-0012](../adr/0012-reference-diff-and-evaluation.md) ·
 [ADR-0011](../adr/0011-reference-graph.md) · [ADR-0010](../adr/0010-reference-inspector.md).

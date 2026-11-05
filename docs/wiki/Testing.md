@@ -1,6 +1,6 @@
 # Testing
 
-> 191 automated tests, 86% branch coverage on the deterministic core, and a golden-file corpus that
+> 541 automated tests, 86% branch coverage on the deterministic core, and a golden-file corpus that
 > compares structure rather than bytes.
 
 ## Running the suite

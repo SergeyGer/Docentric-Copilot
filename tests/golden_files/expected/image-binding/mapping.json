@@ -62,6 +62,23 @@
       "selected_field_path": null,
       "status": "missing",
       "supporting_field_paths": []
+    },
+    {
+      "candidate_field_paths": [],
+      "concept": null,
+      "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "the path is schema-valid but was not supported by the retrieved candidate evidence for this brief",
+      "placement": null,
+      "requirement": "Unverified binding: MainData.Company.Name",
+      "requirement_id": "req_review_c6debc2c",
+      "schema_evidence": "MainData.Company.Name:string",
+      "selected_field_path": "MainData.Company.Name",
+      "status": "needs_review",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "image_binding"

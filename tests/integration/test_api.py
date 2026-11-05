@@ -126,7 +126,12 @@ def test_full_flow(client: TestClient, source: dict) -> None:
     pending = [item for item in plan_body["mapping"]["mappings"] if item["status"] != "confirmed"]
     version = plan_body["version"]
     for item in pending:
-        target = item.get("selected_field_path") or item["candidate_field_paths"][0]
+        targets = item.get("candidate_field_paths") or []
+        target = item.get("selected_field_path") or (targets[0] if targets else None)
+        if target is None:
+            # An abstention row (no schema evidence) has no path to confirm; it
+            # is a review signal, not a binding the test can accept.
+            continue
         confirmed = client.post(
             f"/api/v1/templates/{plan_body['template_id']}/versions/{version}/mappings/{item['requirement_id']}/confirm",
             json={"selected_field_path": target, "note": "Confirmed in the integration test."},
@@ -195,7 +200,10 @@ def test_compile_rejects_ax_target(client: TestClient, source: dict) -> None:
         json={"source_id": source_id, "prompt": PROMPT, "provider": "mock"},
     ).json()
     for item in [m for m in plan["mapping"]["mappings"] if m["status"] != "confirmed"]:
-        target = item.get("selected_field_path") or item["candidate_field_paths"][0]
+        targets = item.get("candidate_field_paths") or []
+        target = item.get("selected_field_path") or (targets[0] if targets else None)
+        if target is None:
+            continue
         plan = client.post(
             f"/api/v1/templates/{plan['template_id']}/versions/{plan['version']}/mappings/{item['requirement_id']}/confirm",
             json={"selected_field_path": target},

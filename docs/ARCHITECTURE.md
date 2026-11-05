@@ -10,7 +10,10 @@
 
 1. **One deterministic core, several interfaces.** The HTTP API and the CLI call the same
    `TemplateService`; neither reimplements pipeline logic.
-2. **A narrow AI boundary.** Only `docentric_copilot.planner` talks to a model. Everything downstream
+2. **A narrow AI boundary.** Only `docentric_copilot.planner` talks to a model. Since v0.11 the
+   planner first decomposes the brief and retrieves a bounded, evidence-backed candidate list from
+   the schema; the model chooses among those candidates, and every emitted binding is re-validated
+   deterministically before the IR is accepted. Everything downstream
    of the produced IR is deterministic, offline and testable.
 3. **A typed contract instead of a document diff.** Planners, compilers and validators exchange the
    Template IR, never raw OOXML or XPath.
@@ -72,7 +75,7 @@ compiler may import `template_ir`. `core` imports nothing from the other layers.
 | `packages/template-validator` | `docentric_copilot.template_validator` | V1–V5 engine, report models, HTML/JSON rendering | core, ddsp_parser, schema_resolver, template_ir, docx_compiler (package inspection only) |
 | `packages/docx-compiler` | `docentric_copilot.docx_compiler` | Deterministic generic DOCX compiler, package normalisation/inspection, expression evaluation, formatting, compiler registry | core, ddsp_parser, schema_resolver, template_ir, python-docx |
 | `packages/llm-gateway` | `docentric_copilot.llm` | Provider adapters, structured output, retries, pricing, telemetry | core, httpx |
-| `packages/planner` | `docentric_copilot.planner` | Prompt construction, provider invocation, deterministic repair, mapping report, revisions, heuristic baseline | core, ddsp_parser, schema_resolver, template_ir, llm |
+| `packages/planner` | `docentric_copilot.planner` | Requirement decomposition and evidence-backed candidate filtering, prompt construction, provider invocation, deterministic repair, post-generation binding review, mapping report, revisions, heuristic baseline | core, ddsp_parser, schema_resolver, template_ir, llm |
 | `packages/renderer` | `docentric_copilot.preview` | Independent HTML preview | core, ddsp_parser, schema_resolver, template_ir, docx_compiler (context/expression/format) |
 | `packages/evaluation` | `docentric_copilot.evaluation` | Planner quality metrics (`evaluate`, `MetricsReport`); the runner lives in `benchmarks/run_evaluation.py` | core (stdlib/pydantic) |
 | `packages/reference-inspector` | `docentric_copilot.reference` | Read-only REF-00 inventory/dedup, OOXML content-control scan, REF-02 ProjectData resolver, stable report, REF-03 ReferenceGraph/projection and REF-04 diff; no execution and no AX writer | core, lxml, pydantic |

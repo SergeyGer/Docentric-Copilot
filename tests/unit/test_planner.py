@@ -115,10 +115,32 @@ class TestSanitizer:
         document = build_document(schema, quotation_request)
         body = [Paragraph(runs=[FieldBinding(path="Nope.Nothing")])]
         tampered = document.model_copy(
-            update={"sections": [document.sections[0].model_copy(update={"body": body})]}
+            update={
+                "sections": [
+                    document.sections[0].model_copy(
+                        update={"body": body, "header": [], "footer": []}
+                    )
+                ]
+            }
         )
         with pytest.raises(InvalidInputError):
             sanitize_document(tampered, schema)
+
+    def test_header_only_section_is_not_dropped(self, schema, quotation_request) -> None:
+        document = build_document(schema, quotation_request)
+        header_only = document.sections[0].model_copy(
+            update={
+                "body": [Paragraph(runs=[FieldBinding(path="Nope.Nothing")])],
+                "header": [ImageBinding(path="GeneralData.Company.CompanyLogo")],
+                "footer": [],
+            }
+        )
+        sanitized, removed = sanitize_document(
+            document.model_copy(update={"sections": [header_only]}), schema
+        )
+        assert [item.path for item in removed] == ["Nope.Nothing"]
+        assert sanitized.sections[0].body == []
+        assert sanitized.sections[0].header
 
     def test_repeat_with_unknown_collection_is_dropped(self, schema, quotation_request) -> None:
         document = build_document(schema, quotation_request)

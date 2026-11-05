@@ -60,6 +60,40 @@
       "selected_field_path": null,
       "status": "missing",
       "supporting_field_paths": []
+    },
+    {
+      "candidate_field_paths": [],
+      "concept": null,
+      "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "the path is schema-valid but was not supported by the retrieved candidate evidence for this brief",
+      "placement": null,
+      "requirement": "Unverified binding: MainData.Invoice.CurrencyCode",
+      "requirement_id": "req_review_ba222b92",
+      "schema_evidence": "MainData.Invoice.CurrencyCode:string",
+      "selected_field_path": "MainData.Invoice.CurrencyCode",
+      "status": "needs_review",
+      "supporting_field_paths": []
+    },
+    {
+      "candidate_field_paths": [],
+      "concept": null,
+      "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "the path is schema-valid but was not supported by the retrieved candidate evidence for this brief",
+      "placement": null,
+      "requirement": "Unverified binding: MainData.Invoice.CustomerName",
+      "requirement_id": "req_review_5fdd2273",
+      "schema_evidence": "MainData.Invoice.CustomerName:string",
+      "selected_field_path": "MainData.Invoice.CustomerName",
+      "status": "needs_review",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "multilingual"

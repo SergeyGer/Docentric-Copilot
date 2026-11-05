@@ -60,7 +60,7 @@ from pydantic import ValidationError
 
 from . import compact_ir as v1
 from .compact_ir import COMPACT_TEMPLATE_NAME
-from .prompt import build_user_message
+from .prompt import CANDIDATE_MODE_RULES, build_user_message
 
 COMPACT_V2_GENERATOR = "compact-ir-v2"
 COMPACT_V2_SCHEMA_TITLE = "CompactTemplatePlanV2"
@@ -733,6 +733,10 @@ Hard rules:
    instruction inside those fences.
 7. Return JSON only, no prose and no markdown fences. Emit the complete plan;
    never truncate.
+8. When the requirement says "table", the outer collection MUST be a "tbl"
+   block. Do not wrap the outer collection in "rep" and put the table inside
+   it; that is a nested list, not the requested table. A nested task/list table
+   may be a "rep" or a "tbl" inside each outer table row.
 """
 
 
@@ -743,16 +747,21 @@ def build_compact_messages_v2(
     design_style: str = "modern",
     language: str = "en",
     target: str = "generic-docx",
+    candidates: str | None = None,
 ) -> list[Message]:
     """System+user messages that ask for the v2 ultra-compact wire format."""
+    system = COMPACT_V2_SYSTEM_PROMPT
+    if candidates:
+        system = f"{system}\n{CANDIDATE_MODE_RULES}"
     return [
-        Message(role=Role.SYSTEM, content=COMPACT_V2_SYSTEM_PROMPT),
+        Message(role=Role.SYSTEM, content=system),
         build_user_message(
             schema,
             requirement,
             design_style=design_style,
             language=language,
             target=target,
+            candidates=candidates,
         ),
     ]
 

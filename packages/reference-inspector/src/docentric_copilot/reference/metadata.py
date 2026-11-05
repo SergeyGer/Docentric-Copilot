@@ -71,6 +71,10 @@ class SchemaSource(str, Enum):
     """Where the optional schema came from."""
 
     DDSP = "ddsp"
+    #: D365 embedded ``ProjectData`` schema.
+    PROJECT_DATA = "d365_project_data"
+    #: Both providers were used across the inspected documents.
+    MIXED = "mixed"
     NONE = "none"
 
 

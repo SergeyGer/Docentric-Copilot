@@ -34,19 +34,26 @@ from docentric_copilot.reference import (
     DdspSchemaEvidence,
     ReferenceDiff,
     ReferenceGraph,
+    ReferenceIRImport,
     ReferenceLimits,
     ReferenceReport,
+    VisualDiffReport,
     analyze_d365_path,
     binding_report_json,
     build_reference_diff,
     build_reference_graph,
+    build_visual_diff,
     diff_json,
     graph_json,
+    import_ir_json,
+    import_summary_lines,
     inspect_reference,
     inspect_reference_bundle,
     project_graph,
+    project_to_template_ir,
     projection_json,
     report_json,
+    visual_diff_json,
 )
 from docentric_copilot.template_ir import (
     CompileTarget,
@@ -410,6 +417,96 @@ def _diff_summary(diff: ReferenceDiff) -> str:
     )
 
 
+@reference_app.command("visual-diff")
+def reference_visual_diff(
+    left: Annotated[
+        str,
+        typer.Argument(help="Left DOCX, ZIP or AXPP reference to render"),
+    ],
+    right: Annotated[
+        str,
+        typer.Argument(help="Right DOCX, ZIP or AXPP reference to render"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the visual diff JSON to this path; '-' for stdout",
+        ),
+    ] = None,
+    output_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--output-dir",
+            help="Directory for report.json, report.html, PDFs and page images",
+        ),
+    ] = None,
+    dpi: Annotated[
+        int,
+        typer.Option("--dpi", min=36, max=600, help="Rasterisation DPI (default 150)"),
+    ] = 150,
+    tolerance: Annotated[
+        float,
+        typer.Option(
+            "--tolerance",
+            min=0.0,
+            max=1.0,
+            help="Page difference tolerance (default 0.005)",
+        ),
+    ] = 0.005,
+) -> None:
+    """Compare two references by LibreOffice-rendered pages (v0.11 P1).
+
+    This is LibreOffice rendering, not Word fidelity. A visual difference is not
+    a defect verdict, and an unavailable renderer is reported as
+    ``renderer_unavailable`` — never as a pass or a fail.
+    """
+    as_json = json_output is not None and str(json_output) == "-"
+    if output_dir is None:
+        if json_output is not None and str(json_output) != "-":
+            output_dir = json_output.parent / "visual-diff"
+        else:
+            output_dir = Path("visual-diff")
+    try:
+        report: VisualDiffReport = build_visual_diff(
+            left,
+            right,
+            output_dir=output_dir,
+            dpi=dpi,
+            tolerance=tolerance,
+        )
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    payload = visual_diff_json(report)
+    if json_output is None:
+        typer.echo(_visual_diff_summary(report))
+    elif str(json_output) == "-":
+        typer.echo(payload, nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(payload, encoding="utf-8")
+        typer.echo(_visual_diff_summary(report))
+        typer.echo(f"Visual diff report written to {json_output}")
+
+
+def _visual_diff_summary(report: VisualDiffReport) -> str:
+    lines = [
+        f"Visual diff: {report.visual_status.value}",
+        (
+            f"Pages: left {report.left.page_count}, right {report.right.page_count}; "
+            f"compared {report.pages_compared}; changed {report.summary.changed_pages}"
+        ),
+        (f"Renderer: {report.renderer_label} ({report.renderer_version or 'version unavailable'})"),
+        "Structural/semantic diff: not compared (use reference diff)",
+        f"Runtime compatibility: {report.runtime_compatibility}",
+    ]
+    if report.reason:
+        lines.append(f"Reason: {report.reason}")
+    lines.append(f"Artifacts: {report.artifacts.get('report_json', 'report.json')}")
+    return "\n".join(lines)
+
+
 def _d365_summary(report: D365BindingReport) -> str:
     counts = report.counts
     summary = report.schema_summary
@@ -512,7 +609,7 @@ def reference_graph(
     try:
         limits = ReferenceLimits.from_limits(get_settings().limits, max_depth=max_depth)
         bundle = inspect_reference_bundle(path, limits=limits, max_depth=max_depth, ddsp_path=ddsp)
-        graph = build_reference_graph(bundle.report, bundle.schemas)
+        graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
     except CopilotError as exc:
         _fail(exc, as_json=as_json)
         return
@@ -540,6 +637,58 @@ def reference_graph(
                 f"({projection.summary.elements} elements, "
                 f"not compilable)"
             )
+
+
+@reference_app.command("import-ir")
+def reference_import_ir(
+    path: Annotated[
+        str,
+        typer.Argument(help="DOCX, ZIP, AXPP or directory with reference constructs"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the safe Generic Template IR import JSON to this path; '-' for stdout",
+        ),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option("--ddsp", help="Optional DDSP schema applied to the reference"),
+    ] = None,
+    allow_unsupported: Annotated[
+        bool,
+        typer.Option(
+            "--allow-unsupported",
+            help=(
+                "Best-effort mode: keep the supported subset and list every unsupported or "
+                "unresolved construct in skipped[]. Never guesses."
+            ),
+        ),
+    ] = False,
+) -> None:
+    """Project resolved reference constructs into Generic Template IR (v0.11 P1)."""
+    as_json = json_output is not None and str(json_output) == "-"
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits)
+        bundle = inspect_reference_bundle(path, limits=limits, ddsp_path=ddsp)
+        graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
+        result: ReferenceIRImport = project_to_template_ir(
+            graph, allow_unsupported=allow_unsupported
+        )
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    lines = import_summary_lines(result)
+    if json_output is None:
+        typer.echo("\n".join(lines))
+    elif str(json_output) == "-":
+        typer.echo(import_ir_json(result), nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(import_ir_json(result), encoding="utf-8")
+        typer.echo("\n".join(lines))
+        typer.echo(f"Generic IR import written to {json_output}")
 
 
 def _graph_summary(graph: ReferenceGraph) -> str:

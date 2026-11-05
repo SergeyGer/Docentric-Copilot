@@ -26,9 +26,17 @@ from enum import Enum
 from typing import Final, Literal
 
 from docentric_copilot.ddsp_parser import NormalizedSchema
+from docentric_copilot.errors import CopilotError
 from docentric_copilot.serialization import digest
 from pydantic import BaseModel, ConfigDict, Field
 
+from .binding_resolver import (
+    BindingResult,
+    BindingStatus,
+    D365BindingReport,
+    build_binding_report,
+)
+from .d365_schema import SchemaSourceKind, extract_d365_schema
 from .ddsp_real import SchemaArtifact, schema_index_from_schema
 from .docx_controls import ElementKind
 from .inventory import PlatformHint, SourceType
@@ -48,10 +56,13 @@ from .report import (
     ReferenceReport,
     Severity,
 )
+from .safety import ReferenceLimits
 
 GRAPH_VERSION: Final[Literal["1.0"]] = "1.0"
 RUNTIME_COMPATIBILITY: Final[Literal["not_tested"]] = "not_tested"
 READ_ONLY_NOTE: Final = "read-only reference graph; not Template IR and not compilable"
+D365_SCHEMA_SOURCE: Final = "d365_project_data"
+DDSP_SCHEMA_SOURCE: Final = "ddsp"
 
 _NODE_RANK: Final[dict[str, int]] = {
     "control": 0,
@@ -117,6 +128,13 @@ class GraphNode(BaseModel):
     collection: bool = False
     origin: str | None = Field(default=None, max_length=80)
     reason: str | None = Field(default=None, max_length=240)
+    #: Evidence provider that produced this node: ``ddsp`` or
+    #: ``d365_project_data``. Controls, elements and sources leave it unset.
+    schema_source: str | None = Field(default=None, max_length=40)
+    #: Canonical schema source id (D365 ``DataSource`` or DDSP section id).
+    source_id: str | None = Field(default=None, max_length=300)
+    #: Exact provider location, e.g. ``customXml/item1.xml#.../Root/@Number``.
+    evidence_location: str | None = Field(default=None, max_length=2_000)
     evidence: dict[str, str] = Field(default_factory=dict)
 
 
@@ -130,6 +148,10 @@ class GraphEdge(BaseModel):
     source: str = Field(min_length=1, max_length=600)
     target: str = Field(min_length=1, max_length=600)
     status: GraphStatus
+    #: Exact binding resolution status when the edge comes from a schema
+    #: provider: ``resolved``, ``ambiguous``, ``unknown_path``,
+    #: ``type_mismatch``, ``schema_unavailable`` or ``unsupported_expression``.
+    resolution_status: str | None = Field(default=None, max_length=40)
     reason: str | None = Field(default=None, max_length=240)
     evidence: dict[str, str] = Field(default_factory=dict)
 
@@ -194,6 +216,16 @@ class GraphSummary(BaseModel):
     sources_total: int = Field(ge=0)
     schema_fields_total: int = Field(ge=0)
     schema_fields_resolved: int = Field(ge=0)
+    #: ``resolves_to`` edges and how many of them are resolved with a provider
+    #: evidence location. ``evidence_coverage_ratio`` = with evidence / total.
+    resolves_to_edges: int = Field(default=0, ge=0)
+    resolves_to_resolved: int = Field(default=0, ge=0)
+    resolves_to_with_evidence: int = Field(default=0, ge=0)
+    evidence_coverage_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
+    #: Non-resolved ``resolves_to`` edges grouped by exact provider status.
+    unresolved_by_status: dict[str, int] = Field(default_factory=dict)
+    #: Unresolved reasons grouped by reason text.
+    unresolved_reasons: dict[str, int] = Field(default_factory=dict)
     lists_detected: int = Field(ge=0)
     conditions_detected: int = Field(ge=0)
     unresolved_total: int = Field(ge=0)
@@ -215,6 +247,9 @@ class ReferenceGraph(BaseModel):
     source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     platform: PlatformHint = PlatformHint.UNKNOWN
     schema_source: SchemaSource = SchemaSource.NONE
+    #: Unified schema evidence providers actually used: ``ddsp`` and/or
+    #: ``d365_project_data``.
+    schema_provider_types: list[str] = Field(default_factory=list, max_length=10)
     schema_ids: list[str] = Field(default_factory=list, max_length=50)
     schema_sections: list[str] = Field(default_factory=list, max_length=50)
     schema_digests: list[str] = Field(default_factory=list, max_length=50)
@@ -337,12 +372,20 @@ class _DocContext:
         index: SchemaIndex | None,
         schema_id: str | None,
         schema_digest: str | None,
+        d365: D365BindingReport | None = None,
     ) -> None:
         self.document = document
         self.schema = schema
         self.index = index
         self.schema_id = schema_id
         self.schema_digest = schema_digest
+        self.d365 = d365
+        self.d365_by_element: dict[tuple[str, str], list[BindingResult]] = {}
+        if d365 is not None:
+            for result in d365.binding_results:
+                self.d365_by_element.setdefault(
+                    (result.element_part, result.element_id), []
+                ).append(result)
         self.nodes: dict[str, GraphNode] = {}
         self.edges: dict[str, GraphEdge] = {}
         self.unresolved: dict[str, GraphUnresolved] = {}
@@ -365,6 +408,7 @@ class _DocContext:
         status: GraphStatus,
         *,
         reason: str | None = None,
+        resolution_status: str | None = None,
         evidence: Mapping[str, str | int | bool | None] | None = None,
     ) -> None:
         edge_id = f"{edge_type.value}:{source}->{target}"
@@ -376,6 +420,7 @@ class _DocContext:
                 source=source,
                 target=target,
                 status=status,
+                resolution_status=resolution_status,
                 reason=_bounded(reason, 240),
                 evidence=_evidence(evidence or {}),
             ),
@@ -575,7 +620,10 @@ class _DocContext:
             self.records.setdefault(element.element_id_unsigned, []).append(node)
             self.record_evidence[node.id] = element
             self._build_source(node, element, binding, binding_notes)
-            self._build_schema_target(node, element, binding)
+            if self.d365 is not None:
+                self._build_d365_schema_targets(node, element)
+            else:
+                self._build_schema_target(node, element, binding)
 
     def _effective(self, element: ElementEvidence) -> tuple[SourceBinding | None, list[str]]:
         if element.effective_binding is not None:
@@ -667,8 +715,17 @@ class _DocContext:
                 collection=collection,
                 origin="ddsp",
                 reason=None if exists else "schema_node_missing",
+                schema_source=DDSP_SCHEMA_SOURCE,
+                source_id=self.schema_id,
+                evidence_location=f"{self.schema_id}#{match.normalized_path}",
                 evidence=_evidence(
-                    {"schema_id": self.schema_id, "schema_path": match.normalized_path}
+                    {
+                        "schema_id": self.schema_id,
+                        "schema_path": match.normalized_path,
+                        "schema_source": DDSP_SCHEMA_SOURCE,
+                        "source_id": self.schema_id,
+                        "evidence": f"{self.schema_id}#{match.normalized_path}",
+                    }
                 ),
             )
             self.add_node(schema_node)
@@ -681,10 +738,16 @@ class _DocContext:
                 schema_node.id,
                 status,
                 reason=None if exists else "schema_node_missing",
+                resolution_status=(
+                    BindingStatus.RESOLVED.value if exists else BindingStatus.UNKNOWN_PATH.value
+                ),
                 evidence={
                     "source": source,
                     "raw_path": path,
                     "normalized_path": match.normalized_path,
+                    "schema_source": DDSP_SCHEMA_SOURCE,
+                    "source_id": self.schema_id,
+                    "evidence": f"{self.schema_id}#{match.normalized_path}",
                 },
             )
             if node.status is GraphStatus.RESOLVED and status is GraphStatus.UNKNOWN:
@@ -746,6 +809,192 @@ class _DocContext:
             )
         )
 
+    # --------------------------------------------------- D365 schema evidence
+    def _build_d365_schema_targets(self, node: GraphNode, element: ElementEvidence) -> None:
+        """Attach one ProjectData element to its D365 canonical schema evidence.
+
+        The D365 resolver is the schema evidence provider for this document.
+        Every binding request produces exactly one ``resolves_to`` edge whose
+        ``resolution_status`` is the resolver status; only a ``resolved`` result
+        is a resolved edge, so an ambiguous, mismatched or unavailable binding
+        can never look like confirmation.
+        """
+        results = self.d365_by_element.get(
+            (element.project_data_part, element.element_id_unsigned), []
+        )
+        if not results:
+            if (
+                element.effective_binding is not None
+                or element.source_binding is not None
+                or element.properties.get("DataXPath")
+            ):
+                self._mark_unknown(node, "d365_binding_missing")
+                self.diagnostics.append(
+                    ReferenceDiagnostic(
+                        code="graph_d365_binding_missing",
+                        severity=Severity.WARNING,
+                        message=(
+                            f"{self.document.filename}: element {element.element_id_unsigned} "
+                            "has binding facts but no D365 binding result"
+                        ),
+                        document_sha256=self.document.sha256,
+                        part=element.project_data_part,
+                        details=_evidence({"element_type": element.element_type}),
+                    )
+                )
+            return
+        for result in results:
+            self._build_d365_target(node, result)
+
+    def _build_d365_target(self, node: GraphNode, result: BindingResult) -> None:
+        status = result.status
+        if status is BindingStatus.RESOLVED:
+            target_status = GraphStatus.RESOLVED
+        elif status is BindingStatus.AMBIGUOUS:
+            target_status = GraphStatus.AMBIGUOUS
+        else:
+            target_status = GraphStatus.UNKNOWN
+
+        canonical = result.canonical_path
+        if canonical:
+            node_id = self._d365_schema_node_id(canonical)
+            existing = self.nodes.get(node_id)
+            if existing is None:
+                field_status = (
+                    GraphStatus.RESOLVED
+                    if status in {BindingStatus.RESOLVED, BindingStatus.TYPE_MISMATCH}
+                    else GraphStatus.AMBIGUOUS
+                )
+                existing = GraphNode(
+                    id=node_id,
+                    kind=NodeKind.SCHEMA_FIELD,
+                    label=_bounded(canonical.rsplit("/", 1)[-1].lstrip("@"), 200) or canonical,
+                    status=field_status,
+                    schema_path=canonical,
+                    normalized_path=canonical,
+                    data_type=result.schema_type,
+                    collection=bool(
+                        result.collection_scope and result.collection_scope == canonical
+                    ),
+                    origin=D365_SCHEMA_SOURCE,
+                    schema_source=D365_SCHEMA_SOURCE,
+                    source_id=result.source_id,
+                    evidence_location=result.evidence,
+                    evidence=_evidence(
+                        {
+                            "schema_source": D365_SCHEMA_SOURCE,
+                            "source_id": result.source_id,
+                            "evidence": result.evidence,
+                            "canonical_path": canonical,
+                            "schema_type": result.schema_type,
+                            "platform": "D365FO",
+                        }
+                    ),
+                )
+                self.add_node(existing)
+            schema_node = existing
+        else:
+            raw = result.raw_path or result.raw_source or status.value
+            node_id = (
+                f"schema:d365:{self.document.sha256[:16]}:unresolved:"
+                f"{hashlib.sha256((raw + '|' + status.value).encode()).hexdigest()[:12]}"
+            )
+            existing = self.nodes.get(node_id)
+            if existing is None:
+                existing = GraphNode(
+                    id=node_id,
+                    kind=NodeKind.SCHEMA_FIELD,
+                    label=_bounded(raw, 200) or status.value,
+                    status=target_status,
+                    binding_path=result.raw_path,
+                    origin=f"d365_{status.value}",
+                    reason=status.value,
+                    schema_source=D365_SCHEMA_SOURCE,
+                    source_id=result.source_id,
+                    evidence_location=result.evidence,
+                    evidence=_evidence(
+                        {
+                            "schema_source": D365_SCHEMA_SOURCE,
+                            "source_id": result.source_id,
+                            "evidence": result.evidence,
+                            "raw_path": result.raw_path,
+                            "raw_source": result.raw_source,
+                            "resolution_status": status.value,
+                        }
+                    ),
+                )
+                self.add_node(existing)
+            schema_node = existing
+
+        codes = [code for code in result.diagnostic_codes if code != status.value]
+        reason = status.value + (":" + ",".join(codes) if codes else "")
+        self.add_edge(
+            EdgeType.RESOLVES_TO,
+            node.id,
+            schema_node.id,
+            target_status,
+            reason=reason if status is not BindingStatus.RESOLVED else None,
+            resolution_status=status.value,
+            evidence={
+                "schema_source": D365_SCHEMA_SOURCE,
+                "platform": "D365FO",
+                "binding_kind": result.binding_kind.value,
+                "raw_source": result.raw_source,
+                "raw_path": result.raw_path,
+                "canonical_path": result.canonical_path,
+                "source_id": result.source_id,
+                "evidence": result.evidence,
+                "schema_type": result.schema_type,
+                "result_data_type": result.result_data_type,
+                "collection_scope": result.collection_scope,
+                "diagnostic_codes": ",".join(codes),
+            },
+        )
+        if status is BindingStatus.RESOLVED:
+            self._mark_resolved(node)
+        elif status is BindingStatus.AMBIGUOUS:
+            self._replace_status(node.id, GraphStatus.AMBIGUOUS)
+            self.unresolved_node(node, reason)
+            self._d365_diagnostic(node, result, reason, Severity.WARNING)
+        else:
+            self._mark_unknown(node, reason)
+            self._d365_diagnostic(node, result, reason, Severity.WARNING)
+
+    def _d365_diagnostic(
+        self,
+        node: GraphNode,
+        result: BindingResult,
+        reason: str,
+        severity: Severity,
+    ) -> None:
+        self.diagnostics.append(
+            ReferenceDiagnostic(
+                code=f"graph_d365_{result.status.value}",
+                severity=severity,
+                message=(
+                    f"{self.document.filename}: D365 binding of element {node.element_id} "
+                    f"({result.element_type}) is {result.status.value}"
+                ),
+                document_sha256=self.document.sha256,
+                part=node.part,
+                details=_evidence(
+                    {
+                        "raw_source": result.raw_source,
+                        "raw_path": result.raw_path,
+                        "canonical_path": result.canonical_path,
+                        "source_id": result.source_id,
+                        "reasons": reason,
+                    }
+                ),
+            )
+        )
+
+    def _d365_schema_node_id(self, canonical_path: str) -> str:
+        suffix = canonical_path
+        if len(suffix) > 420:
+            suffix = "sha256:" + hashlib.sha256(canonical_path.encode()).hexdigest()
+        return f"schema:d365:{self.document.sha256[:16]}:{suffix}"
+
     def _schema_node_id(self, path: str) -> str:
         digest_value = self.schema_digest or "0" * 64
         return f"schema:{digest_value[:16]}:{path}"
@@ -778,19 +1027,33 @@ class _DocContext:
         self._replace_status(node.id, GraphStatus.UNKNOWN)
         self.unresolved_node(node, reason)
 
+    def _mark_resolved(self, node: GraphNode) -> None:
+        current = self.nodes.get(node.id)
+        if current is None:
+            return
+        if current.status is GraphStatus.RESOLVED and current.reason is None:
+            return
+        self._replace_node(
+            current.model_copy(update={"status": GraphStatus.RESOLVED, "reason": None})
+        )
+
     def _replace_status(self, node_id: str, status: GraphStatus) -> None:
         node = self.nodes.get(node_id)
         if node is None or node.status is status:
             return
-        updated = node.model_copy(update={"status": status, "reason": node.reason or status.value})
-        self.nodes[node_id] = updated
+        self._replace_node(
+            node.model_copy(update={"status": status, "reason": node.reason or status.value})
+        )
+
+    def _replace_node(self, updated: GraphNode) -> None:
+        self.nodes[updated.id] = updated
         for index, candidate in enumerate(self.control_nodes):
-            if candidate.id == node_id:
+            if candidate.id == updated.id:
                 self.control_nodes[index] = updated
                 break
         for records in self.records.values():
             for index, candidate in enumerate(records):
-                if candidate.id == node_id:
+                if candidate.id == updated.id:
                     records[index] = updated
                     break
 
@@ -1033,6 +1296,27 @@ def _summary(
         for node in nodes
         if node.kind is NodeKind.SCHEMA_FIELD and node.status is GraphStatus.RESOLVED
     )
+    node_by_id = {node.id: node for node in nodes}
+    resolves_to = [edge for edge in edges if edge.type is EdgeType.RESOLVES_TO]
+    resolves_to_resolved = sum(1 for edge in resolves_to if edge.status is GraphStatus.RESOLVED)
+    resolves_to_with_evidence = sum(
+        1
+        for edge in resolves_to
+        if edge.status is GraphStatus.RESOLVED
+        and (
+            edge.evidence.get("evidence")
+            or (node_by_id.get(edge.target) and node_by_id[edge.target].evidence_location)
+        )
+    )
+    unresolved_by_status: dict[str, int] = {}
+    unresolved_reasons: dict[str, int] = {}
+    for edge in resolves_to:
+        if edge.status is GraphStatus.RESOLVED:
+            continue
+        binding_status = edge.resolution_status or edge.status.value
+        unresolved_by_status[binding_status] = unresolved_by_status.get(binding_status, 0) + 1
+        if edge.reason:
+            unresolved_reasons[edge.reason] = unresolved_reasons.get(edge.reason, 0) + 1
     return GraphSummary(
         node_count=len(nodes),
         edge_count=total_edges,
@@ -1053,6 +1337,14 @@ def _summary(
         sources_total=by_node_kind[NodeKind.SOURCE.value],
         schema_fields_total=schema_fields,
         schema_fields_resolved=schema_fields_resolved,
+        resolves_to_edges=len(resolves_to),
+        resolves_to_resolved=resolves_to_resolved,
+        resolves_to_with_evidence=resolves_to_with_evidence,
+        evidence_coverage_ratio=(
+            round(resolves_to_with_evidence / len(resolves_to), 4) if resolves_to else 0.0
+        ),
+        unresolved_by_status=dict(sorted(unresolved_by_status.items())),
+        unresolved_reasons=dict(sorted(unresolved_reasons.items())),
         lists_detected=len(structures.lists),
         conditions_detected=len(structures.conditions),
         unresolved_total=unresolved_total,
@@ -1076,11 +1368,52 @@ def _sort_edges(edges: Iterable[GraphEdge]) -> list[GraphEdge]:
     return sorted(edges, key=lambda edge: (edge.type.value, edge.source, edge.target, edge.id))
 
 
+def _select_d365_report(
+    document: DocumentEvidence,
+    explicit: Mapping[str, D365BindingReport] | D365BindingReport | None,
+    documents: Mapping[str, bytes] | None,
+) -> D365BindingReport | None:
+    """Return the D365 binding evidence that applies to one document.
+
+    Precedence: explicit mapping by document SHA-256, explicit single report with
+    a matching ``template_id``, then read-only extraction from the original DOCX
+    payload when the caller kept it. Extraction failures are never fatal: the
+    graph keeps its controls and adds an explicit diagnostic instead.
+    """
+    if isinstance(explicit, D365BindingReport):
+        return explicit if explicit.template_id == document.sha256 else None
+    if explicit is not None:
+        match = explicit.get(document.sha256)
+        if match is not None:
+            return match
+    if documents is None:
+        return None
+    payload = documents.get(document.sha256)
+    if payload is None:
+        return None
+    try:
+        extracted = extract_d365_schema(
+            payload,
+            filename=document.filename,
+            limits=ReferenceLimits(),
+        )
+    except CopilotError:
+        return None
+    if extracted.schema_source is SchemaSourceKind.UNAVAILABLE and not extracted.elements:
+        return None
+    built = build_binding_report(extracted)
+    if not built.binding_results:
+        return None
+    return built
+
+
 def build_reference_graph(
     report: ReferenceReport,
     schemas: Mapping[str, SchemaArtifact] | None = None,
     *,
     schema: NormalizedSchema | None = None,
+    d365: Mapping[str, D365BindingReport] | D365BindingReport | None = None,
+    documents: Mapping[str, bytes] | None = None,
 ) -> ReferenceGraph:
     """Build a deterministic, read-only ReferenceGraph from an inspection report.
 
@@ -1088,8 +1421,19 @@ def build_reference_graph(
     that document (see :func:`inspect_reference_bundle`). ``schema`` is an
     optional fallback normalized schema for callers that only have a report and
     one schema.
+
+    ``d365`` supplies D365 binding reports (keyed by document SHA-256, or one
+    report whose ``template_id`` matches) and takes precedence over DDSP
+    evidence for that document. ``documents`` optionally supplies the original
+    DOCX payloads (see ``ReferenceInspection.payloads``); when a document has no
+    DDSP artifact, the graph extracts its embedded D365 schema read-only so AX2012
+    DDSP and D365 embedded schema share one graph API. Extraction failure is a
+    diagnostic, never an exception.
     """
-    documents = sorted(
+    explicit_d365 = d365
+    payloads = documents or None
+    provider_types: set[str] = set()
+    document_list = sorted(
         report.documents,
         key=lambda item: (item.paths[0], item.sha256),
     )
@@ -1102,21 +1446,59 @@ def build_reference_graph(
     schema_sections: set[str] = set()
     schema_digests: set[str] = set()
     schema_source = SchemaSource.NONE
-    for document in documents:
+    for document in document_list:
         resolved_schema, index, schema_id, schema_digest = _resolve_schema_context(
             document, schemas, schema
         )
+        d365_report = None
+        if explicit_d365 is not None:
+            d365_report = _select_d365_report(document, explicit_d365, None)
+        elif resolved_schema is None:
+            d365_report = _select_d365_report(document, None, payloads)
         if resolved_schema is not None:
-            schema_source = SchemaSource.DDSP
+            provider_types.add(DDSP_SCHEMA_SOURCE)
             schema_ids.add(schema_id or resolved_schema.schema_id)
             schema_sections.update(resolved_schema.section_names)
             schema_digests.add(schema_digest or resolved_schema.digest())
+        if d365_report is not None:
+            provider_types.add(D365_SCHEMA_SOURCE)
+            schema_ids.add(f"d365:{document.sha256[:12]}")
+            schema_sections.update(
+                sorted(
+                    {
+                        result.raw_source
+                        for result in d365_report.binding_results
+                        if result.raw_source
+                    }
+                )
+            )
+            diagnostics.append(
+                ReferenceDiagnostic(
+                    code="graph_d365_schema_evidence",
+                    severity=Severity.INFO,
+                    message=(
+                        f"{document.filename}: D365 embedded schema evidence "
+                        f"({d365_report.counts.total} binding request(s), "
+                        f"{d365_report.counts.resolved} resolved)"
+                    ),
+                    document_sha256=document.sha256,
+                    details=_evidence(
+                        {
+                            "schema_source": d365_report.schema_source.value,
+                            "resolved": d365_report.counts.resolved,
+                            "total": d365_report.counts.total,
+                            "evidence_locations": len(d365_report.schema_evidence),
+                        }
+                    ),
+                )
+            )
         context = _DocContext(
             document,
             schema=resolved_schema,
             index=index,
             schema_id=schema_id,
             schema_digest=schema_digest,
+            d365=d365_report,
         )
         context.build_elements()
         context.build_controls()
@@ -1126,19 +1508,19 @@ def build_reference_graph(
         all_unresolved.extend(context.unresolved.values())
         all_structures.extend(context.structures)
         diagnostics.extend(context.diagnostics)
-        if resolved_schema is None:
+        if resolved_schema is None and d365_report is None:
             diagnostics.append(
                 ReferenceDiagnostic(
                     code="graph_schema_not_provided",
                     severity=Severity.INFO,
                     message=(
-                        f"{document.filename}: no DDSP schema was available; bindings are "
-                        "kept as reference data"
+                        f"{document.filename}: no DDSP or D365 embedded schema was available; "
+                        "bindings are kept as reference data"
                     ),
                     document_sha256=document.sha256,
                 )
             )
-    if not documents:
+    if not document_list:
         diagnostics.append(
             ReferenceDiagnostic(
                 code="graph_no_documents",
@@ -1180,12 +1562,21 @@ def build_reference_graph(
         unresolved_total=len(unresolved_all),
         controls_total=report.counts.controls_total,
     )
+    if {DDSP_SCHEMA_SOURCE, D365_SCHEMA_SOURCE} <= provider_types:
+        schema_source = SchemaSource.MIXED
+    elif D365_SCHEMA_SOURCE in provider_types:
+        schema_source = SchemaSource.PROJECT_DATA
+    elif DDSP_SCHEMA_SOURCE in provider_types:
+        schema_source = SchemaSource.DDSP
+    else:
+        schema_source = SchemaSource.NONE
     base = ReferenceGraph(
         source_type=report.source_type,
         source_name=report.source_name,
         source_sha256=report.source_sha256,
         platform=report.container.platform,
         schema_source=schema_source,
+        schema_provider_types=sorted(provider_types),
         schema_ids=sorted(schema_ids),
         schema_sections=sorted(schema_sections),
         schema_digests=sorted(schema_digests),

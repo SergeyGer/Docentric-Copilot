@@ -750,7 +750,14 @@ export type ReferencePathStatus =
   | "unknown"
   | "section_missing"
   | "ambiguous";
-export type ReferenceSchemaSource = "ddsp" | "none";
+export type ReferenceSchemaSource = "ddsp" | "d365_project_data" | "mixed" | "none";
+export type ReferenceBindingStatus =
+  | "resolved"
+  | "ambiguous"
+  | "unknown_path"
+  | "type_mismatch"
+  | "schema_unavailable"
+  | "unsupported_expression";
 export type ReferenceGraphNodeKind = "control" | "element" | "source" | "schema_field";
 export type ReferenceGraphEdgeType = "bound_to" | "resolves_to" | "iterates" | "condition";
 export type ReferenceGraphStatus = "resolved" | "ambiguous" | "unknown";
@@ -1029,6 +1036,9 @@ export interface ReferenceGraphNode {
   collection: boolean;
   origin: string | null;
   reason: string | null;
+  schema_source: ReferenceSchemaSource | null;
+  source_id: string | null;
+  evidence_location: string | null;
   evidence: Record<string, string>;
 }
 
@@ -1038,6 +1048,7 @@ export interface ReferenceGraphEdge {
   source: string;
   target: string;
   status: ReferenceGraphStatus;
+  resolution_status: ReferenceBindingStatus | null;
   reason: string | null;
   evidence: Record<string, string>;
 }
@@ -1086,6 +1097,12 @@ export interface ReferenceGraphSummary {
   sources_total: number;
   schema_fields_total: number;
   schema_fields_resolved: number;
+  resolves_to_edges: number;
+  resolves_to_resolved: number;
+  resolves_to_with_evidence: number;
+  evidence_coverage_ratio: number;
+  unresolved_by_status: Record<string, number>;
+  unresolved_reasons: Record<string, number>;
   lists_detected: number;
   conditions_detected: number;
   unresolved_total: number;
@@ -1103,6 +1120,7 @@ export interface ReferenceGraph {
   source_sha256: string;
   platform: ReferencePlatformHint;
   schema_source: ReferenceSchemaSource;
+  schema_provider_types: string[];
   schema_ids: string[];
   schema_sections: string[];
   schema_digests: string[];
@@ -1113,6 +1131,26 @@ export interface ReferenceGraph {
   summary: ReferenceGraphSummary;
   diagnostics: ReferenceDiagnostic[];
   graph_digest: string;
+}
+
+export type ReferenceReportKind = "inspection" | "graph" | "diff";
+export type ReferenceReportExportFormat = "json" | "html";
+
+/** Persisted reference report envelope (`POST/GET /api/v1/reference/reports`). */
+export interface StoredReferenceReport {
+  report_version: string;
+  runtime_compatibility: ReferenceRuntimeCompatibility;
+  id: string;
+  kind: ReferenceReportKind;
+  schema_version: string;
+  created_at: number;
+  expires_at: number;
+  source_name: string;
+  source_sha256: string | null;
+  report: ReferenceReport | null;
+  graph: ReferenceGraph | null;
+  diff: ReferenceDiff | null;
+  warnings: string[];
 }
 
 /* ------------------------------------------------------------ reference diff */

@@ -8,11 +8,15 @@ The reference inspector implements REF-00 (safe inventory and deduplication), RE
 schema evidence), REF-02 (Docentric metadata resolution), REF-03 (ReferenceGraph and a separate
 read-only Reference IR), REF-04 (reference diff) and REF-05 (reference-based evaluation). The v0.10
 P0 increment adds a D365 embedded-schema adapter and a canonical binding resolver that no longer
-requires a standalone DDSP. It exists so that real-world DOCX, DDSP, ZIP and AXPP packages can be
-examined as evidence **before** any Docentric AX writer is attempted.
+requires a standalone DDSP. The v0.11 P1 increment adds D365 evidence to the unified ReferenceGraph,
+an opt-in safe Reference → Generic Template IR import, an independent visual diff, and report
+persistence/reopen/export. It still exists so that real-world DOCX, DDSP, ZIP and AXPP packages can
+be examined as evidence **before** any Docentric AX writer is attempted.
 
 A report never enables `target=docentric-ax`: that request still returns HTTP `409`, and V5
-compatibility is still `not_tested`.
+compatibility is still `not_tested`. The v0.11 P1 import produces **generic DOCX IR** only; it is
+not a native Docentric template and its visual diff is **LibreOffice rendering, not Word
+fidelity**.
 
 ## Implementation status
 
@@ -21,12 +25,17 @@ compatibility is still `not_tested`.
 | REF-00 inventory and deduplication | Implemented | `inventory.py`, `safety.py` |
 | REF-01 real DDSP adapter | Implemented (bare AX 2012 DDSP) | `ddsp_real.py` |
 | REF-02 metadata resolver | Implemented | `docx_controls.py`, `metadata.py` |
-| REF-03 ReferenceGraph and read-only projection | Implemented (no import mode) | `graph.py`, `projection.py` |
-| REF-04 reference diff | Implemented (no visual diff) | `diff.py`, CLI/API diff endpoints |
+| REF-03 ReferenceGraph and read-only projection | Implemented (read-only projection; opt-in import in #27) | `graph.py`, `projection.py`, `import_ir.py` |
+| REF-04 reference diff | Implemented (structural/semantic + separate visual diff in #28) | `diff.py`, `visual_diff.py`, CLI/API endpoints |
 | REF-05 reference-based evaluation | Implemented (8 synthetic cases + runtime reference mode) | `benchmarks/reference_evaluation.py`, synthetic fixtures |
-| REF-06 web inspector/storage workflow | Not in this milestone | — |
+| REF-06 web inspector/storage workflow | Implemented — partial (SQLite TTL persistence, `?id=` reopen, JSON/HTML export; no Playwright suite) | `routes/reference.py`, `storage/store.py`, `apps/web/src/components/reference/` |
 | REF-07 licensed runtime testing | Not started | — |
 | v0.10 P0 D365 embedded schema + binding resolver | Implemented (static evidence only; six-status taxonomy; `runtime_compatibility: not_tested`) | `d365_schema.py`, `binding_resolver.py` |
+| v0.11 P1 #26 unified D365 evidence in ReferenceGraph | Implemented (synthetic fixtures; corpus not re-run in this branch) | `graph.py` |
+| v0.11 P1 #27 safe Reference → Generic Template IR | Implemented — partial subset (Field/Label/List→Repeat/If/Image); no Table inference | `import_ir.py` |
+| v0.11 P1 #28 visual reference diff | Implemented — renderer-dependent; `renderer_unavailable` instead of pass/fail | `visual_diff.py`, `scripts/reference_visual_diff.py` |
+| v0.11 P1 #29 persistence/export/reopen | Implemented — local SQLite/TTL; no browser E2E | `storage/store.py`, `routes/reference.py`, web `?id=` |
+| v0.11 P1 #30 hardening/docs | Done for this branch; ADR-0016 (ADR-0015 was already used by #31) | `docs/`, `CHANGELOG.md` |
 
 ## Licensing boundary
 
@@ -497,6 +506,158 @@ segments. For evaluation only, the runner creates an IR-safe schema view and map
 to the same spelling. Role, type, collection and context are unchanged, and the report records the
 number of normalized path segments. Template IR, the ReferenceGraph and all compilers are untouched.
 
+## v0.11 P1 — unified graph, IR import, visual diff and persistence
+
+This section describes the P1 workstreams (#26–#30). They are **partial by design**: none of them
+changes the Docentric AX `not_tested` status, enables `target=docentric-ax` or claims Word fidelity.
+
+### #26 — D365 evidence in the unified ReferenceGraph
+
+`build_reference_graph` accepts either explicit D365 binding reports or the original DOCX payloads:
+
+```python
+from docentric_copilot.reference import (
+    analyze_d365_bytes,
+    build_reference_graph,
+    inspect_reference_bundle,
+)
+
+bundle = inspect_reference_bundle("reference.docx")
+d365 = analyze_d365_bytes(open("reference.docx", "rb").read(), filename="reference.docx")
+graph = build_reference_graph(bundle.report, bundle.schemas, d365={d365.template_id: d365})
+# or let the graph extract the embedded schema read-only from the payloads:
+graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
+```
+
+- `schema_field` nodes carry `schema_source` (`ddsp` or `d365_project_data`), `source_id`,
+  `schema_path`, `data_type`, `collection` and `evidence_location` (`part#xpath`).
+- `resolves_to` edges carry `resolution_status` = `resolved | ambiguous | unknown_path |
+  type_mismatch | schema_unavailable | unsupported_expression`. Only `resolved` gets graph status
+  `resolved`; `type_mismatch`, `schema_unavailable` and `unsupported_expression` stay unresolved
+  diagnostics and are never reclassified as `unknown_path`.
+- `GraphSummary` adds `resolves_to_edges`, `resolves_to_resolved`, `resolves_to_with_evidence`,
+  `evidence_coverage_ratio` (resolved edges with evidence / all `resolves_to` edges),
+  `unresolved_by_status` and `unresolved_reasons`.
+- AX 2012 DDSP docs keep the existing DDSP schema paths. When both providers are used across a
+  multi-document source, the graph reports `schema_source: mixed` and both provider types.
+- Determinism: nodes and edges are sorted, evidence is bounded, and repeated builds produce the
+  same `graph_digest`.
+- Partial: the committed tests use synthetic D365-like ProjectData; the local 11-DOCX corpus was
+  not re-run in this branch, so graph coverage of that corpus is not claimed as verified here.
+
+### #27 — safe Reference → Generic Template IR import
+
+`project_to_template_ir(reference_document_or_graph, *, allow_unsupported=False)` is opt-in and
+produces a `ReferenceIRImport` envelope:
+
+| Reference construct | Generic IR mapping | Conditions |
+| --- | --- | --- |
+| Field | `FieldBinding` | unambiguous `resolved` binding with schema path; format defaults follow the type (`number`, `date_short`, `boolean_yes_no`, `plain`) |
+| Label | `TextRun` | resolved element with captured static label text; a raw data path without a label is skipped |
+| List | `Repeat` | confirmed collection scope; children projected recursively |
+| If | `Conditional` | evidence-backed boolean field; condition is `equals true` |
+| Image | `ImageBinding` | confirmed binary/image schema type only |
+
+Everything else (Barcode, Group, SubDocument, SummaryField, complex expressions, unknown kinds,
+ambiguous/unknown/type-mismatch/schema-unavailable/unsupported bindings, empty collections) is
+listed in `skipped[]` with a stable code, location and reason. Strict mode (default) raises
+`reference_import_blocked` if anything was skipped; `allow_unsupported=True` keeps the supported
+subset and returns every skip. It never converts an unsupported construct into a guess.
+
+The produced `Document` is validated with the existing V1-V3 `ValidationEngine` against a synthetic
+schema containing only the imported, evidence-backed paths. A validation failure raises
+`reference_import_invalid` with statuses and findings. The IR target is `generic-docx`; the response
+includes `runtime_compatibility: not_tested`.
+
+`ReferenceIRImport` also returns `provenance[]` keyed by stable IR path
+(`sections[0].body[2].blocks[0]...`) with source reference id, element id, part/ordinal, raw and
+canonical path, schema source, source id and `part#xpath` evidence. Template IR v1.0 is frozen, so
+this sidecar is used instead of adding fields that would change every existing IR digest.
+
+CLI:
+
+```bash
+docentric-copilot reference import-ir template.docx --json .tools/import-ir.json
+docentric-copilot reference import-ir template.docx --allow-unsupported \
+  --json .tools/import-ir.json
+docentric-copilot reference import-ir template.docx --ddsp fallback.ddsp \
+  --json .tools/import-ir.json
+```
+
+HTTP: `POST /api/v1/reference/import-ir` accepts the same multipart `file`/`ddsp` (or corpus
+`?path=`) plus `allow_unsupported=true|false`. The response contains `ir`, `skipped`,
+`provenance`, `validation`, `summary` and `runtime_compatibility: not_tested`.
+
+Partial: List is projected to `Repeat`, not `Table`; Group/SubDocument/Barcode/SummaryField and
+complex expressions remain reference-only; labels are imported as static text rather than dynamic
+Docentric labels.
+
+### #28 — independent visual reference diff
+
+The structural/semantic diff (`reference diff`) is unchanged. The visual dimension is a separate
+report produced by `scripts/reference_visual_diff.py` and the reference package:
+
+```bash
+python scripts/reference_visual_diff.py before.docx after.docx --json out/report.json
+docentric-copilot reference visual-diff before.docx after.docx --json out/report.json
+```
+
+It renders both references through the existing `scripts/docx_to_pdf.py` LibreOffice path
+(`soffice --headless --convert-to pdf` + `pdftoppm`), then reports:
+
+- page counts and page-size changes;
+- blank pages and per-page ink/coverage deltas;
+- a coarse changed-pixel fraction within a fixed tolerance;
+- shifted regions from a bounded grid search (offset in pixels and improvement);
+- `report.json` and `report.html` plus PDF/page-image artifact paths.
+
+The report always states **LibreOffice rendering (not Word fidelity)** and keeps
+`structural_status`/`semantic_status` at `not_compared`; run `reference diff` for those independent
+dimensions. A visual difference is evidence, not a defect verdict.
+
+When `soffice`/`poppler` is missing or rendering fails, `visual_status` is `renderer_unavailable`
+with a reason. It is never `passed`/`failed`, and no baseline is fabricated. The committed test
+suite exercises the deterministic PNG comparison and the unavailable path with a stub renderer; CI
+has no LibreOffice, so real-renderer output is not a CI gate here.
+
+Partial: this is not a Word-layout validator, does not compare text/geometry semantically page by
+page, and has no pinned font set beyond the optional `api-pdf` image.
+
+### #29 — persistence, reopen and export
+
+A new SQLite table `reference_reports` stores the serialized report/graph/diff envelope with a TTL
+(`DC_ARTIFACT_TTL_SECONDS`, default 3600 s). Only JSON evidence is stored; source template bytes are
+never written to the database or artifact storage.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/reference/reports?kind=inspection\|graph\|diff` | Run server-side and persist with an id |
+| `GET` | `/api/v1/reference/reports/{id}` | Reopen by id (404 when missing/expired) |
+| `GET` | `/api/v1/reference/reports/{id}/export?format=json\|html` | Download the full JSON or safe HTML |
+
+The HTML export is self-contained, has no external assets or source active content, and HTML-escapes
+every value including source names and warnings. The envelope includes versions, hashes, platform,
+statuses, metrics, warnings and `runtime_compatibility: not_tested`.
+
+The `/reference` web page saves the last report id in `?id=`, reloads it through
+`GET /reports/{id}`, handles absent/invalid ids without crashing, and offers an **Export report**
+action (JSON or HTML). It does not perform a browser E2E smoke; that remains a follow-up.
+
+Partial: local single-process SQLite with TTL; no retention/delete endpoint beyond expiry, no
+multi-process store and no committed Playwright workflow.
+
+### #30 — hardening and documentation
+
+- ADR-0016 records the IR import and visual diff decisions. **ADR-0015 was already assigned to
+  label adjudication in this v0.11 cycle**, so the requested decision is recorded as ADR-0016
+  rather than reusing a number.
+- Version consistency: the distribution version remains `0.10.0` and these changes are
+  `[Unreleased]`; README, ROADMAP and this document state the same status.
+- The feature matrix marks all four P1 workstreams as implemented/partial, and the partial items
+  above are repeated in `CHANGELOG.md` rather than hidden behind an aggregate "done".
+- `runtime_compatibility` remains `not_tested` everywhere and `target=docentric-ax` remains
+  fail-closed.
+
 ## Report
 
 `report.py` produces `ReferenceReport` (reference version `1.0`) with:
@@ -543,6 +704,16 @@ docentric-copilot reference d365 template.docx --json .tools/d365.json
 
 # the DDSP is a fallback only when the document has no usable embedded schema
 docentric-copilot reference d365 template.docx --ddsp fallback.ddsp --json .tools/d365.json
+
+# safe Reference -> Generic Template IR (v0.11 P1)
+docentric-copilot reference import-ir template.docx --json .tools/import-ir.json
+docentric-copilot reference import-ir template.docx --allow-unsupported \
+  --json .tools/import-ir.json
+
+# independent visual diff through LibreOffice (not Word fidelity)
+docentric-copilot reference visual-diff left.docx right.docx \
+  --json .tools/visual-diff/report.json
+# renderer_unavailable is exit 0 and never a pass/fail
 ```
 
 `--max-depth` is offline-only and capped at 3. Exit codes follow the existing CLI contract:
@@ -557,12 +728,17 @@ POST /api/v1/reference/d365
 POST /api/v1/reference/diff
 ```
 
-`inspect`, `graph` and `d365` accept either an uploaded multipart `file` (`.docx`, `.zip`, `.axpp`)
-with an optional `ddsp` part, or `?path=` for a path confined to a configured corpus root. `diff`
-uses the `left`/`right` uploads or the `left_path`/`right_path` query pair. Query parameter `max_depth`
-defaults to `0` for the public endpoints: the root container is enumerated, but nested archives are
-not expanded. The existing `max_ddsp_bytes` limit is enforced for uploads and the
-uncompressed/entry limits are enforced while reading.
+`inspect`, `graph`, `d365` and `import-ir` accept either an uploaded multipart `file`
+(`.docx`, `.zip`, `.axpp`) with an optional `ddsp` part, or `?path=` for a path confined to a
+configured corpus root. `diff` uses the `left`/`right` uploads or the `left_path`/`right_path`
+query pair. Query parameter `max_depth` defaults to `0` for the public endpoints: the root container
+is enumerated, but nested archives are not expanded. The existing `max_ddsp_bytes` limit is enforced
+for uploads and the uncompressed/entry limits are enforced while reading.
+
+The v0.11 P1 persistence endpoints are separate: `POST /api/v1/reference/reports` runs the
+inspection server-side and stores the envelope, `GET .../reports/{id}` reopens it and
+`GET .../reports/{id}/export?format=json|html` downloads the safe export. They follow the same
+TTL/retention rules as artifacts and never store source template bytes.
 
 ```bash
 curl -s -F "file=@template.docx" \
@@ -573,6 +749,18 @@ curl -s -F "file=@template.docx" -F "ddsp=@template.ddsp" \
 
 curl -s -F "file=@template.docx" \
   http://localhost:8000/api/v1/reference/d365
+
+curl -s -F "file=@template.docx" \
+  "http://localhost:8000/api/v1/reference/import-ir?allow_unsupported=false"
+
+curl -s -F "file=@template.docx" \
+  -F "ddsp=@fallback.ddsp" "http://localhost:8000/api/v1/reference/import-ir"
+
+curl -s -F "file=@template.docx" \
+  "http://localhost:8000/api/v1/reference/reports?kind=inspection"
+
+curl -s "http://localhost:8000/api/v1/reference/reports/ref_.../export?format=html" \
+  -o reference-report.html
 
 curl -s -X POST \
   "http://localhost:8000/api/v1/reference/graph?path=examples/corpus/template.docx&max_depth=0"
@@ -595,14 +783,24 @@ curl -s -X POST \
   "http://localhost:8000/api/v1/reference/diff?left_path=left.docx&right_path=right.docx"
 ```
 
-## What is not implemented
+## What is not implemented or only partial
 
-- REF-06: web inspector/UI and the `/references/{id}` storage workflow. REF-04/REF-05 are
-  Python/CLI/API contracts today; the browser workspace does not render them yet.
-- REF-07: licensed runtime testing, AXPP deployment/execution, native Docentric output.
-- Import-supported mode and any Template IR weakening. `ReferenceDocument` is inspect-only.
-- D365 embedded ProjectData schema evidence as a full REF-01 contract; D365 documents are graphed
-  from their controls and metadata, but bindings remain unvalidated without a standalone DDSP.
+- REF-07: licensed runtime testing, AXPP deployment/execution, native Docentric output. No item in
+  this document changes the `not_tested` status.
+- **#26 partial:** the unified D365 graph is implemented and deterministic, and the synthetic tests
+  cover every binding status; the local 11-DOCX corpus was not re-run in this branch, so corpus-wide
+  graph coverage is not claimed here. AX 2012 DDSP regression tests still pass.
+- **#27 partial:** List is imported as `Repeat`, not `Table`; Group, SubDocument, Barcode,
+  SummaryField and complex expressions stay reference-only; Label is static text; provenance is a
+  sidecar because Template IR v1.0 is frozen. There is no native Docentric output and no AX claim.
+- **#28 partial:** LibreOffice rendering is not Word fidelity. Structural/semantic statuses remain
+  `not_compared` in the visual report. CI has no LibreOffice, so real-renderer comparisons are not a
+  CI gate; tests use a stub renderer and cover `renderer_unavailable`.
+- **#29 partial:** persistence is a local single-process SQLite file with the artifact TTL. There is
+  no multi-process store, no explicit delete/retention API and no committed Playwright browser E2E.
+  Invalid or absent `?id=` is handled without crashing.
+- **Browser E2E** (Playwright workflow, accessibility smoke) is still not committed; only API and
+  component-level behaviour is covered.
 - Any claim or enabling of `target=docentric-ax`. The AX gate remains fail-closed and V5 remains
   `not_tested`.
 
@@ -612,6 +810,7 @@ curl -s -X POST \
 - [ADR-0011: ReferenceGraph and read-only Reference IR](adr/0011-reference-graph.md)
 - [ADR-0012: Reference diff and reference-based evaluation](adr/0012-reference-diff-and-evaluation.md)
 - [ADR-0014: Gold dataset and reference benchmark](adr/0014-gold-dataset-and-reference-benchmark.md)
+- [ADR-0016: Safe IR import and visual reference diff](adr/0016-ir-import-and-visual-diff.md)
 - [Gold semantic labels](GOLD_LABELS.md)
 - [Docentric AX compatibility status](DOCENTRIC_AX_COMPATIBILITY.md)
 - [Threat model](THREAT_MODEL.md)

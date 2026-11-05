@@ -38,6 +38,44 @@ version (`1.0`) independent of the distribution version.
   retained as a historical artifact for dataset `1.0.0`.
 - ADR-0015 and updates to `docs/GOLD_LABELS.md`, `docs/EVALUATION.md`, `docs/BENCHMARKS.md` and the
   ADR index.
+- v0.11 P1 (#26) unified D365 evidence in `ReferenceGraph`: `build_reference_graph(...,
+  d365=..., documents=...)` accepts D365 binding reports or extracts the embedded schema read-only
+  from the original DOCX payload. `schema_field` nodes carry `schema_source`, `source_id` and the
+  exact `part#xpath` evidence location; `resolves_to` edges carry the resolver status
+  (`resolved | unknown_path | type_mismatch | schema_unavailable | unsupported_expression`).
+  `GraphSummary` adds `resolves_to_with_evidence`, `evidence_coverage_ratio`,
+  `unresolved_by_status` and `unresolved_reasons`. The Inspector graph view shows node provenance,
+  edge resolution status and the unresolved status breakdown.
+- v0.11 P1 (#27) safe Reference → Generic Template IR import
+  (`packages/reference-inspector/src/docentric_copilot/reference/import_ir.py`):
+  Field→FieldBinding, Label→TextRun, List→Repeat, If→Conditional and Image→ImageBinding for fully
+  resolved, evidence-backed constructs with sensible format defaults. Every skip is listed in
+  `skipped[]` with a stable code and reason; strict mode refuses any import with unresolved,
+  ambiguous or unsupported material. The produced Document is validated by the existing V1-V3
+  validator against a synthetic schema built only from imported paths. Provenance is carried in a
+  sidecar keyed by IR path because Template IR v1.0 is frozen. CLI
+  `reference import-ir PATH --json OUT [--ddsp PATH] [--allow-unsupported]` and
+  `POST /api/v1/reference/import-ir` return `ir`, `skipped` and
+  `runtime_compatibility: not_tested`.
+- v0.11 P1 (#28) separate Visual Reference Diff
+  (`packages/reference-inspector/src/docentric_copilot/reference/visual_diff.py` and
+  `scripts/reference_visual_diff.py`): renders DOCX/AXPP references with the existing
+  `scripts/docx_to_pdf.py` LibreOffice path, compares page counts, blank pages, per-page
+  ink/coverage and shifted regions, and writes `report.json` plus a self-contained `report.html`.
+  The report is explicitly labelled **LibreOffice rendering (not Word fidelity)**, keeps
+  structural/semantic statuses separate, and reports `renderer_unavailable` (never pass/fail) when
+  soffice or poppler is missing. CLI `reference visual-diff LEFT RIGHT --json OUT`.
+- v0.11 P1 (#29) reference report persistence, reopen and export: SQLite table
+  `reference_reports` with the artifact TTL,
+  `POST /api/v1/reference/reports?kind=inspection|graph|diff`,
+  `GET /api/v1/reference/reports/{id}` and
+  `GET /api/v1/reference/reports/{id}/export?format=json|html`. The HTML export is self-contained
+  and escapes every value. The `/reference` web page saves the last report id in `?id=`, reopens it
+  through the API (invalid/absent ids are handled without crashing) and offers an **Export report**
+  action.
+- v0.11 P1 (#30) ADR-0016 (IR import and visual diff), a wiki page and sidebar entry, and updated
+  README, ROADMAP, REFERENCE_TEMPLATES, EVALUATION and feature-matrix status; partial items are
+  listed in the notes below.
 
 ### Changed
 - Gold label version `2.0.0` fixes two genuine annotation errors by making the prompt state what the
@@ -65,7 +103,23 @@ version (`1.0`) independent of the distribution version.
   collection, optional image and missing/wrong-scope image remain gaps.
 - AT-07 remains **partial**. The deterministic adjudicator is documented as a proxy, not human
   double review, and `governance.second_human_annotator` is `false`.
-- Docentric AX runtime compatibility remains `not_tested`.
+- v0.11 P1 is **partial** and is not a runtime-compatibility claim:
+  - #26: the D365 graph path is implemented for resolved and unresolved statuses; the local D365
+    corpus was not re-run in this branch, so the 11/11 DOCX graph coverage is covered by synthetic
+    fixtures only in the committed tests.
+  - #27: List is imported as `Repeat`, not `Table`; Group, SubDocument, Barcode, SummaryField and
+    complex expressions remain reference-only; Label text is the captured static label, not a
+    dynamic Docentric label; provenance is an IR-path sidecar because Template IR v1.0 is frozen.
+  - #28: the visual status is evidence from **LibreOffice rendering**, not Word fidelity;
+    structural and semantic statuses are `not_compared` in this report (use `reference diff`), and
+    CI has no LibreOffice, so the committed tests exercise the deterministic comparison and the
+    `renderer_unavailable` path with a stub renderer.
+  - #29: persistence is a local SQLite file with the artifact TTL; there is no multi-process store,
+    retention/delete API or committed browser E2E smoke. The web page reopens/export by id without
+    crashing on absent/invalid ids, but a Playwright workflow is still not committed.
+  - #30: ADR-0016 is used because ADR-0015 was already assigned to label adjudication in this same
+    v0.11 cycle. The distribution version stays `0.10.0`; these changes are `[Unreleased]`.
+- Docentric AX runtime compatibility remains `not_tested`; `target=docentric-ax` stays fail-closed.
 
 ## [0.10.0] - 2026-11-05
 

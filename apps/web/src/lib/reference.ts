@@ -131,7 +131,19 @@ export const SOURCE_TYPE_LABELS: Record<string, string> = {
 
 export const SCHEMA_SOURCE_LABELS: Record<string, string> = {
   ddsp: "DDSP schema",
+  d365_project_data: "D365 embedded schema",
+  mixed: "DDSP + D365 schema",
   none: "No schema",
+};
+
+/** Exact binding resolver statuses carried by `resolves_to` edges. */
+export const BINDING_STATUS_LABELS: Record<string, string> = {
+  resolved: "Resolved",
+  ambiguous: "Ambiguous",
+  unknown_path: "Unknown path",
+  type_mismatch: "Type mismatch",
+  schema_unavailable: "Schema unavailable",
+  unsupported_expression: "Unsupported expression",
 };
 
 export const SEVERITY_LABELS: Record<string, string> = {

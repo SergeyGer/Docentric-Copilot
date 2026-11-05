@@ -881,3 +881,29 @@ counts and does not splice the two aggregate reports. Baseline abstention was **
   affected by #24/#25. The v0.10 full report remains the full-matrix artifact and must not be
   spliced with this subset.
 
+
+## 2.9 v0.11 P1 reference workflow is not a benchmark result (#26–#30)
+
+The v0.11 P1 workstreams extend the reference inspector; they do not add a new semantic score and
+must not be read as an improvement over the adjudicated gold benchmark.
+
+- **#26 D365 graph evidence** changes representation, not evaluation labels. The graph summary adds
+  `evidence_coverage_ratio` and `unresolved_by_status`, but no precision/recall number is derived
+  from it. The committed tests are synthetic; the 11-DOCX local corpus was not re-run in this
+  branch.
+- **#27 safe IR import** is a transformation with explicit skips, not a planner score. A successful
+  strict import means every imported construct was resolved and schema-backed; it does **not** mean
+  the generic document is semantically equivalent to the reference. There is no semantic-pass metric
+  for imported IR in this release.
+- **#28 visual diff** is page-level rendering evidence from LibreOffice, not Word fidelity and not a
+  gold-benchmark metric. A `different` status is not an error count; `renderer_unavailable` is
+  missing evidence and is excluded from any aggregate claim. Structural and semantic statuses stay
+  `not_compared` in that report.
+- **#29 persistence/export** stores and re-serves the same report bytes; it does not change metrics.
+  The HTML export is escaped and does not embed source active content.
+- **#30 documentation** records the same partial scope in the README, ROADMAP, CHANGELOG and
+  [REFERENCE_TEMPLATES](REFERENCE_TEMPLATES.md#what-is-not-implemented-or-only-partial).
+
+Consequently, the v0.10/2.0.0 gold results and the v0.11 affected-subset results remain the only
+measured semantic claims. Docentric AX runtime compatibility remains `not_tested`, and none of the
+P1 features is evidence for changing it.

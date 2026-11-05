@@ -21,6 +21,10 @@ document at [`/openapi.json`](http://localhost:8000/openapi.json). A snapshot is
 | `POST` | `/api/v1/reference/graph` | Read-only ReferenceGraph and optional reference projection |
 | `POST` | `/api/v1/reference/d365` | Embedded D365 schema extraction and canonical binding resolution |
 | `POST` | `/api/v1/reference/diff` | ReferenceDiff v1.0 from two uploads or two confined corpus paths |
+| `POST` | `/api/v1/reference/import-ir` | Safe Reference → Generic Template IR subset with `skipped[]` |
+| `POST` | `/api/v1/reference/reports` | Persist an inspection (`+graph`), graph or diff envelope |
+| `GET` | `/api/v1/reference/reports/{id}` | Reopen a persisted reference report by id |
+| `GET` | `/api/v1/reference/reports/{id}/export` | Export the report as JSON or safe HTML |
 | `GET` | `/api/v1/templates/{id}/versions` | Version history |
 | `GET` | `/api/v1/templates/{id}/export/{version}` | Export a version's IR and reports |
 | `GET` | `/api/v1/jobs/{id}` | Job record |
@@ -38,7 +42,17 @@ D365 endpoint returns `template_id`, `platform`, `schema_source`
 `runtime_compatibility: "not_tested"`; each binding status is one of `resolved`, `ambiguous`,
 `unknown_path`, `type_mismatch`, `schema_unavailable`, `unsupported_expression`. All reference
 endpoints are read-only, default to no nested archive recursion over HTTP, and never claim runtime
-compatibility. See [Reference Templates](Reference-Templates).
+compatibility.
+
+`POST /api/v1/reference/import-ir` returns `ir`, `skipped[]`, `provenance[]`, `validation`,
+`summary` and `runtime_compatibility: "not_tested"`; strict mode returns HTTP `422` with
+`reference_import_blocked` when anything is unsupported, while `?allow_unsupported=true` keeps the
+supported subset. `POST /api/v1/reference/reports?kind=inspection|graph|diff` runs server-side and
+persists the envelope under the artifact TTL; `GET /reports/{id}` reopens it and
+`GET /reports/{id}/export?format=json|html` downloads JSON or a safe, escaped HTML export. A
+missing or expired id is HTTP `404` with `reference_report_not_found`. See
+[Reference Templates](Reference-Templates) and
+[Safe IR import and visual diff](Reference-IR-Import-and-Visual-Diff).
 
 ## Error envelope
 

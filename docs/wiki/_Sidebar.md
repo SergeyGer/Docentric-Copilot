@@ -26,6 +26,7 @@
 - [Validation Model](Validation-Model)
 - [DDSP Compatibility](DDSP-Compatibility)
 - [Reference Templates, Diff & Eval](Reference-Templates)
+- [Safe IR Import & Visual Diff](Reference-IR-Import-and-Visual-Diff)
 - [Docentric AX Compatibility](Docentric-AX-Compatibility)
 
 ---

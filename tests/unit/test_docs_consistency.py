@@ -162,6 +162,69 @@ def test_cli_and_api_surfaces_are_documented() -> None:
     assert "/api/v1/reference/d365" in _read("docs/wiki/API-Reference.md")
 
 
+def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
+    changelog = _read("CHANGELOG.md")
+    unreleased = changelog.split("## [Unreleased]", 1)[1].split("## [0.10.0]", 1)[0]
+    for marker in ("#26", "#27", "#28", "#29", "#30"):
+        assert marker in unreleased
+    assert "partial" in unreleased.casefold()
+    assert "not_tested" in unreleased
+    assert "ADR-0016" in unreleased
+
+    reference = _read("docs/REFERENCE_TEMPLATES.md")
+    for surface in (
+        "reference import-ir",
+        "reference visual-diff",
+        "/api/v1/reference/import-ir",
+        "/api/v1/reference/reports",
+        "LibreOffice rendering (not Word fidelity)",
+        "renderer_unavailable",
+        "ADR-0016",
+        "What is not implemented or only partial",
+    ):
+        assert surface in reference
+    assert "planned p1" not in reference.casefold()
+
+    readme = _read("README.md")
+    assert "v0.11 P1 status (unreleased)" in readme
+    assert "Docentric AX runtime compatibility | `not_tested`" in readme
+    assert "ADR-0016" in readme
+    assert "0.11.0" not in readme
+
+    roadmap = _read("docs/ROADMAP.md")
+    assert "M7 — v0.11 P1 reference workflow (unreleased)" in roadmap
+    assert "PR-06 safe Reference → generic Template IR" in roadmap
+
+    evaluation = _read("docs/EVALUATION.md")
+    assert "v0.11 P1 reference workflow is not a benchmark result" in evaluation
+
+    adr = ROOT / "docs" / "adr" / "0016-ir-import-and-visual-diff.md"
+    assert adr.exists()
+    body = adr.read_text(encoding="utf-8")
+    for required in ("Status", "Context", "Decision", "Consequences"):
+        assert required in body
+    assert "ADR-0015 had already" in body
+    assert "renderer_unavailable" in body
+    assert "runtime_compatibility" in body
+    assert "0016-ir-import-and-visual-diff.md" in _read("docs/adr/README.md")
+
+
+def test_v011_p1_wiki_page_and_cli_api_surfaces_are_indexed() -> None:
+    page = ROOT / "docs" / "wiki" / "Reference-IR-Import-and-Visual-Diff.md"
+    assert page.exists()
+    body = page.read_text(encoding="utf-8")
+    for marker in ("#26", "#27", "#28", "#29", "renderer_unavailable", "not_tested"):
+        assert marker in body
+    sidebar = _read("docs/wiki/_Sidebar.md")
+    assert "Reference-IR-Import-and-Visual-Diff" in sidebar
+    assert "reference import-ir" in _read("docs/wiki/CLI-Reference.md")
+    assert "reference visual-diff" in _read("docs/wiki/CLI-Reference.md")
+    assert "/api/v1/reference/reports" in _read("docs/wiki/API-Reference.md")
+    assert "/api/v1/reference/import-ir" in _read("docs/wiki/API-Reference.md")
+    assert "/api/v1/reference/import-ir" in _read("docs/API_SPEC.md")
+    assert "/api/v1/reference/reports" in _read("docs/API_SPEC.md")
+
+
 def test_no_corpus_material_is_referenced_in_committed_docs() -> None:
     """Committed docs may state counts, never corpus paths or file names."""
 

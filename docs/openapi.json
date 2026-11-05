@@ -1,6 +1,16 @@
 {
   "components": {
     "schemas": {
+      "Alignment": {
+        "enum": [
+          "left",
+          "center",
+          "right",
+          "justify"
+        ],
+        "title": "Alignment",
+        "type": "string"
+      },
       "ArtifactKind": {
         "description": "Kind of one inventory artifact.",
         "enum": [
@@ -420,6 +430,38 @@
         "title": "Body_graph_reference_endpoint_api_v1_reference_graph_post",
         "type": "object"
       },
+      "Body_import_reference_ir_endpoint_api_v1_reference_import_ir_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional matching DDSP XML schema for binding resolution",
+            "title": "Ddsp"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reference DOCX, ZIP or AXPP package",
+            "title": "File"
+          }
+        },
+        "title": "Body_import_reference_ir_endpoint_api_v1_reference_import_ir_post",
+        "type": "object"
+      },
       "Body_inspect_reference_endpoint_api_v1_reference_inspect_post": {
         "properties": {
           "ddsp": {
@@ -450,6 +492,64 @@
           }
         },
         "title": "Body_inspect_reference_endpoint_api_v1_reference_inspect_post",
+        "type": "object"
+      },
+      "Body_persist_reference_report_endpoint_api_v1_reference_reports_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional matching DDSP XML schema for binding resolution",
+            "title": "Ddsp"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reference DOCX, ZIP or AXPP package",
+            "title": "File"
+          },
+          "left": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Left reference for kind=diff",
+            "title": "Left"
+          },
+          "right": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Right reference for kind=diff",
+            "title": "Right"
+          }
+        },
+        "title": "Body_persist_reference_report_endpoint_api_v1_reference_reports_post",
         "type": "object"
       },
       "Body_upload_source_api_v1_sources_post": {
@@ -499,6 +599,55 @@
           "limits"
         ],
         "title": "CapabilitiesView",
+        "type": "object"
+      },
+      "Cell": {
+        "additionalProperties": false,
+        "properties": {
+          "blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "conditional": "#/components/schemas/Conditional",
+                  "heading": "#/components/schemas/Heading",
+                  "image": "#/components/schemas/ImageBinding",
+                  "page_break": "#/components/schemas/PageBreak",
+                  "paragraph": "#/components/schemas/Paragraph",
+                  "repeat": "#/components/schemas/Repeat",
+                  "table": "#/components/schemas/Table"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/ImageBinding"
+                },
+                {
+                  "$ref": "#/components/schemas/Repeat"
+                },
+                {
+                  "$ref": "#/components/schemas/Conditional"
+                },
+                {
+                  "$ref": "#/components/schemas/Table"
+                },
+                {
+                  "$ref": "#/components/schemas/PageBreak"
+                }
+              ]
+            },
+            "maxItems": 20,
+            "title": "Blocks",
+            "type": "array"
+          }
+        },
+        "title": "Cell",
         "type": "object"
       },
       "ChangeDimension": {
@@ -928,6 +1077,118 @@
         ],
         "title": "CompileTarget",
         "type": "string"
+      },
+      "Conditional": {
+        "additionalProperties": false,
+        "properties": {
+          "condition": {
+            "$ref": "#/components/schemas/Expression"
+          },
+          "else_blocks": {
+            "anyOf": [
+              {
+                "items": {
+                  "discriminator": {
+                    "mapping": {
+                      "conditional": "#/components/schemas/Conditional",
+                      "heading": "#/components/schemas/Heading",
+                      "image": "#/components/schemas/ImageBinding",
+                      "page_break": "#/components/schemas/PageBreak",
+                      "paragraph": "#/components/schemas/Paragraph",
+                      "repeat": "#/components/schemas/Repeat",
+                      "table": "#/components/schemas/Table"
+                    },
+                    "propertyName": "kind"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Paragraph"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Heading"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImageBinding"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Repeat"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Conditional"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Table"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PageBreak"
+                    }
+                  ]
+                },
+                "maxItems": 200,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Else Blocks"
+          },
+          "kind": {
+            "const": "conditional",
+            "default": "conditional",
+            "title": "Kind",
+            "type": "string"
+          },
+          "then_blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "conditional": "#/components/schemas/Conditional",
+                  "heading": "#/components/schemas/Heading",
+                  "image": "#/components/schemas/ImageBinding",
+                  "page_break": "#/components/schemas/PageBreak",
+                  "paragraph": "#/components/schemas/Paragraph",
+                  "repeat": "#/components/schemas/Repeat",
+                  "table": "#/components/schemas/Table"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/ImageBinding"
+                },
+                {
+                  "$ref": "#/components/schemas/Repeat"
+                },
+                {
+                  "$ref": "#/components/schemas/Conditional"
+                },
+                {
+                  "$ref": "#/components/schemas/Table"
+                },
+                {
+                  "$ref": "#/components/schemas/PageBreak"
+                }
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Then Blocks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "condition",
+          "then_blocks"
+        ],
+        "title": "Conditional",
+        "type": "object"
       },
       "ConfirmMappingRequest": {
         "additionalProperties": false,
@@ -2414,6 +2675,62 @@
         "title": "DiffSummary",
         "type": "object"
       },
+      "Document": {
+        "additionalProperties": false,
+        "description": "Root of the IR. Serialized canonically, hashed for reproducibility.",
+        "properties": {
+          "ir_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Ir Version",
+            "type": "string"
+          },
+          "kind": {
+            "const": "document",
+            "default": "document",
+            "title": "Kind",
+            "type": "string"
+          },
+          "language": {
+            "default": "en",
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+            "title": "Language",
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageSettings"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          },
+          "target": {
+            "$ref": "#/components/schemas/CompileTarget",
+            "default": "generic-docx"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "metadata",
+          "sections"
+        ],
+        "title": "Document",
+        "type": "object"
+      },
       "DocumentEvidence": {
         "additionalProperties": false,
         "description": "Evidence collected for one distinct DOCX payload.",
@@ -2599,6 +2916,76 @@
           "coverage_ratio"
         ],
         "title": "DocumentEvidence",
+        "type": "object"
+      },
+      "DocumentMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "design_style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DesignStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "generator": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generator"
+          },
+          "intent": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intent"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "source_schema_id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Source Schema Id",
+            "type": "string"
+          },
+          "template_name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 _\\-().]{1,120}$",
+            "title": "Template Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "template_name",
+          "source_schema_id"
+        ],
+        "title": "DocumentMetadata",
         "type": "object"
       },
       "DocumentRef": {
@@ -2806,6 +3193,178 @@
         "title": "ElementKind",
         "type": "string"
       },
+      "Expression": {
+        "additionalProperties": false,
+        "description": "A deliberately tiny boolean algebra.\n\nThe LLM never produces XPath: it produces this AST, which the target adapter\ntranslates into a verified construct. Operators outside this enum simply do\nnot exist in the contract.",
+        "properties": {
+          "field": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "operands": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Expression"
+                },
+                "maxItems": 16,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operands"
+          },
+          "operator": {
+            "$ref": "#/components/schemas/ExpressionOperator"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "operator"
+        ],
+        "title": "Expression",
+        "type": "object"
+      },
+      "ExpressionOperator": {
+        "enum": [
+          "and",
+          "or",
+          "not",
+          "equals",
+          "not_equals",
+          "greater_than",
+          "greater_or_equal",
+          "less_than",
+          "less_or_equal",
+          "not_null",
+          "is_null",
+          "contains"
+        ],
+        "title": "ExpressionOperator",
+        "type": "string"
+      },
+      "FieldBinding": {
+        "additionalProperties": false,
+        "description": "A dynamic scalar value bound to a normalized schema path.",
+        "properties": {
+          "currency_code": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency Code"
+          },
+          "date_pattern": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9 \\-/:.,]{1,40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Pattern"
+          },
+          "decimals": {
+            "anyOf": [
+              {
+                "maximum": 6.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decimals"
+          },
+          "format": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValueFormat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "const": "field",
+            "default": "field",
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "path": {
+            "maxLength": 512,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+            "title": "Path",
+            "type": "string"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "FieldBinding",
+        "type": "object"
+      },
       "Finding": {
         "additionalProperties": false,
         "properties": {
@@ -2871,6 +3430,18 @@
               }
             ],
             "title": "Reason"
+          },
+          "resolution_status": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Status"
           },
           "source": {
             "maxLength": 600,
@@ -3000,6 +3571,18 @@
             "title": "Evidence",
             "type": "object"
           },
+          "evidence_location": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Location"
+          },
           "id": {
             "maxLength": 600,
             "minLength": 1,
@@ -3097,6 +3680,30 @@
               }
             ],
             "title": "Schema Path"
+          },
+          "schema_source": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Source"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
           },
           "source_name": {
             "anyOf": [
@@ -3314,6 +3921,13 @@
             "title": "Elements Total",
             "type": "integer"
           },
+          "evidence_coverage_ratio": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Evidence Coverage Ratio",
+            "type": "number"
+          },
           "lists_detected": {
             "minimum": 0.0,
             "title": "Lists Detected",
@@ -3327,6 +3941,24 @@
           "resolved_edges": {
             "minimum": 0.0,
             "title": "Resolved Edges",
+            "type": "integer"
+          },
+          "resolves_to_edges": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Resolves To Edges",
+            "type": "integer"
+          },
+          "resolves_to_resolved": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Resolves To Resolved",
+            "type": "integer"
+          },
+          "resolves_to_with_evidence": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Resolves To With Evidence",
             "type": "integer"
           },
           "schema_fields_resolved": {
@@ -3348,6 +3980,20 @@
             "minimum": 0.0,
             "title": "Unknown Edges",
             "type": "integer"
+          },
+          "unresolved_by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Unresolved By Status",
+            "type": "object"
+          },
+          "unresolved_reasons": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Unresolved Reasons",
+            "type": "object"
           },
           "unresolved_total": {
             "minimum": 0.0,
@@ -3430,6 +4076,62 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "Heading": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "heading",
+            "default": "heading",
+            "title": "Kind",
+            "type": "string"
+          },
+          "level": {
+            "default": 1,
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Level",
+            "type": "integer"
+          },
+          "runs": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "field": "#/components/schemas/FieldBinding",
+                  "text": "#/components/schemas/TextRun"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TextRun"
+                },
+                {
+                  "$ref": "#/components/schemas/FieldBinding"
+                }
+              ]
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Runs",
+            "type": "array"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "runs"
+        ],
+        "title": "Heading",
+        "type": "object"
+      },
       "HealthView": {
         "additionalProperties": false,
         "properties": {
@@ -3457,6 +4159,431 @@
           "docentric_ax_adapter_enabled"
         ],
         "title": "HealthView",
+        "type": "object"
+      },
+      "ImageBinding": {
+        "additionalProperties": false,
+        "description": "A dynamic image. The IR never embeds binary payloads.",
+        "properties": {
+          "alignment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Alignment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "alt_text": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alt Text"
+          },
+          "height_mm": {
+            "anyOf": [
+              {
+                "maximum": 200.0,
+                "minimum": 5.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height Mm"
+          },
+          "kind": {
+            "const": "image",
+            "default": "image",
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "maxLength": 512,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+            "title": "Path",
+            "type": "string"
+          },
+          "width_mm": {
+            "anyOf": [
+              {
+                "maximum": 200.0,
+                "minimum": 5.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width Mm"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "ImageBinding",
+        "type": "object"
+      },
+      "ImportProvenance": {
+        "additionalProperties": false,
+        "description": "Where one produced IR node came from.\n\nTemplate IR v1.0 is frozen (adding fields would change every existing IR\ndigest), so provenance is carried in this sidecar keyed by a stable IR path.",
+        "properties": {
+          "binding_status": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Status"
+          },
+          "document_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Sha256"
+          },
+          "element_id": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Element Id"
+          },
+          "evidence_location": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Location"
+          },
+          "ir_path": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Ir Path",
+            "type": "string"
+          },
+          "node_kind": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Node Kind",
+            "type": "string"
+          },
+          "ordinal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinal"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "reference_kind": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Reference Kind",
+            "type": "string"
+          },
+          "reference_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Path"
+          },
+          "schema_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Path"
+          },
+          "schema_source": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Source"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_reference_id": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Source Reference Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ir_path",
+          "node_kind",
+          "source_reference_id",
+          "reference_kind"
+        ],
+        "title": "ImportProvenance",
+        "type": "object"
+      },
+      "ImportSkipCode": {
+        "description": "Stable diagnostic codes listed in ``skipped[]``.",
+        "enum": [
+          "UNKNOWN_ELEMENT",
+          "UNSUPPORTED_ELEMENT_KIND",
+          "AMBIGUOUS_BINDING",
+          "UNKNOWN_PATH",
+          "TYPE_MISMATCH",
+          "SCHEMA_UNAVAILABLE",
+          "UNSUPPORTED_EXPRESSION",
+          "UNRESOLVED_BINDING",
+          "MISSING_SCHEMA_PATH",
+          "UNSUPPORTED_CONDITION_TYPE",
+          "EMPTY_COLLECTION",
+          "LABEL_TEXT_UNAVAILABLE",
+          "IMAGE_SOURCE_UNVERIFIED",
+          "PARENT_SKIPPED",
+          "EMPTY_DOCUMENT"
+        ],
+        "title": "ImportSkipCode",
+        "type": "string"
+      },
+      "ImportSkipped": {
+        "additionalProperties": false,
+        "description": "One construct that was not imported, with a stable code and reason.",
+        "properties": {
+          "binding_status": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Binding Status"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ImportSkipCode"
+          },
+          "element_id": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Element Id"
+          },
+          "kind": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "ordinal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinal"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "reason": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "schema_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Path"
+          },
+          "source_reference_id": {
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Source Reference Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_reference_id",
+          "kind",
+          "label",
+          "code",
+          "reason"
+        ],
+        "title": "ImportSkipped",
+        "type": "object"
+      },
+      "ImportSummary": {
+        "additionalProperties": false,
+        "description": "Deterministic counts for one import.",
+        "properties": {
+          "by_kind": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Kind",
+            "type": "object"
+          },
+          "by_skip_code": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Skip Code",
+            "type": "object"
+          },
+          "conditions": {
+            "minimum": 0.0,
+            "title": "Conditions",
+            "type": "integer"
+          },
+          "fields": {
+            "minimum": 0.0,
+            "title": "Fields",
+            "type": "integer"
+          },
+          "images": {
+            "minimum": 0.0,
+            "title": "Images",
+            "type": "integer"
+          },
+          "imported": {
+            "minimum": 0.0,
+            "title": "Imported",
+            "type": "integer"
+          },
+          "labels": {
+            "minimum": 0.0,
+            "title": "Labels",
+            "type": "integer"
+          },
+          "lists": {
+            "minimum": 0.0,
+            "title": "Lists",
+            "type": "integer"
+          },
+          "references": {
+            "minimum": 0.0,
+            "title": "References",
+            "type": "integer"
+          },
+          "skipped": {
+            "minimum": 0.0,
+            "title": "Skipped",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "references",
+          "imported",
+          "skipped",
+          "fields",
+          "labels",
+          "lists",
+          "conditions",
+          "images"
+        ],
+        "title": "ImportSummary",
         "type": "object"
       },
       "InventoryEntry": {
@@ -3715,6 +4842,131 @@
           "ir_diff"
         ],
         "title": "OptimizeResponse",
+        "type": "object"
+      },
+      "PageBreak": {
+        "additionalProperties": false,
+        "description": "Force a new page (used to separate a document body from its terms).",
+        "properties": {
+          "kind": {
+            "const": "page_break",
+            "default": "page_break",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "title": "PageBreak",
+        "type": "object"
+      },
+      "PageSettings": {
+        "additionalProperties": false,
+        "properties": {
+          "margin_bottom_mm": {
+            "default": 20.0,
+            "maximum": 60.0,
+            "minimum": 5.0,
+            "title": "Margin Bottom Mm",
+            "type": "number"
+          },
+          "margin_left_mm": {
+            "default": 20.0,
+            "maximum": 60.0,
+            "minimum": 5.0,
+            "title": "Margin Left Mm",
+            "type": "number"
+          },
+          "margin_right_mm": {
+            "default": 20.0,
+            "maximum": 60.0,
+            "minimum": 5.0,
+            "title": "Margin Right Mm",
+            "type": "number"
+          },
+          "margin_top_mm": {
+            "default": 20.0,
+            "maximum": 60.0,
+            "minimum": 5.0,
+            "title": "Margin Top Mm",
+            "type": "number"
+          },
+          "orientation": {
+            "default": "portrait",
+            "enum": [
+              "portrait",
+              "landscape"
+            ],
+            "title": "Orientation",
+            "type": "string"
+          },
+          "size": {
+            "default": "A4",
+            "enum": [
+              "A4",
+              "LETTER"
+            ],
+            "title": "Size",
+            "type": "string"
+          }
+        },
+        "title": "PageSettings",
+        "type": "object"
+      },
+      "Paragraph": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "paragraph",
+            "default": "paragraph",
+            "title": "Kind",
+            "type": "string"
+          },
+          "runs": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "field": "#/components/schemas/FieldBinding",
+                  "text": "#/components/schemas/TextRun"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TextRun"
+                },
+                {
+                  "$ref": "#/components/schemas/FieldBinding"
+                }
+              ]
+            },
+            "maxItems": 200,
+            "title": "Runs",
+            "type": "array"
+          },
+          "space_after_pt": {
+            "anyOf": [
+              {
+                "maximum": 48.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Space After Pt"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "Paragraph",
         "type": "object"
       },
       "PathStatus": {
@@ -4554,6 +5806,14 @@
             "title": "Schema Ids",
             "type": "array"
           },
+          "schema_provider_types": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Schema Provider Types",
+            "type": "array"
+          },
           "schema_sections": {
             "items": {
               "type": "string"
@@ -4602,6 +5862,93 @@
           "summary"
         ],
         "title": "ReferenceGraph",
+        "type": "object"
+      },
+      "ReferenceIRImport": {
+        "additionalProperties": false,
+        "description": "The v0.11 safe import contract consumed by the CLI and the API.",
+        "properties": {
+          "allow_unsupported": {
+            "default": false,
+            "title": "Allow Unsupported",
+            "type": "boolean"
+          },
+          "import_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Import Version",
+            "type": "string"
+          },
+          "ir": {
+            "$ref": "#/components/schemas/Document"
+          },
+          "note": {
+            "default": "Safe reference-to-generic-IR import. Produces generic DOCX only; Docentric AX runtime compatibility is not tested.",
+            "maxLength": 300,
+            "title": "Note",
+            "type": "string"
+          },
+          "provenance": {
+            "items": {
+              "$ref": "#/components/schemas/ImportProvenance"
+            },
+            "maxItems": 20000,
+            "title": "Provenance",
+            "type": "array"
+          },
+          "reference_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Reference Version",
+            "type": "string"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "skipped": {
+            "items": {
+              "$ref": "#/components/schemas/ImportSkipped"
+            },
+            "maxItems": 5000,
+            "title": "Skipped",
+            "type": "array"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ImportSummary"
+          },
+          "target": {
+            "const": "generic-docx",
+            "default": "generic-docx",
+            "title": "Target",
+            "type": "string"
+          },
+          "validation": {
+            "additionalProperties": true,
+            "title": "Validation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "source_name",
+          "source_sha256",
+          "ir",
+          "summary"
+        ],
+        "title": "ReferenceIRImport",
         "type": "object"
       },
       "ReferenceInventory": {
@@ -4766,6 +6113,114 @@
           "inventory"
         ],
         "title": "ReferenceReport",
+        "type": "object"
+      },
+      "ReferenceReportKind": {
+        "description": "What a persisted reference report contains.",
+        "enum": [
+          "inspection",
+          "graph",
+          "diff"
+        ],
+        "title": "ReferenceReportKind",
+        "type": "string"
+      },
+      "Repeat": {
+        "additionalProperties": false,
+        "description": "Iterate a collection.\n\n``alias`` introduces an explicit context: bindings inside the block may use\n``alias.Field`` instead of the full collection path. The validator resolves\nthe alias lexically (nearest enclosing repeat wins).",
+        "properties": {
+          "alias": {
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "title": "Alias",
+            "type": "string"
+          },
+          "blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "conditional": "#/components/schemas/Conditional",
+                  "heading": "#/components/schemas/Heading",
+                  "image": "#/components/schemas/ImageBinding",
+                  "page_break": "#/components/schemas/PageBreak",
+                  "paragraph": "#/components/schemas/Paragraph",
+                  "repeat": "#/components/schemas/Repeat",
+                  "table": "#/components/schemas/Table"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/ImageBinding"
+                },
+                {
+                  "$ref": "#/components/schemas/Repeat"
+                },
+                {
+                  "$ref": "#/components/schemas/Conditional"
+                },
+                {
+                  "$ref": "#/components/schemas/Table"
+                },
+                {
+                  "$ref": "#/components/schemas/PageBreak"
+                }
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Blocks",
+            "type": "array"
+          },
+          "empty_message": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Empty Message"
+          },
+          "kind": {
+            "const": "repeat",
+            "default": "repeat",
+            "title": "Kind",
+            "type": "string"
+          },
+          "max_items": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Items"
+          },
+          "path": {
+            "maxLength": 512,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "alias",
+          "blocks"
+        ],
+        "title": "Repeat",
         "type": "object"
       },
       "ResolutionStatus": {
@@ -5118,6 +6573,8 @@
         "description": "Where the optional schema came from.",
         "enum": [
           "ddsp",
+          "d365_project_data",
+          "mixed",
           "none"
         ],
         "title": "SchemaSource",
@@ -5253,6 +6710,169 @@
         "title": "SchemaView",
         "type": "object"
       },
+      "Section": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "conditional": "#/components/schemas/Conditional",
+                  "heading": "#/components/schemas/Heading",
+                  "image": "#/components/schemas/ImageBinding",
+                  "page_break": "#/components/schemas/PageBreak",
+                  "paragraph": "#/components/schemas/Paragraph",
+                  "repeat": "#/components/schemas/Repeat",
+                  "table": "#/components/schemas/Table"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Paragraph"
+                },
+                {
+                  "$ref": "#/components/schemas/Heading"
+                },
+                {
+                  "$ref": "#/components/schemas/ImageBinding"
+                },
+                {
+                  "$ref": "#/components/schemas/Repeat"
+                },
+                {
+                  "$ref": "#/components/schemas/Conditional"
+                },
+                {
+                  "$ref": "#/components/schemas/Table"
+                },
+                {
+                  "$ref": "#/components/schemas/PageBreak"
+                }
+              ]
+            },
+            "maxItems": 500,
+            "title": "Body",
+            "type": "array"
+          },
+          "footer": {
+            "anyOf": [
+              {
+                "items": {
+                  "discriminator": {
+                    "mapping": {
+                      "conditional": "#/components/schemas/Conditional",
+                      "heading": "#/components/schemas/Heading",
+                      "image": "#/components/schemas/ImageBinding",
+                      "page_break": "#/components/schemas/PageBreak",
+                      "paragraph": "#/components/schemas/Paragraph",
+                      "repeat": "#/components/schemas/Repeat",
+                      "table": "#/components/schemas/Table"
+                    },
+                    "propertyName": "kind"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Paragraph"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Heading"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImageBinding"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Repeat"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Conditional"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Table"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PageBreak"
+                    }
+                  ]
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Footer"
+          },
+          "header": {
+            "anyOf": [
+              {
+                "items": {
+                  "discriminator": {
+                    "mapping": {
+                      "conditional": "#/components/schemas/Conditional",
+                      "heading": "#/components/schemas/Heading",
+                      "image": "#/components/schemas/ImageBinding",
+                      "page_break": "#/components/schemas/PageBreak",
+                      "paragraph": "#/components/schemas/Paragraph",
+                      "repeat": "#/components/schemas/Repeat",
+                      "table": "#/components/schemas/Table"
+                    },
+                    "propertyName": "kind"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Paragraph"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Heading"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImageBinding"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Repeat"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Conditional"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Table"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PageBreak"
+                    }
+                  ]
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Header"
+          },
+          "kind": {
+            "const": "section",
+            "default": "section",
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 _\\-]{1,80}$",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "Section",
+        "type": "object"
+      },
       "SourceBinding": {
         "additionalProperties": false,
         "description": "One typed ``ValueBinding`` from Docentric metadata.",
@@ -5380,6 +7000,113 @@
         "title": "SourceView",
         "type": "object"
       },
+      "StoredReferenceReport": {
+        "additionalProperties": false,
+        "description": "The envelope returned by persistence and export endpoints.",
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "number"
+          },
+          "diff": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceDiff"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expires_at": {
+            "title": "Expires At",
+            "type": "number"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceGraph"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ReferenceReportKind"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "report_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Report Version",
+            "type": "string"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "schema_version": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sha256"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "schema_version",
+          "created_at",
+          "expires_at",
+          "source_name"
+        ],
+        "title": "StoredReferenceReport",
+        "type": "object"
+      },
       "StoryPart": {
         "description": "Word story part that carries a content control.",
         "enum": [
@@ -5394,6 +7121,320 @@
         ],
         "title": "StoryPart",
         "type": "string"
+      },
+      "Table": {
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/TableColumn"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Columns",
+            "type": "array"
+          },
+          "kind": {
+            "const": "table",
+            "default": "table",
+            "title": "Kind",
+            "type": "string"
+          },
+          "repeat": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TableRepeat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "row_template": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Cell"
+                },
+                "maxItems": 20,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Template"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/TableRow"
+            },
+            "maxItems": 500,
+            "title": "Rows",
+            "type": "array"
+          },
+          "show_header": {
+            "default": true,
+            "title": "Show Header",
+            "type": "boolean"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TableStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "columns"
+        ],
+        "title": "Table",
+        "type": "object"
+      },
+      "TableColumn": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Alignment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "header": {
+            "maxLength": 200,
+            "title": "Header",
+            "type": "string"
+          },
+          "width_mm": {
+            "anyOf": [
+              {
+                "maximum": 200.0,
+                "minimum": 5.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width Mm"
+          }
+        },
+        "required": [
+          "header"
+        ],
+        "title": "TableColumn",
+        "type": "object"
+      },
+      "TableRepeat": {
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "title": "Alias",
+            "type": "string"
+          },
+          "max_items": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Items"
+          },
+          "path": {
+            "maxLength": 512,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "alias"
+        ],
+        "title": "TableRepeat",
+        "type": "object"
+      },
+      "TableRow": {
+        "additionalProperties": false,
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/Cell"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Cells",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cells"
+        ],
+        "title": "TableRow",
+        "type": "object"
+      },
+      "TableStyle": {
+        "additionalProperties": false,
+        "properties": {
+          "borders": {
+            "default": true,
+            "title": "Borders",
+            "type": "boolean"
+          },
+          "font_size_pt": {
+            "anyOf": [
+              {
+                "maximum": 24.0,
+                "minimum": 6.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Font Size Pt"
+          },
+          "header_background": {
+            "anyOf": [
+              {
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Header Background"
+          },
+          "zebra": {
+            "default": false,
+            "title": "Zebra",
+            "type": "boolean"
+          }
+        },
+        "title": "TableStyle",
+        "type": "object"
+      },
+      "TextRun": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "text",
+            "default": "text",
+            "title": "Kind",
+            "type": "string"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextStyle"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "text": {
+            "maxLength": 20000,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TextRun",
+        "type": "object"
+      },
+      "TextStyle": {
+        "additionalProperties": false,
+        "description": "Character/paragraph formatting. Never carries raw OOXML.",
+        "properties": {
+          "alignment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Alignment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bold": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bold"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "pattern": "^#[0-9A-Fa-f]{6}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "font_size_pt": {
+            "anyOf": [
+              {
+                "maximum": 72.0,
+                "minimum": 6.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Font Size Pt"
+          },
+          "italic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Italic"
+          },
+          "underline": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Underline"
+          }
+        },
+        "title": "TextStyle",
+        "type": "object"
       },
       "UnresolvedDelta": {
         "additionalProperties": false,
@@ -5611,6 +7652,22 @@
         },
         "title": "ValidationReport",
         "type": "object"
+      },
+      "ValueFormat": {
+        "enum": [
+          "plain",
+          "uppercase",
+          "lowercase",
+          "number",
+          "currency",
+          "percent",
+          "date_short",
+          "date_long",
+          "date_iso",
+          "boolean_yes_no"
+        ],
+        "title": "ValueFormat",
+        "type": "string"
       },
       "VersionHints": {
         "additionalProperties": false,
@@ -6182,6 +8239,94 @@
         ]
       }
     },
+    "/api/v1/reference/import-ir": {
+      "post": {
+        "description": "Project resolved reference constructs into Generic Template IR (v0.11 P1).\n\nThis produces a generic DOCX target only; it is not a Docentric AX template\nand makes no runtime compatibility claim.",
+        "operationId": "import_reference_ir_endpoint_api_v1_reference_import_ir_post",
+        "parameters": [
+          {
+            "description": "Path inside a configured reference corpus root",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Path inside a configured reference corpus root",
+              "title": "Path"
+            }
+          },
+          {
+            "description": "Best-effort mode: keep the supported subset and list unsupported or unresolved constructs in skipped[]. Strict mode (default) refuses the whole import.",
+            "in": "query",
+            "name": "allow_unsupported",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Best-effort mode: keep the supported subset and list unsupported or unresolved constructs in skipped[]. Strict mode (default) refuses the whole import.",
+              "title": "Allow Unsupported",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+            "in": "query",
+            "name": "max_depth",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Nested archive depth. Default 0 keeps public uploads non-recursive; the root container is still enumerated.",
+              "maximum": 3,
+              "minimum": 0,
+              "title": "Max Depth",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_reference_ir_endpoint_api_v1_reference_import_ir_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceIRImport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Reference Ir Endpoint",
+        "tags": [
+          "reference"
+        ]
+      }
+    },
     "/api/v1/reference/inspect": {
       "post": {
         "description": "Inspect a reference template without executing or writing it.",
@@ -6253,6 +8398,228 @@
           }
         },
         "summary": "Inspect Reference Endpoint",
+        "tags": [
+          "reference"
+        ]
+      }
+    },
+    "/api/v1/reference/reports": {
+      "post": {
+        "description": "Persist a read-only reference inspection/graph/diff with a TTL.\n\nOnly serialized evidence is stored; source template bytes are never written\nto the database or to artifact storage.",
+        "operationId": "persist_reference_report_endpoint_api_v1_reference_reports_post",
+        "parameters": [
+          {
+            "description": "Path inside a configured reference corpus root",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Path inside a configured reference corpus root",
+              "title": "Path"
+            }
+          },
+          {
+            "description": "Left corpus path for kind=diff",
+            "in": "query",
+            "name": "left_path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Left corpus path for kind=diff",
+              "title": "Left Path"
+            }
+          },
+          {
+            "description": "Right corpus path for kind=diff",
+            "in": "query",
+            "name": "right_path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Right corpus path for kind=diff",
+              "title": "Right Path"
+            }
+          },
+          {
+            "description": "Persist an inspection report (+graph), a graph, or a structural diff",
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ReferenceReportKind",
+              "default": "inspection",
+              "description": "Persist an inspection report (+graph), a graph, or a structural diff"
+            }
+          },
+          {
+            "description": "Nested archive depth (0 keeps public uploads non-recursive)",
+            "in": "query",
+            "name": "max_depth",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Nested archive depth (0 keeps public uploads non-recursive)",
+              "maximum": 3,
+              "minimum": 0,
+              "title": "Max Depth",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_persist_reference_report_endpoint_api_v1_reference_reports_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredReferenceReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Persist Reference Report Endpoint",
+        "tags": [
+          "reference"
+        ]
+      }
+    },
+    "/api/v1/reference/reports/{report_id}": {
+      "get": {
+        "description": "Reopen a persisted reference report by id (404 when missing or expired).",
+        "operationId": "get_reference_report_endpoint_api_v1_reference_reports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredReferenceReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Reference Report Endpoint",
+        "tags": [
+          "reference"
+        ]
+      }
+    },
+    "/api/v1/reference/reports/{report_id}/export": {
+      "get": {
+        "description": "Export a persisted report. The HTML export contains no source active content.",
+        "operationId": "export_reference_report_endpoint_api_v1_reference_reports__report_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Export the persisted report as JSON or safe HTML",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "description": "Export the persisted report as JSON or safe HTML",
+              "pattern": "^(json|html)$",
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Reference Report Endpoint",
         "tags": [
           "reference"
         ]

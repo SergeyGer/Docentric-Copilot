@@ -854,6 +854,10 @@ template, and always report `runtime_compatibility: "not_tested"`.
 | `POST` | `/api/v1/reference/graph` | Read-only ReferenceGraph and optional reference projection |
 | `POST` | `/api/v1/reference/d365` | Embedded D365 schema extraction and canonical binding resolution |
 | `POST` | `/api/v1/reference/diff` | Structural and semantic reference diff |
+| `POST` | `/api/v1/reference/import-ir` | Safe Reference → Generic Template IR subset (#27) |
+| `POST` | `/api/v1/reference/reports` | Persist an inspection/graph/diff envelope (#29) |
+| `GET` | `/api/v1/reference/reports/{id}` | Reopen a persisted reference report |
+| `GET` | `/api/v1/reference/reports/{id}/export` | JSON or safe HTML export |
 
 ### 8.1 `POST /api/v1/reference/d365`
 
@@ -931,3 +935,46 @@ diagnostics and never success. The package version remains `0.9.0` until the v0.
 endpoint is additive and does not change existing reference contracts. See
 [REFERENCE_TEMPLATES](REFERENCE_TEMPLATES.md#d365-embedded-schema-and-binding-resolution-v010-p0)
 and [ADR-0013](adr/0013-d365-embedded-schema-and-binding-resolution.md).
+
+### 8.2 `POST /api/v1/reference/import-ir`
+
+Multipart `file` (`.docx`, `.zip`, `.axpp`) with an optional `ddsp` part, or `?path=` inside a
+configured corpus root. Query `allow_unsupported` defaults to `false`. The response is
+`ReferenceIRImport`:
+
+```json
+{
+  "import_version": "1.0",
+  "reference_version": "1.0",
+  "runtime_compatibility": "not_tested",
+  "target": "generic-docx",
+  "source_name": "template.docx",
+  "source_sha256": "<sha256>",
+  "allow_unsupported": false,
+  "ir": {"kind": "document", "ir_version": "1.0", "target": "generic-docx"},
+  "skipped": [],
+  "provenance": [{"ir_path": "sections[0].body[0].runs[0]", "node_kind": "field"}],
+  "validation": {"statuses": {"structural": "passed", "semantic": "passed", "logical": "passed", "visual": "skipped", "docentric_compatibility": "not_tested"}, "can_compile": true},
+  "summary": {"references": 1, "imported": 1, "skipped": 0}
+}
+```
+
+Strict mode returns HTTP `422` with `reference_import_blocked` and the complete `skipped[]` when
+anything is unsupported, ambiguous or unresolved. If no construct can be imported safely it returns
+HTTP `422` with `reference_import_empty`. The target is always `generic-docx`; the endpoint never
+enables `docentric-ax` and never claims Docentric AX runtime compatibility. See
+[REFERENCE_TEMPLATES §27](REFERENCE_TEMPLATES.md#27--safe-reference--generic-template-ir-import).
+
+### 8.3 `POST /api/v1/reference/reports`
+
+Runs the reference analysis server-side and persists the serialized envelope in local SQLite under
+the artifact TTL (default 3600 seconds). Query `kind` is `inspection` (report + graph, default),
+`graph` or `diff` (multipart `left`/`right` or `left_path`/`right_path`). No source template bytes
+are stored. The response contains `id`, `kind`, `schema_version`, `created_at`, `expires_at`,
+`source_name`, `source_sha256`, `report`, `graph`, `diff`, `warnings` and
+`runtime_compatibility: "not_tested"`.
+
+`GET /api/v1/reference/reports/{id}` reopens the same envelope; missing or expired ids return HTTP
+`404` with `reference_report_not_found`. `GET .../export?format=json|html` returns the complete JSON
+or a self-contained, HTML-escaped export suitable for review. See
+[REFERENCE_TEMPLATES §29](REFERENCE_TEMPLATES.md#29--persistence-reopen-and-export).

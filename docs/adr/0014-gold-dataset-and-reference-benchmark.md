@@ -78,7 +78,26 @@ test; `runtime_compatibility` stays `not_tested`.
 
 ### Live run
 
-<!-- LIVE_RESULTS -->
+The first committed run is [gold_report.json](../../benchmarks/gold_report.json): 288/288 planned
+runs, dataset `1.0.0` (canonical SHA-256
+`c2b1d89c70f96f14884de54792784d0dbd3ffaa71d0700d5f73c5c24e93ece30`), 2026-11-05.
+
+| Provider | Runs | Precision | Recall | F1 | Semantic pass | Valid template | p50 | Spend |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| OpenAI `gpt-6-sol` | 96 | **0.226** | 1.000 | **0.368** | 55.2% | 100.0% | 15.5 s | **$2.9754 verified** |
+| Anthropic `claude-sonnet-5-5` | 96 | 0.220 | 0.996 | 0.361 | **69.8%** | 100.0% | 10.7 s | $3.9096 verified |
+| Gemini `gemini-3.6-flash` | 96 attempted / 93 planned | 0.184 | 1.000 | 0.311 | 64.6% | 96.9% | **4.1 s** | **$0.2910 estimated** |
+
+Holdout semantic pass (36 runs per provider) was 61.1% / 66.7% / 66.7%, calibration (60 runs per
+provider) 51.7% / 71.7% / 63.3%; precision was lower on holdout for all three. These are observations
+from 12 holdout cases, not significance. Spend was **$6.8849 verified + $0.2910 estimated =
+$7.1759**, under the $10 cap and above the $5 warning line. Three Gemini compact-IR responses were
+rejected (`structured_output`) and their cost is unknown, so Gemini's cost per correct result is
+N/A; the other provider-level cost per correct result is $0.0561 (OpenAI) and $0.0584 (Anthropic).
+Recall, coverage and type/context are near saturation; precision, block coverage and the all-or-nothing
+semantic pass separate the providers. The images family is 0% for every provider because all three
+over-bind scope-guarded paths, which is a scope-adherence observation and an open label-design
+question, not an image-recognition result.
 
 ## Consequences
 

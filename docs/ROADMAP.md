@@ -147,7 +147,7 @@ workstreams below are in scope for this branch; nothing else is presented as don
 | PR-02 D365 embedded schema extraction | `ProjectData`/`DataSource`/`Schema`/`PreviewData`/field-metadata extraction with part + XPath + source-id provenance; `schema_source = projectdata \| ddsp \| unavailable` | Done — static, read-only |
 | PR-03 canonical schema and binding resolver | Canonical fields/collections/scopes/types; exact six-status taxonomy; evidence on every `resolved`; CLI and API | Done — partial semantics by design |
 | PR-04 gold semantic dataset | 32 versioned cases, ten families, annotation guide, 20/12 calibration/holdout split, deterministic rule pass | Done — single-annotator labels; AT-07 partial (no independent human double review) |
-| PR-05 live benchmark runner and report | 288 live runs (32 cases × 3 providers × 3 repeats), calibration/holdout, cost and error taxonomy, JSON/CSV/HTML | Done — see [EVALUATION §2.7](EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05) |
+| PR-05 live benchmark runner and report | 288 live runs (32 cases × 3 providers × 3 repeats), calibration/holdout, cost and error taxonomy, JSON/CSV/HTML | Done — 288/288 runs, $6.8849 verified + $0.2910 estimated; see [EVALUATION §2.7](EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05) |
 | PR-06 safe Reference → generic Template IR | Opt-in projection with no silent loss | Not started |
 | PR-07 visual reference diff | Page-level rendering and failure-safe status | Not started |
 | PR-08 report persistence/export and browser E2E | Durable reports, reopen workflow, E2E | Not started |

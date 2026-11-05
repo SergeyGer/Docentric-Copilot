@@ -7,7 +7,8 @@ executes macros and applies the same size limits as source uploads.
 
 from __future__ import annotations
 
-from pathlib import Path
+import posixpath
+from pathlib import Path, PurePosixPath
 
 from docentric_copilot.api.deps import get_settings
 from docentric_copilot.config import Settings
@@ -37,45 +38,58 @@ _ALLOWED_INPUTS = (".docx", ".zip", ".axpp")
 _ALLOWED_SCHEMAS = (".ddsp", ".xml")
 
 
+def _corpus_index(settings: Settings) -> dict[str, Path]:
+    """Map every file under the configured roots to its resolved path once.
+
+    The request supplies a *key* looked up in this index; no path is constructed
+    from user input, so traversal and existence-oracle patterns cannot occur.
+    """
+    index: dict[str, Path] = {}
+    for root in settings.reference_corpus_roots:
+        root_path = root.expanduser().resolve(strict=False)
+        if not root_path.is_dir():
+            continue
+        for candidate in sorted(root_path.rglob("*")):
+            if candidate.is_file():
+                index.setdefault(candidate.relative_to(root_path).as_posix(), candidate.resolve())
+    return index
+
+
 def _resolve_corpus_path(raw: str, settings: Settings) -> Path:
     if not raw.strip():
         raise InvalidInputError("A non-empty corpus path is required")
-    roots = [root.expanduser() for root in settings.reference_corpus_roots]
-    if not roots:
+    if not settings.reference_corpus_roots:
         raise SecurityViolationError(
             "No reference corpus root is configured",
             code="reference_path_forbidden",
         )
-    requested = Path(raw)
-    if requested.is_absolute():
-        resolved = requested.resolve(strict=False)
-        for root in roots:
-            root_resolved = root.resolve(strict=False)
-            if resolved.is_relative_to(root_resolved):
-                if not resolved.exists():
-                    raise NotFoundError(
-                        "Reference path does not exist",
-                        code="reference_path_not_found",
-                    )
-                return resolved
+    requested = posixpath.normpath(raw.strip().replace("\\", "/"))
+    parts = PurePosixPath(requested).parts
+    if not parts or any(part in {"..", "."} for part in parts):
         raise SecurityViolationError(
             "Reference path is outside the allowed corpus roots",
             code="reference_path_forbidden",
         )
-    for root in roots:
-        root_resolved = root.resolve(strict=False)
-        candidate = (root / requested).resolve(strict=False)
-        if not candidate.is_relative_to(root_resolved):
+    if requested.startswith("/"):
+        relative = None
+        for root in settings.reference_corpus_roots:
+            root_string = str(root.expanduser().resolve(strict=False))
+            if requested == root_string or requested.startswith(root_string.rstrip("/") + "/"):
+                relative = requested[len(root_string) :].lstrip("/")
+                break
+        if relative is None:
             raise SecurityViolationError(
                 "Reference path is outside the allowed corpus roots",
                 code="reference_path_forbidden",
             )
-        if candidate.exists():
-            return candidate
-    raise NotFoundError(
-        "Reference path does not exist inside any allowed corpus root",
-        code="reference_path_not_found",
-    )
+        requested = relative
+    resolved = _corpus_index(settings).get(PurePosixPath(requested).as_posix())
+    if resolved is None:
+        raise NotFoundError(
+            "Reference path does not exist inside any allowed corpus root",
+            code="reference_path_not_found",
+        )
+    return resolved
 
 
 async def _read_upload(file: UploadFile, *, limit: int, allowed: tuple[str, ...]) -> bytes:

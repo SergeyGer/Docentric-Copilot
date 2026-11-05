@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -18,6 +21,8 @@ jobs:
   python:
     name: Python · lint, types, tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
 
@@ -68,6 +73,8 @@ jobs:
   web:
     name: Web · lint, types, build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: apps/web
@@ -97,6 +104,8 @@ jobs:
   docker:
     name: Docker · API and web images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: [python, web]
     steps:
       - uses: actions/checkout@v5
@@ -124,6 +133,8 @@ jobs:
   security:
     name: Security · static analysis
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
 

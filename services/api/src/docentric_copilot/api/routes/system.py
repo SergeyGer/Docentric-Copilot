@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html
+
 from docentric_copilot import __version__
 from docentric_copilot.api.deps import get_service, get_settings, get_store
 from docentric_copilot.api.schemas import (
@@ -98,7 +100,7 @@ def view_artifact(artifact_id: str, store: Store = Depends(get_store)) -> HTMLRe
     if record.media_type != "text/html":
         return HTMLResponse(
             "<!doctype html><p>This artifact is not an HTML document. "
-            f'<a href="/api/v1/artifacts/{artifact_id}">Download it instead</a>.</p>',
+            f'<a href="/api/v1/artifacts/{html.escape(artifact_id)}">Download it instead</a>.</p>',
             status_code=415,
         )
     return HTMLResponse(

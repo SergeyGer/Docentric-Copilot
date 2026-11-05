@@ -7,7 +7,13 @@
  */
 
 import { isRecord } from "@/lib/guards";
-import type { ReferenceDiff, ReferenceGraph, ReferenceReport } from "@/lib/types";
+import type {
+  ReferenceDiff,
+  ReferenceGraph,
+  ReferenceReport,
+  ReferenceReportExportFormat,
+  StoredReferenceReport,
+} from "@/lib/types";
 
 // Same origin by default: Next.js proxies /api/v1/* to the backend, so the
 // browser only needs the web port. Set NEXT_PUBLIC_API_BASE_URL to call a
@@ -293,6 +299,45 @@ export function buildReferenceGraph(
     timeoutMs: REFERENCE_REQUEST_TIMEOUT_MS,
     ...options,
   });
+}
+
+/**
+ * `POST /api/v1/reference/reports?kind=inspection` — run the read-only
+ * inspection and persist the report + graph with a TTL.
+ */
+export function persistReferenceInspection(
+  file: File,
+  ddsp: File | null = null,
+  options: ApiRequestOptions = {},
+): Promise<StoredReferenceReport> {
+  const body = new FormData();
+  appendUpload(body, "file", file);
+  if (ddsp) {
+    appendUpload(body, "ddsp", ddsp);
+  }
+  return postMultipart<StoredReferenceReport>(
+    "/api/v1/reference/reports?kind=inspection",
+    body,
+    { timeoutMs: REFERENCE_REQUEST_TIMEOUT_MS, ...options },
+  );
+}
+
+/** `GET /api/v1/reference/reports/{id}` — reopen a persisted report. */
+export function getStoredReferenceReport(
+  reportId: string,
+  options: ApiRequestOptions = {},
+): Promise<StoredReferenceReport> {
+  const encoded = encodeURIComponent(reportId);
+  return apiRequest<StoredReferenceReport>(`/api/v1/reference/reports/${encoded}`, {}, options);
+}
+
+/** Download path for a persisted report export (JSON or safe HTML). */
+export function referenceReportExportPath(
+  reportId: string,
+  format: ReferenceReportExportFormat,
+): string {
+  const encoded = encodeURIComponent(reportId);
+  return `/api/v1/reference/reports/${encoded}/export?format=${format}`;
 }
 
 /** `POST /api/v1/reference/diff` — read-only structural/semantic comparison. */

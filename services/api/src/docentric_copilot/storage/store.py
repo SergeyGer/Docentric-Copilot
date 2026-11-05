@@ -71,8 +71,20 @@ CREATE TABLE IF NOT EXISTS artifacts (
     created_at REAL NOT NULL,
     expires_at REAL NOT NULL
 );
+CREATE TABLE IF NOT EXISTS reference_reports (
+    id TEXT PRIMARY KEY,
+    kind TEXT NOT NULL,
+    schema_version TEXT NOT NULL,
+    created_at REAL NOT NULL,
+    expires_at REAL NOT NULL,
+    source_name TEXT NOT NULL,
+    source_sha256 TEXT,
+    payload_json TEXT NOT NULL,
+    warnings_json TEXT NOT NULL
+);
 CREATE INDEX IF NOT EXISTS idx_artifacts_expires ON artifacts(expires_at);
 CREATE INDEX IF NOT EXISTS idx_versions_template ON versions(template_id, version);
+CREATE INDEX IF NOT EXISTS idx_reference_reports_expires ON reference_reports(expires_at);
 """
 
 
@@ -149,6 +161,28 @@ class VersionRecord:
 
     def validation(self) -> dict[str, Any]:
         return json.loads(self.validation_json)
+
+
+@dataclass(frozen=True)
+class ReferenceReportRecord:
+    """One persisted reference report/graph/diff envelope (TTL like artifacts)."""
+
+    id: str
+    kind: str
+    schema_version: str
+    created_at: float
+    expires_at: float
+    source_name: str
+    source_sha256: str | None
+    payload_json: str
+    warnings: list[str]
+
+    def payload(self) -> dict[str, Any]:
+        return json.loads(self.payload_json)
+
+    @property
+    def expired(self) -> bool:
+        return time.time() > self.expires_at
 
 
 class Store:
@@ -369,6 +403,84 @@ class Store:
             for row in rows
         ]
 
+    # ------------------------------------------------------ reference reports
+    def save_reference_report(
+        self,
+        *,
+        kind: str,
+        schema_version: str,
+        source_name: str,
+        source_sha256: str | None,
+        payload: dict[str, Any],
+        warnings: list[str] | None = None,
+    ) -> ReferenceReportRecord:
+        report_id = new_id("ref")
+        created = time.time()
+        record = ReferenceReportRecord(
+            id=report_id,
+            kind=kind[:40],
+            schema_version=schema_version[:40],
+            created_at=created,
+            expires_at=created + self._settings.artifact_ttl_seconds,
+            source_name=source_name[:300],
+            source_sha256=source_sha256,
+            payload_json=json.dumps(payload, ensure_ascii=False, sort_keys=True),
+            warnings=list(warnings or [])[:100],
+        )
+        with self._lock:
+            self._connection.execute(
+                "INSERT INTO reference_reports (id, kind, schema_version, created_at, expires_at, "
+                "source_name, source_sha256, payload_json, warnings_json) "
+                "VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    record.id,
+                    record.kind,
+                    record.schema_version,
+                    record.created_at,
+                    record.expires_at,
+                    record.source_name,
+                    record.source_sha256,
+                    record.payload_json,
+                    json.dumps(record.warnings, ensure_ascii=False),
+                ),
+            )
+        return record
+
+    def get_reference_report(self, report_id: str) -> ReferenceReportRecord:
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT * FROM reference_reports WHERE id = ?", (report_id,)
+            ).fetchone()
+        if row is None:
+            raise NotFoundError(
+                "Reference report not found",
+                code="reference_report_not_found",
+                details={"report_id": report_id},
+            )
+        record = ReferenceReportRecord(
+            id=row["id"],
+            kind=row["kind"],
+            schema_version=row["schema_version"],
+            created_at=row["created_at"],
+            expires_at=row["expires_at"],
+            source_name=row["source_name"],
+            source_sha256=row["source_sha256"],
+            payload_json=row["payload_json"],
+            warnings=json.loads(row["warnings_json"]),
+        )
+        if record.expired:
+            self.delete_reference_report(record.id)
+            raise NotFoundError(
+                "Reference report has expired",
+                code="reference_report_not_found",
+                details={"report_id": report_id},
+            )
+        return record
+
+    def delete_reference_report(self, report_id: str) -> None:
+        with self._lock:
+            self._connection.execute("DELETE FROM reference_reports WHERE id = ?", (report_id,))
+
     # ------------------------------------------------------------- artifacts
     def save_artifact(
         self,
@@ -474,7 +586,16 @@ class Store:
             ).fetchall()
             for row in source_rows:
                 self._connection.execute("DELETE FROM sources WHERE id = ?", (row["id"],))
-        return {"artifacts": removed_artifacts, "sources": len(source_rows)}
+            reference_rows = self._connection.execute(
+                "SELECT id FROM reference_reports WHERE expires_at < ?", (reference,)
+            ).fetchall()
+            for row in reference_rows:
+                self._connection.execute("DELETE FROM reference_reports WHERE id = ?", (row["id"],))
+        return {
+            "artifacts": removed_artifacts,
+            "sources": len(source_rows),
+            "reference_reports": len(reference_rows),
+        }
 
 
 __all__ = ["ArtifactRecord", "JobRecord", "SourceRecord", "Store", "VersionRecord"]

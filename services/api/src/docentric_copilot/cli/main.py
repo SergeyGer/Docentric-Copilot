@@ -37,10 +37,12 @@ from docentric_copilot.reference import (
     ReferenceIRImport,
     ReferenceLimits,
     ReferenceReport,
+    VisualDiffReport,
     analyze_d365_path,
     binding_report_json,
     build_reference_diff,
     build_reference_graph,
+    build_visual_diff,
     diff_json,
     graph_json,
     import_ir_json,
@@ -51,6 +53,7 @@ from docentric_copilot.reference import (
     project_to_template_ir,
     projection_json,
     report_json,
+    visual_diff_json,
 )
 from docentric_copilot.template_ir import (
     CompileTarget,
@@ -412,6 +415,96 @@ def _diff_summary(diff: ReferenceDiff) -> str:
             f"Runtime compatibility: {diff.runtime_compatibility}",
         ]
     )
+
+
+@reference_app.command("visual-diff")
+def reference_visual_diff(
+    left: Annotated[
+        str,
+        typer.Argument(help="Left DOCX, ZIP or AXPP reference to render"),
+    ],
+    right: Annotated[
+        str,
+        typer.Argument(help="Right DOCX, ZIP or AXPP reference to render"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the visual diff JSON to this path; '-' for stdout",
+        ),
+    ] = None,
+    output_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--output-dir",
+            help="Directory for report.json, report.html, PDFs and page images",
+        ),
+    ] = None,
+    dpi: Annotated[
+        int,
+        typer.Option("--dpi", min=36, max=600, help="Rasterisation DPI (default 150)"),
+    ] = 150,
+    tolerance: Annotated[
+        float,
+        typer.Option(
+            "--tolerance",
+            min=0.0,
+            max=1.0,
+            help="Page difference tolerance (default 0.005)",
+        ),
+    ] = 0.005,
+) -> None:
+    """Compare two references by LibreOffice-rendered pages (v0.11 P1).
+
+    This is LibreOffice rendering, not Word fidelity. A visual difference is not
+    a defect verdict, and an unavailable renderer is reported as
+    ``renderer_unavailable`` — never as a pass or a fail.
+    """
+    as_json = json_output is not None and str(json_output) == "-"
+    if output_dir is None:
+        if json_output is not None and str(json_output) != "-":
+            output_dir = json_output.parent / "visual-diff"
+        else:
+            output_dir = Path("visual-diff")
+    try:
+        report: VisualDiffReport = build_visual_diff(
+            left,
+            right,
+            output_dir=output_dir,
+            dpi=dpi,
+            tolerance=tolerance,
+        )
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    payload = visual_diff_json(report)
+    if json_output is None:
+        typer.echo(_visual_diff_summary(report))
+    elif str(json_output) == "-":
+        typer.echo(payload, nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(payload, encoding="utf-8")
+        typer.echo(_visual_diff_summary(report))
+        typer.echo(f"Visual diff report written to {json_output}")
+
+
+def _visual_diff_summary(report: VisualDiffReport) -> str:
+    lines = [
+        f"Visual diff: {report.visual_status.value}",
+        (
+            f"Pages: left {report.left.page_count}, right {report.right.page_count}; "
+            f"compared {report.pages_compared}; changed {report.summary.changed_pages}"
+        ),
+        (f"Renderer: {report.renderer_label} ({report.renderer_version or 'version unavailable'})"),
+        "Structural/semantic diff: not compared (use reference diff)",
+        f"Runtime compatibility: {report.runtime_compatibility}",
+    ]
+    if report.reason:
+        lines.append(f"Reason: {report.reason}")
+    lines.append(f"Artifacts: {report.artifacts.get('report_json', 'report.json')}")
+    return "\n".join(lines)
 
 
 def _d365_summary(report: D365BindingReport) -> str:

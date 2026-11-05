@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FileSearch, GitBranch, ListChecks, Loader2 } from "lucide-react";
+import { Download, FileSearch, GitBranch, ListChecks, Loader2 } from "lucide-react";
 
 import { ReferenceControlsPanel } from "@/components/reference/reference-controls-panel";
 import { ReferenceDiffPanel } from "@/components/reference/reference-diff-panel";
@@ -12,6 +12,7 @@ import { RuntimeCompatibilityNotice } from "@/components/reference/reference-bad
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/workspace/empty-state";
@@ -20,8 +21,11 @@ import {
   ApiError,
   apiRequest,
   buildReferenceGraph,
-  inspectReference,
+  getStoredReferenceReport,
+  persistReferenceInspection,
+  referenceReportExportPath,
   toApiError,
+  triggerDownload,
 } from "@/lib/api";
 import { formatBytes, formatNumber } from "@/lib/format";
 import {
@@ -29,9 +33,36 @@ import {
   REFERENCE_TEMPLATE_EXTENSIONS,
   hasReferenceExtension,
 } from "@/lib/reference";
-import type { CapabilitiesView, ReferenceGraph, ReferenceReport } from "@/lib/types";
+import type {
+  CapabilitiesView,
+  ReferenceGraph,
+  ReferenceReport,
+  ReferenceReportExportFormat,
+  StoredReferenceReport,
+} from "@/lib/types";
 
 type ReferenceTab = "overview" | "controls" | "graph" | "diff";
+
+function readReportIdFromUrl(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const value = new URLSearchParams(window.location.search).get("id");
+  return value && value.trim().length > 0 ? value.trim() : null;
+}
+
+function writeReportIdToUrl(reportId: string | null): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  const url = new URL(window.location.href);
+  if (reportId) {
+    url.searchParams.set("id", reportId);
+  } else {
+    url.searchParams.delete("id");
+  }
+  window.history.replaceState({}, "", url);
+}
 
 function validateInspectionInput(
   file: File,
@@ -123,6 +154,9 @@ export function ReferenceInspector() {
   const [graphError, setGraphError] = useState<ApiError | null>(null);
   const [limitBytes, setLimitBytes] = useState<number | null>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [exportFormat, setExportFormat] =
+    useState<ReferenceReportExportFormat>("json");
   const requestRef = useRef(0);
   const busy = inspectPending || graphPending;
 
@@ -146,11 +180,67 @@ export function ReferenceInspector() {
     };
   }, []);
 
+  // Reopen the last persisted report from `?id=`. An absent or invalid id must
+  // never crash the page: the error is shown and the query string is cleared.
+  useEffect(() => {
+    const storedId = readReportIdFromUrl();
+    if (!storedId) {
+      return;
+    }
+    let cancelled = false;
+    const requestId = requestRef.current + 1;
+    requestRef.current = requestId;
+    setInspectPending(true);
+    setGraphPending(true);
+    setUploadError(null);
+    setGraphError(null);
+    setAnnouncement(`Reopening saved reference report ${storedId}.`);
+    getStoredReferenceReport(storedId)
+      .then((record: StoredReferenceReport) => {
+        if (cancelled || requestRef.current !== requestId) {
+          return;
+        }
+        setReportId(record.id);
+        setReport(record.report);
+        setGraph(record.graph);
+        setTab(record.report ? "overview" : "graph");
+        setAnnouncement(
+          `Saved report ${record.id} reopened: ${record.source_name}. Docentric AX runtime compatibility: not tested.`,
+        );
+      })
+      .catch((caught: unknown) => {
+        if (cancelled || requestRef.current !== requestId) {
+          return;
+        }
+        const apiError = toApiError(caught);
+        setReportId(null);
+        setReport(null);
+        setGraph(null);
+        setUploadError(apiError);
+        setAnnouncement(`Saved report could not be reopened: ${apiError.message}`);
+        writeReportIdToUrl(null);
+      })
+      .finally(() => {
+        if (!cancelled && requestRef.current === requestId) {
+          setInspectPending(false);
+          setGraphPending(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const clearResults = useCallback(() => {
     setReport(null);
     setGraph(null);
     setUploadError(null);
     setGraphError(null);
+  }, []);
+
+  const clearStoredReport = useCallback(() => {
+    setReportId(null);
+    writeReportIdToUrl(null);
   }, []);
 
   const handleFileChange = useCallback(
@@ -160,13 +250,14 @@ export function ReferenceInspector() {
       setInspectPending(false);
       setGraphPending(false);
       clearResults();
+      clearStoredReport();
       setAnnouncement(
         next
           ? `Selected ${next.name} (${formatBytes(next.size)}). Select Inspect reference to analyse it.`
           : "Template selection cleared.",
       );
     },
-    [clearResults],
+    [clearResults, clearStoredReport],
   );
 
   const handleDdspChange = useCallback(
@@ -176,13 +267,14 @@ export function ReferenceInspector() {
       setInspectPending(false);
       setGraphPending(false);
       clearResults();
+      clearStoredReport();
       setAnnouncement(
         next
           ? `Selected DDSP schema ${next.name} (${formatBytes(next.size)}).`
           : "DDSP schema cleared.",
       );
     },
-    [clearResults],
+    [clearResults, clearStoredReport],
   );
 
   const handleReset = useCallback(() => {
@@ -192,8 +284,9 @@ export function ReferenceInspector() {
     setInspectPending(false);
     setGraphPending(false);
     clearResults();
+    clearStoredReport();
     setAnnouncement("Reference inspector cleared.");
-  }, [clearResults]);
+  }, [clearResults, clearStoredReport]);
 
   const handleInspect = useCallback(async () => {
     if (!file || busy) {
@@ -214,58 +307,44 @@ export function ReferenceInspector() {
     setGraph(null);
     setUploadError(null);
     setGraphError(null);
-    setAnnouncement(
-      `Inspecting ${file.name}. The report and reference graph load from the same source.`,
-    );
+    setAnnouncement(`Inspecting and saving ${file.name} together with its reference graph.`);
 
-    const inspection = inspectReference(file, ddsp)
-      .then((result) => {
-        if (requestRef.current !== requestId) {
-          return;
-        }
-        setReport(result);
-        setAnnouncement(
-          `Inspection complete for ${result.source_name}: ${formatNumber(result.counts.controls_total)} controls, ${formatNumber(result.counts.classification_recognized)} recognized, ${formatNumber(result.counts.classification_ambiguous)} ambiguous and ${formatNumber(result.counts.classification_unknown)} unknown. Docentric AX runtime compatibility: not tested.`,
-        );
-      })
-      .catch((caught: unknown) => {
-        if (requestRef.current !== requestId) {
-          return;
-        }
-        const apiError = toApiError(caught);
-        setUploadError(apiError);
-        setAnnouncement(`Inspection failed: ${apiError.message}`);
-      })
-      .finally(() => {
-        if (requestRef.current === requestId) {
-          setInspectPending(false);
-        }
-      });
-
-    const graphRequest = buildReferenceGraph(file, ddsp)
-      .then((result) => {
-        if (requestRef.current !== requestId) {
-          return;
-        }
-        setGraph(result);
-      })
-      .catch((caught: unknown) => {
-        if (requestRef.current !== requestId) {
-          return;
-        }
-        setGraphError(toApiError(caught));
-      })
-      .finally(() => {
-        if (requestRef.current === requestId) {
-          setGraphPending(false);
-        }
-      });
-
-    await Promise.allSettled([inspection, graphRequest]);
+    try {
+      const stored = await persistReferenceInspection(file, ddsp);
+      if (requestRef.current !== requestId) {
+        return;
+      }
+      setReport(stored.report);
+      setGraph(stored.graph);
+      setReportId(stored.id);
+      writeReportIdToUrl(stored.id);
+      setTab(stored.report ? "overview" : "graph");
+      const counts = stored.report?.counts;
+      setAnnouncement(
+        counts
+          ? `Inspection complete for ${stored.source_name}: ${formatNumber(counts.controls_total)} controls, ${formatNumber(counts.classification_recognized)} recognized, ${formatNumber(counts.classification_ambiguous)} ambiguous and ${formatNumber(counts.classification_unknown)} unknown. Saved as ${stored.id}. Docentric AX runtime compatibility: not tested.`
+          : `Reference graph saved as ${stored.id} for ${stored.source_name}. Docentric AX runtime compatibility: not tested.`,
+      );
+    } catch (caught) {
+      if (requestRef.current !== requestId) {
+        return;
+      }
+      const apiError = toApiError(caught);
+      setUploadError(apiError);
+      setAnnouncement(`Inspection failed: ${apiError.message}`);
+    } finally {
+      if (requestRef.current === requestId) {
+        setInspectPending(false);
+        setGraphPending(false);
+      }
+    }
   }, [busy, ddsp, file, limitBytes]);
 
   const retryGraph = useCallback(async () => {
-    if (!file || graphPending) {
+    if (graphPending) {
+      return;
+    }
+    if (!file && !reportId) {
       return;
     }
     const requestId = requestRef.current;
@@ -273,14 +352,18 @@ export function ReferenceInspector() {
     setGraphError(null);
     setAnnouncement("Retrying the reference graph.");
     try {
-      const result = await buildReferenceGraph(file, ddsp);
+      const result = reportId
+        ? (await getStoredReferenceReport(reportId)).graph
+        : await buildReferenceGraph(file as File, ddsp);
       if (requestRef.current !== requestId) {
         return;
       }
-      setGraph(result);
-      setAnnouncement(
-        `Reference graph complete: ${formatNumber(result.summary.node_count)} nodes and ${formatNumber(result.summary.edge_count)} edges.`,
-      );
+      if (result) {
+        setGraph(result);
+        setAnnouncement(
+          `Reference graph complete: ${formatNumber(result.summary.node_count)} nodes and ${formatNumber(result.summary.edge_count)} edges.`,
+        );
+      }
     } catch (caught) {
       if (requestRef.current !== requestId) {
         return;
@@ -293,7 +376,7 @@ export function ReferenceInspector() {
         setGraphPending(false);
       }
     }
-  }, [ddsp, file, graphPending]);
+  }, [ddsp, file, graphPending, reportId]);
 
   const controlsCount = report?.counts.controls_total ?? 0;
   const graphNodeCount = graph?.summary.node_count ?? 0;
@@ -311,7 +394,8 @@ export function ReferenceInspector() {
           <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
             Inspect content controls, ProjectData evidence, DDSP binding resolution and the
             reference graph behind an existing Docentric template. Compare two templates
-            structurally and semantically. Nothing is compiled, written or executed.
+            structurally and semantically. Nothing is compiled or executed; inspection
+            evidence is saved locally so a report can be reopened and exported by id.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -323,6 +407,39 @@ export function ReferenceInspector() {
       </div>
 
       <RuntimeCompatibilityNotice className="mt-4" />
+
+      {reportId ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/15 px-3 py-2">
+          <span className="text-xs text-muted-foreground">
+            Saved report <code className="break-all font-mono text-foreground">{reportId}</code>
+          </span>
+          <Select
+            aria-label="Export format"
+            className="h-8 w-24"
+            value={exportFormat}
+            onChange={(event) =>
+              setExportFormat(event.target.value as ReferenceReportExportFormat)
+            }
+          >
+            <option value="json">JSON</option>
+            <option value="html">HTML</option>
+          </Select>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              triggerDownload(
+                referenceReportExportPath(reportId, exportFormat),
+                `reference-report-${reportId}.${exportFormat}`,
+              )
+            }
+          >
+            <Download aria-hidden="true" />
+            Export report
+          </Button>
+        </div>
+      ) : null}
 
       <p role="status" aria-live="polite" className="sr-only">
         {announcement}

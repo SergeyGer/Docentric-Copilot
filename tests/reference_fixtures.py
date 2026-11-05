@@ -162,6 +162,29 @@ class ElementSpec:
     properties: dict[str, str] = field(default_factory=dict)
 
 
+def _render_element(element: ElementSpec) -> str:
+    attrs = {"Type": element.element_type, "Id": str(element.element_id)}
+    attrs.update(element.attributes)
+    rendered = " ".join(f'{key}="{escape(value)}"' for key, value in sorted(attrs.items()))
+    children: list[str] = []
+    if element.child_ids:
+        refs = "".join(f'<ElementRef Id="{escape(str(item))}"/>' for item in element.child_ids)
+        children.append(f"<ChildElements>{refs}</ChildElements>")
+    if element.properties:
+        rendered_properties = " ".join(
+            f'{key}="{escape(value)}"' for key, value in sorted(element.properties.items())
+        )
+        children.append(f"<Value {rendered_properties}/>")
+    if element.source is not None and element.path is not None:
+        children.append(
+            "<ValueBinding "
+            f'DataKind="2" Source="{escape(element.source)}" '
+            f'Path="{escape(element.path)}" '
+            f'ResultDataType="{escape(element.result_data_type or "")}"/>'
+        )
+    return f"<Element {rendered}>{''.join(children)}</Element>"
+
+
 def build_project_data(
     elements: tuple[ElementSpec, ...] = (),
     *,
@@ -170,34 +193,13 @@ def build_project_data(
 ) -> bytes:
     """Build a namespace-correct synthetic ProjectData XML document."""
     source_xml = "".join(f'<DataSource Name="{escape(name)}"/>' for name in data_sources)
-    element_xml: list[str] = []
-    for element in elements:
-        attrs = {"Type": element.element_type, "Id": str(element.element_id)}
-        attrs.update(element.attributes)
-        rendered = " ".join(f'{key}="{escape(value)}"' for key, value in sorted(attrs.items()))
-        children: list[str] = []
-        if element.child_ids:
-            refs = "".join(f'<ElementRef Id="{escape(str(item))}"/>' for item in element.child_ids)
-            children.append(f"<ChildElements>{refs}</ChildElements>")
-        if element.properties:
-            rendered_properties = " ".join(
-                f'{key}="{escape(value)}"' for key, value in sorted(element.properties.items())
-            )
-            children.append(f"<Value {rendered_properties}/>")
-        if element.source is not None and element.path is not None:
-            children.append(
-                "<ValueBinding "
-                f'DataKind="2" Source="{escape(element.source)}" '
-                f'Path="{escape(element.path)}" '
-                f'ResultDataType="{escape(element.result_data_type or "")}"/>'
-            )
-        element_xml.append(f"<Element {rendered}>{''.join(children)}</Element>")
+    element_xml = "".join(_render_element(element) for element in elements)
     text = (
         f'<ProjectData xmlns="{PROJECT_DATA_NS}" ProductId="3" '
         f'ProductVersion="{escape(product_version)}">'
         '<UISettings xmlns=""/>'
         f'<DataSources xmlns="">{source_xml}</DataSources>'
-        f'<Elements xmlns="">{"".join(element_xml)}</Elements>'
+        f'<Elements xmlns="">{element_xml}</Elements>'
         "</ProjectData>"
     )
     return text.encode("utf-8")
@@ -436,6 +438,130 @@ _REFERENCE_DDSP_TEMPLATE: Final = """<?xml version="1.0" encoding="utf-8"?>
 """
 
 
+EMBEDDED_MAIN_XSD: Final = """
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xse="http://schemas.docentric.com/xml-schema-extensions">
+  <xs:complexType name="Enum">
+    <xs:attribute name="Value" type="xs:integer"/>
+    <xs:attribute name="Text" type="xs:string"/>
+  </xs:complexType>
+  <xs:element name="Root">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Lines" minOccurs="0">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Line">
+                <xs:annotation><xs:appinfo>
+                  <xse:label xse:text="Order line" xse:refCode="@SYN010"/>
+                </xs:appinfo></xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="ItemId" type="xs:string"/>
+                  <xs:attribute name="Amount" type="xs:decimal"/>
+                  <xs:attribute name="Quantity" type="xs:integer"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Status" type="Enum" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="Number" type="xs:string">
+        <xs:annotation><xs:appinfo>
+          <xse:label xse:text="Order number" xse:refCode="@SYN011"/>
+        </xs:appinfo></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="IssuedOn" type="xs:date"/>
+      <xs:attribute name="IsPaid" type="xs:boolean"/>
+      <xs:attribute name="Logo" type="xs:base64Binary"/>
+      <xs:attribute name="Name" type="xs:string"/>
+      <xs:attribute name="Total" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+"""
+
+EMBEDDED_GENERAL_XSD: Final = """
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="GeneralData">
+    <xs:complexType>
+      <xs:attribute name="Company" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+"""
+
+EMBEDDED_MAIN_PREVIEW: Final = (
+    '<Root Number="T-1" IssuedOn="2026-01-15" IsPaid="true" Name="Synthetic" Total="9.50">'
+    '<Lines><Line ItemId="A" Amount="1.50" Quantity="1"/>'
+    '<Line ItemId="B" Amount="8.00" Quantity="2"/></Lines>'
+    '<Status Value="1" Text="Open"/>'
+    "</Root>"
+)
+
+
+@dataclass(frozen=True)
+class EmbeddedDataSourceSpec:
+    """One DataSource with an embedded XSD and optional PreviewData."""
+
+    name: str = "MainData"
+    xsd: str = EMBEDDED_MAIN_XSD
+    data_section_type: str | None = "1"
+    preview: str | None = EMBEDDED_MAIN_PREVIEW
+    include_schema: bool = True
+    namespace_mappings: tuple[tuple[str, str], ...] = (("xs", "http://www.w3.org/2001/XMLSchema"),)
+
+
+def build_embedded_project_data(
+    elements: tuple[ElementSpec, ...] = (),
+    *,
+    sources: tuple[EmbeddedDataSourceSpec, ...] = (EmbeddedDataSourceSpec(),),
+    product_version: str = "3.0.0.998",
+) -> bytes:
+    """Build ProjectData with real DataSource/Schema/XsdList/SampleXml parts."""
+    rendered_sources: list[str] = []
+    for source in sources:
+        attrs = f'Name="{escape(source.name)}" DataKind="2"'
+        if source.data_section_type is not None:
+            attrs += f' dataSectionType="{escape(source.data_section_type)}"'
+        children: list[str] = []
+        if source.include_schema:
+            mappings = "".join(
+                f'<XmlNamespaceMapping Prefix="{escape(prefix)}" Name="{escape(uri)}"/>'
+                for prefix, uri in source.namespace_mappings
+            )
+            children.append(
+                '<Schema Origin="2">'
+                f"<XsdList><MainXsd>{source.xsd}</MainXsd></XsdList>"
+                f"<XmlNamespaceMappings>{mappings}</XmlNamespaceMappings>"
+                "</Schema>"
+            )
+        if source.preview is not None:
+            children.append(f"<PreviewData><SampleXml>{source.preview}</SampleXml></PreviewData>")
+        rendered_sources.append(f"<DataSource {attrs}>{''.join(children)}</DataSource>")
+    element_xml = "".join(_render_element(element) for element in elements)
+    text = (
+        f'<ProjectData xmlns="{PROJECT_DATA_NS}" ProductId="3" '
+        f'ProductVersion="{escape(product_version)}">'
+        '<UISettings xmlns=""/>'
+        f'<DataSources xmlns="">{"".join(rendered_sources)}</DataSources>'
+        f'<Elements xmlns="">{element_xml}</Elements>'
+        "</ProjectData>"
+    )
+    return text.encode("utf-8")
+
+
+def build_embedded_docx(
+    elements: tuple[ElementSpec, ...] = (),
+    *,
+    sources: tuple[EmbeddedDataSourceSpec, ...] = (EmbeddedDataSourceSpec(),),
+    item_index: int = 1,
+) -> bytes:
+    """Build a synthetic DOCX whose customXml carries an embedded schema."""
+    project_data = build_embedded_project_data(elements, sources=sources)
+    return build_docx(custom_parts=project_data_parts(project_data, item_index=item_index))
+
+
 def build_reference_ddsp() -> bytes:
     """Build a synthetic, realistic bare DDSP with nested collections and labels.
 
@@ -466,13 +592,19 @@ def build_zip(files: dict[str, bytes]) -> bytes:
 
 
 __all__ = [
+    "EMBEDDED_GENERAL_XSD",
+    "EMBEDDED_MAIN_PREVIEW",
+    "EMBEDDED_MAIN_XSD",
     "MISSING_STORE_ITEM_ID",
     "STORE_ITEM_ID",
     "ControlSpec",
     "ElementSpec",
+    "EmbeddedDataSourceSpec",
     "build_axpp",
     "build_ddsp",
     "build_docx",
+    "build_embedded_docx",
+    "build_embedded_project_data",
     "build_project_data",
     "build_reference_ddsp",
     "build_story_part",

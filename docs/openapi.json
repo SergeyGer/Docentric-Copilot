@@ -67,6 +67,282 @@
         "title": "ArtifactView",
         "type": "object"
       },
+      "BindingCounts": {
+        "additionalProperties": false,
+        "description": "Deterministic aggregate counts; every request is counted once.",
+        "properties": {
+          "ambiguous": {
+            "minimum": 0.0,
+            "title": "Ambiguous",
+            "type": "integer"
+          },
+          "by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Status",
+            "type": "object"
+          },
+          "resolved": {
+            "minimum": 0.0,
+            "title": "Resolved",
+            "type": "integer"
+          },
+          "resolved_with_evidence": {
+            "minimum": 0.0,
+            "title": "Resolved With Evidence",
+            "type": "integer"
+          },
+          "resolved_without_evidence": {
+            "minimum": 0.0,
+            "title": "Resolved Without Evidence",
+            "type": "integer"
+          },
+          "schema_unavailable": {
+            "minimum": 0.0,
+            "title": "Schema Unavailable",
+            "type": "integer"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "type_mismatch": {
+            "minimum": 0.0,
+            "title": "Type Mismatch",
+            "type": "integer"
+          },
+          "unknown_path": {
+            "minimum": 0.0,
+            "title": "Unknown Path",
+            "type": "integer"
+          },
+          "unsupported_expression": {
+            "minimum": 0.0,
+            "title": "Unsupported Expression",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "resolved",
+          "ambiguous",
+          "unknown_path",
+          "type_mismatch",
+          "schema_unavailable",
+          "unsupported_expression",
+          "resolved_with_evidence",
+          "resolved_without_evidence"
+        ],
+        "title": "BindingCounts",
+        "type": "object"
+      },
+      "BindingKind": {
+        "description": "Which ProjectData fact produced a binding request.",
+        "enum": [
+          "value_binding",
+          "label_data_path"
+        ],
+        "title": "BindingKind",
+        "type": "string"
+      },
+      "BindingResult": {
+        "additionalProperties": false,
+        "description": "One binding request and its exact resolution outcome.",
+        "properties": {
+          "binding_kind": {
+            "$ref": "#/components/schemas/BindingKind"
+          },
+          "canonical_path": {
+            "anyOf": [
+              {
+                "maxLength": 1800,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Path"
+          },
+          "collection_scope": {
+            "anyOf": [
+              {
+                "maxLength": 1800,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection Scope"
+          },
+          "diagnostic_codes": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Diagnostic Codes",
+            "type": "array"
+          },
+          "element_id": {
+            "maxLength": 20,
+            "pattern": "^[0-9]+$",
+            "title": "Element Id",
+            "type": "string"
+          },
+          "element_part": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Element Part",
+            "type": "string"
+          },
+          "element_type": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Element Type",
+            "type": "string"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
+          "raw_path": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Path"
+          },
+          "raw_source": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Source"
+          },
+          "result_data_type": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Data Type"
+          },
+          "schema_type": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Type"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BindingStatus"
+          },
+          "suggestions": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Suggestions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "element_id",
+          "element_type",
+          "element_part",
+          "binding_kind",
+          "status"
+        ],
+        "title": "BindingResult",
+        "type": "object"
+      },
+      "BindingStatus": {
+        "description": "The normative v0.10 binding status taxonomy (exactly six values).",
+        "enum": [
+          "resolved",
+          "ambiguous",
+          "unknown_path",
+          "type_mismatch",
+          "schema_unavailable",
+          "unsupported_expression"
+        ],
+        "title": "BindingStatus",
+        "type": "string"
+      },
+      "Body_d365_reference_endpoint_api_v1_reference_d365_post": {
+        "properties": {
+          "ddsp": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional fallback DDSP schema for documents without embedded schema",
+            "title": "Ddsp"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "D365 DOCX or single-template AXPP/ZIP package",
+            "title": "File"
+          }
+        },
+        "title": "Body_d365_reference_endpoint_api_v1_reference_d365_post",
+        "type": "object"
+      },
       "Body_diff_reference_endpoint_api_v1_reference_diff_post": {
         "properties": {
           "ddsp": {
@@ -1088,6 +1364,84 @@
         "title": "CoverageDelta",
         "type": "object"
       },
+      "D365BindingReport": {
+        "additionalProperties": false,
+        "description": "The v0.10 result contract for one D365 template (spec \u00a73.3).",
+        "properties": {
+          "binding_results": {
+            "items": {
+              "$ref": "#/components/schemas/BindingResult"
+            },
+            "maxItems": 10000,
+            "title": "Binding Results",
+            "type": "array"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/BindingCounts"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/SchemaDiagnostic"
+            },
+            "maxItems": 1000,
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "platform": {
+            "const": "D365FO",
+            "default": "D365FO",
+            "title": "Platform",
+            "type": "string"
+          },
+          "report_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Report Version",
+            "type": "string"
+          },
+          "runtime_compatibility": {
+            "const": "not_tested",
+            "default": "not_tested",
+            "title": "Runtime Compatibility",
+            "type": "string"
+          },
+          "schema_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Schema Evidence",
+            "type": "array"
+          },
+          "schema_source": {
+            "$ref": "#/components/schemas/SchemaSourceKind"
+          },
+          "schema_summary": {
+            "$ref": "#/components/schemas/SchemaSummary"
+          },
+          "template_id": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Template Id",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "template_id",
+          "schema_source",
+          "counts",
+          "schema_summary"
+        ],
+        "title": "D365BindingReport",
+        "type": "object"
+      },
       "DataBinding": {
         "additionalProperties": false,
         "description": "Word ``w:dataBinding`` attributes; never evaluated as an XPath expression.",
@@ -1601,6 +1955,16 @@
           "minimal"
         ],
         "title": "DesignStyle",
+        "type": "string"
+      },
+      "DiagnosticSeverity": {
+        "description": "Severity of one extraction/resolution diagnostic.",
+        "enum": [
+          "info",
+          "warning",
+          "error"
+        ],
+        "title": "DiagnosticSeverity",
         "type": "string"
       },
       "DiffCountPair": {
@@ -4679,6 +5043,77 @@
         "title": "RoutingExecutionTrace",
         "type": "object"
       },
+      "SchemaDiagnostic": {
+        "additionalProperties": false,
+        "description": "One explicit extraction/resolution observation; never silently dropped.",
+        "properties": {
+          "code": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/DiagnosticSeverity"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "xpath": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xpath"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "message"
+        ],
+        "title": "SchemaDiagnostic",
+        "type": "object"
+      },
       "SchemaSource": {
         "description": "Where the optional schema came from.",
         "enum": [
@@ -4686,6 +5121,16 @@
           "none"
         ],
         "title": "SchemaSource",
+        "type": "string"
+      },
+      "SchemaSourceKind": {
+        "description": "How the canonical schema was obtained for one template.",
+        "enum": [
+          "projectdata",
+          "ddsp",
+          "unavailable"
+        ],
+        "title": "SchemaSourceKind",
         "type": "string"
       },
       "SchemaStats": {
@@ -4718,6 +5163,59 @@
           }
         },
         "title": "SchemaStats",
+        "type": "object"
+      },
+      "SchemaSummary": {
+        "additionalProperties": false,
+        "description": "Bounded size/availability summary of the canonical schema.",
+        "properties": {
+          "available": {
+            "default": false,
+            "title": "Available",
+            "type": "boolean"
+          },
+          "collections": {
+            "minimum": 0.0,
+            "title": "Collections",
+            "type": "integer"
+          },
+          "fields": {
+            "minimum": 0.0,
+            "title": "Fields",
+            "type": "integer"
+          },
+          "namespaces": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 40,
+            "title": "Namespaces",
+            "type": "array"
+          },
+          "preview_data_sources": {
+            "minimum": 0.0,
+            "title": "Preview Data Sources",
+            "type": "integer"
+          },
+          "project_data_parts": {
+            "minimum": 0.0,
+            "title": "Project Data Parts",
+            "type": "integer"
+          },
+          "sources": {
+            "minimum": 0.0,
+            "title": "Sources",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "project_data_parts",
+          "sources",
+          "fields",
+          "collections",
+          "preview_data_sources"
+        ],
+        "title": "SchemaSummary",
         "type": "object"
       },
       "SchemaView": {
@@ -5448,6 +5946,68 @@
         "summary": "Providers",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/reference/d365": {
+      "post": {
+        "description": "Extract the embedded D365 schema and resolve bindings (read-only).",
+        "operationId": "d365_reference_endpoint_api_v1_reference_d365_post",
+        "parameters": [
+          {
+            "description": "Path inside a configured reference corpus root",
+            "in": "query",
+            "name": "path",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Path inside a configured reference corpus root",
+              "title": "Path"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_d365_reference_endpoint_api_v1_reference_d365_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/D365BindingReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "D365 Reference Endpoint",
+        "tags": [
+          "reference"
         ]
       }
     },

@@ -189,7 +189,7 @@ def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
     assert "v0.11 P1 status (unreleased)" in readme
     assert "Docentric AX runtime compatibility | `not_tested`" in readme
     assert "ADR-0016" in readme
-    assert "0.11.0" not in readme
+    assert "0.11.0" in readme
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M7 — v0.11 P1 reference workflow (unreleased)" in roadmap

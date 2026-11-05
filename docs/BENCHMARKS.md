@@ -221,5 +221,30 @@ The labels are single-annotator and validated by a deterministic rule pass; see
 [GOLD_LABELS](GOLD_LABELS.md). There is no independent human double review, so AT-07 is partial.
 Docentric AX runtime compatibility is `not_tested` and is not measured here.
 
-<!-- GOLD-BENCHMARK-RESULTS -->
+### Committed run (2026-11-05)
+
+288/288 planned runs completed. Dataset `1.0.0`, canonical SHA-256
+`c2b1d89c70f96f14884de54792784d0dbd3ffaa71d0700d5f73c5c24e93ece30`.
+
+| Provider | Model | Runs | Precision | Recall | F1 | Coverage | Type/context | Blocks | Semantic pass | Valid template | p50 / p95 | Spend | Cost/correct |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| OpenAI | `gpt-6-sol` | 96 | **0.226** | 1.000 | **0.368** | 1.000 | 0.995 | 0.851 | 55.2% | 100.0% | 15.5 / 20.0 s | **$2.9754 verified** | **$0.0561 verified** |
+| Anthropic | `claude-sonnet-5-5` | 96 | 0.220 | 0.996 | 0.361 | 0.996 | **0.998** | **0.943** | **69.8%** | 100.0% | 10.7 / 20.6 s | $3.9096 verified | $0.0584 verified |
+| Gemini | `gemini-3.6-flash` | 96 attempted / 93 planned | 0.184 | 1.000 | 0.311 | 1.000 | 0.998 | 0.911 | 64.6% | 96.9% | **4.1 / 10.2 s** | **$0.2910 estimated** | N/A (3 unknown runs) |
+
+Holdout (36 runs per provider) semantic pass: OpenAI 61.1%, Anthropic 66.7%, Gemini 66.7%.
+Calibration (60 runs per provider): 51.7%, 71.7%, 63.3%. Precision is lower on holdout for all
+three. These are observations from 12 holdout cases, not significance.
+
+Spend: **$6.8849 verified + $0.2910 estimated = $7.1759**, under the $10 cap; the $5 warning line
+fired. Three Gemini compact-IR responses were rejected (`structured_output`) and have unknown cost;
+they are counted as `unavailable`, not as $0.00. Error taxonomy: `wrong_binding` 276 runs,
+`wrong_context` 70, `structured_output` 3, `missing_field` 1. Recall and coverage saturated; the
+separation is precision and block coverage. The images family is 0% semantic pass for all providers
+because every model over-binds scope-guarded paths; that is a scope-adherence observation and a
+future label-design question, not an image-recognition result.
+
+Raw per-run records are in the git-ignored `benchmarks/gold_runs.jsonl`; the committed reports are
+aggregates only. Verified Docentric AX compatibility remains `not_tested`.
+
 

@@ -161,10 +161,13 @@ construction is never reported as resolved. See
 and [ADR-0013](docs/adr/0013-d365-embedded-schema-and-binding-resolution.md).
 
 The gold dataset and its annotation rules are in [GOLD_LABELS](docs/GOLD_LABELS.md); the measured
-run is in [EVALUATION §2.7](docs/EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05). The labels
-were authored by the implementer and checked by a deterministic rule pass. There is no independent
-human double review, so the annotation gate is reported as partial, not passed. The benchmark is
-synthetic; it is not Docentric corpus content and it does not change the AX `not_tested` status.
+run is in [EVALUATION §2.7](docs/EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05). The committed
+run completed 288/288 planned calls for **$6.8849 verified + $0.2910 estimated = $7.1759**, under the
+$10 cap. Recall and coverage were saturated; precision separated the providers (0.226 OpenAI, 0.220
+Anthropic, 0.184 Gemini), and semantic pass was 55.2% / 69.8% / 64.6%. The labels were authored by
+the implementer and checked by a deterministic rule pass. There is no independent human double
+review, so the annotation gate is reported as partial, not passed. The benchmark is synthetic; it is
+not Docentric corpus content and it does not change the AX `not_tested` status.
 
 ---
 

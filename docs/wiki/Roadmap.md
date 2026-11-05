@@ -39,7 +39,7 @@ list. Proposals that are not yet accepted do not get an issue.
 | PR-02 D365 embedded schema extraction | Done — static `ProjectData`/XSD/`PreviewData` evidence with OOXML provenance |
 | PR-03 canonical schema and binding resolver | Done — six exact statuses; duplicates and conflicts never resolve |
 | PR-04 gold semantic dataset | Done — 32 versioned cases, 20/12 calibration/holdout, single-annotator labels (AT-07 partial) |
-| PR-05 live benchmark and report | Done — 288 live runs, calibration/holdout separated, cost and error taxonomy |
+| PR-05 live benchmark and report | Done — 288/288 runs, $6.8849 verified + $0.2910 estimated, calibration/holdout separated, cost and error taxonomy |
 | PR-06…PR-09 (IR projection, visual diff, persistence, hardening) | Not started |
 | Docentric AX runtime | `not_tested` — unchanged |
 

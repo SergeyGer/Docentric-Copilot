@@ -30,11 +30,14 @@ from docentric_copilot.docx_compiler import CompileOptions
 from docentric_copilot.errors import CopilotError, NotFoundError
 from docentric_copilot.planner import PlanOptions, TemplatePlanner
 from docentric_copilot.reference import (
+    D365BindingReport,
     DdspSchemaEvidence,
     ReferenceDiff,
     ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    analyze_d365_path,
+    binding_report_json,
     build_reference_diff,
     build_reference_graph,
     diff_json,
@@ -405,6 +408,72 @@ def _diff_summary(diff: ReferenceDiff) -> str:
             f"Runtime compatibility: {diff.runtime_compatibility}",
         ]
     )
+
+
+def _d365_summary(report: D365BindingReport) -> str:
+    counts = report.counts
+    summary = report.schema_summary
+    return "\n".join(
+        [
+            f"D365 schema: {report.schema_source.value}",
+            (
+                f"Canonical schema: {summary.sources} sources, {summary.fields} fields, "
+                f"{summary.collections} collections; "
+                f"{summary.project_data_parts} ProjectData part(s); "
+                f"{len(report.schema_evidence)} evidence location(s)"
+            ),
+            (
+                f"Bindings: {counts.total} "
+                f"(resolved {counts.resolved}, ambiguous {counts.ambiguous}, "
+                f"unknown_path {counts.unknown_path}, type_mismatch {counts.type_mismatch}, "
+                f"schema_unavailable {counts.schema_unavailable}, "
+                f"unsupported_expression {counts.unsupported_expression})"
+            ),
+            f"Resolved with evidence: {counts.resolved_with_evidence}/{counts.resolved}",
+            f"Runtime compatibility: {report.runtime_compatibility}",
+        ]
+    )
+
+
+@reference_app.command("d365")
+def reference_d365(
+    path: Annotated[
+        str,
+        typer.Argument(help="D365 DOCX or single-template AXPP/ZIP to analyse"),
+    ],
+    json_output: Annotated[
+        Path | None,
+        typer.Option(
+            "--json",
+            help="Write the D365 binding report JSON to this path; use '-' for stdout",
+        ),
+    ] = None,
+    ddsp: Annotated[
+        str | None,
+        typer.Option(
+            "--ddsp",
+            help="Optional DDSP schema used only when the document has no usable embedded schema",
+        ),
+    ] = None,
+) -> None:
+    """Extract the embedded D365 schema and resolve bindings (PR-02/PR-03)."""
+    as_json = json_output is not None and str(json_output) == "-"
+    try:
+        limits = ReferenceLimits.from_limits(get_settings().limits)
+        report = analyze_d365_path(path, limits=limits, ddsp_path=ddsp)
+    except CopilotError as exc:
+        _fail(exc, as_json=as_json)
+        return
+    summary = _d365_summary(report)
+    if json_output is None:
+        typer.echo(summary)
+    elif str(json_output) == "-":
+        typer.echo(binding_report_json(report), nl=False)
+    else:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(binding_report_json(report), encoding="utf-8")
+        typer.echo(summary)
+        typer.echo(f"D365 binding report written to {json_output}")
 
 
 @reference_app.command("graph")

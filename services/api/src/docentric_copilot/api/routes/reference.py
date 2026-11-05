@@ -19,10 +19,13 @@ from docentric_copilot.errors import (
     UnsupportedInputError,
 )
 from docentric_copilot.reference import (
+    D365BindingReport,
     ReferenceDiff,
     ReferenceGraph,
     ReferenceLimits,
     ReferenceReport,
+    analyze_d365_bytes,
+    analyze_d365_path,
     build_reference_diff,
     build_reference_graph,
     inspect_reference,
@@ -324,6 +327,56 @@ async def diff_reference_endpoint(
         ddsp_name=ddsp_name,
     )
     return build_reference_diff(left_bundle, right_bundle)
+
+
+@router.post("/d365", response_model=D365BindingReport)
+async def d365_reference_endpoint(
+    file: UploadFile | None = File(
+        default=None,
+        description="D365 DOCX or single-template AXPP/ZIP package",
+    ),
+    path: str | None = Query(
+        default=None,
+        max_length=1024,
+        description="Path inside a configured reference corpus root",
+    ),
+    ddsp_file: UploadFile | None = File(
+        default=None,
+        alias="ddsp",
+        description="Optional fallback DDSP schema for documents without embedded schema",
+    ),
+    settings: Settings = Depends(get_settings),
+) -> D365BindingReport:
+    """Extract the embedded D365 schema and resolve bindings (read-only)."""
+    if file is not None and path is not None:
+        raise InvalidInputError("Provide either an uploaded file or a corpus path, not both")
+    if file is None and path is None:
+        raise InvalidInputError("Provide a template file or a corpus path")
+    limits = ReferenceLimits.from_limits(settings.limits)
+    if file is not None:
+        payload = await _read_upload(
+            file, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_INPUTS
+        )
+        ddsp_data: bytes | None = None
+        ddsp_name = "source.ddsp"
+        if ddsp_file is not None:
+            ddsp_data = await _read_upload(
+                ddsp_file, limit=settings.limits.max_ddsp_bytes, allowed=_ALLOWED_SCHEMAS
+            )
+            ddsp_name = Path(ddsp_file.filename or "source.ddsp").name
+        return analyze_d365_bytes(
+            payload,
+            filename=Path(file.filename or "upload.docx").name,
+            limits=limits,
+            ddsp_data=ddsp_data,
+            ddsp_name=ddsp_name,
+        )
+    if ddsp_file is not None:
+        raise InvalidInputError(
+            "A DDSP upload is only supported together with an uploaded template file"
+        )
+    target = _resolve_corpus_path(path or "", settings)
+    return analyze_d365_path(target, limits=limits)
 
 
 __all__ = ["router"]

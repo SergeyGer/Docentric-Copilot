@@ -6,9 +6,10 @@
 
 The reference inspector implements REF-00 (safe inventory and deduplication), REF-01 (real DDSP
 schema evidence), REF-02 (Docentric metadata resolution), REF-03 (ReferenceGraph and a separate
-read-only Reference IR), REF-04 (reference diff) and REF-05 (reference-based evaluation). It exists
-so that real-world DOCX, DDSP, ZIP and AXPP packages can be examined as evidence **before** any
-Docentric AX writer is attempted.
+read-only Reference IR), REF-04 (reference diff) and REF-05 (reference-based evaluation). The v0.10
+P0 increment adds a D365 embedded-schema adapter and a canonical binding resolver that no longer
+requires a standalone DDSP. It exists so that real-world DOCX, DDSP, ZIP and AXPP packages can be
+examined as evidence **before** any Docentric AX writer is attempted.
 
 A report never enables `target=docentric-ax`: that request still returns HTTP `409`, and V5
 compatibility is still `not_tested`.
@@ -18,13 +19,14 @@ compatibility is still `not_tested`.
 | Epic | Status | Module(s) |
 | --- | --- | --- |
 | REF-00 inventory and deduplication | Implemented | `inventory.py`, `safety.py` |
-| REF-01 real DDSP adapter | Implemented (bare AX 2012 DDSP; D365 embedded schemas are still out of scope) | `ddsp_real.py` |
+| REF-01 real DDSP adapter | Implemented (bare AX 2012 DDSP) | `ddsp_real.py` |
 | REF-02 metadata resolver | Implemented | `docx_controls.py`, `metadata.py` |
 | REF-03 ReferenceGraph and read-only projection | Implemented (no import mode) | `graph.py`, `projection.py` |
 | REF-04 reference diff | Implemented (no visual diff) | `diff.py`, CLI/API diff endpoints |
 | REF-05 reference-based evaluation | Implemented (8 synthetic cases + runtime reference mode) | `benchmarks/reference_evaluation.py`, synthetic fixtures |
 | REF-06 web inspector/storage workflow | Not in this milestone | — |
 | REF-07 licensed runtime testing | Not started | — |
+| v0.10 P0 D365 embedded schema + binding resolver | Implemented (static evidence only; six-status taxonomy; `runtime_compatibility: not_tested`) | `d365_schema.py`, `binding_resolver.py` |
 
 ## Licensing boundary
 
@@ -129,6 +131,132 @@ Unresolved controls are never discarded. Each control reports `resolved`, `missi
 `unknown_path` or `ambiguous`, with link/path statuses and diagnostic codes kept separately from
 the overall status.
 
+## D365 embedded schema and binding resolution (v0.10 P0)
+
+D365 examples do not ship one standalone DDSP per document. The schema is embedded in
+`customXml/itemN.xml` as Docentric `ProjectData`:
+
+```
+ProjectData
+  DataSources/DataSource[@Name, @dataSectionType]
+    Schema/XsdList/MainXsd/xs:schema     # fields, types and cardinality
+    Schema/XmlNamespaceMappings          # declared path prefixes
+    PreviewData/SampleXml                # sample instance (corroboration only)
+  Elements/Element[@Id, @Type]           # ValueBinding facts to resolve
+```
+
+`d365_schema.py` reads only what is present and attaches OOXML provenance to every fact: the part,
+an XPath-like location and a stable source id. `binding_resolver.py` matches the typed facts against
+the canonical schema. Neither module executes an expression, opens the network, or turns a missing
+piece of evidence into a success.
+
+### Schema classification
+
+| `schema_source` | Condition |
+| --- | --- |
+| `projectdata` | At least one embedded DataSource yields a usable XSD schema |
+| `ddsp` | No usable embedded schema, but a caller-supplied DDSP yields a usable section |
+| `unavailable` | Neither source has enough evidence; the report says so explicitly |
+
+Absence of a standalone DDSP is not by itself a failure. A document with a complete embedded schema
+is checked without one. Embedded schema is primary; a supplied DDSP is a fallback and never silently
+merged.
+
+### Binding statuses
+
+| Status | Meaning |
+| --- | --- |
+| `resolved` | Source, canonical path, collection scope and type were all verified against schema evidence |
+| `ambiguous` | More than one admissible binding, duplicate source/path or unresolved relative context |
+| `unknown_path` | Schema is available, but the path, source or scope is absent or invalid in this context |
+| `type_mismatch` | The path was found, but the declared result type or element role conflicts with the schema type (for example a boolean conditional on a string field, or a scalar field on a collection) |
+| `schema_unavailable` | Neither embedded ProjectData nor a supplied DDSP carries enough schema |
+| `unsupported_expression` | The path uses semantics this resolver does not evaluate (functions, comparisons, predicates, aggregates, undeclared or non-data namespace prefixes) |
+
+A `resolved` result stores `source_id` and an `evidence` string of the form
+`customXml/item1.xml#/ProjectData/...`, so every success can be traced to a concrete schema node.
+Duplicate sources and duplicate paths are diagnostics, never a success. Relative `Source="."`
+bindings require an enclosing `List` with a resolvable collection binding; a missing or
+non-collection context is `unknown_path`.
+
+### Result contract
+
+```json
+{
+  "template_id": "<sha256 of the DOCX>",
+  "platform": "D365FO",
+  "schema_source": "projectdata",
+  "schema_evidence": ["customXml/item1.xml#/ProjectData/..."],
+  "binding_results": [
+    {
+      "element_id": "...",
+      "status": "resolved",
+      "raw_path": "@Number",
+      "canonical_path": "MainData/Root/@Number",
+      "source_id": "customXml/item1.xml#dataSource[1]",
+      "evidence": "customXml/item1.xml#/ProjectData/..."
+    }
+  ],
+  "runtime_compatibility": "not_tested"
+}
+```
+
+The report additionally carries deterministic counts, a schema summary and diagnostics. Schema
+models expose fields, collections, scopes, XSD types, type families, namespaces, preview repetitions
+and the raw/canonical path pair.
+
+### Corpus assessment (counts only)
+
+`scripts/assess_d365_corpus.py` scans a local corpus, expands unique ZIP/AXPP containers in memory
+and writes only counts, hashes and statuses to the ignored `.tools/` directory. Against the
+maintainer's 11 D365 DOCX copy of the official archive:
+
+| Metric | Count |
+| --- | --- |
+| D365 DOCX analysed | 11 (10 unique payloads) |
+| `schema_source = projectdata` | 11 |
+| `schema_source = ddsp` / `unavailable` | 0 / 0 |
+| Bindings resolved | 233 / 246 |
+| `ambiguous` | 0 |
+| `unknown_path` | 4 |
+| `type_mismatch` | 1 |
+| `schema_unavailable` | 0 |
+| `unsupported_expression` | 8 |
+| Resolved with source + path + evidence | 233 / 233 |
+| Runtime compatibility | `not_tested` |
+
+The numbers are a reproducible baseline, not a quality score: non-resolved bindings are the cases
+where the available evidence was insufficient or the semantics were not evaluated. The command that
+produced them is recorded below; no file name, fragment, schema or template text leaves `.tools/`.
+
+### Security boundary
+
+The adapter reuses the REF-00 limits: ZIP entry count, uncompressed size, compression ratio,
+encrypted entries, symlinks and traversal are rejected; XML is parsed with DTDs, external entities
+and network access disabled; node count and depth are bounded. The adapter also bounds customXml
+parts, DataSources, schema nodes, collections, preview nodes and diagnostics. Every truncation is
+reported. Inputs are never executed, and malformed ProjectData becomes a diagnostic (or a clear
+`reference_container_invalid` / `reference_xml_invalid` error for a malformed container).
+
+### CLI and HTTP
+
+```bash
+docentric-copilot reference d365 template.docx --json .tools/d365.json
+docentric-copilot reference d365 template.docx --ddsp fallback.ddsp --json .tools/d365.json
+```
+
+```text
+POST /api/v1/reference/d365
+  multipart: file (.docx/.zip/.axpp) + optional ddsp
+  or query: ?path=... inside DC_REFERENCE_CORPUS_ROOTS
+```
+
+The endpoint is read-only and returns the binding report with
+`runtime_compatibility: "not_tested"`. A package with several DOCX templates is rejected rather
+than analysed partially.
+
+Reference: [ADR-0013](adr/0013-d365-embedded-schema-and-binding-resolution.md).
+
 ## REF-03 — ReferenceGraph and read-only projection
 
 ### Graph contract
@@ -199,10 +327,11 @@ with their reasons.
 | Detected lists / conditionals | 27 structural lists / 22 conditional elements |
 | Projection sections / elements | 16 / 672 |
 
-**Coverage caveat:** 11 D365 documents have no standalone DDSP, so their bindings are still joined
-to elements but have no `resolves_to` edge to score. Edge coverage counts only emitted edges; the
-report and graph make the 22 unresolved controls explicit, and the projection keeps them as
-`unknown`.
+**Coverage caveat:** the 11 D365 documents have no standalone DDSP, so the graph still joins their
+bindings to elements without a `resolves_to` edge. Their embedded ProjectData schema is checked by
+the separate D365 adapter above; the graph and the D365 report are independent contracts. Edge
+coverage counts only emitted edges; the report and graph make the 22 unresolved controls explicit,
+and the projection keeps them as `unknown`.
 
 The 22 unresolved instances are `no_element_for_id`; they remain in the report with full location
 and marker evidence. These are technical join results, not a judgement that Docentric itself is
@@ -403,6 +532,12 @@ docentric-copilot reference graph template.docx --json -
 
 # compare two references (REF-04)
 docentric-copilot reference diff left.docx right.docx --json .tools/diff.json
+
+# D365 embedded schema + canonical binding resolution (v0.10 P0)
+docentric-copilot reference d365 template.docx --json .tools/d365.json
+
+# the DDSP is a fallback only when the document has no usable embedded schema
+docentric-copilot reference d365 template.docx --ddsp fallback.ddsp --json .tools/d365.json
 ```
 
 `--max-depth` is offline-only and capped at 3. Exit codes follow the existing CLI contract:
@@ -413,12 +548,13 @@ docentric-copilot reference diff left.docx right.docx --json .tools/diff.json
 ```
 POST /api/v1/reference/inspect
 POST /api/v1/reference/graph
+POST /api/v1/reference/d365
 POST /api/v1/reference/diff
 ```
 
-`inspect` and `graph` accept either an uploaded multipart `file` (`.docx`, `.zip`, `.axpp`) with an
-optional `ddsp` part, or `?path=` for a path confined to a configured corpus root. `diff` uses the
-`left`/`right` uploads or the `left_path`/`right_path` query pair. Query parameter `max_depth`
+`inspect`, `graph` and `d365` accept either an uploaded multipart `file` (`.docx`, `.zip`, `.axpp`)
+with an optional `ddsp` part, or `?path=` for a path confined to a configured corpus root. `diff`
+uses the `left`/`right` uploads or the `left_path`/`right_path` query pair. Query parameter `max_depth`
 defaults to `0` for the public endpoints: the root container is enumerated, but nested archives are
 not expanded. The existing `max_ddsp_bytes` limit is enforced for uploads and the
 uncompressed/entry limits are enforced while reading.
@@ -429,6 +565,9 @@ curl -s -F "file=@template.docx" \
 
 curl -s -F "file=@template.docx" -F "ddsp=@template.ddsp" \
   http://localhost:8000/api/v1/reference/graph
+
+curl -s -F "file=@template.docx" \
+  http://localhost:8000/api/v1/reference/d365
 
 curl -s -X POST \
   "http://localhost:8000/api/v1/reference/graph?path=examples/corpus/template.docx&max_depth=0"

@@ -11,7 +11,8 @@
 | **M2 AI planning** | Template IR, gateway, mapping, expressions, validators | Done |
 | **M3 Compilation** | Generic DOCX, preview, golden files | Done |
 | **M4 Web + CLI** | API, workspace, jobs, artifacts, Docker | Done |
-| **M5 Release** | CI, security scans, docs, benchmarks, release | Done — latest v0.4.1 |
+| **M5 Release** | CI, security scans, docs, benchmarks, release | Done — latest v0.9.0 |
+| **v0.10 P0** | D365 embedded schema, canonical binding resolver, docs baseline | In progress — PR-01…PR-03 done; PR-04/PR-05 not started |
 
 ## Open work — tracked in issues
 
@@ -29,6 +30,22 @@ Every item below has an issue; the issue is the source of truth for status and a
 
 Closed issues stay visible as evidence that the roadmap item shipped; nothing is deleted from the
 list. Proposals that are not yet accepted do not get an issue.
+
+## v0.10 status — Reference Template Intelligence
+
+| Workstream | Status |
+| --- | --- |
+| PR-01 baseline docs and corpus manifest | Done — version strings and feature matrix aligned; package version not bumped |
+| PR-02 D365 embedded schema extraction | Done — static `ProjectData`/XSD/`PreviewData` evidence with OOXML provenance |
+| PR-03 canonical schema and binding resolver | Done — six exact statuses; duplicates and conflicts never resolve |
+| PR-04 gold semantic dataset | Not started |
+| PR-05 live benchmark and report | Not started |
+| PR-06…PR-09 (IR projection, visual diff, persistence, hardening) | Not started |
+| Docentric AX runtime | `not_tested` — unchanged |
+
+Local D365 corpus (counts only): 11/11 documents with `projectdata` schema evidence; 246 bindings,
+233 resolved with evidence, 4 `unknown_path`, 8 `unsupported_expression`, 1 `type_mismatch`, 0
+`ambiguous`, 0 `schema_unavailable`. This is static evidence, not a runtime or model-quality claim.
 
 ## Now — hardening the MVP
 

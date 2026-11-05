@@ -139,6 +139,26 @@ a revision box that produces a new version instead of silently editing a file.
 This is a deliberate product decision, not a missing feature: a beautiful document built on an unverified
 assumption is a liability, not a deliverable.
 
+### Reference Template Intelligence — v0.10 P0 status
+
+The reference inspector is static analysis, not a Docentric runtime. The v0.10 P0 increment is
+deliberately partial and is reported as such:
+
+| Workstream | Status |
+| --- | --- |
+| PR-01 baseline docs, corpus manifest and consistency | Done — version strings, feature matrix and changelog now agree |
+| PR-02 D365 embedded schema extraction | Done — reads `ProjectData` XSD, `PreviewData` and field metadata with OOXML provenance |
+| PR-03 canonical schema and binding resolver | Done — six exact statuses; every `resolved` carries source, path, scope, type and evidence |
+| PR-04 gold semantic dataset / PR-05 live benchmark | Not started in this increment |
+| Reference → generic Template IR, visual diff, persistence | Planned P1; not implemented |
+| Docentric AX runtime compatibility | `not_tested` — unchanged |
+
+The D365 adapter does not require a standalone DDSP when the document contains a usable embedded
+schema. Absence of evidence is returned as `schema_unavailable`; an unknown or unsupported
+construction is never reported as resolved. See
+[Reference Templates](docs/REFERENCE_TEMPLATES.md#d365-embedded-schema-and-binding-resolution-v010-p0)
+and [ADR-0013](docs/adr/0013-d365-embedded-schema-and-binding-resolution.md).
+
 ---
 
 ## Try it
@@ -189,11 +209,11 @@ The complete documentation lives in the **[project Wiki](https://github.com/Serg
 
 | | |
 | --- | --- |
-| **Version** | 0.4.1 |
+| **Version** | 0.9.0 |
 | **Licence** | Apache-2.0 |
 | **Interfaces** | Web workspace · command line · REST API |
 | **AI providers** | OpenAI · Anthropic · Google Gemini · offline deterministic assistant |
-| **Quality gate** | 191 automated tests · 86% branch coverage on the deterministic core · every CI job green |
+| **Quality gate** | 541 automated tests · 86% branch coverage (85% gate) · every CI job green |
 | **Status** | Working MVP, actively developed |
 
 Docentric Copilot is an independent open-source project. It is not an official Docentric product and is not

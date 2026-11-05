@@ -48,6 +48,21 @@ docentric-copilot reference graph template.docx --ddsp schema.ddsp \
 Builds the read-only ReferenceGraph (REF-03) and, optionally, the separate non-compilable Reference
 IR projection.
 
+### `reference d365`
+
+```bash
+docentric-copilot reference d365 template.docx --json .tools/d365.json
+docentric-copilot reference d365 template.docx --ddsp fallback.ddsp --json .tools/d365.json
+```
+
+Extracts the D365 embedded `ProjectData` schema and resolves `Source`/`Path`/type/collection scope,
+writing the v0.10 binding report. `--json` takes an output path (`-` for stdout). `--ddsp` is a
+fallback only for documents without a usable embedded schema. Statuses are exactly `resolved`,
+`ambiguous`, `unknown_path`, `type_mismatch`, `schema_unavailable` and `unsupported_expression`;
+every `resolved` binding carries source, canonical path and `part#xpath` evidence. The command
+reports `runtime_compatibility: not_tested` and never executes the template. See
+[Reference Templates](Reference-Templates).
+
 ### `reference diff`
 
 ```bash
@@ -124,7 +139,7 @@ Exports the JSON Schema of the current Template IR version.
 
 ```bash
 docentric-copilot version
-# docentric-copilot 0.2.0 (IR 1.0)
+# docentric-copilot 0.9.0 (IR 1.0)
 ```
 
 ## Secrets

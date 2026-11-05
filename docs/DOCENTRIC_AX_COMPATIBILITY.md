@@ -5,7 +5,7 @@
 | Status | **Blocked / unverified.** No compatibility is claimed. |
 | Compiler | `DocentricAXCompiler` in [generic.py](../packages/docx-compiler/src/docentric_copilot/docx_compiler/generic.py) |
 | Gate status string | `blocked: feasibility gate M0 has not been passed` |
-| Related | [FEASIBILITY.md](FEASIBILITY.md), [ADR-0005](adr/0005-docentric-compatibility-gate.md), [DDSP_COMPATIBILITY.md](DDSP_COMPATIBILITY.md) |
+| Related | [FEASIBILITY.md](FEASIBILITY.md), [ADR-0005](adr/0005-docentric-compatibility-gate.md), [ADR-0013](adr/0013-d365-embedded-schema-and-binding-resolution.md), [DDSP_COMPATIBILITY.md](DDSP_COMPATIBILITY.md) |
 
 ## 1. Scope of this document
 
@@ -41,7 +41,8 @@ It is a compatibility *gate*, not a marketing page. Nothing here may be quoted a
 | What does the validation report say? | V5 check status `not_tested`; overall `passed_unverified_compatibility` for a valid generic document. |
 | Is any AX compatibility claimed? | No. |
 | Has any AX environment been used in development? | No. No licensed environment was available. |
-| Are real DDSP packages tested? | No. Only synthetic fixtures. |
+| Are real DDSP packages tested? | No. Only synthetic fixtures in the public test suite; the local corpus may be inspected privately. |
+| Does D365 embedded-schema inspection change this gate? | No. `reference d365` reads static `ProjectData` XSD/`PreviewData` evidence and reports `not_tested`; it does not execute or validate in Docentric AX. |
 
 ## 4. What the code does today (fail closed)
 

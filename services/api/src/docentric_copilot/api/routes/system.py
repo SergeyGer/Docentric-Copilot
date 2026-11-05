@@ -52,6 +52,7 @@ def capabilities(
             "html_preview": True,
             "reference_inspector": True,
             "reference_graph": True,
+            "reference_d365_bindings": True,
             "pdf_preview": False,
             "docentric_ax_adapter": False,
             "verified_compatibility": False,

@@ -12,7 +12,7 @@ professionally structured Word document, with a reviewable plan and a machine-ch
 
 No Microsoft Word. No template designer session. No Dynamics 365 environment.
 
-> **Status:** working MVP, version `0.2.0`. The engine produces **generic DOCX** documents and proves every
+> **Status:** working MVP, version `0.9.0`. The engine produces **generic DOCX** documents and proves every
 > binding against the data source. Docentric AX compatibility is **unverified** and reported as `not_tested`
 > everywhere — see [Docentric AX Compatibility](Docentric-AX-Compatibility).
 
@@ -70,7 +70,7 @@ No Microsoft Word. No template designer session. No Dynamics 365 environment.
 | Interfaces | Web workspace · CLI · REST API |
 | Data formats | DDSP (ZIP + XML), XML, XSD → DOCX (OOXML) |
 | AI providers | OpenAI · Anthropic · Google Gemini · deterministic offline baseline |
-| Status | MVP `0.2.0`, CI green, 191 automated tests |
+| Status | MVP `0.9.0`, CI green, 541 automated tests |
 
 Docentric Copilot is an independent open-source project. It is not an official Docentric product and makes no
 claim of endorsement.

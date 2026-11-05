@@ -5,7 +5,40 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from benchmarks.gold_dataset import DEFAULT_CASES, load_gold_dataset
 from benchmarks.gold_evaluation import main
+
+
+def test_committed_report_matches_the_dataset_and_contains_no_prompts() -> None:
+    report = json.loads(Path("benchmarks/gold_report.json").read_text(encoding="utf-8"))
+    dataset = load_gold_dataset(DEFAULT_CASES)
+    assert report["dataset"]["version"] == dataset.version
+    assert report["dataset"]["sha256"] == dataset.canonical_sha256
+    assert report["dataset"]["case_count"] == 32
+    assert report["sample_size"]["planned_runs"] == 288
+    assert report["sample_size"]["completed_runs"] == 288
+    assert report["sample_size"]["splits"] == {"calibration": 20, "holdout": 12}
+    assert len(report["providers"]) == 3
+    assert all(provider["metrics"]["runs"] == 96 for provider in report["providers"])
+    assert report["by_split"]["calibration"][0]["metrics"]["runs"] == 60
+    assert report["by_split"]["holdout"][0]["metrics"]["runs"] == 36
+    assert report["budget"]["aborted"] is False
+    assert report["budget"]["total_spend_usd"] <= report["budget"]["max_spend_usd"]
+    assert report["cost"]["unknown_runs"] == 3
+    assert report["cost"]["verified_usd"] > 0
+    assert report["cost"]["estimated_usd"] >= 0
+
+    serialized = json.dumps(report, ensure_ascii=False)
+    for case in dataset.cases:
+        assert case["prompt"] not in serialized
+    assert "api_key" not in serialized.casefold()
+    csv_text = Path("benchmarks/gold_report.csv").read_text(encoding="utf-8")
+    assert "scope,split,family,category,provider,model,case_id" in csv_text
+    assert "provider,all" in csv_text
+    assert "split,holdout" in csv_text
+    page = Path("benchmarks/gold_report.html").read_text(encoding="utf-8")
+    assert "Observations, not significance" in page
+    assert "http://" not in page and "https://" not in page
 
 
 def test_mock_gold_report_is_written_and_self_describing(tmp_path: Path, capsys) -> None:

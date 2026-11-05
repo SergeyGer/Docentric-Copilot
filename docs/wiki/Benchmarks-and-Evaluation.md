@@ -117,7 +117,33 @@ before a call whose worst case could cross the $10 cap. Per-run records stay in 
 `benchmarks/gold_runs.jsonl`; only aggregates are committed. The report states explicitly that the
 numbers are **observations, not significance**, and it does not declare a single winner.
 
-<!-- GOLD-WIKI-RESULTS -->
+### Committed run (2026-11-05)
+
+288/288 planned runs; dataset `1.0.0`,
+SHA-256 `c2b1d89c70f96f14884de54792784d0dbd3ffaa71d0700d5f73c5c24e93ece30`. Spend:
+**$6.8849 verified + $0.2910 estimated = $7.1759** (under the $10 cap, over the $5 warning line).
+
+| Provider | Runs | Precision | Recall | F1 | Semantic pass | Valid template | p50 | Spend |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| OpenAI `gpt-6-sol` | 96 | **0.226** | 1.000 | **0.368** | 55.2% | 100.0% | 15.5 s | **$2.9754 verified** |
+| Anthropic `claude-sonnet-5-5` | 96 | 0.220 | 0.996 | 0.361 | **69.8%** | 100.0% | 10.7 s | $3.9096 verified |
+| Gemini `gemini-3.6-flash` | 96 attempted / 93 planned | 0.184 | 1.000 | 0.311 | 64.6% | 96.9% | **4.1 s** | **$0.2910 estimated** |
+
+Holdout semantic pass (36 runs each): OpenAI 61.1%, Anthropic 66.7%, Gemini 66.7%; calibration
+(60 each): 51.7%, 71.7%, 63.3%. Precision is lower on holdout for all three. These are observations,
+not significance; see [EVALUATION §2.7](../EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05).
+
+Recall and coverage saturated; precision and block coverage separate the providers. Conditions,
+missing and ambiguous cases pass at 100% for all three. Nested lists and the images family are the
+hardest: nested semantic pass is 22.2% / 44.4% / 0%, and images is 0% for all because every model
+over-binds scope-guarded paths. Gemini has three compact-IR failures (`structured_output`), so its
+valid-template rate is 96.9% and its cost per correct result is N/A (three unknown-cost runs, not
+free). Error taxonomy: `wrong_binding` 276 runs, `wrong_context` 70, `structured_output` 3,
+`missing_field` 1.
+
+The labels remain single-annotator; AT-07 is partial. Docentric AX runtime compatibility is
+`not_tested`.
+
 
 ## Why two separate metrics
 

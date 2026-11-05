@@ -15,6 +15,9 @@ This guide describes what a gold label means, how the 32 cases were composed, ho
 calibration/holdout split was fixed, and what was and was not reviewed. It is part of the
 reproducibility contract: a metric is only comparable when its dataset version and hash are quoted.
 
+The first committed report generated from this version is
+[benchmarks/gold_report.json](../benchmarks/gold_report.json) (2026-11-05, 288 runs).
+
 ## 1. What this dataset is
 
 The gold set is a **semantic** benchmark for the prompt-to-template planner. Each case is a short

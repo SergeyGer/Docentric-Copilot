@@ -8,6 +8,8 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-05
+
 ### Added
 - v0.10 P0 D365 embedded schema adapter (`d365_schema.py`): read-only extraction of
   `customXml/ProjectData` `DataSources`, embedded XSD (`Schema/XsdList/MainXsd`), `PreviewData`
@@ -73,6 +75,20 @@ version (`1.0`) independent of the distribution version.
   bindings — 233 resolved with evidence, 4 `unknown_path`, 8 `unsupported_expression`,
   1 `type_mismatch`, 0 `ambiguous`, 0 `schema_unavailable`. The official archive itself remains
   uncommitted under `.tools/reference-corpus/`.
+- Gold benchmark live run (2026-11-05): 288/288 planned runs (32 cases × 3 providers × 3 repeats) on
+  dataset `1.0.0` (`c2b1d89c70f96f14884de54792784d0dbd3ffaa71d0700d5f73c5c24e93ece30`).
+  Precision / recall / F1 / semantic pass / valid template: OpenAI `gpt-6-sol` 0.226 / 1.000 / 0.368
+  / 55.2% / 100%; Anthropic `claude-sonnet-5-5` 0.220 / 0.996 / 0.361 / 69.8% / 100%; Gemini
+  `gemini-3.6-flash` 0.184 / 1.000 / 0.311 / 64.6% / 96.9%. Holdout semantic pass was 61.1% /
+  66.7% / 66.7% (36 runs per provider), calibration 51.7% / 71.7% / 63.3% (60 runs per provider).
+  Spend was **$6.8849 verified + $0.2910 estimated = $7.1759**, under the $10 cap and above the $5
+  warning line; three Gemini compact-IR failures have unknown cost and are counted as `unavailable`,
+  not $0.00. Error taxonomy: `wrong_binding` 276 runs, `wrong_context` 70, `structured_output` 3,
+  `missing_field` 1. AT-08 (three runs per case/model) and AT-09 (precision/recall/F1/coverage and
+  class-level errors) are met; AT-07 remains **partial** because the labels are single-annotator with
+  no independent human double review. No Docentric corpus content is committed and
+  `runtime_compatibility` remains `not_tested`.
+
 
 ## [0.9.0] - 2026-11-04
 

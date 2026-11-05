@@ -18,7 +18,7 @@ def _read(relative: str) -> str:
 
 def test_versions_agree_across_the_distribution_and_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == __version__ == "0.10.0"
+    assert pyproject["project"]["version"] == __version__ == "0.11.0"
     assert json.loads(_read("apps/web/package.json"))["version"] == __version__
 
     readme = _read("README.md")
@@ -43,8 +43,8 @@ def test_versions_agree_across_the_distribution_and_docs() -> None:
 def test_changelog_documents_v010_release() -> None:
     changelog = _read("CHANGELOG.md")
     assert "## [Unreleased]" in changelog
-    assert "## [0.10.0]" in changelog
-    released = changelog.split("## [0.10.0]", 1)[1].split("## [0.9.0]", 1)[0]
+    assert "## [0.11.0]" in changelog
+    released = changelog.split("## [0.11.0]", 1)[1].split("## [0.10.0]", 1)[0]
     assert "D365 embedded schema" in released
     assert "binding resolver" in released
     assert "gold" in released.lower()

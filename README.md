@@ -172,7 +172,7 @@ not Docentric corpus content and it does not change the AX `not_tested` status.
 ### Reference workflow — v0.11 P1 status (unreleased)
 
 The v0.11 P1 increment is implemented on top of the same read-only inspector. The distribution
-version stays `0.10.0`; these changes are `[Unreleased]`.
+version stays `0.11.0`; these changes are `[Unreleased]`.
 
 | Workstream | Status |
 | --- | --- |
@@ -241,7 +241,7 @@ The complete documentation lives in the **[project Wiki](https://github.com/Serg
 
 | | |
 | --- | --- |
-| **Version** | 0.10.0 |
+| **Version** | 0.11.0 |
 | **Licence** | Apache-2.0 |
 | **Interfaces** | Web workspace · command line · REST API |
 | **AI providers** | OpenAI · Anthropic · Google Gemini · offline deterministic assistant |

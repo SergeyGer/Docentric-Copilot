@@ -14,6 +14,7 @@ from docentric_copilot.app.service import TemplateService
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.errors import InvalidInputError, NotFoundError
 from docentric_copilot.planner import rebind_paths
+from docentric_copilot.planner.candidates import retrieve_candidates
 from docentric_copilot.planner.service import build_mapping_report
 from docentric_copilot.schema_resolver import MappingStatus
 from docentric_copilot.storage import Store
@@ -65,7 +66,9 @@ async def confirm_mapping(
     document = load_document(record.ir())
     intent = document.metadata.intent or ""
 
-    report = build_mapping_report(schema, document, intent)
+    report = build_mapping_report(
+        schema, document, intent, candidate_set=retrieve_candidates(schema, intent)
+    )
     mapping = next(
         (item for item in report.mappings if item.requirement_id == requirement_id), None
     )
@@ -103,7 +106,9 @@ async def confirm_mapping(
         for item in record.mapping().get("mappings", [])
         if item.get("status") == "confirmed"
     }
-    report = build_mapping_report(schema, document, intent)
+    report = build_mapping_report(
+        schema, document, intent, candidate_set=retrieve_candidates(schema, intent)
+    )
     report = report.model_copy(
         update={
             "mappings": [

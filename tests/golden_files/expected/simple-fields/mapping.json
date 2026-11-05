@@ -79,6 +79,40 @@
       "supporting_field_paths": [
         "MainData.Document.TotalAmount"
       ]
+    },
+    {
+      "candidate_field_paths": [],
+      "concept": "number",
+      "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No schema evidence supports this requirement; the planner abstained instead of inventing a path.",
+      "placement": null,
+      "requirement": "create a simple document with the document number",
+      "requirement_id": "req_cand_req_00",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "needs_review",
+      "supporting_field_paths": []
+    },
+    {
+      "candidate_field_paths": [],
+      "concept": "date",
+      "confidence_score": null,
+      "conflict": false,
+      "conflicts_with": [],
+      "data_type": null,
+      "evidence_score": null,
+      "explanation": "No schema evidence supports this requirement; the planner abstained instead of inventing a path.",
+      "placement": null,
+      "requirement": "issue date",
+      "requirement_id": "req_cand_req_01",
+      "schema_evidence": null,
+      "selected_field_path": null,
+      "status": "needs_review",
+      "supporting_field_paths": []
     }
   ],
   "schema_id": "simple_fields"

@@ -1,6 +1,6 @@
 {
-  "schema": "gold-cases/v1",
-  "version": "1.0.0",
+  "schema": "gold-cases/v2",
+  "version": "2.0.0",
   "created_at": "2026-11-05",
   "title": "Gold semantic benchmark for the template planner",
   "description": "Thirty-two synthetic business cases with concept-level gold bindings, forbidden paths, required blocks and a fixed calibration/holdout split. No Docentric corpus content is used.",
@@ -29,9 +29,17 @@
   ],
   "split_policy": "The split was fixed before the first live run. Calibration cases may be used to tune prompts or routing; holdout cases must not be used for tuning and are reported separately.",
   "provenance": {
-    "authoring": "implementer-authored labels for synthetic fixtures",
-    "review": "deterministic rule pass only (path/type/scope/split checks); no independent human double review was available",
-    "adjudication": "single-annotator decisions recorded in docs/GOLD_LABELS.md"
+    "author": "v0.10 single annotator (implementer)",
+    "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+    "review_status": "adjudicated_proxy",
+    "human_review": false,
+    "at07_status": "partial",
+    "adjudication_report": "benchmarks/adjudication_report.json",
+    "notes": [
+      "Author labels are preserved; the independent adjudicator reproduced them or flagged a documented disagreement.",
+      "The adjudicator is a deterministic proxy, not a second human annotator. AT-07 remains partial.",
+      "Image-family adjudication: all three committed image cases are expressible at the annotated company-logo path; label_status=verified, no case excluded as a gap."
+    ]
   },
   "cases": [
     {
@@ -53,7 +61,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "order_date",
@@ -64,7 +78,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -74,7 +94,17 @@
         "purchase_order",
         "fields"
       ],
-      "notes": "Two scalar identifiers with no ambiguity; the easiest anchor for a purchase-order prompt."
+      "notes": "Two scalar identifiers with no ambiguity; the easiest anchor for a purchase-order prompt.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "po-flat-vendor-identity",
@@ -95,7 +125,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "vendor_name",
@@ -106,7 +142,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "vendor_address",
@@ -117,7 +159,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -129,7 +177,24 @@
         "purchase_order",
         "vendor_scope"
       ],
-      "notes": "The company name is the deliberate wrong-scope alternative for the vendor name."
+      "notes": "The company name is the deliberate wrong-scope alternative for the vendor name.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "GeneralData.Company.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "po-flat-commercial-terms",
@@ -150,7 +215,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "delivery_terms",
@@ -161,7 +232,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "currency_code",
@@ -172,7 +249,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "order_total",
@@ -183,7 +266,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -193,7 +282,17 @@
         "purchase_order",
         "commercial_terms"
       ],
-      "notes": "Four unrelated scalars; checks that the planner does not confuse delivery terms with a date."
+      "notes": "Four unrelated scalars; checks that the planner does not confuse delivery terms with a date.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "po-image-logo-header",
@@ -214,7 +313,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "image",
-          "expected_context": "header"
+          "expected_context": "header",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "company_name",
@@ -225,7 +330,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "header"
+          "expected_context": "header",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -244,7 +355,33 @@
         "purchase_order",
         "header"
       ],
-      "notes": "An image block and a scalar in the header; the vendor name is the wrong-scope trap."
+      "notes": "An image block and a scalar in the header; the vendor name is the wrong-scope trap.",
+      "label_status": "verified",
+      "image_subtype": "company_logo",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: MainData.PurchaseOrder.Vendor.Name"
+      },
+      "block_provenance": [
+        {
+          "kind": "image",
+          "path": "GeneralData.Company.CompanyLogo",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {
+        "MainData.PurchaseOrder.Vendor.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "po-collection-line-items",
@@ -265,7 +402,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -276,7 +419,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_quantity",
@@ -287,7 +436,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_unit_price",
@@ -298,7 +453,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -309,7 +470,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -330,7 +497,32 @@
         "purchase_order",
         "table"
       ],
-      "notes": "Five line-scoped fields plus the collection scope; a header-scoped binding is incorrect."
+      "notes": "Five line-scoped fields plus the collection scope; a header-scoped binding is incorrect.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.PurchaseOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.PurchaseOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "po-collection-line-summary",
@@ -351,7 +543,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -362,7 +560,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -383,7 +587,32 @@
         "purchase_order",
         "table"
       ],
-      "notes": "A smaller line table; tests that the collection scope survives when only two columns are requested."
+      "notes": "A smaller line table; tests that the collection scope survives when only two columns are requested.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.PurchaseOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.PurchaseOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "po-multilingual-de",
@@ -404,7 +633,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "order_date",
@@ -415,7 +650,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "vendor_name",
@@ -426,7 +667,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -438,7 +685,24 @@
         "purchase_order",
         "de"
       ],
-      "notes": "German brief; schema paths stay English, so the model must translate the concepts, not the paths."
+      "notes": "German brief; schema paths stay English, so the model must translate the concepts, not the paths.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "GeneralData.Company.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "po-multilingual-fr",
@@ -459,7 +723,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "vendor_address",
@@ -470,7 +740,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "delivery_terms",
@@ -481,7 +757,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -493,7 +775,24 @@
         "purchase_order",
         "fr"
       ],
-      "notes": "French brief with one vendor-scope guard."
+      "notes": "French brief with one vendor-scope guard.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "GeneralData.Company.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "po-footer-vendor-scope",
@@ -514,7 +813,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "footer"
+          "expected_context": "footer",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "vendor_address",
@@ -525,7 +830,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "footer"
+          "expected_context": "footer",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -537,7 +848,24 @@
         "purchase_order",
         "footer"
       ],
-      "notes": "Footer placement plus a scope guard: the buying company is not the vendor."
+      "notes": "Footer placement plus a scope guard: the buying company is not the vendor.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "GeneralData.Company.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "po-ambiguous-supplier-contact",
@@ -560,7 +888,13 @@
           ],
           "required": true,
           "expected_type": "string",
-          "note": "The prompt explicitly permits either contact channel; both are accepted without a duplicate penalty."
+          "note": "The prompt explicitly permits either contact channel; both are accepted without a duplicate penalty.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -570,7 +904,17 @@
         "purchase_order",
         "alternatives"
       ],
-      "notes": "Ambiguity resolved by the prompt itself; acceptable alternatives are annotated rather than guessed."
+      "notes": "Ambiguity resolved by the prompt itself; acceptable alternatives are annotated rather than guessed.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-flat-quotation-identity",
@@ -591,7 +935,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "quotation_date",
@@ -602,7 +952,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "validity_date",
@@ -613,7 +969,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -623,7 +985,17 @@
         "sales_order",
         "fields"
       ],
-      "notes": "Quotation identifiers; the validity date must not be confused with the quotation date."
+      "notes": "Quotation identifiers; the validity date must not be confused with the quotation date.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-flat-invoice-identity",
@@ -644,7 +1016,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "invoice_date",
@@ -655,7 +1033,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "due_date",
@@ -666,7 +1050,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -676,7 +1066,17 @@
         "sales_order",
         "fields"
       ],
-      "notes": "Invoice identifier triad; checks date/date disambiguation."
+      "notes": "Invoice identifier triad; checks date/date disambiguation.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-image-logo-footer",
@@ -697,7 +1097,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "image",
-          "expected_context": "footer"
+          "expected_context": "footer",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "company_name",
@@ -708,7 +1114,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "footer"
+          "expected_context": "footer",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "company_address",
@@ -719,7 +1131,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "footer"
+          "expected_context": "footer",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -738,7 +1156,39 @@
         "sales_order",
         "footer"
       ],
-      "notes": "Company identity in the footer; customer identity is forbidden."
+      "notes": "Company identity in the footer; customer identity is forbidden.",
+      "label_status": "verified",
+      "image_subtype": "company_logo",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Address, MainData.Quotation.Customer.Name"
+      },
+      "block_provenance": [
+        {
+          "kind": "image",
+          "path": "GeneralData.Company.CompanyLogo",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {
+        "MainData.Quotation.Customer.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        },
+        "MainData.Quotation.Customer.Address": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "so-image-logo-header-invoice",
@@ -759,7 +1209,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "image",
-          "expected_context": "header"
+          "expected_context": "header",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "invoice_number",
@@ -770,7 +1226,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "header"
+          "expected_context": "header",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -788,7 +1250,33 @@
         "sales_order",
         "header"
       ],
-      "notes": "Header composition with an image and a scalar; the customer name is the wrong-scope trap."
+      "notes": "Header composition with an image and a scalar; the customer name is the wrong-scope trap.",
+      "label_status": "verified",
+      "image_subtype": "company_logo",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: MainData.Invoice.Customer.Name"
+      },
+      "block_provenance": [
+        {
+          "kind": "image",
+          "path": "GeneralData.Company.CompanyLogo",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {
+        "MainData.Invoice.Customer.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "so-collection-wide-lines",
@@ -809,7 +1297,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -820,7 +1314,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_quantity",
@@ -831,7 +1331,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_net_amount",
@@ -842,7 +1348,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -863,7 +1375,32 @@
         "sales_order",
         "table"
       ],
-      "notes": "Wide schema but only four columns requested; the model must not add every available column."
+      "notes": "Wide schema but only four columns requested; the model must not add every available column.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-long-table-all-columns",
@@ -884,7 +1421,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -895,7 +1438,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_quantity",
@@ -906,7 +1455,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_unit",
@@ -917,7 +1472,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_unit_price",
@@ -928,7 +1489,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_discount",
@@ -939,7 +1506,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_net_amount",
@@ -950,7 +1523,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_tax_amount",
@@ -961,7 +1540,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -972,7 +1557,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_warehouse",
@@ -983,7 +1574,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_delivery_date",
@@ -994,7 +1591,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_note",
@@ -1005,7 +1608,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1026,7 +1635,32 @@
         "sales_order",
         "wide_table"
       ],
-      "notes": "Twelve requested columns: the hardest recall case and a stress test for table width."
+      "notes": "Twelve requested columns: the hardest recall case and a stress test for table width.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-long-table-40-rows",
@@ -1047,7 +1681,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -1058,7 +1698,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_quantity",
@@ -1069,7 +1715,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -1080,7 +1732,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1101,7 +1759,32 @@
         "sales_order",
         "row_count"
       ],
-      "notes": "The fixture carries forty sample rows; the prompt tests that the model keeps the collection repeat rather than a fixed row count."
+      "notes": "The fixture carries forty sample rows; the prompt tests that the model keeps the collection repeat rather than a fixed row count.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.QuotationLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.QuotationLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-long-table-long-descriptions",
@@ -1122,7 +1805,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -1133,7 +1822,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -1144,7 +1839,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1165,7 +1866,32 @@
         "sales_order",
         "long_text"
       ],
-      "notes": "Long descriptions are a layout concern, but the semantic binding must still target the description field."
+      "notes": "Long descriptions are a layout concern, but the semantic binding must still target the description field.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.QuotationLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.QuotationLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "so-multilingual-de",
@@ -1186,7 +1912,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "quotation_number",
@@ -1197,7 +1929,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "quotation_date",
@@ -1208,7 +1946,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "date",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "total_amount",
@@ -1219,7 +1963,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -1231,7 +1981,24 @@
         "sales_order",
         "de"
       ],
-      "notes": "German brief with four concepts and a customer/company guard."
+      "notes": "German brief with four concepts and a customer/company guard.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "MainData.Quotation.Customer.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": false,
+          "note": "author scope guard; the independent pass did not derive it"
+        }
+      }
     },
     {
       "id": "so-ambiguous-vat-number",
@@ -1254,7 +2021,13 @@
           ],
           "required": true,
           "expected_type": "string",
-          "note": "The prompt does not say whose VAT number; both parties are defensible."
+          "note": "The prompt does not say whose VAT number; both parties are defensible.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1264,7 +2037,17 @@
         "sales_order",
         "vat"
       ],
-      "notes": "Genuine ambiguity between customer and company VAT numbers; the alternative is accepted, not guessed."
+      "notes": "Genuine ambiguity between customer and company VAT numbers; the alternative is accepted, not guessed.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): MainData.Quotation.Customer.VatNumber"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "cc-nested-service-tasks",
@@ -1274,7 +2057,7 @@
       "split": "calibration",
       "language": "en",
       "package": "benchmarks/fixtures/field-service.ddsp",
-      "prompt": "Create a service order with a table of service lines and, under each line, a nested list of tasks showing the task id, description and hours.",
+      "prompt": "Create a service order with a table of service lines showing the line description and, under each line, a nested list of tasks showing the task id, description and hours.",
       "required_bindings": [
         {
           "id": "service_line_description",
@@ -1285,7 +2068,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_id",
@@ -1296,7 +2085,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_description",
@@ -1307,7 +2102,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_hours",
@@ -1318,7 +2119,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1344,7 +2151,39 @@
         "conditional_complex",
         "repeat"
       ],
-      "notes": "Nested repeat scope: task fields must use the inner collection, not the outer line scope."
+      "notes": "Nested repeat scope: the line description and the task fields use the outer and inner collection respectively; the task fields must not use the outer line scope.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "cc-nested-task-effort",
@@ -1354,7 +2193,7 @@
       "split": "holdout",
       "language": "en",
       "package": "benchmarks/fixtures/field-service.ddsp",
-      "prompt": "Show each service line with its item number and, nested beneath it, each task's id, rate and amount.",
+      "prompt": "Create a service order table showing each service line's item number and, nested beneath it, each task's id, rate and amount.",
       "required_bindings": [
         {
           "id": "line_item",
@@ -1365,7 +2204,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_id",
@@ -1376,7 +2221,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_rate",
@@ -1387,7 +2238,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_amount",
@@ -1398,7 +2255,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1424,7 +2287,39 @@
         "conditional_complex",
         "repeat"
       ],
-      "notes": "Nested list with money fields; checks inner-scope type correctness."
+      "notes": "Nested list with money fields; the outer line table and the inner task repeat must both use the correct collection scope.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "cc-nested-service-amounts",
@@ -1445,7 +2340,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_amount",
@@ -1456,7 +2357,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_description",
@@ -1467,7 +2374,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "task_hours",
@@ -1478,7 +2391,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1504,7 +2423,39 @@
         "conditional_complex",
         "repeat"
       ],
-      "notes": "A second nested composition; differs from the first by mixing line amount with task text/effort."
+      "notes": "A second nested composition; differs from the first by mixing line amount with task text/effort.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.ServiceOrderLines.Line.Tasks.Task",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "cc-conditional-eu-vat",
@@ -1525,7 +2476,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "customer_is_eu",
@@ -1536,7 +2493,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "boolean",
-          "expected_context": "conditional"
+          "expected_context": "conditional",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -1553,7 +2516,32 @@
         "conditional_complex",
         "vat"
       ],
-      "notes": "The schema has a separate Parameters.ShowVatNotice flag; the prompt conditions on the customer's EU status, so the flag is forbidden."
+      "notes": "The schema has a separate Parameters.ShowVatNotice flag; the prompt conditions on the customer's EU status, so the flag is forbidden.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name"
+      },
+      "block_provenance": [
+        {
+          "kind": "conditional",
+          "path": null,
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {
+        "Parameters.ShowVatNotice": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        }
+      }
     },
     {
       "id": "cc-conditional-reverse-charge",
@@ -1574,7 +2562,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "boolean",
-          "expected_context": "conditional"
+          "expected_context": "conditional",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "tax_amount",
@@ -1585,7 +2579,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "gross_amount",
@@ -1596,7 +2596,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1611,7 +2617,25 @@
         "conditional_complex",
         "tax"
       ],
-      "notes": "A boolean condition plus two monetary fields; reverse charge must drive the condition."
+      "notes": "A boolean condition plus two monetary fields; reverse charge must drive the condition.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "conditional",
+          "path": null,
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "cc-conditional-eu-vat-invoice",
@@ -1632,7 +2656,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "boolean",
-          "expected_context": "conditional"
+          "expected_context": "conditional",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "customer_vat_number",
@@ -1643,7 +2673,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "invoice_total",
@@ -1654,7 +2690,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1669,7 +2711,25 @@
         "conditional_complex",
         "vat"
       ],
-      "notes": "Conditional VAT rendering on the invoice fixture; the total stays unconditional."
+      "notes": "Conditional VAT rendering on the invoice fixture; the total stays unconditional.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): GeneralData.Company.VatNumber"
+      },
+      "block_provenance": [
+        {
+          "kind": "conditional",
+          "path": null,
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {}
     },
     {
       "id": "adv-missing-requisition-number",
@@ -1690,7 +2750,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "requisition_number",
@@ -1701,7 +2767,13 @@
           "expected_type": "string",
           "expected_context": "body",
           "satisfiable": false,
-          "note": "The purchase-order schema has no requisition field; a correct run must not invent one."
+          "note": "The purchase-order schema has no requisition field; a correct run must not invent one.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "both passes agree that the schema cannot express this request"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1711,7 +2783,17 @@
         "adversarial",
         "purchase_order"
       ],
-      "notes": "Unsatisfiable requirement excluded from recall/coverage; hallucinating a path is charged as wrong_binding."
+      "notes": "Unsatisfiable requirement excluded from recall/coverage; hallucinating a path is charged as wrong_binding.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "adv-missing-customer-po-reference",
@@ -1732,7 +2814,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "customer_po_reference",
@@ -1743,7 +2831,13 @@
           "expected_type": "string",
           "expected_context": "body",
           "satisfiable": false,
-          "note": "The invoice fixture has no customer purchase-order reference; the run must not substitute the invoice number."
+          "note": "The invoice fixture has no customer purchase-order reference; the run must not substitute the invoice number.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "both passes agree that the schema cannot express this request"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1753,7 +2847,17 @@
         "adversarial",
         "sales_order"
       ],
-      "notes": "A subtler missing field: the only nearby identifier is the invoice number, which is a different concept."
+      "notes": "A subtler missing field: the only nearby identifier is the invoice number, which is a different concept.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "adv-ambiguous-address",
@@ -1776,7 +2880,13 @@
           ],
           "required": true,
           "expected_type": "string",
-          "note": "Top-of-document usually means the company address, but the customer address is defensible in some layouts."
+          "note": "Top-of-document usually means the company address, but the customer address is defensible in some layouts.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [],
@@ -1786,7 +2896,17 @@
         "adversarial",
         "address"
       ],
-      "notes": "Ambiguity is explicit in the label; both addresses are accepted alternatives."
+      "notes": "Ambiguity is explicit in the label; both addresses are accepted alternatives.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): MainData.Quotation.Customer.Address"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {}
     },
     {
       "id": "adv-forbidden-customer-bank",
@@ -1807,7 +2927,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "customer_bank_iban",
@@ -1817,7 +2943,13 @@
           "required": true,
           "expected_type": "string",
           "satisfiable": false,
-          "note": "Only the selling company has bank details in this schema; there is no customer bank account."
+          "note": "Only the selling company has bank details in this schema; there is no customer bank account.",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "both passes agree that the schema cannot express this request"
+          }
         }
       ],
       "forbidden_paths": [
@@ -1831,7 +2963,36 @@
         "adversarial",
         "bank"
       ],
-      "notes": "The schema's BankDetails belong to the company, not the customer; binding them is a scope error."
+      "notes": "The schema's BankDetails belong to the company, not the customer; binding them is a scope error.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": "Advisory counterpart guards (not applied): GeneralData.Company.Name"
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "MainData.Quotation.BankDetails.Iban": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        },
+        "MainData.Quotation.BankDetails.BankName": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        },
+        "MainData.Quotation.BankDetails.Swift": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        }
+      }
     },
     {
       "id": "adv-forbidden-company-as-customer",
@@ -1852,7 +3013,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "customer_account",
@@ -1863,7 +3030,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "body"
+          "expected_context": "body",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -1875,7 +3048,24 @@
         "adversarial",
         "customer_scope"
       ],
-      "notes": "A direct company/customer identity trap in the sales-order header."
+      "notes": "A direct company/customer identity trap in the sales-order header.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [],
+      "forbidden_provenance": {
+        "GeneralData.Company.Name": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        }
+      }
     },
     {
       "id": "adv-collection-forbidden-columns",
@@ -1896,7 +3086,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_description",
@@ -1907,7 +3103,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "string",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         },
         {
           "id": "line_quantity",
@@ -1918,7 +3120,13 @@
           "allowed_alternatives": [],
           "required": true,
           "expected_type": "number",
-          "expected_context": "repeat"
+          "expected_context": "repeat",
+          "provenance": {
+            "author": "v0.10 single annotator (implementer)",
+            "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+            "agreement": true,
+            "note": "same acceptable set"
+          }
         }
       ],
       "forbidden_paths": [
@@ -1943,7 +3151,51 @@
         "adversarial",
         "table"
       ],
-      "notes": "Negative scope inside a collection: the forbidden columns are plausible but explicitly excluded."
+      "notes": "Negative scope inside a collection: the forbidden columns are plausible but explicitly excluded.",
+      "label_status": "verified",
+      "provenance": {
+        "author": "v0.10 single annotator (implementer)",
+        "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+        "review_status": "adjudicated_proxy",
+        "agreement": "agree",
+        "note": ""
+      },
+      "block_provenance": [
+        {
+          "kind": "table",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        },
+        {
+          "kind": "repeat",
+          "path": "MainData.SalesOrderLines.Line",
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true
+        }
+      ],
+      "forbidden_provenance": {
+        "MainData.SalesOrderLines.Line.Warehouse": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        },
+        "MainData.SalesOrderLines.Line.DiscountPct": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        },
+        "MainData.SalesOrderLines.Line.LineNote": {
+          "author": "v0.10 single annotator (implementer)",
+          "adjudicator": "benchmarks/adjudicate_labels.py 1.0.0 (deterministic proxy)",
+          "agreement": true,
+          "note": "reproduced by the independent pass"
+        }
+      }
     }
   ]
 }

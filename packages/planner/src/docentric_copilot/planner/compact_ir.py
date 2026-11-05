@@ -61,7 +61,7 @@ from docentric_copilot.template_ir import (
 )
 from pydantic import ValidationError
 
-from .prompt import build_user_message
+from .prompt import CANDIDATE_MODE_RULES, build_user_message
 
 COMPACT_TEMPLATE_NAME = "compact"
 COMPACT_GENERATOR = "compact-ir-v1"
@@ -1211,16 +1211,21 @@ def build_compact_messages(
     design_style: str = "modern",
     language: str = "en",
     target: str = "generic-docx",
+    candidates: str | None = None,
 ) -> list[Message]:
     """System+user messages that ask for the compact wire format."""
+    system = COMPACT_SYSTEM_PROMPT
+    if candidates:
+        system = f"{system}\n{CANDIDATE_MODE_RULES}"
     return [
-        Message(role=Role.SYSTEM, content=COMPACT_SYSTEM_PROMPT),
+        Message(role=Role.SYSTEM, content=system),
         build_user_message(
             schema,
             requirement,
             design_style=design_style,
             language=language,
             target=target,
+            candidates=candidates,
         ),
     ]
 

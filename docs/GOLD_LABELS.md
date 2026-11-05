@@ -3,20 +3,25 @@
 | Field | Value |
 | --- | --- |
 | Dataset | [benchmarks/gold_cases.json](../benchmarks/gold_cases.json) |
-| Dataset version | `1.0.0` (schema `gold-cases/v1`) |
-| Canonical cases SHA-256 | `c2b1d89c70f96f14884de54792784d0dbd3ffaa71d0700d5f73c5c24e93ece30` |
+| Dataset version | `2.0.0` (schema `gold-cases/v2`) |
+| Canonical cases SHA-256 | `a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed` |
 | Case count | 32 |
 | Split | 20 calibration / 12 holdout, fixed before the first live run |
 | Rule pass | [benchmarks/gold_dataset.py](../benchmarks/gold_dataset.py) |
+| Independent adjudicator | [benchmarks/adjudicate_labels.py](../benchmarks/adjudicate_labels.py) (deterministic proxy, not a human) |
+| Adjudication report | [benchmarks/adjudication_report.json](../benchmarks/adjudication_report.json) |
 | Runner | [benchmarks/gold_evaluation.py](../benchmarks/gold_evaluation.py) |
-| Related | [EVALUATION](EVALUATION.md), [ADR-0014](adr/0014-gold-dataset-and-reference-benchmark.md) |
+| Review status | `adjudicated_proxy`; AT-07 **partial** |
+| Related | [EVALUATION](EVALUATION.md), [ADR-0014](adr/0014-gold-dataset-and-reference-benchmark.md), [ADR-0015](adr/0015-label-adjudication-and-candidate-filtering.md) |
 
 This guide describes what a gold label means, how the 32 cases were composed, how the
 calibration/holdout split was fixed, and what was and was not reviewed. It is part of the
 reproducibility contract: a metric is only comparable when its dataset version and hash are quoted.
 
-The first committed report generated from this version is
-[benchmarks/gold_report.json](../benchmarks/gold_report.json) (2026-11-05, 288 runs).
+The v0.10 full report ([benchmarks/gold_report.json](../benchmarks/gold_report.json), 288 runs) is
+preserved as a historical artifact for dataset `1.0.0`. The current v0.11 report is the affected
+subset in [benchmarks/gold_report_v011_subset.json](../benchmarks/gold_report_v011_subset.json);
+it was generated from dataset `2.0.0` and must not be spliced with the v0.10 aggregate.
 
 ## 1. What this dataset is
 
@@ -134,6 +139,23 @@ condition is expressed by a requirement with `expected_context: "conditional"`.
   the path is otherwise nearby. This is the metric that catches "bind the whole line instead of the
   line's item number".
 
+### 2.5 Provenance and label status
+
+Schema `gold-cases/v2` adds per-label provenance. Every case declares:
+
+| Field | Meaning |
+| --- | --- |
+| `label_status` | `verified` or `gap`. A `gap` case is excluded from semantic denominators; it is not silently dropped from the run matrix. |
+| `provenance` | Case-level `author`, `adjudicator`, `review_status`, `agreement` and a note. |
+| `required_bindings[].provenance` | Per-requirement `author`, `adjudicator`, `agreement` (boolean) and a note. |
+| `forbidden_provenance` | Per-forbidden-path provenance. `agreement: false` means the author added a scope guard that the independent pass did not derive; it is a documented reviewer note, not a silent rewrite. |
+| `block_provenance` | Parallel to `expected_blocks`, with the same author/adjudicator/agreement fields. |
+| `image_subtype` | Image-family subtype. All three committed image cases are `company_logo`; product image, image collection and optional image are not covered. |
+
+The dataset-level `provenance` block records `review_status: adjudicated_proxy`,
+`human_review: false`, `at07_status: partial`, the adjudicator id and the report path. A v2 dataset
+with `human_review: true` fails the rule pass until a real human review exists.
+
 ## 3. Ambiguity
 
 Ambiguity is annotated, not hidden. The rules are:
@@ -210,26 +232,71 @@ The full case list, prompts and requirements are in the dataset; this guide does
 ## 6. Adjudication record — honest version
 
 **No independent human double review was available for this dataset.** The specification asks for
-at least two reviewers and an adjudication journal. The project had one implementer; pretending
-otherwise would be worse than the limitation. What actually happened is:
+at least two reviewers and an adjudication journal. The project has one implementer; pretending
+otherwise would be worse than the limitation. v0.11 adds a **deterministic independent adjudicator**,
+but it is explicitly a proxy, not a second person.
+
+What actually happened:
 
 1. The implementer authored the 32 cases and their labels against the synthetic fixtures.
-2. A **deterministic rule pass** (`benchmarks/gold_dataset.py --check`) verified the mechanical
+2. A **deterministic rule pass** (`benchmarks/gold_dataset.py --check`) verifies the mechanical
    contract: every path exists in the case's DDSP, types and contexts match the schema, forbidden
    paths are not also expected, block paths are collections/images, the family invariants hold, the
    split sizes and family coverage are exact, and no path points at private corpus material.
-3. The implementer reviewed the rule-pass output and the first live run's per-case evidence, and
-   corrected labels where the evidence showed an annotation error. Those corrections are part of
-   version `1.0.0`; no earlier version was published.
-4. **The rule pass is not a second reviewer.** It cannot judge whether a concept is the right
-   business concept, whether an alternative is defensible, or whether a forbidden path is too broad.
-   Those remain single-annotator decisions.
+3. In v0.11, `benchmarks/adjudicate_labels.py` re-derived each case's required paths, alternatives,
+   forbidden guards and blocks from the prompt and schema **without reading the author's answers to
+   derive them**. It uses its own bounded lexicon and schema-evidence rules; it does not import the
+   planner's candidate-retrieval code, so it is not a circular check of the same path.
+4. The adjudicator reproduced **32/32 cases and 98/98 requirement labels** (`agreement_rate: 1.0` in
+   [adjudication_report.json](../benchmarks/adjudication_report.json)). It flagged no unresolved
+   requirement conflict after two prompt corrections (below). It did report the author's
+   forbidden-scope guards as *stricter* than its own derivation in a few cases; those are recorded
+   as `gold_additional` notes and deliberately **not** loosened.
+5. The adjudicator is deterministic and makes no model calls, but it is **not human review** and its
+   lexicon was developed against this fixture set. It cannot establish business correctness or
+   generalisation. AT-07 therefore remains **partial**.
 
 Status against the specification: AT-07 is **partial**. The dataset has 32 cases, concept-level
-labels, a version, a hash, a fixed split and an adjudication record, but not independent double
-review. Reports must state this; the HTML report carries the limitation in its Limits section.
+labels, a version, a hash, a fixed split, per-label provenance and an independent deterministic
+adjudication, but not independent human double review. Reports must state this; the HTML report
+carries the limitation in its Limits section.
 
-### 6.1 Decisions that were genuinely contested
+### 6.1 Label changes in version 2.0.0
+
+Two genuine annotation errors were found and corrected. Neither change loosens a metric to make a
+model look better: both make an unstated requirement explicit.
+
+| Case | v1.0.0 problem | v2.0.0 correction | Why |
+| --- | --- | --- | --- |
+| `cc-nested-service-tasks` | Prompt did not mention the line description, but the label required it. | Prompt now says "showing the line description". | The expected path is legitimate, but the request must state it. |
+| `cc-nested-task-effort` | Prompt said "Show each service line..." while the label required a table block. | Prompt now says "Create a service order table...". | A table requirement must be explicit; the alternative would have been to weaken the block label. |
+
+Everything else in the author's labels was reproduced by the independent pass. The nested-scope
+labels (`table` + outer `repeat` + inner `repeat`) are unchanged; a model that uses only a paragraph
+repeat still fails the block requirement, as it should.
+
+### 6.2 Image-family decision
+
+The v0.10 report showed a 0% image-family semantic pass for all three providers. Before treating
+that as an image-recognition result, v0.11 checked every image case against the fixture:
+
+- All three image cases request the company logo and annotate the same top-level image path,
+  `GeneralData.Company.CompanyLogo`, with an `image` block.
+- The path exists in the schema and has `data_type: image`; the prompt and block agree.
+- The v0.10 raw runs produced the required image binding in **27/27 image runs**. The semantic gate
+  failed because the same plans also bound forbidden or unrequested paths (for example the vendor
+  or customer name), not because the image path was impossible.
+
+Decision per case: **the label was not wrong and it is not a gap.** All three image cases stay
+`label_status: "verified"`, are not excluded from semantic denominators, and are reported in a
+separate image scorecard in the v0.11 subset report. In the v0.11 affected subset, the required
+image binding was present in **18/18 image runs** and the image family passed **100%** for all three
+providers (v0.10: 0%). The 0% was a precision/scope-adherence failure;
+the v0.11 candidate filter is the remedy. The remaining image-family gap is coverage: only company
+logo is represented; product image, image collection, optional image, a similar text field, a
+missing image and a wrong-collection image are not yet cases.
+
+### 6.3 Genuinely contested author calls
 
 | Case(s) | Question | Decision | Why |
 | --- | --- | --- | --- |
@@ -244,8 +311,10 @@ review. Reports must state this; the HTML report carries the limitation in its L
 | `so-long-table-all-columns` | Twelve required columns is harsh. | Keep all twelve. | The case exists to stress long-table recall; dropping columns would hide the stress. |
 | `po-footer-vendor-scope` | Vendor or company identity in the footer? | Vendor only; company name forbidden. | The request is explicitly about the supplier. |
 
-There were no reviewer disputes because there was no second reviewer. The table is a record of the
-single annotator's contested calls, not a two-person adjudication.
+The independent adjudicator reproduced these calls. It also suggested additional counterpart guards
+(for example a company name when a customer name was requested) in a few cases; those suggestions
+are recorded as advisory notes, not applied automatically. They are a candidate for real human
+review, not evidence that the existing guard is wrong.
 
 ## 7. Deterministic rule pass
 
@@ -258,7 +327,7 @@ Run:
 
 The pass checks, among other things:
 
-- `schema == "gold-cases/v1"`, version, date, case count 32;
+- `schema == "gold-cases/v2"`, version `2.0.0`, date, case count 32;
 - unique ids and required metadata (`prompt`, `package`, `family`, `category`, `difficulty`, `split`,
   `labels`);
 - each `required_bindings` entry has a unique id and concept; `expected_paths` and
@@ -273,10 +342,21 @@ The pass checks, among other things:
   requirement; ambiguous cases have allowed alternatives; multilingual cases are non-English; long
   tables have a table and at least three columns; forbidden-scope cases have forbidden paths;
 - exact family and category counts, split sizes 20/12, and every family represented in both splits;
-- no package path is absolute, escapes the repository, or points at `.tools`/corpus material.
+- no package path is absolute, escapes the repository, or points at `.tools`/corpus material;
+- v2 provenance: dataset `human_review: false`, `at07_status: partial`, every case has a valid
+  `label_status`, every requirement has author/adjudicator/agreement, forbidden and block provenance
+  match their paths, and no dataset claims human dual review.
 
-The pass is intentionally mechanical. It is a guard against typos, stale paths and accidental split
-drift, not a substitute for domain review.
+Run the independent adjudicator as well:
+
+```bash
+.venv/bin/python benchmarks/adjudicate_labels.py --write   # write the report
+.venv/bin/python benchmarks/adjudicate_labels.py --check   # fail on a requirement conflict
+```
+
+The rule pass is intentionally mechanical. It is a guard against typos, stale paths and accidental
+split drift, not a substitute for domain review. The adjudicator is an independent deterministic
+proxy; it is stronger than the rule pass on business paths, but it is still not a human.
 
 ## 8. Versioning and change process
 
@@ -284,13 +364,14 @@ The dataset uses semantic versioning independent of the distribution version:
 
 | Change | Version bump | Required action |
 | --- | --- | --- |
-| Typo in `notes`, comment or documentation; no label change | Patch (`1.0.x`) | Update the file hash in reports; live results remain comparable. |
-| Added case, corrected path, added allowed alternative, changed a difficulty or family | Minor (`1.x.0`) | Re-run the affected cases and publish a new report; quote the new hash. Old and new results are not directly comparable. |
+| Typo in `notes`, comment or documentation; no label change | Patch (`2.0.x`) | Update the file hash in reports; live results remain comparable. |
+| Added case, corrected path, added allowed alternative, changed a difficulty or family | Minor (`2.x.0`) | Re-run the affected cases and publish a new report; quote the new hash. Old and new results are not directly comparable. |
 | Moved a case between calibration and holdout, removed a case, changed the scoring contract or the family/category taxonomy | Major (`x.0.0`) | Treat as a new benchmark. Re-run all cases; do not splice old and new aggregates. |
 
 Every change must:
 
-1. update `version` and `created_at` in the dataset;
+1. update `version` and `created_at` in the dataset, and re-run
+   `benchmarks/adjudicate_labels.py --apply` so per-label provenance matches the new content;
 2. pass `gold_dataset.py --check`;
 3. update this guide if the label rules changed;
 4. be committed with the reports generated from the new hash;
@@ -311,17 +392,44 @@ the only honest way to keep a benchmark versionable.
   estimated with the named proxy; it is never `$0.00`.
 - The sample is small and the repeats are not a population sample. Reports say "observations, not
   significance" and do not declare a single winner.
-- Per-run JSONL stays in the git-ignored `benchmarks/gold_runs.jsonl`; committed reports contain
-  aggregates only, with no prompt text, raw provider output, credentials or corpus content.
+- Per-run JSONL stays in the git-ignored `benchmarks/gold_runs.jsonl` (the v0.11 subset uses
+  `benchmarks/gold_runs_v011_subset.jsonl`); committed reports contain aggregates only, with no
+  prompt text, raw provider output, credentials or corpus content.
+
+### 9.1 v0.11 counters
+
+- **`pass@k`** is computed per `(provider, case)` group: the fraction of groups with at least one
+  semantic pass among the first `k` executed repeats. A group with fewer than `k` runs is excluded
+  from that `k`'s denominator and the report says so; it is not silently treated as a failure.
+  `gap` cases are excluded from both numerator and denominator.
+- **`abstention_rate`** is the fraction of executed runs where at least one requirement was returned
+  as `needs_review` with **no selected path**. A bound ambiguous alternative is a review row but not
+  an abstention; the report also publishes `review_rate` and `review_requirements`.
+- **`family_semantic_pass`** reports semantic pass and pass@k per family and provider. The image
+  family has its own scorecard so an aggregate cannot hide a family failure.
+- **`counters`** publishes planned, executed, skipped, succeeded, failed, valid-template, semantic
+  pass, semantic-excluded and abstained runs with two explicit invariants:
+  `planned = executed + skipped` and `executed = succeeded + failed`. The v2 report separately names
+  `valid_template_runs`; that is not the same counter as a successful run.
+- **`governance.at07_status`** is `partial` because `second_human_annotator` is `false` and the
+  adjudicator is a deterministic proxy. No report may upgrade it without a real second annotator.
+- **`comparison`** (written by `benchmarks/compare_subset.py`) holds the v0.10 → v0.11 before/after
+  block for the same 12 cases. It reads the committed v0.10 per-case metrics, states the 3-repeat vs
+  2-repeat difference, and records baseline abstention as `not_measured`, not zero.
 
 ## 10. Known limitations
 
-- **Single annotator.** No independent human double review; see §6.
+- **Single annotator plus a deterministic proxy.** No independent human double review; the v0.11
+  adjudicator is deterministic and independent of the planner, but it is not a person. AT-07 stays
+  partial; see §6.
 - **Synthetic fixtures.** The cases encode this project's judgement on synthetic schemas, not a
   customer's business rules. They do not prove generalisation to real Docentric templates.
 - **Small holdout.** Twelve cases cannot support a confidence interval or a claim of significance.
 - **Model drift.** Provider model versions change; a report is only reproducible for the recorded
   model id and date.
+- **v0.11 subset measurement.** The v0.11 report covers the affected 12 cases × 3 providers × 2
+  repeats, not the full 288-run matrix. It is a before/after check on the changed families, not a new
+  full ranking. The v0.10 full report remains the only full-matrix artifact.
 - **Path-level precision is strict.** Extra bindings that were not requested are false positives even
   when they are harmless to a reader. That is deliberate: the benchmark measures adherence to the
   request, not document aesthetics.

@@ -364,6 +364,12 @@ def _run_one(
         "forbidden_hits": [],
         "missing_requirements": [],
         "wrong_paths": [],
+        "mapping_counts": {},
+        "review_requirements": [],
+        "abstained": False,
+        "semantic_excluded": False,
+        "candidate_summary": {},
+        "binding_review_counts": {},
     }
 
     try:
@@ -410,6 +416,19 @@ def _run_one(
     produced = collect_produced_bindings(outcome.document, parsed.schema, outcome.mapping)
     blocks = collect_produced_blocks(outcome.document, parsed.schema)
     score = score_run(case, produced, produced_blocks=blocks)
+    mapping_counts = outcome.mapping.counts()
+    review_requirements = [
+        mapping.requirement_id
+        for mapping in outcome.mapping.mappings
+        if getattr(mapping.status, "value", mapping.status) == "needs_review"
+    ]
+    abstained = any(
+        getattr(mapping.status, "value", mapping.status) == "needs_review"
+        and mapping.selected_field_path is None
+        for mapping in outcome.mapping.mappings
+    )
+    review_counts = Counter(str(review.get("status")) for review in (outcome.binding_reviews or []))
+    semantic_passed = bool(score.semantic_pass and not score.excluded_from_semantic)
 
     codes = list(score.error_codes)
     if not report.can_compile:
@@ -448,9 +467,15 @@ def _run_one(
         {
             "ok": True,
             "valid_template": valid_template,
-            "semantic_pass": score.semantic_pass,
-            "correct": bool(score.semantic_pass and valid_template),
+            "semantic_pass": semantic_passed,
+            "semantic_excluded": score.excluded_from_semantic,
+            "correct": bool(semantic_passed and valid_template),
             "semantic": score.as_dict(),
+            "mapping_counts": mapping_counts,
+            "review_requirements": review_requirements,
+            "abstained": abstained,
+            "candidate_summary": outcome.candidate_summary,
+            "binding_review_counts": dict(sorted(review_counts.items())),
             "validation": report.statuses(),
             "validation_passed": report.can_compile,
             "validation_codes": validation_codes,
@@ -458,7 +483,7 @@ def _run_one(
             "compile_error": compile_error,
             "error": (
                 None
-                if score.semantic_pass and valid_template and not ordered_codes
+                if semantic_passed and valid_template and not ordered_codes
                 else {
                     "code": primary or "harness",
                     "message": (
@@ -493,11 +518,44 @@ def _run_one(
 # --------------------------------------------------------------------------- #
 # Aggregates
 # --------------------------------------------------------------------------- #
+def _pass_at_k(runs: Sequence[Mapping[str, Any]], max_k: int) -> dict[str, float | None]:
+    """Pass@k over (provider, case) groups.
+
+    The rate is the fraction of groups with at least one semantic pass among the
+    first k executed repeats. A group with fewer than k runs is excluded from
+    that k's denominator and the report says so; it is never silently treated as
+    a failure. Runs whose case is excluded by ``label_status: gap`` are not in
+    the numerator or denominator.
+    """
+    groups: dict[tuple[str, str], list[Mapping[str, Any]]] = {}
+    for run in runs:
+        semantic = run.get("semantic") or {}
+        if semantic.get("excluded_from_semantic"):
+            continue
+        groups.setdefault((str(run["provider"]), str(run["case_id"])), []).append(run)
+    result: dict[str, float | None] = {}
+    for k in range(1, max_k + 1):
+        eligible = [group for group in groups.values() if len(group) >= k]
+        if not eligible:
+            result[str(k)] = None
+            continue
+        passed = 0
+        for group in eligible:
+            ordered = sorted(group, key=lambda run: int(run.get("repeat") or 0))[:k]
+            passed += 1 if any(run.get("semantic_pass") for run in ordered) else 0
+        result[str(k)] = round(passed / len(eligible), 6)
+    return result
+
+
 def _aggregate(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     planned = [run for run in runs if run.get("ok")]
-    semantic = [run["semantic"] for run in planned if run.get("semantic")]
+    all_semantic = [run["semantic"] for run in planned if run.get("semantic")]
+    semantic = [item for item in all_semantic if not item.get("excluded_from_semantic")]
+    excluded_semantic = len(all_semantic) - len(semantic)
     valid = [run for run in planned if run.get("valid_template")]
     correct = [run for run in planned if run.get("correct")]
+    abstained_runs = sum(1 for run in runs if run.get("abstained"))
+    review_runs = sum(1 for run in runs if run.get("review_requirements"))
 
     precision_tp = sum(int(item["true_positives"]) for item in semantic)
     precision_den = sum(
@@ -576,8 +634,19 @@ def _aggregate(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "block_coverage": _ratio(block_satisfied, block_total),
         "block_numerator": block_satisfied,
         "block_denominator": block_total,
-        "semantic_pass_rate": _ratio(semantic_passes, len(runs)),
+        "semantic_pass_rate": _ratio(semantic_passes, max(0, len(runs) - excluded_semantic)),
         "semantic_passes": semantic_passes,
+        "semantic_excluded_runs": excluded_semantic,
+        "semantic_denominator": max(0, len(runs) - excluded_semantic),
+        "abstained_runs": abstained_runs,
+        "abstention_rate": _ratio(abstained_runs, len(runs)),
+        "review_runs": review_runs,
+        "review_rate": _ratio(review_runs, len(runs)),
+        "review_requirements": sum(len(run.get("review_requirements") or []) for run in runs),
+        "pass_at_k": _pass_at_k(
+            runs, max((int(run.get("repeat") or 1) for run in runs), default=1)
+        ),
+        "succeeded_runs": len(planned),
         "valid_template_rate": _ratio(len(valid), len(runs)),
         "validation_pass_rate": _ratio(
             sum(1 for run in planned if run.get("validation_passed")), len(planned)
@@ -1361,6 +1430,103 @@ def main(argv: list[str] | None = None) -> int:
             }
         )
     total_aggregate = _aggregate(runs)
+    family_semantic_pass: dict[str, dict[str, Any]] = {}
+    for family_entry in per_family:
+        family_name = str(family_entry["family"])
+        family_semantic_pass[family_name] = {
+            "cases": family_entry["cases"],
+            "providers": {
+                str(provider["provider"]): {
+                    "semantic_pass_rate": provider["metrics"]["semantic_pass_rate"],
+                    "pass_at_k": provider["metrics"]["pass_at_k"],
+                    "runs": provider["metrics"]["runs"],
+                }
+                for provider in family_entry["providers"]
+            },
+        }
+    image_cases = [case for case in definitions if str(case.get("family")) == "images"]
+    image_case_reports: list[dict[str, Any]] = []
+    for case in image_cases:
+        expected_image_paths = [
+            path
+            for binding in case.get("required_bindings") or []
+            if isinstance(binding, Mapping) and binding.get("expected_type") == "image"
+            for path in (binding.get("expected_paths") or [])
+        ]
+        case_runs = [run for run in runs if run.get("case_id") == case["id"]]
+        image_case_reports.append(
+            {
+                "case_id": case["id"],
+                "label_status": case.get("label_status", "verified"),
+                "image_subtype": case.get("image_subtype", "unspecified"),
+                "expected_image_paths": expected_image_paths,
+                "image_binding_present_runs": sum(
+                    1
+                    for run in case_runs
+                    if any(
+                        path in (run.get("produced_paths") or []) for path in expected_image_paths
+                    )
+                ),
+                "runs": len(case_runs),
+                "semantic_pass_by_provider": {
+                    state["provider"]: _provider_report(
+                        state,
+                        [run for run in case_runs if run["provider"] == state["provider"]],
+                    )["metrics"]["semantic_pass_rate"]
+                    for state in provider_state
+                },
+                "forbidden_hits": sorted(
+                    {path for run in case_runs for path in run.get("forbidden_hits") or []}
+                ),
+            }
+        )
+    image_family = {
+        "decision": (
+            "labels_verified_no_gap"
+            if all(case.get("label_status", "verified") == "verified" for case in image_cases)
+            else "label_gap_present"
+        ),
+        "label_status": {case["id"]: case.get("label_status", "verified") for case in image_cases},
+        "cases": image_case_reports,
+        "providers": {
+            state["provider"]: _provider_report(
+                state,
+                [
+                    run
+                    for run in runs
+                    if run.get("family") == "images" and run["provider"] == state["provider"]
+                ],
+            )["metrics"]
+            for state in provider_state
+        },
+        "note": (
+            "Image-family adjudication: each committed image case asks for the company logo and "
+            "the schema exposes that exact image path; the v0.10 0% semantic pass was caused by "
+            "forbidden-scope contamination, not an inexpressible label. No case is a gap. The "
+            "image scorecard is reported separately so the aggregate cannot hide it."
+        ),
+    }
+    counters = {
+        "planned_runs": planned_runs,
+        "executed_runs": len(runs),
+        "skipped_runs": max(0, planned_runs - len(runs)),
+        "succeeded_runs": total_aggregate["succeeded_runs"],
+        "failed_runs": total_aggregate["failed_runs"],
+        "valid_template_runs": total_aggregate["valid_runs"],
+        "semantic_pass_runs": total_aggregate["semantic_passes"],
+        "semantic_excluded_runs": total_aggregate["semantic_excluded_runs"],
+        "abstained_runs": total_aggregate["abstained_runs"],
+        "abstention_rate": total_aggregate["abstention_rate"],
+        "review_runs": total_aggregate["review_runs"],
+        "review_rate": total_aggregate["review_rate"],
+        "pass_at_k": total_aggregate["pass_at_k"],
+        "invariants": {
+            "planned_equals_executed_plus_skipped": planned_runs
+            == len(runs) + max(0, planned_runs - len(runs)),
+            "executed_equals_succeeded_plus_failed": len(runs)
+            == total_aggregate["succeeded_runs"] + total_aggregate["failed_runs"],
+        },
+    }
     overall_cost_status = (
         "estimated"
         if any(run["cost_status"] == "estimated" for run in runs)
@@ -1393,6 +1559,10 @@ def main(argv: list[str] | None = None) -> int:
                 for state in provider_state
             },
             "splits": dict(sorted(Counter(str(case.get("split")) for case in definitions).items())),
+            "skipped_runs": max(0, planned_runs - len(runs)),
+            "failed_runs": total_aggregate["failed_runs"],
+            "succeeded_runs": total_aggregate["succeeded_runs"],
+            "gap_cases": list(metadata.get("gap_cases") or []),
             "families": dict(
                 sorted(Counter(str(case.get("family")) for case in definitions).items())
             ),
@@ -1404,6 +1574,9 @@ def main(argv: list[str] | None = None) -> int:
             "prompt_version": PROMPT_VERSION,
             "gemini_compact_version": "v2",
             "compact_mode": "gemini-only",
+            "candidate_filter": True,
+            "candidate_filter_version": "v0.11.1",
+            "candidate_limits": {"max_candidates": 24, "max_per_requirement": 4},
             "repair_attempts": {
                 "gemini": GEMINI_REPAIR_ATTEMPTS,
                 "other": args.repair_attempts,
@@ -1430,6 +1603,23 @@ def main(argv: list[str] | None = None) -> int:
             ],
         },
         "providers": provider_reports,
+        "counters": counters,
+        "family_semantic_pass": family_semantic_pass,
+        "image_family": image_family,
+        "governance": {
+            "at07_status": metadata.get("at07_status", "partial"),
+            "second_human_annotator": False,
+            "deterministic_adjudicator": (metadata.get("labels_provenance") or {}).get(
+                "adjudicator"
+            ),
+            "adjudication_report": (metadata.get("labels_provenance") or {}).get(
+                "adjudication_report"
+            ),
+            "note": (
+                "AT-07 remains partial: the deterministic adjudicator is a proxy, not human "
+                "double review."
+            ),
+        },
         "by_split": by_split,
         "per_family": per_family,
         "per_category": per_category,
@@ -1464,10 +1654,11 @@ def main(argv: list[str] | None = None) -> int:
         "runs_sha256": runs_sha,
         "notes": [
             OBSERVATIONS_NOTE,
-            "Labels were authored by the implementer and validated by the deterministic rule pass in benchmarks/gold_dataset.py; no independent human double review was available.",
+            "Labels were authored by the implementer and adjudicated by benchmarks/adjudicate_labels.py, a deterministic independent proxy. No second human annotator exists, so AT-07 remains partial.",
             "valid_template_rate is the deterministic validation + compilation rate and is never folded into precision, recall or F1.",
             "Gemini 3.6-flash is unpriced; its cost is estimated with the named proxy and is never reported as $0.00.",
             "Ground truth is authored for synthetic fixtures and reflects this project's judgement.",
+            "Image-family labels are reported separately; no image case is excluded as a label gap.",
             "Verified Docentric AX compatibility is not tested by this harness.",
             "Per-run records live in the git-ignored gold_runs.jsonl; no prompt text or raw provider output is committed.",
         ],

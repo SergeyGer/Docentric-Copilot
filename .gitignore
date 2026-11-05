@@ -54,3 +54,4 @@ benchmark-results/
 .visual-work/
 apps/web/.smoke-browsers/
 apps/web/.smoke-artifacts/
+benchmarks/gold_runs_v011_subset.jsonl

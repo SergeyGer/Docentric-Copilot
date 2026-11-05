@@ -39,7 +39,7 @@ def _dataset_with(cases: list[dict], *, version: str = "1.0.0") -> GoldDataset:
 
 def test_dataset_loads_with_the_required_contract() -> None:
     dataset = load_gold_dataset(DEFAULT_CASES)
-    assert dataset.version == "1.0.0"
+    assert dataset.version == "2.0.0"
     assert len(dataset.cases) == 32
     assert len({case["id"] for case in dataset.cases}) == 32
     assert len(dataset.canonical_sha256) == 64
@@ -50,6 +50,33 @@ def test_dataset_loads_with_the_required_contract() -> None:
 def test_dataset_passes_the_deterministic_rule_pass() -> None:
     dataset = load_gold_dataset(DEFAULT_CASES)
     assert validate_gold_dataset(dataset) == []
+
+
+def test_dataset_carries_independent_adjudication_provenance() -> None:
+    dataset = load_gold_dataset(DEFAULT_CASES)
+    provenance = dataset.document["provenance"]
+    assert provenance["human_review"] is False
+    assert provenance["at07_status"] == "partial"
+    assert "adjudicate_labels.py" in provenance["adjudicator"]
+    assert {case["label_status"] for case in dataset.cases} <= {"verified", "gap"}
+    for case in dataset.cases:
+        assert case["provenance"]["agreement"] in {"agree", "partial", "disagree"}
+        for binding in case["required_bindings"]:
+            assert binding["provenance"]["agreement"] is True
+            assert binding["provenance"]["author"]
+            assert binding["provenance"]["adjudicator"]
+        assert len(case.get("block_provenance") or []) == len(case.get("expected_blocks") or [])
+        assert set(case.get("forbidden_provenance") or {}) == set(case.get("forbidden_paths") or [])
+
+
+def test_gap_case_is_excluded_from_semantic_denominators() -> None:
+    from benchmarks.semantic_scoring import score_run
+
+    case = _case()
+    case["label_status"] = "gap"
+    score = score_run(case, [])
+    assert score.excluded_from_semantic is True
+    assert score.label_status == "gap"
 
 
 def test_dataset_split_and_family_composition() -> None:

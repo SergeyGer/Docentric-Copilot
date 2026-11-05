@@ -8,8 +8,10 @@ what was accepted, what was dropped and what still needs a human decision.
 
 from __future__ import annotations
 
+import hashlib
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from typing import Any, Literal
 
 from docentric_copilot.ddsp_parser.models import NormalizedSchema
@@ -64,6 +66,7 @@ from docentric_copilot.template_ir import (
 )
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from .candidates import CandidateSet, retrieve_candidates, type_matches
 from .compact_ir import (
     COMPACT_GENERATOR,
     COMPACT_TEMPLATE_NAME,
@@ -102,6 +105,9 @@ class PlanOptions(BaseModel):
     #: ultra-compact array format used for Gemini; v1 stays available for
     #: back-compat and for callers that pin the older readable format.
     compact_version: Literal["v1", "v2"] = "v2"
+    #: Restrict the provider prompt to evidence-backed candidate bindings.
+    #: On by default since v0.11; set False only for a deliberate v0.10 replay.
+    candidate_filter: bool = True
 
 
 class RemovedBinding(BaseModel):
@@ -122,6 +128,8 @@ class PlanOutcome(BaseModel):
     repairs: list[str] = []
     warnings: list[str] = []
     changed: list[Change] = []
+    candidate_summary: dict[str, Any] = {}
+    binding_reviews: list[dict[str, Any]] = []
 
 
 # --------------------------------------------------------------------------- #
@@ -343,6 +351,9 @@ def build_mapping_report(
     document: Document,
     requirement: str,
     removed: list[RemovedBinding] | None = None,
+    *,
+    candidate_set: CandidateSet | None = None,
+    binding_reviews: Sequence[Mapping[str, Any]] | None = None,
 ) -> MappingReport:
     """Derive a reviewable requirement-to-field report from the produced IR.
 
@@ -516,7 +527,320 @@ def build_mapping_report(
             )
         )
 
+    if candidate_set is not None:
+        reviews = (
+            list(binding_reviews)
+            if binding_reviews is not None
+            else [review.to_dict() for review in review_bindings(document, schema, candidate_set)]
+        )
+        reviewed_paths = {
+            mapping.selected_field_path
+            for mapping in mappings
+            if mapping.selected_field_path is not None
+        }
+        for atom in candidate_set.atoms:
+            if atom.collection:
+                # Collection scope is represented by the produced table/repeat
+                # block and by the scope column of its fields; it is not a
+                # binding requirement and must not create an abstention row.
+                continue
+            evidence = candidate_set.for_requirement(atom.id)
+            review_bound: str | None = None
+            for item in reviews:
+                candidate_path = item.get("path")
+                if not isinstance(candidate_path, str):
+                    continue
+                path_evidence = candidate_set.evidence_for(candidate_path)
+                if path_evidence is not None and path_evidence.requirement_id == atom.id:
+                    review_bound = candidate_path
+                    break
+            if not evidence:
+                mappings.append(
+                    FieldMapping(
+                        requirement_id=f"req_cand_{atom.id}",
+                        requirement=atom.text,
+                        concept=atom.concept,
+                        placement=atom.placement,
+                        candidate_field_paths=[],
+                        selected_field_path=None,
+                        status=MappingStatus.NEEDS_REVIEW,
+                        confidence_score=None,
+                        explanation=(
+                            "No schema evidence supports this requirement; the planner "
+                            "abstained instead of inventing a path."
+                        ),
+                    )
+                )
+                continue
+            if evidence[0].decision == "ambiguous":
+                mappings.append(
+                    FieldMapping(
+                        requirement_id=f"req_cand_{atom.id}",
+                        requirement=atom.text,
+                        concept=atom.concept,
+                        placement=atom.placement,
+                        candidate_field_paths=[candidate.path for candidate in evidence],
+                        selected_field_path=review_bound,
+                        status=MappingStatus.NEEDS_REVIEW,
+                        confidence_score=min(1.0, round(evidence[0].score, 3)),
+                        explanation=(
+                            "Genuine ambiguity: more than one schema path is defensible; "
+                            "confirm the choice."
+                        ),
+                    )
+                )
+        for review in reviews:
+            if review.get("status") != "needs_review":
+                continue
+            path = str(review.get("path") or "")
+            if not path or path in reviewed_paths:
+                continue
+            mappings.append(
+                FieldMapping(
+                    requirement_id=(
+                        "req_review_"
+                        + hashlib.sha1(path.encode("utf-8"), usedforsecurity=False).hexdigest()[:8]
+                    ),
+                    requirement=f"Unverified binding: {path}",
+                    candidate_field_paths=list(review.get("candidate_paths") or []),
+                    selected_field_path=path,
+                    schema_evidence=f"{path}:{review.get('actual_type') or 'any'}",
+                    status=MappingStatus.NEEDS_REVIEW,
+                    confidence_score=review.get("score"),
+                    explanation=str(review.get("reason") or "needs review"),
+                )
+            )
+            reviewed_paths.add(path)
+
     return MappingReport(mappings=mappings, schema_id=schema.schema_id)
+
+
+# --------------------------------------------------------------------------- #
+# Post-generation binding review
+# --------------------------------------------------------------------------- #
+@dataclass(frozen=True, slots=True)
+class BindingReview:
+    """Deterministic verdict for one emitted binding."""
+
+    path: str
+    status: str
+    reason: str
+    requirement_id: str | None
+    expected_type: str | None
+    actual_type: str | None
+    scope: str | None
+    contexts: tuple[str, ...] = ()
+    candidate_paths: tuple[str, ...] = ()
+    score: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "path": self.path,
+            "status": self.status,
+            "reason": self.reason,
+            "requirement_id": self.requirement_id,
+            "expected_type": self.expected_type,
+            "actual_type": self.actual_type,
+            "scope": self.scope,
+            "contexts": list(self.contexts),
+            "candidate_paths": list(self.candidate_paths),
+            "score": self.score,
+        }
+
+
+def _binding_contexts(
+    document: Document, schema: NormalizedSchema
+) -> dict[str, tuple[str | None, set[str]]]:
+    """Return ``{absolute_path: (data_type, contexts)}`` for produced bindings."""
+    observed: dict[str, tuple[str | None, set[str]]] = {}
+
+    def note(path: str, data_type: str | None, contexts: set[str]) -> None:
+        existing = observed.get(path)
+        if existing is None:
+            observed[path] = (data_type, set(contexts))
+        else:
+            existing[1].update(contexts)
+
+    def walk(
+        blocks: list[Block], scope: Scope, base: str, *, repeat: bool, conditional: bool
+    ) -> None:
+        contexts = {base}
+        if repeat:
+            contexts.add("repeat")
+        if conditional:
+            contexts.add("conditional")
+        for block in blocks:
+            if isinstance(block, Paragraph | Heading):
+                for run in block.runs:
+                    if not isinstance(run, FieldBinding):
+                        continue
+                    try:
+                        resolved = resolve_value(schema, run.path, scope).absolute
+                    except PathResolutionError:
+                        continue
+                    resolved_node = schema.node(resolved)
+                    note(
+                        resolved,
+                        resolved_node.data_type if resolved_node is not None else None,
+                        contexts,
+                    )
+            elif isinstance(block, ImageBinding):
+                try:
+                    resolved = resolve_value(schema, block.path, scope).absolute
+                except PathResolutionError:
+                    continue
+                note(resolved, "image", contexts)
+            elif isinstance(block, Repeat):
+                try:
+                    collection = resolve_collection(schema, block.path, scope)
+                except PathResolutionError:
+                    continue
+                note(collection.absolute, "collection", contexts)
+                walk(
+                    block.blocks,
+                    scope.push(block.alias, collection.absolute),
+                    base,
+                    repeat=True,
+                    conditional=conditional,
+                )
+            elif isinstance(block, Conditional):
+                for expression in iter_expressions(block.condition):
+                    if expression.field is None:
+                        continue
+                    try:
+                        resolved = resolve_value(schema, expression.field, scope).absolute
+                    except PathResolutionError:
+                        continue
+                    node = schema.node(resolved)
+                    note(resolved, node.data_type if node else None, {*contexts, "conditional"})
+                walk(block.then_blocks, scope, base, repeat=repeat, conditional=True)
+                walk(block.else_blocks or [], scope, base, repeat=repeat, conditional=True)
+            elif isinstance(block, Table):
+                table_scope = scope
+                if block.repeat is not None:
+                    try:
+                        collection = resolve_collection(schema, block.repeat.path, scope)
+                    except PathResolutionError:
+                        collection = None
+                    if collection is not None:
+                        note(collection.absolute, "collection", contexts)
+                        table_scope = scope.push(block.repeat.alias, collection.absolute)
+                for row in block.rows:
+                    for cell in row.cells:
+                        walk(cell.blocks, scope, base, repeat=repeat, conditional=conditional)
+                for cell in block.row_template or []:
+                    walk(cell.blocks, table_scope, base, repeat=True, conditional=conditional)
+
+    for section in document.sections:
+        walk(section.body, Scope(), "body", repeat=False, conditional=False)
+        walk(section.header or [], Scope(), "header", repeat=False, conditional=False)
+        walk(section.footer or [], Scope(), "footer", repeat=False, conditional=False)
+    return observed
+
+
+def review_bindings(
+    document: Document, schema: NormalizedSchema, candidate_set: CandidateSet | None
+) -> list[BindingReview]:
+    """Re-validate every binding against existence, type and scope evidence.
+
+    A path that resolves but has no candidate evidence is marked ``needs_review``
+    instead of being silently accepted as a confirmed binding.
+    """
+    if candidate_set is None:
+        return []
+    reviews: list[BindingReview] = []
+    for path, (data_type, contexts) in sorted(_binding_contexts(document, schema).items()):
+        evidence = candidate_set.evidence_for(path)
+        if not schema.has_path(path):
+            reviews.append(
+                BindingReview(
+                    path=path,
+                    status="rejected",
+                    reason="the path does not exist in the schema",
+                    requirement_id=None,
+                    expected_type=None,
+                    actual_type=data_type,
+                    scope=None,
+                    contexts=tuple(sorted(contexts)),
+                )
+            )
+            continue
+        if evidence is None:
+            reviews.append(
+                BindingReview(
+                    path=path,
+                    status="needs_review",
+                    reason=(
+                        "the path is schema-valid but was not supported by the retrieved "
+                        "candidate evidence for this brief"
+                    ),
+                    requirement_id=None,
+                    expected_type=None,
+                    actual_type=data_type,
+                    scope=None,
+                    contexts=tuple(sorted(contexts)),
+                )
+            )
+            continue
+        candidates = candidate_set.for_requirement(evidence.requirement_id)
+        candidate_paths = tuple(candidate.path for candidate in candidates)
+        if not type_matches(evidence.expected_type, data_type):
+            reviews.append(
+                BindingReview(
+                    path=path,
+                    status="needs_review",
+                    reason=(
+                        f"type mismatch: the requirement expects {evidence.expected_type!r}, "
+                        f"the binding has {data_type!r}"
+                    ),
+                    requirement_id=evidence.requirement_id,
+                    expected_type=evidence.expected_type,
+                    actual_type=data_type,
+                    scope=evidence.scope,
+                    contexts=tuple(sorted(contexts)),
+                    candidate_paths=candidate_paths,
+                    score=evidence.score,
+                )
+            )
+            continue
+        if evidence.scope and "repeat" not in contexts:
+            reviews.append(
+                BindingReview(
+                    path=path,
+                    status="needs_review",
+                    reason=(
+                        "collection scope mismatch: the path belongs to "
+                        f"{evidence.scope!r} but the binding is outside a repeat/table row"
+                    ),
+                    requirement_id=evidence.requirement_id,
+                    expected_type=evidence.expected_type,
+                    actual_type=data_type,
+                    scope=evidence.scope,
+                    contexts=tuple(sorted(contexts)),
+                    candidate_paths=candidate_paths,
+                    score=evidence.score,
+                )
+            )
+            continue
+        reviews.append(
+            BindingReview(
+                path=path,
+                status="accepted",
+                reason=(
+                    "one of several defensible alternatives"
+                    if evidence.decision == "ambiguous"
+                    else "exists, type and scope match the retrieved evidence"
+                ),
+                requirement_id=evidence.requirement_id,
+                expected_type=evidence.expected_type,
+                actual_type=data_type,
+                scope=evidence.scope,
+                contexts=tuple(sorted(contexts)),
+                candidate_paths=candidate_paths,
+                score=evidence.score,
+            )
+        )
+    return reviews
 
 
 # --------------------------------------------------------------------------- #
@@ -650,11 +974,11 @@ def sanitize_document(
         body = sanitize_blocks(section.body, schema, root_scope, removed)
         header = sanitize_blocks(section.header or [], schema, root_scope, removed)
         footer = sanitize_blocks(section.footer or [], schema, root_scope, removed)
-        if not body:
+        if not body and not header and not footer:
             removed.append(
                 RemovedBinding(
                     path=section.name,
-                    reason="Section body referenced only unknown fields and became empty",
+                    reason="Section body, header and footer referenced only unknown fields and became empty",
                     block_kind="section",
                 )
             )
@@ -695,6 +1019,13 @@ class TemplatePlanner:
         if not requirement.strip():
             raise InvalidInputError("A requirement prompt is required")
 
+        candidate_set = (
+            retrieve_candidates(schema, requirement) if resolved_options.candidate_filter else None
+        )
+        candidate_text = None
+        if candidate_set is not None and candidate_set.atoms and not candidate_set.fallback:
+            candidate_text = candidate_set.format_prompt()
+
         if resolved_options.compact_ir:
             build_messages_for_compact = (
                 build_compact_messages
@@ -707,6 +1038,7 @@ class TemplatePlanner:
                 design_style=resolved_options.design_style.value,
                 language=resolved_options.language,
                 target=resolved_options.target.value,
+                candidates=candidate_text,
             )
         else:
             messages = build_messages(
@@ -715,6 +1047,7 @@ class TemplatePlanner:
                 design_style=resolved_options.design_style.value,
                 language=resolved_options.language,
                 target=resolved_options.target.value,
+                candidates=candidate_text,
             )
         if provider == "mock":
             self._install_baseline_responder(schema, requirement, resolved_options)
@@ -732,7 +1065,17 @@ class TemplatePlanner:
 
         document = document.model_copy(update={"target": resolved_options.target})
         sanitized, removed = sanitize_document(document, schema)
-        mapping = build_mapping_report(schema, sanitized, requirement, removed)
+        binding_reviews = (
+            review_bindings(sanitized, schema, candidate_set) if candidate_set is not None else []
+        )
+        mapping = build_mapping_report(
+            schema,
+            sanitized,
+            requirement,
+            removed,
+            candidate_set=candidate_set,
+            binding_reviews=[review.to_dict() for review in binding_reviews],
+        )
         repairs = (
             [f"Removed {len(removed)} unresolvable reference(s) before compilation"]
             if removed
@@ -758,6 +1101,10 @@ class TemplatePlanner:
             removed_bindings=removed,
             repairs=repairs,
             warnings=warnings,
+            candidate_summary=(
+                candidate_set.summary() if candidate_set is not None else {"enabled": False}
+            ),
+            binding_reviews=[review.to_dict() for review in binding_reviews],
         )
 
     async def revise(
@@ -931,6 +1278,7 @@ class TemplatePlanner:
 
 
 __all__ = [
+    "BindingReview",
     "PlanOptions",
     "PlanOutcome",
     "RemovedBinding",
@@ -938,6 +1286,7 @@ __all__ = [
     "absolute_bindings",
     "build_mapping_report",
     "extract_requirements",
+    "review_bindings",
     "sanitize_blocks",
     "sanitize_document",
 ]

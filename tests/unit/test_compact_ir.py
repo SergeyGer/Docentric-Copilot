@@ -405,7 +405,7 @@ class TestPlannerCompact:
                 schema,
                 quotation_request,
                 provider="mock",
-                options=PlanOptions(compact_ir=True),
+                options=PlanOptions(compact_ir=True, candidate_filter=False),
             )
         )
         assert outcome.document.sections
@@ -421,7 +421,7 @@ class TestPlannerCompact:
                 schema,
                 "Create a sales quotation.",
                 provider="gemini",
-                options=PlanOptions(compact_ir=True),
+                options=PlanOptions(compact_ir=True, candidate_filter=False),
             )
         )
 
@@ -475,7 +475,7 @@ class TestPlannerCompact:
                 schema,
                 "Create a sales quotation.",
                 provider="gemini",
-                options=PlanOptions(compact_ir=True, compact_version="v1"),
+                options=PlanOptions(compact_ir=True, compact_version="v1", candidate_filter=False),
             )
         )
         assert gateway.calls[0]["schema"] == compact_schema()

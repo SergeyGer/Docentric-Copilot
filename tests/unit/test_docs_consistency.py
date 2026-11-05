@@ -79,14 +79,17 @@ def test_gold_dataset_labels_are_versioned_and_documented() -> None:
 
     dataset = load_gold_dataset(ROOT / "benchmarks" / "gold_cases.json")
     guide = _read("docs/GOLD_LABELS.md")
-    assert "gold-cases/v1" in guide
-    assert "1.0.0" in guide
+    assert "gold-cases/v2" in guide
+    assert "2.0.0" in guide
+    assert "adjudicate_labels.py" in guide
+    assert "adjudication_report.json" in guide
     assert "20 calibration / 12 holdout" in guide
     assert dataset.canonical_sha256 in guide
     assert "No independent human double review" in guide
     assert "AT-07" in guide
     assert "ADR-0014" in guide
     evaluation = _read("docs/EVALUATION.md")
+    assert "image_family" in evaluation or "image-family" in evaluation.casefold()
     assert "Gold semantic benchmark (v0.10 PR-05)" in evaluation
     assert "benchmarks/gold_evaluation.py" in evaluation
     assert "20 calibration / 12 holdout" in evaluation
@@ -94,6 +97,19 @@ def test_gold_dataset_labels_are_versioned_and_documented() -> None:
         "observations, not significance"
         in _read("docs/wiki/Benchmarks-and-Evaluation.md").casefold()
     )
+
+
+def test_adr_0015_is_complete_and_indexed() -> None:
+    adr = ROOT / "docs" / "adr" / "0015-label-adjudication-and-candidate-filtering.md"
+    assert adr.exists()
+    body = adr.read_text(encoding="utf-8")
+    for required in ("Status", "Context", "Decision", "Consequences"):
+        assert required in body
+    assert "AT-07" in body
+    assert "deterministic proxy" in body
+    assert "candidate" in body.casefold()
+    index = _read("docs/adr/README.md")
+    assert "0015-label-adjudication-and-candidate-filtering.md" in index
 
 
 def test_adr_0014_is_complete_and_indexed() -> None:

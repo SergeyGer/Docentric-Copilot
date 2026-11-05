@@ -49,6 +49,26 @@ by the JSON schema attached to this request.
 
 MAX_SCHEMA_ROWS = 400
 
+CANDIDATE_MODE_RULES = """Candidate-mode rules (these override the layout preference in rule 5):
+11. Bind ONLY a path listed in <candidate_bindings>. Never bind a path that is
+    not in that list, even if you know it exists in the schema.
+12. Build the smallest document that satisfies the brief. Do not add a company
+    block, customer block, item table, totals block, VAT block or footer unless
+    the candidate list contains fields for it.
+13. A requirement marked NO SUPPORTED BINDING has no schema evidence. Omit it
+    and do not invent a substitute path.
+14. A requirement marked AMBIGUOUS lists two or more acceptable paths. Choose
+    exactly one of them; do not bind all of them.
+15. Every emitted binding must reference one of the requirement ids in the
+    candidate list; do not emit decorative or unfilled fields.
+16. The section body must never be empty. If every requested field belongs to
+    the header or footer, still add a short static title/heading block to the
+    body. An all-header plan with an empty body is structurally invalid.
+17. When the brief says "table", emit a table block over the requested
+    collection; a paragraph/block repeat is not a table and does not satisfy
+    the requirement.
+"""
+
 
 def schema_fragment(
     schema: NormalizedSchema, *, max_rows: int = MAX_SCHEMA_ROWS
@@ -63,8 +83,19 @@ def build_user_message(
     design_style: str,
     language: str,
     target: str,
+    candidates: str | None = None,
 ) -> Message:
     fragment = json.dumps(schema_fragment(schema), ensure_ascii=False, separators=(",", ":"))
+    if candidates:
+        schema_block = (
+            "<candidate_bindings>\n"
+            "Each row is: requirement id | concept | type | path (schema type) | "
+            "scope | primary/alternative.\n"
+            f"{candidates}\n"
+            "</candidate_bindings>\n"
+        )
+    else:
+        schema_block = f"<schema>\n{fragment}\n</schema>\n"
     body = (
         f"Design style: {design_style}\n"
         f"Output language: {language}\n"
@@ -74,9 +105,7 @@ def build_user_message(
         "<requirement>\n"
         f"{requirement.strip()}\n"
         "</requirement>\n\n"
-        "<schema>\n"
-        f"{fragment}\n"
-        "</schema>\n"
+        f"{schema_block}"
     )
     return Message(role=Role.USER, content=body)
 
@@ -88,15 +117,20 @@ def build_messages(
     design_style: str = "modern",
     language: str = "en",
     target: str = "generic-docx",
+    candidates: str | None = None,
 ) -> list[Message]:
+    system = SYSTEM_PROMPT
+    if candidates:
+        system = f"{SYSTEM_PROMPT}\n{CANDIDATE_MODE_RULES}"
     return [
-        Message(role=Role.SYSTEM, content=SYSTEM_PROMPT),
+        Message(role=Role.SYSTEM, content=system),
         build_user_message(
             schema,
             requirement,
             design_style=design_style,
             language=language,
             target=target,
+            candidates=candidates,
         ),
     ]
 
@@ -115,6 +149,7 @@ def build_repair_message(errors: list[dict[str, Any]] | list[str]) -> Message:
 
 
 __all__ = [
+    "CANDIDATE_MODE_RULES",
     "PROMPT_VERSION",
     "SYSTEM_PROMPT",
     "build_messages",

@@ -40,8 +40,8 @@ from docentric_copilot.ddsp_parser import parse_ddsp  # noqa: E402
 from benchmarks.semantic_scoring import validate_cases  # noqa: E402
 
 DEFAULT_CASES = ROOT / "benchmarks" / "gold_cases.json"
-GOLD_SCHEMA = "gold-cases/v1"
-GOLD_VERSION = "1.0.0"
+GOLD_SCHEMA = "gold-cases/v2"
+GOLD_VERSION = "2.0.0"
 EXPECTED_CASE_COUNT = 32
 EXPECTED_SPLIT_SIZES = {"calibration": 20, "holdout": 12}
 EXPECTED_FAMILY_COUNTS = {
@@ -329,6 +329,68 @@ def _family_errors(
     return errors
 
 
+def _provenance_errors(dataset: GoldDataset) -> list[str]:
+    """Check the v2 annotation-provenance contract.
+
+    A v2 dataset must say who authored each label, which deterministic pass
+    adjudicated it, and whether that pass agreed. A gap case is allowed, but it
+    must carry ``label_status: "gap"`` so the scorer can exclude it from the
+    semantic denominators. The contract deliberately does not claim human
+    double review: AT-07 stays partial.
+    """
+    errors: list[str] = []
+    provenance = dataset.document.get("provenance")
+    if not isinstance(provenance, dict):
+        return ["dataset provenance block is missing"]
+    for field in ("author", "adjudicator", "review_status", "at07_status"):
+        if not isinstance(provenance.get(field), str) or not provenance.get(field):
+            errors.append(f"dataset provenance is missing {field}")
+    if provenance.get("human_review") is not False:
+        errors.append("dataset provenance must keep human_review=false until a human review exists")
+    if provenance.get("at07_status") != "partial":
+        errors.append("dataset provenance must keep AT-07 status=partial")
+    for case in dataset.cases:
+        case_id = str(case.get("id"))
+        if case.get("label_status") not in {"verified", "gap"}:
+            errors.append(f"{case_id}: label_status must be 'verified' or 'gap'")
+        case_provenance = case.get("provenance")
+        if not isinstance(case_provenance, dict):
+            errors.append(f"{case_id}: case provenance is missing")
+        else:
+            for field in ("author", "adjudicator", "agreement"):
+                if field not in case_provenance:
+                    errors.append(f"{case_id}: case provenance is missing {field}")
+        requirements = [
+            item for item in case.get("required_bindings") or [] if isinstance(item, dict)
+        ]
+        for requirement in requirements:
+            binding_provenance = requirement.get("provenance")
+            if not isinstance(binding_provenance, dict):
+                errors.append(f"{case_id}: requirement {requirement.get('id')!r} has no provenance")
+                continue
+            for field in ("author", "adjudicator", "agreement"):
+                if field not in binding_provenance:
+                    errors.append(
+                        f"{case_id}: requirement {requirement.get('id')!r} provenance "
+                        f"is missing {field}"
+                    )
+        forbidden = case.get("forbidden_paths") or []
+        forbidden_provenance = case.get("forbidden_provenance")
+        if forbidden and not isinstance(forbidden_provenance, dict):
+            errors.append(f"{case_id}: forbidden_provenance is missing")
+        elif isinstance(forbidden_provenance, dict):
+            missing = [path for path in forbidden if path not in forbidden_provenance]
+            if missing:
+                errors.append(f"{case_id}: forbidden_provenance is missing {missing}")
+        blocks = case.get("expected_blocks") or []
+        block_provenance = case.get("block_provenance")
+        if blocks and not isinstance(block_provenance, list):
+            errors.append(f"{case_id}: block_provenance is missing")
+        elif isinstance(block_provenance, list) and len(block_provenance) != len(blocks):
+            errors.append(f"{case_id}: block_provenance length does not match expected blocks")
+    return errors
+
+
 def validate_gold_dataset(
     dataset: GoldDataset,
     *,
@@ -407,6 +469,8 @@ def validate_gold_dataset(
             errors.extend(validate_cases([case], schema_paths=schema_paths))
             errors.extend(_family_errors(case, schema_paths, _collection_paths(case)))
 
+    errors.extend(_provenance_errors(dataset))
+
     families = Counter(str(case.get("family")) for case in cases)
     categories = Counter(str(case.get("category")) for case in cases)
     splits = Counter(str(case.get("split")) for case in cases)
@@ -438,6 +502,7 @@ def validate_gold_dataset(
 def dataset_metadata(dataset: GoldDataset) -> dict[str, Any]:
     """Describe the dataset for a report. Counts are derived, never hand-written."""
     cases = list(dataset.cases)
+
     families = Counter(str(case.get("family")) for case in cases)
     categories = Counter(str(case.get("category")) for case in cases)
     languages = Counter(str(case.get("language") or "en") for case in cases)
@@ -459,6 +524,24 @@ def dataset_metadata(dataset: GoldDataset) -> dict[str, Any]:
         "difficulties": dict(sorted(difficulties.items())),
         "labels_provenance": dataset.document.get("provenance", {}),
         "split_policy": dataset.document.get("split_policy", ""),
+        "label_status": dict(
+            sorted(Counter(str(case.get("label_status") or "verified") for case in cases).items())
+        ),
+        "gap_cases": [
+            str(case.get("id"))
+            for case in cases
+            if str(case.get("label_status") or "verified") == "gap"
+        ],
+        "at07_status": (dataset.document.get("provenance") or {}).get("at07_status", "partial"),
+        "image_subtypes": dict(
+            sorted(
+                Counter(
+                    str(case.get("image_subtype") or "unspecified")
+                    for case in cases
+                    if str(case.get("family")) == "images"
+                ).items()
+            )
+        ),
     }
 
 

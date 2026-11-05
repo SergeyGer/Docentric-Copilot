@@ -598,7 +598,8 @@ def build_mapping_report(
             mappings.append(
                 FieldMapping(
                     requirement_id=(
-                        "req_review_" + hashlib.sha1(path.encode("utf-8"), usedforsecurity=False).hexdigest()[:8]
+                        "req_review_"
+                        + hashlib.sha1(path.encode("utf-8"), usedforsecurity=False).hexdigest()[:8]
                     ),
                     requirement=f"Unverified binding: {path}",
                     candidate_field_paths=list(review.get("candidate_paths") or []),

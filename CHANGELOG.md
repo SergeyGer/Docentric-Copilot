@@ -9,6 +9,24 @@ version (`1.0`) independent of the distribution version.
 ## [Unreleased]
 
 ### Added
+- v0.12 PR-2 (#36) full semantic benchmark: 32 cases × 3 providers × 3 repeats = 288 logical runs
+  on dataset `2.0.0` (`8489e4c0...`), with 284 completed, 4 technical failures (`structured_output`,
+  visible with reasons), 0 skipped, 277 semantic passes and 276 correct runs. Precision 0.9535,
+  recall 1.0000, F1 0.9762, semantic pass 97.54% of evaluable runs, valid-template rate 99.65% of
+  completed runs, technical-failure rate 1.39%, pass@2 97.92%; spend $3.9251 (verified $3.7915 +
+  estimated $0.1336). Technical failures are no longer counted as semantic failures.
+- `benchmarks/benchmark_manifest.py` builds and verifies `benchmarks/gold_manifest_v012.json`:
+  unique run ids, all 288 case/provider/repeat combinations, status/retry/token/cost/latency history,
+  dataset/report/runs hashes, model ids, generation parameters, commit SHA, counters and invariants,
+  separate v0.10/v0.11/v0.12 comparison blocks, metric definitions and limitations.
+- Committed sanitized per-run records (`benchmarks/gold_runs_v012.jsonl`) and aggregate
+  JSON/CSV/HTML reports; `docs/BENCHMARKS.md` §10 publishes the result and its limits. The report
+  omits prompts, raw provider output and credentials.
+- Evaluator `1.0.1` separates technical failures from semantic denominators and adds
+  `technical_failure_rate`, `valid_template_rate_executed`, cost per completed/semantic-pass run
+  and explicit planned/completed/technical/skipped counters.
+
+### Added
 - v0.12 PR-1 (#35) gold dataset audit trail: `benchmarks/gold_audit.py` writes and verifies
   `benchmarks/gold_adjudication_log.json` (32/32 cases with before/after snapshots, status,
   change type, rationale, UTC timestamp and dataset SHA-256), `benchmarks/gold_manifest.json`

@@ -59,6 +59,9 @@ jobs:
           python benchmarks/gold_audit.py --check
           python scripts/freeze_baseline.py --check
 
+      - name: Full benchmark manifest is consistent
+        run: python benchmarks/benchmark_manifest.py --check
+
       - name: Docs links, ADR index and wiki sidebar
         run: python scripts/check_docs_links.py
 

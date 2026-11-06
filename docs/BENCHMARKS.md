@@ -280,3 +280,123 @@ from the committed JSON rather than retyped.
 The dataset to quote with these numbers is `2.0.0`, canonical SHA-256
 `a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed`. Do not combine this 72-run
 subset with the 288-run v0.10 aggregate.
+
+## 10. v0.12 full benchmark (32 × 3 × 3, V012-02)
+
+This is the full-matrix semantic benchmark required for the v0.12 release. It is
+**not** spliced with the v0.10 full report or the v0.11 affected subset.
+
+| Field | Value |
+| --- | --- |
+| Dataset | `gold-cases/v2` version `2.0.0`, 32 cases |
+| Dataset SHA-256 | `8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b` |
+| Manifest | [benchmarks/gold_manifest_v012.json](../benchmarks/gold_manifest_v012.json) |
+| Manifest SHA-256 | `b830ed6313955a87576c5bfc110730a35294364c0fc8ae61d2942b0c534ceba3` |
+| Runs file | [benchmarks/gold_runs_v012.jsonl](../benchmarks/gold_runs_v012.jsonl) (sanitized records) |
+| Aggregate report | [gold_report_v012.json](../benchmarks/gold_report_v012.json) · [HTML](../benchmarks/gold_report_v012.html) · [CSV](../benchmarks/gold_report_v012.csv) |
+| Providers | `gpt-6-sol`, `claude-sonnet-5-5`, `gemini-3.6-flash` (observed ids pinned in the manifest) |
+| Repeats | 3 per case/provider |
+| Planned logical runs | 288 (96 per provider) |
+| Temperature / output cap | `0.0` / `16000` tokens |
+| Repair attempts | OpenAI/Anthropic 1, Gemini 2 (compact v2) |
+| Candidate filter | v0.11.1 |
+| Application commit | `05bb71325e10720b3c47822e1dec31610edeab02` |
+| Evaluator / planner version | `1.0.1` / `0.12.0` |
+| Run timestamp | 2026-11-06 (see `generated_at` in the report) |
+| Spend | **$3.9251** (`$3.7915` verified + `$0.1336` estimated Gemini proxy) |
+
+The run was produced before the V012-05 alias/table fixes. Those fixes are a
+separate planner change and are covered by the targeted regression described in
+`docs/EVALUATION.md`; the full 288-run matrix above remains the V012-02 artifact
+and is not edited or spliced.
+
+### 10.1 Counters
+
+| Counter | Value |
+| --- | ---: |
+| Planned logical runs | 288 |
+| Completed (schema-valid attempt) | 284 |
+| Technical failures (`structured_output`) | 4 |
+| Skipped / blocked | 0 / 0 |
+| Valid templates | 283 |
+| Semantic passes | 277 |
+| Correct (valid + semantic) | 276 |
+| Semantic failures among completed | 7 |
+
+`completed + technical + skipped = planned` and `executed = succeeded + failed`.
+A technical failure is **not** a semantic failure: the semantic-pass denominator
+is 284 completed runs. The technical-failure rate is reported separately
+(4/288 = 1.39%).
+
+### 10.2 Aggregate metrics
+
+| Metric | Value |
+| --- | ---: |
+| Semantic precision | **0.9535** (841 correct / 882 predicted bindings) |
+| Semantic recall | **1.0000** |
+| F1 | **0.9762** |
+| Requirement coverage | 1.0000 |
+| Semantic pass rate (evaluable) | **97.54%** (277/284) |
+| Valid template rate (completed) | **99.65%** (283/284) |
+| Valid template rate (all executed) | 98.26% (283/288) |
+| Technical failure rate | 1.39% (4/288) |
+| Abstention rate | 12.68% (36/284) |
+| Review rate | 25.35% (72/284) |
+| pass@1 / pass@2 / pass@3 | 96.88% / 97.92% / 97.92% |
+| Latency p50 / p95 | 3637.5 ms / 8379.6 ms |
+| Cost per completed run | $0.013821 |
+| Cost per semantic pass | $0.014170 |
+
+### 10.3 Per provider
+
+| Provider | Runs | Valid | Correct | Precision | Recall | Semantic pass | Technical | p50 | Cost |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| OpenAI `gpt-6-sol` | 96 | 96 | 96 | 0.950 | 1.000 | **100.0%** | 0 | 4639.5 ms | $1.2996 verified |
+| Anthropic `claude-sonnet-5-5` | 96 | 95 | 95 | 0.950 | 1.000 | **100.0%** | 0 | 3751.5 ms | $2.4918 verified |
+| Gemini `gemini-3.6-flash` | 96 | 92 | 85 | 0.961 | 1.000 | **92.4%** | 4 | 1333.0 ms | $0.1336 estimated |
+
+### 10.4 Error and family breakdown
+
+- Primary error codes: `wrong_context` 48, `structured_output` 4,
+  `unsupported_expression` 1. An error code counts a run; it is not a measure
+  of how many fields were wrong.
+- Every non-nested family passes 100% semantically for all three providers:
+  flat fields, images, collections, conditions, missing, ambiguous,
+  multilingual, long tables and forbidden scope.
+- The Gemini **nested-list** family is the known compact-v2 limitation:
+  2/9 semantic passes. The model often emits an outer `rep` with an inner
+  `tbl` instead of the requested outer table, and four Gemini runs fail
+  structured output. The labels are correct; this is the wire-format gap that
+  V012-05 addresses in a later commit. No label was loosened to hide it.
+- Anthropic's single valid-template miss is a V3-002 duplicate-alias event in
+  `cc-nested-task-effort`; its semantics were still correct. The same V012-05
+  change makes that alias conflict deterministic.
+- Split results: calibration OpenAI/Anthropic 100%, Gemini 93.2%; holdout
+  OpenAI 100%, Anthropic 97.2%, Gemini 90.9%. The holdout is not used for
+  tuning.
+
+### 10.5 Comparison with v0.10 and v0.11 (not spliced)
+
+| Artifact | Dataset | Cases | Repeats | Runs | Precision | Semantic pass |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| v0.10 full | `1.0.0` | 32 | 3 | 288 | 0.2087 | 63.19% |
+| v0.11 affected subset | `2.0.0` | 12 | 2 | 72 | 0.9615 | 95.83% |
+| **v0.12 full** | **`2.0.0`** | **32** | **3** | **288** | **0.9535** | **97.54%** |
+
+The comparison is descriptive. The v0.10 dataset and prompt differ, the v0.11
+artifact is a 12-case subset, and the v0.12 evaluator separates technical
+failures. The reports are shown side by side and are not combined into one
+aggregate. See `comparison.differences` in the manifest for the exact statement.
+
+### 10.6 Limits
+
+- The labels are this project's judgement on synthetic fixtures, not absolute
+  truth. No independent human review was performed; AT-07 stays `partial`.
+- Three repeats show run-to-run variation; they are not a population sample.
+- Provider models and prices change; the manifest pins the requested/observed
+  model ids and the pricing table version.
+- A technical failure is visible in the manifest with its reason and is excluded
+  from the semantic denominator, never silently dropped or counted as a semantic
+  failure.
+- Docentric AX runtime compatibility remains **not_tested**. A semantic pass is
+  not a Docentric AX execution proof.

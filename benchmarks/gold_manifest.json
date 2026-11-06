@@ -1,0 +1,68 @@
+{
+  "audit": {
+    "at07_status": "partial",
+    "audit_version": "1.0.0",
+    "canonical_sha256": "f380ff277b66855f2d1f57d4ee716acac7ce91f5b27683d5ccf03c192a7a7ad7",
+    "case_count": 32,
+    "file": "benchmarks/gold_adjudication_log.json",
+    "independent_human_review": false,
+    "schema": "gold-audit/v1",
+    "sha256": "d7437a63b43252e2391a01d608fdd9ccda262ec6adbeee88c4c56063a2be84b2",
+    "summary": {
+      "at07_status": "partial",
+      "audit_status": {
+        "no_change": 18,
+        "reviewed_by_owner": 14,
+        "unresolved": 0
+      },
+      "blocks_audited": 26,
+      "cases": 32,
+      "change_type": {
+        "clarification": 14,
+        "label_correction": 0,
+        "no_change": 18
+      },
+      "clarifications": 14,
+      "independent_human_review": false,
+      "requirements_audited": 98,
+      "unresolved": 0
+    }
+  },
+  "consistency": {
+    "checked_at": "2026-11-06T00:00:00Z",
+    "checks": [
+      "dataset SHA-256 and version match the committed dataset",
+      "audit covers all 32 case ids exactly once and in dataset order",
+      "audit status and change type use the documented values",
+      "before/after snapshots and required fields are structurally valid",
+      "every expected and forbidden path exists in the case DDSP schema",
+      "no expected/forbidden path conflicts are present",
+      "every label change carries a rationale and a recorded diff",
+      "the generated report matches the machine-readable audit log",
+      "independent human review is not claimed and AT-07 is partial"
+    ],
+    "status": "passed"
+  },
+  "created_at": "2026-11-06T00:00:00Z",
+  "dataset": {
+    "canonical_sha256": "a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed",
+    "case_count": 32,
+    "created_at": "2026-11-05",
+    "file": "benchmarks/gold_cases.json",
+    "schema": "gold-cases/v2",
+    "sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+    "version": "2.0.0"
+  },
+  "manifest_sha256": "1c21bbb7102d2012582fff14449b1ae68975cd03107b32561af991302d7defb4",
+  "manifest_version": "1.0.0",
+  "schema": "gold-manifest/v1",
+  "tools": {
+    "adjudicator_version": "1.0.0",
+    "audit_version": "1.0.0",
+    "benchmark_runner_version": "1.0.0",
+    "compact_prompt_version": "compact-ir-v2",
+    "evaluator_version": "1.0.0",
+    "planner_version": "0.12.0",
+    "prompt_version": "planner-v1"
+  }
+}

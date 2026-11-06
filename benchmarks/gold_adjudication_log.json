@@ -1,0 +1,1143 @@
+{
+  "audit_date": "2026-11-06",
+  "audit_version": "1.0.0",
+  "dataset": {
+    "canonical_sha256": "a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed",
+    "case_count": 32,
+    "created_at": "2026-11-05",
+    "file": "benchmarks/gold_cases.json",
+    "schema": "gold-cases/v2",
+    "sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+    "version": "2.0.0"
+  },
+  "entries": [
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.OrderDate",
+          "MainData.PurchaseOrder.OrderId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.OrderDate",
+          "MainData.PurchaseOrder.OrderId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "po-flat-order-identity",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Two scalar identifiers with no ambiguity; the easiest anchor for a purchase-order prompt.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:00Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.AccountNum",
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.AccountNum",
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "po-flat-vendor-identity",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "The company name is the deliberate wrong-scope alternative for the vendor name.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: GeneralData.Company.Name. Retained author scope guard(s) 'GeneralData.Company.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:01Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.CurrencyCode",
+          "MainData.PurchaseOrder.DeliveryTerms",
+          "MainData.PurchaseOrder.TotalAmount",
+          "MainData.PurchaseOrder.Vendor.ContactEmail"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.CurrencyCode",
+          "MainData.PurchaseOrder.DeliveryTerms",
+          "MainData.PurchaseOrder.TotalAmount",
+          "MainData.PurchaseOrder.Vendor.ContactEmail"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "po-flat-commercial-terms",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Four unrelated scalars; checks that the planner does not confuse delivery terms with a date.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:02Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo",
+          "GeneralData.Company.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo",
+          "GeneralData.Company.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "po-image-logo-header",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "An image block and a scalar in the header; the vendor name is the wrong-scope trap.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 1 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: MainData.PurchaseOrder.Vendor.Name. Retained author scope guard(s) 'MainData.PurchaseOrder.Vendor.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:03Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.PurchaseOrderLines.Line",
+          "table:MainData.PurchaseOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.Description",
+          "MainData.PurchaseOrderLines.Line.ItemId",
+          "MainData.PurchaseOrderLines.Line.LineAmount",
+          "MainData.PurchaseOrderLines.Line.Quantity",
+          "MainData.PurchaseOrderLines.Line.UnitPrice"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.PurchaseOrderLines.Line",
+          "table:MainData.PurchaseOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.Description",
+          "MainData.PurchaseOrderLines.Line.ItemId",
+          "MainData.PurchaseOrderLines.Line.LineAmount",
+          "MainData.PurchaseOrderLines.Line.Quantity",
+          "MainData.PurchaseOrderLines.Line.UnitPrice"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "po-collection-line-items",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Five line-scoped fields plus the collection scope; a header-scoped binding is incorrect.",
+      "rationale": "Deterministic adjudication reproduced 5 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:04Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.PurchaseOrderLines.Line",
+          "table:MainData.PurchaseOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.ItemId",
+          "MainData.PurchaseOrderLines.Line.LineAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.PurchaseOrderLines.Line",
+          "table:MainData.PurchaseOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.PurchaseOrderLines.Line.ItemId",
+          "MainData.PurchaseOrderLines.Line.LineAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "po-collection-line-summary",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "A smaller line table; tests that the collection scope survives when only two columns are requested.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:05Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.OrderDate",
+          "MainData.PurchaseOrder.OrderId",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.OrderDate",
+          "MainData.PurchaseOrder.OrderId",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "po-multilingual-de",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "German brief; schema paths stay English, so the model must translate the concepts, not the paths.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: GeneralData.Company.Name. Retained author scope guard(s) 'GeneralData.Company.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:06Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.DeliveryTerms",
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.DeliveryTerms",
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "po-multilingual-fr",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "French brief with one vendor-scope guard.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: GeneralData.Company.Name. Retained author scope guard(s) 'GeneralData.Company.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:07Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "po-footer-vendor-scope",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Footer placement plus a scope guard: the buying company is not the vendor.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: GeneralData.Company.Name. Retained author scope guard(s) 'GeneralData.Company.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:08Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.ContactEmail"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Address",
+          "MainData.PurchaseOrder.Vendor.ContactEmail"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "po-ambiguous-supplier-contact",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Ambiguity resolved by the prompt itself; acceptable alternatives are annotated rather than guessed.",
+      "rationale": "Deterministic adjudication reproduced 1 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:09Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.QuotationDate",
+          "MainData.Quotation.QuotationId",
+          "MainData.Quotation.ValidUntil"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.QuotationDate",
+          "MainData.Quotation.QuotationId",
+          "MainData.Quotation.ValidUntil"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-flat-quotation-identity",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Quotation identifiers; the validity date must not be confused with the quotation date.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:10Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.DueDate",
+          "MainData.Invoice.InvoiceDate",
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.DueDate",
+          "MainData.Invoice.InvoiceDate",
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-flat-invoice-identity",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Invoice identifier triad; checks date/date disambiguation.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:11Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.Address",
+          "GeneralData.Company.CompanyLogo",
+          "GeneralData.Company.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.Customer.Address",
+          "MainData.Quotation.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.Address",
+          "GeneralData.Company.CompanyLogo",
+          "GeneralData.Company.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.Customer.Address",
+          "MainData.Quotation.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "so-image-logo-footer",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Company identity in the footer; customer identity is forbidden.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 1 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Address, MainData.Quotation.Customer.Name. Retained author scope guard(s) 'MainData.Quotation.Customer.Address', 'MainData.Quotation.Customer.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:12Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo",
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [
+          "MainData.Invoice.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [
+          "image:GeneralData.Company.CompanyLogo"
+        ],
+        "expected_paths": [
+          "GeneralData.Company.CompanyLogo",
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [
+          "MainData.Invoice.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "so-image-logo-header-invoice",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Header composition with an image and a scalar; the customer name is the wrong-scope trap.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 1 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: MainData.Invoice.Customer.Name. Retained author scope guard(s) 'MainData.Invoice.Customer.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:13Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.NetAmount",
+          "MainData.SalesOrderLines.Line.Quantity"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.NetAmount",
+          "MainData.SalesOrderLines.Line.Quantity"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-collection-wide-lines",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Wide schema but only four columns requested; the model must not add every available column.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:14Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.DeliveryDate",
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.LineAmount",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.NetAmount",
+          "MainData.SalesOrderLines.Line.Quantity",
+          "MainData.SalesOrderLines.Line.TaxAmount",
+          "MainData.SalesOrderLines.Line.Unit",
+          "MainData.SalesOrderLines.Line.UnitPrice",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.DeliveryDate",
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.LineAmount",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.NetAmount",
+          "MainData.SalesOrderLines.Line.Quantity",
+          "MainData.SalesOrderLines.Line.TaxAmount",
+          "MainData.SalesOrderLines.Line.Unit",
+          "MainData.SalesOrderLines.Line.UnitPrice",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-long-table-all-columns",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Twelve requested columns: the hardest recall case and a stress test for table width.",
+      "rationale": "Deterministic adjudication reproduced 12 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:15Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.QuotationLines.Line",
+          "table:MainData.QuotationLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Description",
+          "MainData.QuotationLines.Line.ItemId",
+          "MainData.QuotationLines.Line.LineAmount",
+          "MainData.QuotationLines.Line.Quantity"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.QuotationLines.Line",
+          "table:MainData.QuotationLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Description",
+          "MainData.QuotationLines.Line.ItemId",
+          "MainData.QuotationLines.Line.LineAmount",
+          "MainData.QuotationLines.Line.Quantity"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-long-table-40-rows",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "The fixture carries forty sample rows; the prompt tests that the model keeps the collection repeat rather than a fixed row count.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:16Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.QuotationLines.Line",
+          "table:MainData.QuotationLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Description",
+          "MainData.QuotationLines.Line.ItemId",
+          "MainData.QuotationLines.Line.LineAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.QuotationLines.Line",
+          "table:MainData.QuotationLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.QuotationLines.Line.Description",
+          "MainData.QuotationLines.Line.ItemId",
+          "MainData.QuotationLines.Line.LineAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-long-table-long-descriptions",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Long descriptions are a layout concern, but the semantic binding must still target the description field.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:17Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.Name",
+          "MainData.Quotation.QuotationDate",
+          "MainData.Quotation.QuotationId",
+          "MainData.Quotation.TotalAmount"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.Name",
+          "MainData.Quotation.QuotationDate",
+          "MainData.Quotation.QuotationId",
+          "MainData.Quotation.TotalAmount"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "so-multilingual-de",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "German brief with four concepts and a customer/company guard.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. The gold guard is stricter than the independent derivation: MainData.Quotation.Customer.Name. Retained author scope guard(s) 'MainData.Quotation.Customer.Name'; the independent pass did not derive them and they forbid wrong-scope bindings, so the safer label is kept rather than loosened. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:18Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.VatNumber",
+          "MainData.Quotation.Customer.VatNumber"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.VatNumber",
+          "MainData.Quotation.Customer.VatNumber"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "so-ambiguous-vat-number",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Genuine ambiguity between customer and company VAT numbers; the alternative is accepted, not guessed.",
+      "rationale": "Deterministic adjudication reproduced 1 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): MainData.Quotation.Customer.VatNumber. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:19Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Hours",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Hours",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "cc-nested-service-tasks",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Nested repeat scope: the line description and the task fields use the outer and inner collection respectively; the task fields must not use the outer line scope.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 3 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:20Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.ItemId",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Amount",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Rate",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.ItemId",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Amount",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Rate",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.TaskId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "cc-nested-task-effort",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Nested list with money fields; the outer line table and the inner task repeat must both use the correct collection scope.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 3 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:21Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.ItemId",
+          "MainData.ServiceOrderLines.Line.LineAmount",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.ServiceOrderLines.Line",
+          "repeat:MainData.ServiceOrderLines.Line.Tasks.Task",
+          "table:MainData.ServiceOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.ServiceOrderLines.Line.ItemId",
+          "MainData.ServiceOrderLines.Line.LineAmount",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Description",
+          "MainData.ServiceOrderLines.Line.Tasks.Task.Hours"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "cc-nested-service-amounts",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "A second nested composition; differs from the first by mixing line amount with task text/effort.",
+      "rationale": "Deterministic adjudication reproduced 4 requirement label(s) and 3 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:22Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.Customer.IsEU",
+          "MainData.Quotation.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "Parameters.ShowVatNotice"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.Customer.IsEU",
+          "MainData.Quotation.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "Parameters.ShowVatNotice"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "cc-conditional-eu-vat",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "The schema has a separate Parameters.ShowVatNotice flag; the prompt conditions on the customer's EU status, so the flag is forbidden.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): GeneralData.Company.Name. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:23Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.GrossAmount",
+          "MainData.Invoice.ReverseCharge",
+          "MainData.Invoice.TaxAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.GrossAmount",
+          "MainData.Invoice.ReverseCharge",
+          "MainData.Invoice.TaxAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "cc-conditional-reverse-charge",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "A boolean condition plus two monetary fields; reverse charge must drive the condition.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:24Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.Customer.IsEU",
+          "MainData.Invoice.Customer.VatNumber",
+          "MainData.Invoice.GrossAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.Customer.IsEU",
+          "MainData.Invoice.Customer.VatNumber",
+          "MainData.Invoice.GrossAmount"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "cc-conditional-eu-vat-invoice",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Conditional VAT rendering on the invoice fixture; the total stays unconditional.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): GeneralData.Company.VatNumber. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:25Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.PurchaseOrder.Vendor.Name"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "adv-missing-requisition-number",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Unsatisfiable requirement excluded from recall/coverage; hallucinating a path is charged as wrong_binding.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): GeneralData.Company.Name. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:26Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Invoice.InvoiceId"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "adv-missing-customer-po-reference",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "A subtler missing field: the only nearby identifier is the invoice number, which is a different concept.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:27Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.Address",
+          "MainData.Quotation.Customer.Address"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "GeneralData.Company.Address",
+          "MainData.Quotation.Customer.Address"
+        ],
+        "forbidden_paths": [],
+        "label_status": "verified"
+      },
+      "case_id": "adv-ambiguous-address",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Ambiguity is explicit in the label; both addresses are accepted alternatives.",
+      "rationale": "Deterministic adjudication reproduced 1 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): MainData.Quotation.Customer.Address. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:28Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.BankDetails.Iban",
+          "MainData.Quotation.BankDetails.Swift"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "reviewed_by_owner",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.Quotation.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.BankDetails.Iban",
+          "MainData.Quotation.BankDetails.Swift"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "adv-forbidden-customer-bank",
+      "change_type": "clarification",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "The schema's BankDetails belong to the company, not the customer; binding them is a scope error.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Interpretation recorded; the dataset labels themselves are unchanged. Advisory counterpart guards (not applied): GeneralData.Company.Name. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:29Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.SalesOrder.Customer.AccountNum",
+          "MainData.SalesOrder.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [],
+        "expected_paths": [
+          "MainData.SalesOrder.Customer.AccountNum",
+          "MainData.SalesOrder.Customer.Name"
+        ],
+        "forbidden_paths": [
+          "GeneralData.Company.Name"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "adv-forbidden-company-as-customer",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "A direct company/customer identity trap in the sales-order header.",
+      "rationale": "Deterministic adjudication reproduced 2 requirement label(s) and 0 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:30Z"
+    },
+    {
+      "after": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.Quantity"
+        ],
+        "forbidden_paths": [
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ],
+        "label_status": "verified"
+      },
+      "audit_status": "no_change",
+      "before": {
+        "expected_blocks": [
+          "repeat:MainData.SalesOrderLines.Line",
+          "table:MainData.SalesOrderLines.Line"
+        ],
+        "expected_paths": [
+          "MainData.SalesOrderLines.Line.Description",
+          "MainData.SalesOrderLines.Line.ItemId",
+          "MainData.SalesOrderLines.Line.Quantity"
+        ],
+        "forbidden_paths": [
+          "MainData.SalesOrderLines.Line.DiscountPct",
+          "MainData.SalesOrderLines.Line.LineNote",
+          "MainData.SalesOrderLines.Line.Warehouse"
+        ],
+        "label_status": "verified"
+      },
+      "case_id": "adv-collection-forbidden-columns",
+      "change_type": "no_change",
+      "dataset_sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+      "dataset_version": "2.0.0",
+      "notes": "Negative scope inside a collection: the forbidden columns are plausible but explicitly excluded.",
+      "rationale": "Deterministic adjudication reproduced 3 requirement label(s) and 2 expected block(s); case agreement=agree. Self-review by the dataset owner; no independent human review was performed.",
+      "timestamp": "2026-11-06T00:00:31Z"
+    }
+  ],
+  "reviewer": {
+    "at07_status": "partial",
+    "identity": "dataset owner (implementer)",
+    "independent_human_review": false,
+    "method": "Deterministic adjudication with benchmarks/adjudicate_labels.py 1.0.0, followed by an owner review of every case. This is a documented proxy and self-review, not independent human review.",
+    "role": "owner_self_review",
+    "second_human_annotator": false
+  },
+  "schema": "gold-audit/v1",
+  "summary": {
+    "at07_status": "partial",
+    "audit_status": {
+      "no_change": 18,
+      "reviewed_by_owner": 14,
+      "unresolved": 0
+    },
+    "blocks_audited": 26,
+    "cases": 32,
+    "change_type": {
+      "clarification": 14,
+      "label_correction": 0,
+      "no_change": 18
+    },
+    "clarifications": 14,
+    "independent_human_review": false,
+    "requirements_audited": 98,
+    "unresolved": 0
+  }
+}

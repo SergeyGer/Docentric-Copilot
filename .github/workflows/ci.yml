@@ -54,6 +54,11 @@ jobs:
       - name: Golden files are up to date
         run: python -m tests.golden_files.update_golden --check
 
+      - name: Gold dataset audit trail and v0.11 baseline
+        run: |
+          python benchmarks/gold_audit.py --check
+          python scripts/freeze_baseline.py --check
+
       - name: Docs links, ADR index and wiki sidebar
         run: python scripts/check_docs_links.py
 

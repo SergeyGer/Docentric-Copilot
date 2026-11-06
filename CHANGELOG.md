@@ -8,6 +8,23 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+### Added
+- v0.12 PR-1 (#35) gold dataset audit trail: `benchmarks/gold_audit.py` writes and verifies
+  `benchmarks/gold_adjudication_log.json` (32/32 cases with before/after snapshots, status,
+  change type, rationale, UTC timestamp and dataset SHA-256), `benchmarks/gold_manifest.json`
+  (dataset, audit and manifest hashes plus prompt/planner/evaluator/runner versions) and the
+  generated public report `docs/GOLD_AUDIT.md`. The consistency checker rejects missing entries,
+  expected/forbidden conflicts, unknown schema paths, changes without rationales, hash drift,
+  report drift and any claim of independent human review. AT-07 stays `partial`; 18 cases are
+  `no_change` and 14 record owner-reviewed clarifications that keep the author's scope guards.
+- v0.12 PR-1 (#35) frozen baseline `benchmarks/baseline_v011.json` and
+  `scripts/freeze_baseline.py --check`: v0.11.0 commit `3101c9a`, dataset `2.0.0` SHA-256
+  `8489e4c0…`, adjudication artifact hash, model IDs and the public D365 aggregate
+  (11 documents / 246 bindings / 233 resolved / 13 unresolved). The baseline contains no corpus
+  paths, document hashes or credentials.
+- `PLANNER_VERSION` is now exported by the planner package and pinned by benchmark manifests;
+  `benchmarks/versions.py` is the single source for evaluator and runner versions.
+
 ## [0.11.0] - 2026-11-05
 
 ### Added

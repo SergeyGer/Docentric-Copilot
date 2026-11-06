@@ -100,7 +100,19 @@ def rebind_paths(
                     if block.row_template
                     else None
                 )
-                block = block.model_copy(update={"rows": rows, "row_template": template})
+                footer_rows = [
+                    type(row)(
+                        cells=[type(cell)(blocks=walk(cell.blocks, scope)) for cell in row.cells]
+                    )
+                    for row in block.footer_rows
+                ]
+                block = block.model_copy(
+                    update={
+                        "rows": rows,
+                        "row_template": template,
+                        "footer_rows": footer_rows,
+                    }
+                )
             result.append(block)
         return result
 

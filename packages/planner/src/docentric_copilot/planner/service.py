@@ -192,7 +192,7 @@ def _used_paths(document: Document, schema: NormalizedSchema) -> dict[str, str]:
                     if collection is not None:
                         used[block.repeat.path] = collection.absolute
                         row_scope = scope.push(block.repeat.alias, collection.absolute)
-                for row in block.rows:
+                for row in [*block.rows, *block.footer_rows]:
                     for cell in row.cells:
                         walk(cell.blocks, scope)
                 for cell in block.row_template or []:
@@ -728,7 +728,7 @@ def _binding_contexts(
                     if collection is not None:
                         note(collection.absolute, "collection", contexts)
                         table_scope = scope.push(block.repeat.alias, collection.absolute)
-                for row in block.rows:
+                for row in [*block.rows, *block.footer_rows]:
                     for cell in row.cells:
                         walk(cell.blocks, scope, base, repeat=repeat, conditional=conditional)
                 for cell in block.row_template or []:
@@ -961,6 +961,15 @@ def sanitize_blocks(
                     ]
                 )
                 for row in block.rows
+            ]
+            updates["footer_rows"] = [
+                type(row)(
+                    cells=[
+                        Cell(blocks=sanitize_blocks(cell.blocks, schema, scope, removed))
+                        for cell in row.cells
+                    ]
+                )
+                for row in block.footer_rows
             ]
             kept.append(block.model_copy(update=updates))
         else:  # pragma: no cover - defensive against future block kinds

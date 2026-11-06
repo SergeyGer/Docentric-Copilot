@@ -374,6 +374,8 @@ class _PreviewRenderer:
                     self._stats["repeats"] += 1
                     child = context.child(block.repeat.alias, collection.absolute, item)
                     body_rows.append(self._row(block.row_template, child))
+        for row in block.footer_rows:
+            body_rows.append(self._row(row.cells, context))
         plain = " plain" if (block.style is not None and not block.style.borders) else ""
         if (
             plain

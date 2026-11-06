@@ -358,6 +358,7 @@ class Table(StrictModel):
     kind: Literal["table"] = "table"
     columns: list[TableColumn] = Field(min_length=1, max_length=20)
     rows: list[TableRow] = Field(default_factory=list, max_length=500)
+    footer_rows: list[TableRow] = Field(default_factory=list, max_length=500)
     repeat: TableRepeat | None = None
     row_template: list[Cell] | None = Field(default=None, max_length=20)
     show_header: bool = True
@@ -366,7 +367,7 @@ class Table(StrictModel):
     @model_validator(mode="after")
     def _check_table(self) -> Table:
         width = len(self.columns)
-        for index, row in enumerate(self.rows):
+        for index, row in enumerate([*self.rows, *self.footer_rows]):
             if len(row.cells) != width:
                 raise ValueError(
                     f"table row {index} has {len(row.cells)} cells but {width} columns are declared"
@@ -418,7 +419,7 @@ class Document(StrictModel):
     """Root of the IR. Serialized canonically, hashed for reproducibility."""
 
     kind: Literal["document"] = "document"
-    ir_version: Literal["1.1"] = "1.1"
+    ir_version: Literal["1.2"] = "1.2"
     title: str = Field(min_length=1, max_length=200)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(-[A-Z]{2})?$")
     target: CompileTarget = CompileTarget.GENERIC_DOCX

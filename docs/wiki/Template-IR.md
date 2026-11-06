@@ -12,7 +12,7 @@ gives us three properties: **reviewable decisions**, **deterministic execution**
 
 ```text
 Document
-├── ir_version       "1.1"
+├── ir_version       "1.2"
 ├── title, language, target
 ├── page             size, orientation, margins
 ├── metadata         template_name, source_schema_id, design_style, generator
@@ -30,6 +30,7 @@ Document
 | --- | --- | --- |
 | `paragraph` | Static text and inline dynamic values | `runs[]`, `style`, `space_after_pt` |
 | `heading` | Section titles | `level` 1–3, `runs[]` |
+| `table` | Static/repeated/footer table | `columns`, `rows`, `footer_rows`, `repeat`, `row_template` |
 | `image` | Schema or static image | `source`, `path`/`static_asset`, `fallback`, `preserve_aspect`, width/height, `alt_text` |
 | `repeat` | Iterate a collection | `path`, `alias`, `blocks[]`, `max_items` |
 | `conditional` | Show content when a typed expression holds | `condition`, `then_blocks`, `else_blocks` |
@@ -43,7 +44,7 @@ the contract.
 ```json
 {
   "kind": "document",
-  "ir_version": "1.1",
+  "ir_version": "1.2",
   "title": "Sales Quotation",
   "language": "en",
   "target": "generic-docx",
@@ -121,7 +122,7 @@ cannot be represented at all.
 
 ## Versioning, canonical form, schema
 
-- `ir_version` is part of the document; 1.0 payloads migrate to 1.1, unsupported versions raise
+- `ir_version` is part of the document; 1.0/1.1 payloads migrate to 1.2, unsupported versions raise
   `ir_version_unsupported`.
 - `first_page_header` enables Word `titlePg`; the compiler writes a separate first-page header part and
   `headerReference type="first"`. The preview selects it only for page 1.

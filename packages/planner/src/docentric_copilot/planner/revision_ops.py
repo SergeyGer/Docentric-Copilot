@@ -347,6 +347,10 @@ def _add_column(
                         ]
                     ),
                 ],
+                "footer_rows": [
+                    row.model_copy(update={"cells": [*row.cells, Cell(blocks=[])]})
+                    for row in table.footer_rows
+                ],
             }
         )
 

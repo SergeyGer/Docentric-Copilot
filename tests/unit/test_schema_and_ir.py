@@ -209,7 +209,7 @@ class TestTemplateIR:
 
     def test_json_schema_is_exported(self) -> None:
         schema = document_json_schema()
-        assert schema["$id"].endswith("template-ir-v1.1.json")
+        assert schema["$id"].endswith("template-ir-v1.2.json")
         assert "properties" in schema and "$defs" in schema
 
     def test_traversal(self) -> None:

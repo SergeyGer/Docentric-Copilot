@@ -53,7 +53,7 @@ def _tables_in(blocks: list[Block]) -> list[Table]:
         for block in items:
             if isinstance(block, Table):
                 tables.append(block)
-                for row in block.rows:
+                for row in [*block.rows, *block.footer_rows]:
                     for cell in row.cells:
                         walk(cell.blocks)
                 for cell in block.row_template or []:
@@ -99,6 +99,14 @@ def structural_findings(document: Document, requirement: str) -> list[dict[str, 
                         visit(
                             cell.blocks,
                             prefix=f"{location}.rows[{row_index}].cells[{cell_index}]",
+                            in_repeat=in_repeat,
+                            in_table=True,
+                        )
+                for row_index, row in enumerate(block.footer_rows):
+                    for cell_index, cell in enumerate(row.cells):
+                        visit(
+                            cell.blocks,
+                            prefix=f"{location}.footer_rows[{row_index}].cells[{cell_index}]",
                             in_repeat=in_repeat,
                             in_table=True,
                         )

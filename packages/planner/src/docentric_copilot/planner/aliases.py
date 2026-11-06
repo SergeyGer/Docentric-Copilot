@@ -244,6 +244,26 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
                     )
                     for cell_index, cell in enumerate(block.row_template or [])
                 ]
+                footer_rows = [
+                    row.model_copy(
+                        update={
+                            "cells": [
+                                cell.model_copy(
+                                    update={
+                                        "blocks": visit(
+                                            cell.blocks,
+                                            scope,
+                                            (*branch, index, -2, row_index, cell_index),
+                                            f"{location}.footer_rows[{row_index}].cells[{cell_index}]",
+                                        )
+                                    }
+                                )
+                                for cell_index, cell in enumerate(row.cells)
+                            ]
+                        }
+                    )
+                    for row_index, row in enumerate(block.footer_rows)
+                ]
                 result.append(
                     block.model_copy(
                         update={
@@ -251,6 +271,7 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
                             "row_template": row_template
                             if block.row_template is not None
                             else None,
+                            "footer_rows": footer_rows,
                         }
                     )
                 )

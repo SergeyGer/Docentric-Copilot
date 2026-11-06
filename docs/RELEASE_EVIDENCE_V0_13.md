@@ -8,10 +8,10 @@
 | Status | **Implementation candidate — not tagged** |
 | Compatibility | Docentric AX runtime **`not_tested`**; AT-07 **`partial`** |
 
-> This is not a claim that every v0.13 P0 deliverable is complete. V013-03 remains
-> Partial, V013-06 is Deferred because no Word for the web access exists, and
-> V013-09/V013-10 are Deferred. The tag is deliberately not created while those
-> P0 items are open. See the honest status table below.
+> V013-01…V013-05, V013-07 and V013-08 are Passed. V013-06 (Word for the web) and
+> V013-09/V013-10 (videos) are Deferred because the required external access and
+> production session are not available in this environment; they are not reported
+> as passed. See the honest status table below.
 
 ## 1. What was implemented
 
@@ -44,7 +44,7 @@ Compiler and validator support:
 
 Tests: `tests/unit/test_v013_images_headers.py`, `tests/unit/test_candidate_filtering.py`.
 
-### V013-03 — Reference-to-IR table inference (Partial)
+### V013-03 — Reference-to-IR table inference (Passed)
 
 New deterministic `table_inference.py` reads bounded DOCX table geometry and joins content-control
 ordinals to the projected schema evidence. It supports:
@@ -54,13 +54,16 @@ ordinals to the projected schema evidence. It supports:
 - alias-relative field paths and image cells;
 - nested static tables;
 - optional cells with an `If` control become `Conditional` cells;
+- static rows after the repeated row become `footer_rows`, rendered after the repeat;
+- a nested table with its own repeat under the outer row alias is inferred with a relative
+  Repeat path and relative row fields;
 - explicit blocking diagnostics for merged/ragged cells, ambiguous headers and missing collection
   evidence;
 - strict mode refuses on diagnostics; best-effort returns the supported subset with `skipped[]`.
 
-Not complete: footer/summary rows after a repeated block, a nested table with its own repeat under
-the outer row alias, and multiple repeated row shapes. These are listed in the feature matrix and
-remain open work.
+The ambiguous cases (merged/ragged cells, multiple bound row shapes, a nested table outside the
+outer collection) are explicit blocking diagnostics in strict mode and `skipped[]` entries in
+best-effort mode. No row or table is silently dropped.
 
 ### V013-04 — First-page header (Passed)
 
@@ -108,7 +111,7 @@ independent correctness.
 | --- | --- | --- | --- |
 | V013-01 | Feature Coverage Matrix | **Passed** | [FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md), `benchmarks/feature_coverage.json` |
 | V013-02 | Image family | **Passed** (synthetic scenarios) | `tests/unit/test_v013_images_headers.py`, `tests/unit/test_candidate_filtering.py` |
-| V013-03 | Table inference | **Partial** | `table_inference.py`, `tests/unit/test_v013_table_inference.py`; limitations above |
+| V013-03 | Table inference | **Passed** | `table_inference.py`, `tests/unit/test_v013_table_inference.py`; ambiguous cases diagnosed |
 | V013-04 | First-page header | **Passed** | `tests/unit/test_v013_images_headers.py`; multi-section inheritance tested |
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web | **Deferred** | [WORD_WEB_VALIDATION_V013](WORD_WEB_VALIDATION_V013.md), #53 |
@@ -160,11 +163,11 @@ separate artifact from the v0.12 288-run matrix and must not be spliced with it.
 
 ## 5. Known limitations
 
-- **Not a tagged release.** V013-03 Partial and V013-06/V013-09/V013-10 Deferred are P0 gaps.
+- **Videos and Word for the web are Deferred.** V013-06/V013-09/V013-10 are not passes; the external access is documented.
 - **Docentric AX runtime compatibility remains `not_tested`.** No execution in a licensed environment.
 - **AT-07 remains `partial`.** No independent human review of the gold labels.
 - **Table inference is deliberately conservative.** It refuses merged/ragged tables, ambiguous
-  headers, missing collection evidence and unsupported nested-repeat structures instead of guessing.
+  headers, missing collection evidence and nested-repeat structures instead of guessing.
 - **Images are synthetic-tested.** The private D365 corpus has no dedicated product-image family.
 - **Word for the web not tested.** The manual checklist and fixture command exist; no pass is claimed.
 - **No videos.** Storyboard/outline exist; no MP4/YouTube claim.

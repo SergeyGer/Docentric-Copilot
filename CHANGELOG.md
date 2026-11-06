@@ -11,8 +11,8 @@ version (`1.1`) independent of the distribution version.
 ## [0.13.0] - 2026-11-06
 
 **Implementation candidate — see [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).**
-V013-03 is Partial and V013-06/V013-09/V013-10 are Deferred; the tag is
-not created while those P0 items are open.
+V013-06/V013-09/V013-10 are Deferred external dependencies; they are not
+reported as passes.
 
 ### Added
 - Template IR 1.1: `Section.first_page_header`, image `source`/`static_asset`/`fallback`/
@@ -24,8 +24,8 @@ not created while those P0 items are open.
   optional/missing images with placeholder/blank/alt-text fallback, aspect-ratio control,
   wrong-type and wrong-scope rejection, and product-image candidate scoping.
 - Reference-to-IR table inference for static tables, static header rows, repeated data rows,
-  alias-relative fields, optional `If` cells (become `Conditional`) and static nested tables,
-  with explicit diagnostics. Strict mode refuses ambiguous/merged/unsupported structures;
+  alias-relative fields, optional `If` cells (become `Conditional`), static nested tables and
+  `footer_rows` after the repeat, with explicit diagnostics. Strict mode refuses ambiguous/merged/unsupported structures;
   best-effort keeps them in `skipped[]`.
 - Feature Coverage Matrix (`benchmarks/feature_coverage.json`,
   `docs/FEATURE_COVERAGE_V013.md`) and a Reference Evaluation over the official 17-document corpus
@@ -56,8 +56,7 @@ not created while those P0 items are open.
   global fields.
 
 ### Known limitations
-- V013-03 table inference does not yet support footer/summary rows after a repeated block or a
-  nested repeat inside an outer repeated row.
+- V013-03 multiple bound row shapes are diagnosed as ambiguous rather than guessed.
 - V013-06 Word for the web validation and V013-09/V013-10 videos are Deferred.
 - Docentric AX runtime compatibility remains `not_tested`; AT-07 remains `partial`.
 

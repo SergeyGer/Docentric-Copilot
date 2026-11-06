@@ -896,7 +896,10 @@ def _add_table_schema(context: _Context, inferred: InferredTable) -> None:
     context.schema_entries[repeat.path] = _SchemaEntry(
         repeat.path, data_type="any", collection=True
     )
-    for cell in table.row_template or []:
+    cells = list(table.row_template or [])
+    for row in table.footer_rows:
+        cells.extend(row.cells)
+    for cell in cells:
         for block, _depth in iter_blocks(cell.blocks):
             for binding in _inline_bindings(block):
                 path = binding.path

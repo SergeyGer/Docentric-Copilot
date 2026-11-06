@@ -41,7 +41,7 @@ def iter_blocks(blocks: list[Block], depth: int = 0) -> Iterator[tuple[Block, in
             yield from iter_blocks(block.then_blocks, depth + 1)
             yield from iter_blocks(list(block.else_blocks or []), depth + 1)
         elif isinstance(block, Table):
-            for row in block.rows:
+            for row in [*block.rows, *block.footer_rows]:
                 for cell in row.cells:
                     yield from iter_blocks(cell.blocks, depth + 1)
             for cell in block.row_template or []:
@@ -108,7 +108,7 @@ def iter_tables(blocks: list[Block]) -> Iterator[Table]:
 
 
 def table_cell_blocks(table: Table) -> Iterator[Cell]:
-    for row in table.rows:
+    for row in [*table.rows, *table.footer_rows]:
         yield from row.cells
     yield from table.row_template or []
 

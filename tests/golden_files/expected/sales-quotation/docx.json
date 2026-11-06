@@ -106,7 +106,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=sales_quotation;digest=afa8e7c90a39d1ff71bf0e51c8dbee26;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.2;target=generic-docx;schema=sales_quotation;digest=dea89af6ab8b5684531393b69d34282f;docentric-compatibility=not_tested",
     "subject": "quotation_template",
     "title": "Sales Quotation"
   },

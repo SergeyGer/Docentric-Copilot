@@ -211,7 +211,7 @@ class TestExpandCompact:
         assert isinstance(document, Document)
         assert document.title == "Sales Quotation"
         assert document.language == "en"
-        assert document.ir_version == "1.1"
+        assert document.ir_version == "1.2"
         assert document.target.value == "generic-docx"
         assert document.metadata.template_name == COMPACT_TEMPLATE_NAME
         assert document.metadata.source_schema_id == schema.schema_id

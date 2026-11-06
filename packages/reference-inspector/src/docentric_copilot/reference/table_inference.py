@@ -24,7 +24,7 @@ import io
 import re
 import zipfile
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from docentric_copilot.template_ir import (
     Alignment,
@@ -95,6 +95,7 @@ class _CellData:
     controls: tuple[ProjectionElement, ...]
     ordinals: frozenset[int]
     nested: tuple[InferredTable, ...] = ()
+    nested_elements: tuple[etree._Element, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -374,23 +375,19 @@ class _TableParser:
         metadata_row = rows[0] if data_index == 1 else None
         data_row = rows[data_index]
         trailing = rows[data_index + 1 :]
-        if trailing:
-            code = (
-                "TABLE_MULTIPLE_REPEATED_ROWS"
-                if any(row.controls for row in trailing)
-                else "TABLE_FOOTER_UNSUPPORTED"
-            )
+        if any(row.controls for row in trailing):
             self._diagnostics.append(
                 TableDiagnostic(
-                    code=code,
+                    code="TABLE_MULTIPLE_REPEATED_ROWS",
                     message=(
-                        "Rows after the first repeated data row are not represented; the table "
-                        "uses one repeated row template and lists this limitation."
+                        "More than one bound row shape follows the header; only the first "
+                        "repeated row is represented and the rest are listed as unsupported."
                     ),
                     table_ordinal=table_ordinal,
                     blocking=True,
                 )
             )
+            trailing = [row for row in trailing if not row.controls]
         collection_raw = _collection_for(data_row.controls, self._collection_paths)
         if collection_raw is None:
             self._diagnostics.append(
@@ -405,9 +402,30 @@ class _TableParser:
                 )
             )
             return None
-        collection = _sanitize_path(collection_raw)
+        if outer is not None:
+            outer_raw, outer_alias = outer
+            if collection_raw.startswith(f"{outer_raw}."):
+                collection = f"{outer_alias}.{_sanitize_path(collection_raw[len(outer_raw) + 1 :])}"
+            else:
+                self._diagnostics.append(
+                    TableDiagnostic(
+                        code="TABLE_NESTED_REPEAT_UNSUPPORTED",
+                        message=(
+                            "A nested repeated table is not under the outer row collection; "
+                            "it is listed as unsupported."
+                        ),
+                        table_ordinal=table_ordinal,
+                        blocking=True,
+                    )
+                )
+                return None
+        else:
+            collection = _sanitize_path(collection_raw)
         alias = _alias(collection)
-        rewrite = _rewriter(collection=collection_raw, alias=alias)
+        rewrite = _rewriter(collection=collection, alias=alias)
+        data_row = self._attach_nested(
+            data_row, outer=(collection_raw, alias), table_ordinal=table_ordinal
+        )
         headers = (
             [cell.text for cell in metadata_row.cells]
             if metadata_row is not None
@@ -423,13 +441,20 @@ class _TableParser:
                 TableColumn(header=header, width_mm=width_mm, alignment=Alignment.LEFT)
                 for header in headers
             ],
+            footer_rows=[
+                TableRow(cells=[Cell(blocks=cell.blocks) for cell in row.cells]) for row in trailing
+            ],
             repeat=TableRepeat(path=collection, alias=alias),
             row_template=template,
             show_header=True,
         )
         return InferredTable(
             table=table,
-            ordinals=data_row.ordinals | (metadata_row.ordinals if metadata_row else frozenset()),
+            ordinals=(
+                data_row.ordinals
+                | (metadata_row.ordinals if metadata_row else frozenset())
+                | frozenset(ordinal for row in trailing for ordinal in row.ordinals)
+            ),
             provenance=(
                 (f"table:{table_ordinal}", collection),
                 (f"table:{table_ordinal}.header", "static-header"),
@@ -499,22 +524,45 @@ class _TableParser:
                         then_blocks=blocks,
                     )
                 ]
-        nested: list[InferredTable] = []
-        for nested_element in cell.findall(_q("tbl")):
-            nested_result = self._parse_table(nested_element, outer=outer)
-            if nested_result is not None:
-                nested.append(nested_result)
-        for nested_table in nested:
-            ordinals.update(nested_table.ordinals)
         return _CellData(
             blocks=blocks,
             text=_cell_text(cell),
             controls=controls,
             ordinals=frozenset(ordinals),
-            nested=tuple(nested),
+            nested_elements=tuple(cell.findall(_q("tbl"))),
+        )
+
+    def _attach_nested(
+        self,
+        row: _RowData,
+        *,
+        outer: tuple[str, str] | None,
+        table_ordinal: int,
+    ) -> _RowData:
+        cells: list[_CellData] = []
+        for cell in row.cells:
+            nested: list[InferredTable] = []
+            for nested_element in cell.nested_elements:
+                nested_result = self._parse_table(nested_element, outer=outer)
+                if nested_result is not None:
+                    nested.append(nested_result)
+            ordinals = set(cell.ordinals)
+            for nested_table in nested:
+                ordinals.update(nested_table.ordinals)
+            cells.append(
+                replace(
+                    cell,
+                    nested=tuple(nested),
+                    ordinals=frozenset(ordinals),
+                )
+            )
+        return _RowData(
+            cells=tuple(cells),
+            ordinals=frozenset(ordinal for cell in cells for ordinal in cell.ordinals),
         )
 
     def _static_table(self, rows: list[_RowData], *, table_ordinal: int) -> InferredTable:
+        rows = [self._attach_nested(row, outer=None, table_ordinal=table_ordinal) for row in rows]
         column_count = len(rows[0].cells)
         headers = [cell.text or f"Column {index + 1}" for index, cell in enumerate(rows[0].cells)]
         table = Table(

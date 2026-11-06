@@ -2680,8 +2680,8 @@
         "description": "Root of the IR. Serialized canonically, hashed for reproducibility.",
         "properties": {
           "ir_version": {
-            "const": "1.1",
-            "default": "1.1",
+            "const": "1.2",
+            "default": "1.2",
             "title": "Ir Version",
             "type": "string"
           },
@@ -7223,6 +7223,14 @@
             "maxItems": 20,
             "minItems": 1,
             "title": "Columns",
+            "type": "array"
+          },
+          "footer_rows": {
+            "items": {
+              "$ref": "#/components/schemas/TableRow"
+            },
+            "maxItems": 500,
+            "title": "Footer Rows",
             "type": "array"
           },
           "kind": {

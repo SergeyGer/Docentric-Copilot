@@ -132,6 +132,11 @@ def _iter_block_paths(blocks: list[Block], prefix: str) -> Iterator[tuple[Block,
                 yield from _iter_block_paths(
                     cell.blocks, f"{path}.row_template[{cell_index}].blocks"
                 )
+            for row_index, row in enumerate(block.footer_rows):
+                for cell_index, cell in enumerate(row.cells):
+                    yield from _iter_block_paths(
+                        cell.blocks, f"{path}.footer_rows[{row_index}].cells[{cell_index}].blocks"
+                    )
 
 
 def _alias_resolver(alias: str, item: dict[str, Any], collection_path: str) -> Resolver:
@@ -154,7 +159,7 @@ def _row_contexts(
     if sample_data is None:
         return []
     contexts: list[tuple[str, list[Cell], Resolver]] = []
-    for row_index, row in enumerate(table.rows):
+    for row_index, row in enumerate([*table.rows, *table.footer_rows]):
         contexts.append(
             (
                 f"rows[{row_index}].cells",
@@ -326,7 +331,7 @@ def _walk(blocks: list[Block]) -> list[tuple[Block, str]]:
         elif isinstance(block, Table):
             for cell in block.row_template or []:
                 found.extend(_walk(cell.blocks))
-            for row in block.rows:
+            for row in [*block.rows, *block.footer_rows]:
                 for cell in row.cells:
                     found.extend(_walk(cell.blocks))
     return found

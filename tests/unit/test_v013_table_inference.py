@@ -217,7 +217,8 @@ def test_optional_cell_becomes_a_conditional() -> None:
 
 
 def test_extra_data_rows_are_diagnosed_not_silently_dropped() -> None:
-    elements = _elements() + [
+    elements = [
+        *_elements(),
         _element(2, "MainData.Lines.Line.ItemId", label="SKU"),
         _element(3, "MainData.Lines.Line.Amount", label="Amount"),
     ]

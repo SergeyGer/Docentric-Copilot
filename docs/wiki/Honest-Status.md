@@ -21,7 +21,7 @@ and published with `python scripts/sync_wiki.py --push`.
 | Docentric AX runtime compatibility | **`not_tested`** — no execution claim |
 | Gold labels annotation | **AT-07 = `partial`** — owner self-review + deterministic proxy; no independent human review |
 | v0.12 reliability release | **Released** — [v0.12.0](https://github.com/SergeyGer/Docentric-Copilot/releases/tag/v0.12.0) |
-| v0.13 feature candidate | **Implementation candidate, not tagged** — V013-01…05/07/08 Passed; V013-06/V013-09/V013-10 Deferred |
+| v0.13 release | **Released `v0.13.0`** — V013-01…05/07/08 Passed; V013-06/V013-09/V013-10 Deferred |
 | Template IR | **`1.1`** — first-page header and image source/fallback; `1.0` migrates |
 | Feature coverage | **Published** — [FEATURE_COVERAGE_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/FEATURE_COVERAGE_V013.md) |
 | Reference Evaluation | **Published** — [REFERENCE_EVALUATION_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REFERENCE_EVALUATION_V013.md) |
@@ -32,7 +32,7 @@ and published with `python scripts/sync_wiki.py --push`.
 ## v0.13 — implementation candidate
 
 Full evidence: [RELEASE_EVIDENCE_V0_13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md).
-The tag is deliberately not created while P0 items below are Partial/Deferred.
+The release tag `v0.13.0` is published; the Deferred items below are external dependencies, not passes.
 
 | V013 ID | Workstream | Status | Evidence |
 | --- | --- | --- | --- |

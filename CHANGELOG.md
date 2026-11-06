@@ -10,7 +10,7 @@ version (`1.1`) independent of the distribution version.
 
 ## [0.13.0] - 2026-11-06
 
-**Implementation candidate — see [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).**
+See [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).
 V013-06/V013-09/V013-10 are Deferred external dependencies; they are not
 reported as passes.
 

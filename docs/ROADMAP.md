@@ -6,7 +6,7 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.13.0 (release candidate); Template IR 1.2 |
+| Current release | 0.13.0 (published); Template IR 1.2 |
 | Overall status | M0–M4 implemented to the extent described below; v0.13 P0 work partially complete; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 

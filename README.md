@@ -148,8 +148,8 @@ honest status changes.
 - **Generic DOCX** is delivered; **Docentric AX runtime compatibility is `not_tested`**.
 - **AT-07 remains `partial`** — there was no independent human review of the gold labels; the
   deterministic adjudicator is a documented proxy.
-- **v0.13.0 is an implementation candidate, not a tagged release.** V013-03 table inference is
-  Partial; Word for the web (#53) and the videos (#54) are Deferred.
+- **v0.13.0 is released.** V013-01…05/07/08 are Passed; Word for the web (#53) and the videos
+  (#54) remain Deferred with documented external access limits.
   See [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).
 - v0.12 evidence: [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md); benchmark:
   [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).

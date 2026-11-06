@@ -7,8 +7,8 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | **v0.12.0** released; **v0.13.0 implementation candidate** — [v0.13 evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md) |
-| Status | v0.13 P0 code complete; Word Web and videos Deferred (external access) |
+| Current release | **v0.13.0** released — [v0.13 evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md) |
+| Status | v0.13 released; Word Web and videos Deferred (external access) |
 | Open issues | 9 (5 backlog + #37/#40 + #53 Word Web + #54 videos) |
 | Honest status | [Honest Status](Honest-Status) |
 

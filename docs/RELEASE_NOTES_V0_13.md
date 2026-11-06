@@ -1,6 +1,6 @@
 # Docentric Copilot v0.13.0 — images, tables and first-page headers
 
-**Compatibility: `not_tested`.** This release produces generic DOCX documents. It does not claim
+**Release tag: `v0.13.0`.** **Compatibility: `not_tested`.** This release produces generic DOCX documents. It does not claim
 Docentric AX runtime compatibility.
 
 ## Highlights

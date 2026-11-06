@@ -5,7 +5,8 @@
 | Base release | `0.12.0` (tag `v0.12.0`, commit `a4d3eb9`) |
 | Candidate version | `0.13.0` |
 | Template IR | `1.1` (migration from `1.0`) |
-| Status | **Implementation candidate — not tagged** |
+| Status | **Released** |
+| Tag | `v0.13.0` |
 | Compatibility | Docentric AX runtime **`not_tested`**; AT-07 **`partial`** |
 
 > V013-01…V013-05, V013-07 and V013-08 are Passed. V013-06 (Word for the web) and

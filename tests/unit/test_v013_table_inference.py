@@ -24,18 +24,19 @@ def _sdt(text: str) -> object:
     )
 
 
-def _docx_with_table(*, controls: bool = True, nested: bool = False) -> bytes:
+def _docx_with_table(*, controls: bool = True, nested: bool = False, rows: int = 2) -> bytes:
     document = DocxDocument()
-    table = document.add_table(rows=3, cols=2)
+    table = document.add_table(rows=rows, cols=2)
     table.cell(0, 0).text = "SKU"
     table.cell(0, 1).text = "Amount"
     if controls:
         for column, value in enumerate(("A-1", "10.00")):
             paragraph = table.cell(1, column).paragraphs[0]
             paragraph._p.append(_sdt(value))
-        for column, value in enumerate(("A-2", "20.00")):
-            paragraph = table.cell(2, column).paragraphs[0]
-            paragraph._p.append(_sdt(value))
+        for row in range(2, rows):
+            for column, value in enumerate((f"A-{row}", f"{row}0.00")):
+                paragraph = table.cell(row, column).paragraphs[0]
+                paragraph._p.append(_sdt(value))
     if nested:
         nested_table = table.cell(1, 0).add_table(rows=2, cols=1)
         nested_table.cell(0, 0).text = "Task"
@@ -108,7 +109,7 @@ def test_static_table_has_no_repeat() -> None:
     table = result.tables[0].table
     assert table.repeat is None
     assert table.row_template is None
-    assert len(table.rows) == 2
+    assert len(table.rows) == 1
     assert table.columns[0].header == "SKU"
 
 
@@ -213,3 +214,15 @@ def test_optional_cell_becomes_a_conditional() -> None:
     assert blocks[0].kind == "conditional"
     assert blocks[0].condition.field == "line.ShowNote"
     assert any(getattr(block, "kind", "") == "paragraph" for block in blocks[0].then_blocks)
+
+
+def test_extra_data_rows_are_diagnosed_not_silently_dropped() -> None:
+    elements = _elements() + [
+        _element(2, "MainData.Lines.Line.ItemId", label="SKU"),
+        _element(3, "MainData.Lines.Line.Amount", label="Amount"),
+    ]
+    result = infer_tables(_docx_with_table(rows=3), elements)
+    assert result.tables
+    assert any(
+        item.code == "TABLE_MULTIPLE_REPEATED_ROWS" and item.blocking for item in result.diagnostics
+    )

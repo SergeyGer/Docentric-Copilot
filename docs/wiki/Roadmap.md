@@ -40,7 +40,7 @@ Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Do
 | V013-05 | Reference Evaluation | **Passed** | — |
 | V013-06 | Word for the web | **Deferred** | [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) |
 | V013-07 | Live Demo reliability/UX | **Passed** | — |
-| V013-08 | Final quality benchmark | **Passed** — 276/288 completed, 272 semantic passes | — |
+| V013-08 | Final quality benchmark | **Passed** — 278/288 completed, 274 semantic passes | — |
 | V013-09 | Product Demo video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 | V013-10 | Technical video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 

@@ -342,7 +342,7 @@ is 284 completed runs. The technical-failure rate is reported separately
 | Technical failure rate | 1.39% (4/288) |
 | Abstention rate | 12.68% (36/284) |
 | Review rate | 25.35% (72/284) |
-| pass@1 / pass@2 / pass@3 | 96.88% / 97.92% / 97.92% |
+| pass@1 / pass@2 / pass@3 | 96.88% / 95.83% / 95.83% |
 | Latency p50 / p95 | 3637.5 ms / 8379.6 ms |
 | Cost per completed run | $0.013821 |
 | Cost per semantic pass | $0.014170 |
@@ -415,7 +415,7 @@ evaluable runs, spend $0.4761. The result is deliberately kept separate from the
 Full 32 cases × 3 providers × 3 repeats on the frozen `gold-cases/v2` `2.0.0` dataset
 (SHA-256 `8489e4c0…`). This is a **separate artifact** from the v0.12 matrix; the two
 runs are not spliced. Report: `benchmarks/gold_report_v013.json`; manifest:
-`benchmarks/gold_manifest_v013.json` (SHA-256 `e393fea2…`); sanitized runs:
+`benchmarks/gold_manifest_v013.json` (SHA-256 `e7f13c96…`); sanitized runs:
 `benchmarks/gold_runs_v013.jsonl`.
 
 ### 11.1 Counters and aggregate
@@ -423,43 +423,43 @@ runs are not spliced. Report: `benchmarks/gold_report_v013.json`; manifest:
 | Counter | Value |
 | --- | ---: |
 | Planned logical runs | 288 |
-| Completed | 276 |
-| Technical failures | 12 (all Gemini `structured_output`) |
+| Completed | 278 |
+| Technical failures | 10 (all Gemini `structured_output`) |
 | Skipped | 0 |
-| Semantic passes | 272 |
-| Correct runs | 272 |
-| Valid-template runs | 276 |
+| Semantic passes | 274 |
+| Correct runs | 274 |
+| Valid-template runs | 278 |
 
 | Metric | Value |
 | --- | ---: |
-| Precision | **0.9552** (810 / 848 predicted bindings) |
-| Recall | **0.9988** (810 / 811 gold bindings) |
-| F1 | **0.9765** |
-| Requirement coverage | 0.9988 |
-| Semantic pass rate (completed) | **98.55%** (272 / 276) |
-| Valid-template rate (completed) | **100%** (276 / 276) |
-| Technical-failure rate | 4.17% (12 / 288) |
-| Abstention rate | 13.41% (37 / 276) |
-| Review rate | 25.36% (70 / 276) |
-| pass@1 / pass@2 / pass@3 | 95.83% / 97.92% / 97.92% |
-| Latency p50 / p95 | 3643.0 ms / 8266.3 ms |
-| Spend | **$4.1669** = $4.0314 verified + $0.1355 estimated |
-| Unknown-cost runs | 12 (the Gemini technical failures) |
+| Precision | **0.9510** (816 / 858 predicted bindings) |
+| Recall | **0.9976** (816 / 818 gold bindings) |
+| F1 | **0.9737** |
+| Requirement coverage | 0.9976 |
+| Semantic pass rate (completed) | **98.56%** (274 / 278) |
+| Valid-template rate (completed) | **100%** (278 / 278) |
+| Technical-failure rate | 3.47% (10 / 288) |
+| Abstention rate | 12.95% (36 / 278) |
+| Review rate | 25.18% (70 / 278) |
+| pass@1 / pass@2 / pass@3 | 93.75% / 95.83% / 97.92% |
+| Latency p50 / p95 | 3554.0 ms / 8057.8 ms |
+| Spend | **$4.1844** = $4.0463 verified + $0.1381 estimated |
+| Unknown-cost runs | 10 (the Gemini technical failures) |
 
 ### 11.2 Per provider
 
 | Provider | Runs | Valid | Correct | Precision | Recall | Semantic pass | Technical | p50 | Cost |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| OpenAI `gpt-6-sol` | 96 | 96 | 96 | 0.950 | 1.000 | **100.0%** | 0 | 5467.0 ms | $1.4133 verified |
-| Anthropic `claude-sonnet-5-5` | 96 | 96 | 96 | 0.950 | 1.000 | **100.0%** | 0 | 3541.0 ms | $2.6181 verified |
-| Gemini `gemini-3.6-flash` | 96 | 84 | 80 | 0.968 | 0.996 | **95.2%** | 12 | 1081.5 ms | $0.1355 estimated |
+| OpenAI `gpt-6-sol` | 96 | 96 | 96 | 0.950 | 1.000 | **100.0%** | 0 | 5052.5 ms | $1.4149 verified |
+| Anthropic `claude-sonnet-5-5` | 96 | 96 | 96 | 0.950 | 1.000 | **100.0%** | 0 | 3489.5 ms | $2.6314 verified |
+| Gemini `gemini-3.6-flash` | 96 | 86 | 82 | 0.953 | 0.992 | **95.3%** | 10 | 1195.5 ms | $0.1381 estimated |
 
 ### 11.3 Error and family breakdown
 
-- Primary error codes: `wrong_context` 41, `structured_output` 12, `missing_field` 1.
+- Primary error codes: `wrong_context` 46, `structured_output` 10, `missing_field` 1.
   An error code counts a run; it is not a field-level error count.
 - OpenAI and Anthropic pass every family 100% semantically.
-- Gemini loses 12 runs to `structured_output` (technical, excluded from the semantic
+- Gemini loses 10 runs to `structured_output` (technical, excluded from the semantic
   denominator); its non-nested families are otherwise at or near 100%. The images and
   long-table families show the remaining semantic misses without any label being loosened.
 - The 4 semantic failures among completed runs are genuine misses (3 images/ambiguous
@@ -472,17 +472,16 @@ runs are not spliced. Report: `benchmarks/gold_report_v013.json`; manifest:
 | Artifact | Dataset | Cases | Repeats | Runs | Precision | Semantic pass |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | v0.12 full | `2.0.0` | 32 | 3 | 288 | 0.9535 | 97.54% |
-| **v0.13 full** | **`2.0.0`** | **32** | **3** | **288** | **0.9552** | **98.55%** |
+| **v0.13 full** | **`2.0.0`** | **32** | **3** | **288** | **0.9510** | **98.56%** |
 
 The v0.13 run used the v0.13 planner/IR and candidate rules; it is not a re-scoring of
-the v0.12 records. The manifest records the run commit `d263402` and the dirty paths
-present in the working tree, so the exact code state is auditable.
+the v0.12 records. The manifest records the run commit `b1c07cf` on a clean tree, so the exact code state is auditable.
 
 ### 11.5 Limits
 
 - Labels are owner-authored on synthetic fixtures with a deterministic proxy; AT-07
   remains `partial`, not an independent human annotation.
 - Three repeats are not a population sample; provider models and prices change.
-- Twelve Gemini failures are technical and visible with reasons; they are not semantic
+- Ten Gemini failures are technical and visible with reasons; they are not semantic
   failures and are not silently dropped.
 - Semantic success is not Docentric AX runtime compatibility. That remains `not_tested`.

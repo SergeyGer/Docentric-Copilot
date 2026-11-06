@@ -6,7 +6,7 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.13.0 (implementation branch; release decision pending); Template IR 1.1 |
+| Current release | 0.13.0 (release candidate); Template IR 1.2 |
 | Overall status | M0–M4 implemented to the extent described below; v0.13 P0 work partially complete; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
@@ -220,7 +220,7 @@ weakening the compatibility gate. Evidence:
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web validation | **Deferred** | Issue #53; no Microsoft 365/OneDrive access |
 | V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation state, download regression |
-| V013-08 | Final quality benchmark | **Passed** | [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08); 288 planned, 276 completed, 12 technical, 272 semantic passes |
+| V013-08 | Final quality benchmark | **Passed** | [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08); 288 planned, 278 completed, 10 technical, 274 semantic passes |
 | V013-09 | Product demo video | **Deferred** | Issue #54; no production/publishing pipeline in this environment |
 | V013-10 | Technical deep-dive video | **Deferred** | Issue #54 |
 

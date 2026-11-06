@@ -208,9 +208,13 @@ Behaviour changes update the page that describes them **in the same pull request
 | The planner or the requirement concepts | `docs/wiki/Architecture.md`, `docs/wiki/Template-IR.md` |
 | An endpoint, CLI flag or exit code | `docs/wiki/API-Reference.md`, `docs/wiki/CLI-Reference.md` |
 | Compatibility gating or its wording | `docs/wiki/Docentric-AX-Compatibility.md` |
+| A workstream status, AT-07, known limitation or compatibility wording | `docs/wiki/Honest-Status.md` |
+| A roadmap item, target version or issue state | `docs/wiki/Roadmap.md`; GitHub Issues is the source of truth |
 | The build, tests or CI | `docs/wiki/Testing.md`, `docs/wiki/Contributing.md` |
 
-`docs/wiki/` is the reviewed source; the GitHub Wiki is published from it:
+`docs/wiki/` is the reviewed source; the GitHub Wiki is published from it. The README keeps only a
+short compatibility warning and a link to the Wiki **Honest Status** page; do not duplicate the
+detailed status tables there.
 
 ```bash
 python scripts/check_docs_links.py     # links, anchors, ADR structure, sidebar coverage

@@ -35,6 +35,11 @@ from .service import (
     sanitize_document,
 )
 
+#: Version of the planner behaviour that produced a benchmark plan. Bump when
+#: prompts, post-processing or repair behaviour can change the generated IR;
+#: benchmark manifests pin this value.
+PLANNER_VERSION = "0.12.0"
+
 __all__ = [
     "BASELINE_VERSION",
     "COMPACT_SYSTEM_PROMPT",
@@ -42,6 +47,7 @@ __all__ = [
     "COMPACT_V2_GENERATOR",
     "COMPACT_V2_SCHEMA_TITLE",
     "COMPACT_V2_SYSTEM_PROMPT",
+    "PLANNER_VERSION",
     "PROMPT_VERSION",
     "SYSTEM_PROMPT",
     "Change",

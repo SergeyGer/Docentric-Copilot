@@ -1,0 +1,90 @@
+{
+  "adjudication": {
+    "adjudicator_version": "1.0.0",
+    "at07_status": "partial",
+    "available": true,
+    "file": "benchmarks/adjudication_report.json",
+    "schema": "gold-adjudication/v1",
+    "second_human_annotator": false,
+    "sha256": "58d052d70a0619231b830cd2487683641da9710116c7f565944d569c4d2b6e0e",
+    "summary": {
+      "agreement_rate": 1.0,
+      "case_agreement": {
+        "agree": 32,
+        "disagree": 0,
+        "partial": 0
+      },
+      "cases": 32,
+      "requirement_agreement": {
+        "agree": 98,
+        "author_missing": 0,
+        "disagree": 0,
+        "partial": 0
+      }
+    }
+  },
+  "baseline_version": "0.11.0",
+  "d365": {
+    "bindings": 246,
+    "documents": 11,
+    "resolved_with_evidence": 233,
+    "resolved_without_evidence": 0,
+    "runtime_compatibility": "not_tested",
+    "source": "v0.11.0 audit (local aggregate only; no corpus content or hashes)",
+    "statuses": {
+      "ambiguous": 0,
+      "resolved": 233,
+      "schema_unavailable": 0,
+      "type_mismatch": 1,
+      "unknown_path": 4,
+      "unsupported_expression": 8
+    },
+    "unresolved": 13
+  },
+  "dataset": {
+    "canonical_sha256": "a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed",
+    "case_count": 32,
+    "schema": "gold-cases/v2",
+    "sha256": "8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b",
+    "version": "2.0.0"
+  },
+  "frozen_at": "2026-11-06T00:00:00Z",
+  "git": {
+    "commit": "3101c9a422f091a02dccd8a29a79543444c37f49",
+    "commit_at_freeze": "3101c9a422f091a02dccd8a29a79543444c37f49",
+    "describe": "v0.11.0",
+    "dirty_at_freeze": false,
+    "tag": "v0.11.0"
+  },
+  "limitations": [
+    "The baseline is a snapshot of the v0.11.0 audit, not a runtime guarantee.",
+    "Docentric AX runtime compatibility remains not_tested.",
+    "AT-07 is partial: the adjudicator is a deterministic proxy, not a second human."
+  ],
+  "models": {
+    "anthropic": "claude-sonnet-5-5",
+    "gemini": "gemini-3.6-flash",
+    "openai": "gpt-6-sol"
+  },
+  "prompts": {
+    "candidate_filter": "v0.11.1",
+    "compact": "compact-ir-v2",
+    "full": "planner-v1"
+  },
+  "schema": "baseline-freeze/v1",
+  "tools": {
+    "compiler_version": "0.2.1",
+    "ir_version": "1.0",
+    "model_runtime": "not_tested",
+    "mypy": "2.4.1",
+    "playwright": "1.64.1",
+    "product_version": "0.11.0",
+    "pytest": "9.2.0",
+    "python": "3.12.3",
+    "renderer": {
+      "libreoffice": false,
+      "poppler": false
+    },
+    "ruff": "0.17.3"
+  }
+}

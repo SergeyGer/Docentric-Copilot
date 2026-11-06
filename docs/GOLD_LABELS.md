@@ -10,6 +10,8 @@
 | Rule pass | [benchmarks/gold_dataset.py](../benchmarks/gold_dataset.py) |
 | Independent adjudicator | [benchmarks/adjudicate_labels.py](../benchmarks/adjudicate_labels.py) (deterministic proxy, not a human) |
 | Adjudication report | [benchmarks/adjudication_report.json](../benchmarks/adjudication_report.json) |
+| v0.12 audit trail | [GOLD_AUDIT](GOLD_AUDIT.md) · [log](../benchmarks/gold_adjudication_log.json) · [manifest](../benchmarks/gold_manifest.json) |
+| Baseline freeze | [benchmarks/baseline_v011.json](../benchmarks/baseline_v011.json) |
 | Runner | [benchmarks/gold_evaluation.py](../benchmarks/gold_evaluation.py) |
 | Review status | `adjudicated_proxy`; AT-07 **partial** |
 | Related | [EVALUATION](EVALUATION.md), [ADR-0014](adr/0014-gold-dataset-and-reference-benchmark.md), [ADR-0015](adr/0015-label-adjudication-and-candidate-filtering.md) |
@@ -316,6 +318,38 @@ The independent adjudicator reproduced these calls. It also suggested additional
 are recorded as advisory notes, not applied automatically. They are a candidate for real human
 review, not evidence that the existing guard is wrong.
 
+### 6.4 v0.12 audit trail and manifest
+
+v0.12 adds a machine-readable audit trail around the same immutable v2.0.0 labels:
+
+- [benchmarks/gold_adjudication_log.json](../benchmarks/gold_adjudication_log.json) has one entry
+  for every one of the 32 cases. Each entry records `case_id`, `dataset_version`, `before`/`after`
+  label snapshots, `audit_status`, `change_type`, a rationale, an ISO-8601 UTC timestamp and the
+  dataset SHA-256 it reviewed.
+- [benchmarks/gold_manifest.json](../benchmarks/gold_manifest.json) pins the dataset file hash,
+  canonical cases hash, audit-log hash, manifest hash, prompt/planner/evaluator/runner versions and
+  the `AT-07 = partial` statement.
+- [GOLD_AUDIT.md](GOLD_AUDIT.md) is generated from the log, so the public report cannot drift from
+  the machine-readable record.
+
+Result for dataset v2.0.0: **32/32 cases covered**, 98 requirement labels and 26 expected blocks
+audited, **18 `no_change`**, **14 `reviewed_by_owner` clarifications**, 0 label corrections and
+0 unresolved entries. The clarifications keep the author's stricter forbidden-scope guards and
+record why they were not loosened. No entry claims a second human reviewer.
+
+Run:
+
+```bash
+.venv/bin/python benchmarks/gold_audit.py --check
+.venv/bin/python benchmarks/gold_audit.py --check --json
+.venv/bin/python scripts/freeze_baseline.py --check
+```
+
+A future label correction requires a new dataset version and a regenerated audit log via
+`--seed --force`; editing the labels while keeping version `2.0.0` fails the hash check. AT-07 is
+still **partial**, and this audit does not change that status.
+
+
 ## 7. Deterministic rule pass
 
 Run:
@@ -352,6 +386,13 @@ Run the independent adjudicator as well:
 ```bash
 .venv/bin/python benchmarks/adjudicate_labels.py --write   # write the report
 .venv/bin/python benchmarks/adjudicate_labels.py --check   # fail on a requirement conflict
+```
+
+The v0.12 audit trail has its own gate:
+
+```bash
+.venv/bin/python benchmarks/gold_audit.py --check
+.venv/bin/python scripts/freeze_baseline.py --check
 ```
 
 The rule pass is intentionally mechanical. It is a guard against typos, stale paths and accidental

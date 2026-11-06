@@ -170,9 +170,7 @@ def test_import_integration_filters_table_controls_and_adds_table() -> None:
             schema_fields=2,
         ),
     )
-    result = project_to_template_ir(
-        reference, allow_unsupported=True, docx_payload=payload
-    )
+    result = project_to_template_ir(reference, allow_unsupported=True, docx_payload=payload)
     tables = [block for block in result.document.sections[0].body if block.kind == "table"]
     assert len(tables) == 1
     assert tables[0].repeat is not None

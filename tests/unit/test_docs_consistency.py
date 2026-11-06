@@ -348,8 +348,8 @@ def test_wiki_honest_status_is_canonical_and_in_the_sidebar() -> None:
 def test_wiki_roadmap_is_synchronized_with_github_issues() -> None:
     roadmap = _read("docs/wiki/Roadmap.md")
     assert "GitHub Issues is the source of truth" in roadmap
-    assert "7 open issues" in roadmap
-    for number in ("#12", "#13", "#14", "#15", "#17", "#37", "#40"):
+    assert "9 open issues" in roadmap
+    for number in ("#12", "#13", "#14", "#15", "#17", "#37", "#40", "#53", "#54"):
         assert number in roadmap, number
     for number in (
         "#24",

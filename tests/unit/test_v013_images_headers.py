@@ -356,10 +356,8 @@ def test_product_image_is_embedded_in_a_repeated_table_row() -> None:
 
 
 def test_wrong_scope_image_is_rejected_inside_a_line_repeat() -> None:
-    from docentric_copilot.ddsp_parser.models import SchemaNode, SchemaSection
+    from docentric_copilot.ddsp_parser.models import NormalizedSchema, SchemaNode, SchemaSection
     from docentric_copilot.template_ir import Document, DocumentMetadata, Section
-
-    from docentric_copilot.ddsp_parser.models import NormalizedSchema
 
     base = _image_collection_schema()
     schema = NormalizedSchema(

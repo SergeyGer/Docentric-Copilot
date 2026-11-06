@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip("streamlit", reason="Streamlit is an optional demo dependency")
+
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parent.parent.parent

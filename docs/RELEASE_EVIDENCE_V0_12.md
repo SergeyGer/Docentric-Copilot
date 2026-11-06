@@ -29,8 +29,8 @@ they were produced from independently.
 | V012-04 | D365 real-corpus regression | **Passed** | [D365_REGRESSION](D365_REGRESSION.md): 11/11 documents, 246 bindings, 233 resolved, 13 unresolved (4 unknown_path, 8 unsupported_expression, 1 type_mismatch), 0 lost/new/duplicate/scope, 11/11 stable digests. Private files never committed. |
 | V012-05 | Gemini nested table / Anthropic alias | **Passed** | [V012-05](V012_05_REGRESSIONS.md): object-column nested table support, typed structural validator, branch/cell alias scopes and deterministic rename. Deterministic tests need no LLM; targeted live subset 23/23 evaluable correct, 4 Gemini `structured_output` technical failures. |
 | V012-06 | Reference → IR table inference | **Deferred** | Issue #40; target v0.13. Table/Row/Cell inference is not claimed; unsupported constructs remain explicit skips. |
-| V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** | [VISUAL_CI](VISUAL_CI.md); pinned renderer lock, five fixtures, real render, tolerance 0.005, artifacts and fail-closed statuses. Local real-render run passed; the dedicated workflow is part of the release gates. |
-| V012-08 | Playwright E2E | **Passed** | [E2E](E2E.md); happy path, five negative paths, trace/screenshot probe, dedicated CI job green on PR-4; responsive tests 1280/768/390. |
+| V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** | [VISUAL_CI](VISUAL_CI.md); pinned renderer lock, five fixtures, real render, tolerance 0.005, artifacts and fail-closed statuses. Locally passed all five; the dedicated workflow is green on the PR-5 CI run. |
+| V012-08 | Playwright E2E | **Passed** | [E2E](E2E.md); happy path, five negative paths, trace/screenshot probe, dedicated CI job green on the PR-5 CI run; responsive tests 1280/768/390. |
 | V012-09 | Report retention/deletion | **Passed** | [REPORT_RETENTION](REPORT_RETENTION.md); report-specific TTL, DELETE 204, verified 404 after deletion, tests for TTL/database contents. |
 | V012-10 | Responsive + release docs | **Passed** | [RESPONSIVE](RESPONSIVE.md); version/changelog/roadmap/README/OpenAPI aligned to 0.12.0; P1 statuses below. |
 
@@ -56,8 +56,8 @@ No status is represented as a single "percent complete". `Deferred` is not
 | Technical failures separate from semantic failures | Met | evaluator 1.0.1; 4 technical/284 evaluable; explicit reasons |
 | D365 11/11 local, private files not staged | Met | D365 safe aggregate; `.local-artifacts/` git-ignored; no private paths in Git |
 | Gemini nested table / Anthropic alias tests | Met | deterministic regression suite + targeted live subset |
-| Playwright E2E in CI | Met | E2E job green on PR-4; responsive tests in the same suite |
-| Real LibreOffice/Poppler Visual CI | Met | `Visual Diff` workflow; local real-render pass; renderer unavailable is not a pass |
+| Playwright E2E in CI | Met | E2E job green on the PR-5 CI run; responsive tests in the same suite |
+| Real LibreOffice/Poppler Visual CI | Met | `Visual Diff` workflow green on the PR-5 CI run; local real-render pass; renderer unavailable is not a pass |
 | P1 statuses and deferred issues | Met | table above |
 | README/CHANGELOG/ROADMAP/version/OpenAPI consistent | Met | version 0.12.0 in pyproject, package, web, README, ROADMAP, OpenAPI; CHANGELOG 0.12.0 |
 | Secret/private artifact scan | Met | key scan reviewed (only documented placeholders and test values); no tracked `.env`, `.git-token`, private corpus or `.local-artifacts` |

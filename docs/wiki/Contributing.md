@@ -8,7 +8,10 @@
 2. **No compatibility claims.** Never describe generic DOCX output as Docentric-compatible.
 3. **Tests first.** Every behaviour change ships with a test; golden files are updated deliberately.
 4. **Docs follow code.** Update the Wiki page or `docs/` in the same change.
-5. **English only** in code, comments, commits, docs and UI.
+5. **Status and roadmap live in the Wiki.** Update [Honest Status](Honest-Status) for workstream status,
+   AT-07 and limitations, and [Roadmap](Roadmap) for issue/target changes. GitHub Issues is the source
+   of truth; the README links to these pages and does not duplicate their tables.
+6. **English only** in code, comments, commits, docs and UI.
 
 ## Definition of Done
 

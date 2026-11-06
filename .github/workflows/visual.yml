@@ -1,0 +1,72 @@
+name: Visual Diff
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: visual-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  LC_ALL: C.UTF-8
+  LANG: C.UTF-8
+  # Pinned renderer stack. The lock file is checked again by scripts/visual_ci.py.
+  LIBREOFFICE_PACKAGE: "4:24.2.7-0ubuntu0.24.04.7"
+  POPPLER_PACKAGE: "24.02.0-1ubuntu9.11"
+  FONTS_PACKAGE: "2.37-8"
+
+jobs:
+  visual:
+    name: LibreOffice/Poppler visual diff
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pinned LibreOffice, Poppler and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends --allow-downgrades \
+            "libreoffice-writer=${LIBREOFFICE_PACKAGE}" \
+            "poppler-utils=${POPPLER_PACKAGE}" \
+            "fonts-dejavu-core=${FONTS_PACKAGE}"
+          soffice --version
+          pdftoppm -v
+          fc-match "DejaVu Sans"
+
+      - name: Install the package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Real renderer visual gate
+        run: python scripts/visual_ci.py --output-dir visual-ci --json > visual-ci-summary.json
+
+      - name: Show the summary
+        if: always()
+        run: |
+          test -f visual-ci/summary.json && python -m json.tool visual-ci/summary.json | head -120
+          test -f visual-ci-summary.json && head -40 visual-ci-summary.json
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-diff-evidence
+          path: |
+            visual-ci
+            visual-ci-summary.json
+          if-no-files-found: warn

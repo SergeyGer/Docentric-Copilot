@@ -616,6 +616,9 @@ It renders both references through the existing `scripts/docx_to_pdf.py` LibreOf
 - shifted regions from a bounded grid search (offset in pixels and improvement);
 - `report.json` and `report.html` plus PDF/page-image artifact paths.
 
+v0.12 adds a real-renderer CI gate with pinned LibreOffice/Poppler, deterministic synthetic
+fixtures, a documented tolerance and uploaded evidence: see [VISUAL_CI](VISUAL_CI.md).
+
 The report always states **LibreOffice rendering (not Word fidelity)** and keeps
 `structural_status`/`semantic_status` at `not_compared`; run `reference diff` for those independent
 dimensions. A visual difference is evidence, not a defect verdict.

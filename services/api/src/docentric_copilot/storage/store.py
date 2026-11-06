@@ -421,7 +421,7 @@ class Store:
             kind=kind[:40],
             schema_version=schema_version[:40],
             created_at=created,
-            expires_at=created + self._settings.artifact_ttl_seconds,
+            expires_at=created + self._settings.reference_report_ttl_seconds,
             source_name=source_name[:300],
             source_sha256=source_sha256,
             payload_json=json.dumps(payload, ensure_ascii=False, sort_keys=True),
@@ -477,9 +477,13 @@ class Store:
             )
         return record
 
-    def delete_reference_report(self, report_id: str) -> None:
+    def delete_reference_report(self, report_id: str) -> bool:
+        """Delete one report; return whether a row was removed."""
         with self._lock:
-            self._connection.execute("DELETE FROM reference_reports WHERE id = ?", (report_id,))
+            cursor = self._connection.execute(
+                "DELETE FROM reference_reports WHERE id = ?", (report_id,)
+            )
+            return cursor.rowcount > 0
 
     # ------------------------------------------------------------- artifacts
     def save_artifact(
@@ -507,7 +511,7 @@ class Store:
             size_bytes=len(content),
             digest=digest,
             created_at=created,
-            expires_at=created + self._settings.artifact_ttl_seconds,
+            expires_at=created + self._settings.reference_report_ttl_seconds,
             template_id=template_id,
             job_id=job_id,
         )

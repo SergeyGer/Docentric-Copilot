@@ -333,6 +333,9 @@ Resolution rules:
 1. `alias.Field` expands to `<absolute collection path>.Field`.
 2. Scopes are lexical and nest; the nearest enclosing repeat wins. An inner repeat may reuse an outer
    alias name only if it shadows it; two repeats in the *same* scope may not share a name (V3-002).
+   Conditional branches and independent table cells are separate scopes: an alias may be reused in
+   two mutually exclusive branches or two sibling cells. The planner resolves a real same-scope
+   conflict deterministically and reports an `alias_conflict_resolved` repair note.
 3. Aliases are resolved by the planner, validator, compiler and preview with the same function
    (`schema_resolver.paths.absolute_path` / `Scope`), so the four components cannot disagree.
 4. An alias that does not cover the path's ancestor collection does not make the binding legal: the

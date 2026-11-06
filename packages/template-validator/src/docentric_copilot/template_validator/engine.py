@@ -51,29 +51,41 @@ _COMPARISON_OPERATORS = {
 }
 
 
+def _alias_scope(node: _Node) -> tuple[tuple[tuple[str, str], ...], tuple[int, ...]]:
+    """Identity of one alias scope and one mutually exclusive branch."""
+    return (tuple(sorted(node.scope.aliases.items())), node.branch)
+
+
 @dataclass(frozen=True, slots=True)
 class _Node:
     block: Block
     scope: Scope
+    branch: tuple[int, ...] = ()
 
 
 def _walk(document: Document, schema: NormalizedSchema) -> list[_Node]:
-    """Flatten the IR with the alias scope valid at each block."""
+    """Flatten the IR with the alias scope valid at each block.
+
+    ``branch`` identifies mutually exclusive containers (conditional branches
+    and independent table cells). A repeat alias must be unique within one
+    lexical scope, but the same alias may appear in two branches that can never
+    be active at the same time; V3-002 uses this identity.
+    """
     nodes: list[_Node] = []
 
-    def visit(blocks: list[Block], scope: Scope, depth: int) -> None:
+    def visit(blocks: list[Block], scope: Scope, depth: int, branch: tuple[int, ...]) -> None:
         for block in blocks:
-            nodes.append(_Node(block=block, scope=scope))
+            nodes.append(_Node(block=block, scope=scope, branch=branch))
             if isinstance(block, Repeat):
                 try:
                     collection = resolve_collection(schema, block.path, scope)
                     child_scope = scope.push(block.alias, collection.absolute)
                 except PathResolutionError:
                     child_scope = scope
-                visit(block.blocks, child_scope, depth + 1)
+                visit(block.blocks, child_scope, depth + 1, branch)
             elif isinstance(block, Conditional):
-                visit(block.then_blocks, scope, depth)
-                visit(block.else_blocks or [], scope, depth)
+                visit(block.then_blocks, scope, depth, (*branch, id(block), 1))
+                visit(block.else_blocks or [], scope, depth, (*branch, id(block), 2))
             elif isinstance(block, Table):
                 row_scope = scope
                 if block.repeat is not None:
@@ -82,16 +94,26 @@ def _walk(document: Document, schema: NormalizedSchema) -> list[_Node]:
                         row_scope = scope.push(block.repeat.alias, collection.absolute)
                     except PathResolutionError:
                         row_scope = scope
-                for row in block.rows:
-                    for cell in row.cells:
-                        visit(cell.blocks, scope, depth)
-                for cell in block.row_template or []:
-                    visit(cell.blocks, row_scope, depth)
+                for row_index, row in enumerate(block.rows):
+                    for cell_index, cell in enumerate(row.cells):
+                        visit(
+                            cell.blocks,
+                            scope,
+                            depth,
+                            (*branch, id(block), row_index, cell_index),
+                        )
+                for cell_index, cell in enumerate(block.row_template or []):
+                    visit(
+                        cell.blocks,
+                        row_scope,
+                        depth,
+                        (*branch, id(block), -1, cell_index),
+                    )
 
     for section in document.sections:
-        visit(section.body, Scope(), 0)
-        visit(section.header or [], Scope(), 0)
-        visit(section.footer or [], Scope(), 0)
+        visit(section.body, Scope(), 0, ())
+        visit(section.header or [], Scope(), 0, ())
+        visit(section.footer or [], Scope(), 0, ())
     return nodes
 
 
@@ -448,7 +470,7 @@ class ValidationEngine:
     # --------------------------------------------------------------------- V3
     def _logical(self, nodes: list[_Node], schema: NormalizedSchema) -> list[CheckResult]:
         findings: list[Finding] = []
-        aliases_seen: dict[int, set[str]] = {}
+        aliases_seen: dict[tuple[tuple[tuple[str, str], ...], tuple[int, ...]], set[str]] = {}
         for node in nodes:
             block = node.block
             if isinstance(block, Repeat):
@@ -463,7 +485,7 @@ class ValidationEngine:
                             location=block.path,
                         )
                     )
-                used = aliases_seen.setdefault(id(node.scope.aliases), set())
+                used = aliases_seen.setdefault(_alias_scope(node), set())
                 if block.alias in used:
                     findings.append(
                         Finding(
@@ -486,6 +508,20 @@ class ValidationEngine:
                             location=block.repeat.path,
                         )
                     )
+                used = aliases_seen.setdefault(_alias_scope(node), set())
+                if block.repeat.alias in used:
+                    findings.append(
+                        Finding(
+                            code="V3-002",
+                            severity=Severity.ERROR,
+                            message=(
+                                f"Duplicate table repeat alias '{block.repeat.alias}' "
+                                "in the same scope"
+                            ),
+                            location=block.repeat.path,
+                        )
+                    )
+                used.add(block.repeat.alias)
             elif isinstance(block, Conditional):
                 findings.extend(self._condition_findings(block.condition, schema, node.scope))
         return [

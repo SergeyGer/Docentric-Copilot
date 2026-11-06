@@ -400,3 +400,12 @@ aggregate. See `comparison.differences` in the manifest for the exact statement.
   failure.
 - Docentric AX runtime compatibility remains **not_tested**. A semantic pass is
   not a Docentric AX execution proof.
+
+### 10.7 V012-05 affected subset (separate artifact)
+
+After the alias/table fixes, the three nested cases were re-run on all providers
+(27 logical runs): 23 completed, 4 Gemini `structured_output` technical
+failures, 23/23 correct among completed, precision/recall/semantic pass 100% of
+evaluable runs, spend $0.4761. The result is deliberately kept separate from the
+288-run table above (which predates the fixes) and is documented in
+[EVALUATION §2.11](EVALUATION.md#211-v012-05-affected-regression-nested-tables-and-aliases).

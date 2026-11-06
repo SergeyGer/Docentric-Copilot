@@ -117,6 +117,7 @@ unambiguous (heading, alert, table cell).
   visual test; LibreOffice/Poppler rendering is covered separately by the
   visual-diff CI job (V012-07) and is labelled as LibreOffice rendering, not
   Word fidelity.
-- Responsive viewport checks for `/reference` are part of the v0.12 release
-  documentation status (see the release evidence), not a claim that mobile is
-  supported.
+- Responsive viewport checks for `/reference` live in
+  [test_reference_responsive.py](../tests/e2e/test_reference_responsive.py) and
+  [RESPONSIVE](RESPONSIVE.md): 1280/768/390 px pass with no horizontal overflow.
+  The minimum supported width is 390 px; 320 px and below are untested.

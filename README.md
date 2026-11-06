@@ -169,17 +169,17 @@ the implementer and checked by a deterministic rule pass. There is no independen
 review, so the annotation gate is reported as partial, not passed. The benchmark is synthetic; it is
 not Docentric corpus content and it does not change the AX `not_tested` status.
 
-### Reference workflow — v0.11 P1 status (unreleased)
+### Reference workflow — v0.11 P1 status (released in 0.11.0)
 
 The v0.11 P1 increment is implemented on top of the same read-only inspector. The distribution
-version stays `0.11.0`; these changes are `[Unreleased]`.
+version was `0.11.0`; these changes are now released as `0.12.0`.
 
 | Workstream | Status |
 | --- | --- |
-| #26 D365 evidence in the unified ReferenceGraph | Done — `schema_source`, `source_id`, `part#xpath` evidence, exact binding status on `resolves_to` edges, evidence coverage and unresolved-by-status summary; synthetic tests only in this branch |
+| #26 D365 evidence in the unified ReferenceGraph | Done — `schema_source`, `source_id`, `part#xpath` evidence, exact binding status on `resolves_to` edges, evidence coverage and unresolved-by-status summary; synthetic tests plus the v0.12 11-document regression (V012-04) |
 | #27 safe Reference → Generic Template IR | Partial — Field, Label, List→Repeat, If, Image; every skip listed; strict/`--allow-unsupported`; generic DOCX target only |
-| #28 independent visual reference diff | Partial — LibreOffice page rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; **not Word fidelity**; no LibreOffice in CI |
-| #29 persistence, reopen and export | Partial — local SQLite with TTL, `GET /reports/{id}`, JSON/HTML export, web `?id=` reopen; no committed browser E2E |
+| #28 independent visual reference diff | Done — LibreOffice page rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; **not Word fidelity**; real pinned LibreOffice/Poppler CI (V012-07) |
+| #29 persistence, reopen and export | Done — local SQLite with a report-specific TTL, delete/retention, JSON/HTML export, web `?id=` reopen and committed Playwright E2E (V012-08/09) |
 | #30 hardening and docs | Done for this branch — ADR-0016 (ADR-0015 was already used), CHANGELOG/REFERENCE_TEMPLATES/EVALUATION/wiki/feature status |
 | Docentric AX runtime compatibility | `not_tested` — unchanged; `target=docentric-ax` remains fail-closed |
 
@@ -190,6 +190,27 @@ missing. Details and the full partial list:
 [Reference Templates](docs/REFERENCE_TEMPLATES.md#what-is-not-implemented-or-only-partial),
 [wiki: Safe IR import and visual diff](docs/wiki/Reference-IR-Import-and-Visual-Diff.md) and
 [ADR-0016](docs/adr/0016-ir-import-and-visual-diff.md).
+
+### Reference reliability — v0.12 status
+
+v0.12 is a release of **provable reliability**, not new surface area. The full
+evidence package is in [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md).
+
+| V012 ID | Workstream | Status |
+| --- | --- | --- |
+| V012-01 | Gold dataset audit trail, hashes, consistency report | **Passed** — [GOLD_AUDIT](docs/GOLD_AUDIT.md); AT-07 remains `partial` (owner self-review, no independent human) |
+| V012-02 | Full 32 × 3 × 3 semantic benchmark | **Passed** — [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02); 288 runs, 284 completed, 4 technical, 277 semantic passes |
+| V012-03 | Image-family expansion | **Deferred** — issue #37, target v0.13 (the v0.12 dataset is frozen for the 288-run benchmark) |
+| V012-04 | D365 real-corpus regression | **Passed** — [D365_REGRESSION](docs/D365_REGRESSION.md); 11/11, 246 bindings, 233 resolved, 13 unresolved, stable digests |
+| V012-05 | Gemini nested table / Anthropic Repeat alias | **Passed** — [V012-05](docs/V012_05_REGRESSIONS.md); targeted live subset 23/23 evaluable correct, 4 Gemini technical failures |
+| V012-06 | Reference → IR table inference | **Deferred** — issue #40, target v0.13 (skips stay explicit) |
+| V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** — [VISUAL_CI](docs/VISUAL_CI.md); real renderer, five fixtures, tolerance and artifacts |
+| V012-08 | Playwright E2E | **Passed** — [E2E](docs/E2E.md); happy path, negative paths and trace/screenshot probe in CI |
+| V012-09 | Report retention/deletion | **Passed** — [REPORT_RETENTION](docs/REPORT_RETENTION.md); 24 h default TTL, DELETE, verified 404 |
+| V012-10 | Responsive and release docs | **Passed** — [RESPONSIVE](docs/RESPONSIVE.md); 1280/768/390 px, version/changelog/roadmap/OpenAPI aligned |
+
+Docentric AX runtime compatibility remains **`not_tested`** and is outside the
+v0.12 scope. No P1 item is reported as passed without an artifact.
 
 ---
 
@@ -256,7 +277,7 @@ The complete documentation lives in the **[project Wiki](https://github.com/Serg
 
 | | |
 | --- | --- |
-| **Version** | 0.11.0 |
+| **Version** | 0.12.0 |
 | **Licence** | Apache-2.0 |
 | **Interfaces** | Web workspace · command line · REST API |
 | **AI providers** | OpenAI · Anthropic · Google Gemini · offline deterministic assistant |

@@ -1,0 +1,14 @@
+{
+  "schema": "visual-renderer-lock/v1",
+  "libreoffice": "24.2.7.2",
+  "poppler": "24.02.0",
+  "font_family": "DejaVu Sans",
+  "font_version": "2.37-8",
+  "locale": "C.UTF-8",
+  "dpi": 150,
+  "tolerance": 0.005,
+  "flags": {
+    "libreoffice": ["--headless", "--norestore", "--nolockcheck", "--convert-to", "pdf"],
+    "poppler": ["-png", "-r", "150"]
+  }
+}

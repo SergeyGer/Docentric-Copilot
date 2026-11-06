@@ -8,7 +8,7 @@
 | Field | Value |
 | --- | --- |
 | Current release | **v0.12.0** released; **v0.13.0 implementation candidate** — [v0.13 evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md) |
-| Status | v0.13 P0 partially complete; tag withheld until table edge cases and videos/Word Web are resolved |
+| Status | v0.13 P0 code complete; Word Web and videos Deferred (external access) |
 | Open issues | 9 (5 backlog + #37/#40 + #53 Word Web + #54 videos) |
 | Honest status | [Honest Status](Honest-Status) |
 
@@ -35,7 +35,7 @@ Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Do
 | --- | --- | --- | --- |
 | V013-01 | Feature Coverage Matrix | **Passed** | — |
 | V013-02 | Image family | **Passed** (synthetic scenarios) | [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) partially addressed |
-| V013-03 | Reference-to-IR table inference | **Partial** | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) |
+| V013-03 | Reference-to-IR table inference | **Passed** | Header/repeated rows, optional/footer cells, nested repeat |
 | V013-04 | First-page header | **Passed** — real Word sections, inheritance and per-section first pages | — |
 | V013-05 | Reference Evaluation | **Passed** | — |
 | V013-06 | Word for the web | **Deferred** | [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) |

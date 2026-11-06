@@ -643,6 +643,16 @@ class _Renderer:
                         _shade_cell(docx_row.cells[index], _TABLE_ZEBRA_FILL)
                     docx_row.cells[index].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
+        for row in block.footer_rows:
+            docx_row = table.add_row()
+            _set_row_cant_split(docx_row)
+            for index, source_cell in enumerate(row.cells):
+                docx_row.cells[index].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+                self._render_cell(docx_row.cells[index], source_cell, context)
+                column_width = block.columns[index].width_mm
+                if column_width is not None:
+                    docx_row.cells[index].width = Mm(float(column_width))
+
         self._format_table(table, block)
 
     def _format_table(self, table: DocxTable, block: Table) -> None:

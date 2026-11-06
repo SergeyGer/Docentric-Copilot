@@ -4,7 +4,7 @@
 | --- | --- |
 | Product | Docentric Copilot |
 | Version | 0.13.0 |
-| IR version | 1.1 |
+| IR version | 1.2 |
 | Status | Living document; claims map to the implementation in this repository |
 | Audience | Engineering, QA, security review, integration partners |
 

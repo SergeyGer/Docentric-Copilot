@@ -142,7 +142,7 @@ def _emit(payload: dict[str, Any], *, as_json: bool, message: str | None = None)
 @app.command()
 def version() -> None:
     """Print the CLI and IR versions."""
-    typer.echo(f"docentric-copilot {__version__} (IR 1.1)")
+    typer.echo(f"docentric-copilot {__version__} (IR 1.2)")
 
 
 @app.command()

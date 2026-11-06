@@ -1,8 +1,8 @@
-# Template IR v1.1
+# Template IR v1.2
 
 | Field | Value |
 | --- | --- |
-| Contract | Template Intermediate Representation, version `1.1` |
+| Contract | Template Intermediate Representation, version `1.2` |
 | Model | [packages/template-ir/src/docentric_copilot/template_ir/models.py](../packages/template-ir/src/docentric_copilot/template_ir/models.py) |
 | Canonical form | [canonical.py](../packages/template-ir/src/docentric_copilot/template_ir/canonical.py) |
 | Traversal | [traversal.py](../packages/template-ir/src/docentric_copilot/template_ir/traversal.py) |
@@ -26,7 +26,7 @@ and `page` have defaults and may be omitted; `metadata`, `title` and `sections` 
 ```json
 {
   "kind": "document",
-  "ir_version": "1.1",
+  "ir_version": "1.2",
   "title": "Sales Quotation",
   "language": "en",
   "target": "generic-docx",
@@ -68,7 +68,7 @@ This document is model-valid. Semantic validity additionally requires that `sale
 | Field | Type | Required | Constraints | Default |
 | --- | --- | --- | --- | --- |
 | `kind` | literal `"document"` | no | fixed discriminator | `"document"` |
-| `ir_version` | literal `"1.1"` | no | current version; `1.0` payloads are migrated | `"1.1"` |
+| `ir_version` | literal `"1.2"` | no | current version; `1.0`/`1.1` payloads are migrated | `"1.2"` |
 | `title` | string | **yes** | 1–200 chars, must not be blank after trimming | — |
 | `language` | string | no | `^[a-z]{2}(-[A-Z]{2})?$`, e.g. `en`, `en-US` | `"en"` |
 | `target` | enum | no | `generic-docx` \| `docentric-ax` | `generic-docx` |
@@ -237,6 +237,7 @@ silently. This is a deliberate "show the intended content" behaviour, not an eva
 | `kind` | literal `"table"` | no | discriminator | `"table"` |
 | `columns` | array of `TableColumn` | **yes** | 1–20 items | — |
 | `rows` | array of `TableRow` | no | ≤ 500 items; every row must have exactly `len(columns)` cells | `[]` |
+| `footer_rows` | array of `TableRow` | no | ≤ 500 items; rendered after the repeated rows; same width rule | `[]` |
 | `repeat` | `TableRepeat` \| null | no | requires `row_template` | `null` |
 | `row_template` | array of `Cell` \| null | no | ≤ 20 items, exactly `len(columns)`; only valid with `repeat` | `null` |
 | `show_header` | bool | no | — | `true` |
@@ -452,15 +453,16 @@ validates it. Validation errors are reported with at most 25 entries of the form
 
 ## 9. Versioning and migration policy
 
-- Current version: `IR_SCHEMA_VERSION = "1.1"`; supported set: `{"1.0", "1.1"}`.
+- Current version: `IR_SCHEMA_VERSION = "1.2"`; supported set: `{"1.0", "1.1", "1.2"}`.
 - A payload without `ir_version` is assumed to be the current version.
 - `1.0 -> 1.1` migration adds `sections[*].first_page_header: null` and the image source/fallback
-  defaults; it never changes a binding path or a block.
+  defaults; `1.1 -> 1.2` adds `footer_rows: []` to every table. Neither step changes a binding path
+  or a block.
 - The major/minor prefix (`"1.0"` from `"1.0.3"`) is checked against the supported set. Anything else
   raises `IRMigrationError` with code `ir_version_unsupported` (an `InvalidInputError`, HTTP 400).
 - Migrations are one-step functions keyed by the *from* version in `MIGRATIONS`; a chain is followed
   until the current version is reached, with a cycle guard of 16 steps. The registry currently
-  contains `1.0 -> 1.1`.
+  contains `1.0 -> 1.1` and `1.1 -> 1.2`.
 - Policy for future changes:
   1. **Backwards-compatible addition** (new optional field with a default): increment the minor
      version, keep reading 1.0, and add a migration that fills the default explicitly.
@@ -505,6 +507,7 @@ IR-level bounds (enforced by pydantic; violation is a validation error):
 | --- | --- |
 | Sections per document | 10 |
 | Blocks per body / header / first-page header / footer | 500 / 50 / 50 / 50 |
+| Table rows / footer rows / row template | 500 / 500 / 20 |
 | Blocks per repeat / conditional branch | 200 |
 | Table rows / columns / cells per row | 500 / 20 / 20 |
 | Blocks per table cell | 20 |

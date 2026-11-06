@@ -96,7 +96,7 @@ def _walk(document: Document, schema: NormalizedSchema) -> list[_Node]:
                         row_scope = scope.push(block.repeat.alias, collection.absolute)
                     except PathResolutionError:
                         row_scope = scope
-                for row_index, row in enumerate(block.rows):
+                for row_index, row in enumerate([*block.rows, *block.footer_rows]):
                     for cell_index, cell in enumerate(row.cells):
                         visit(
                             cell.blocks,
@@ -311,7 +311,7 @@ class ValidationEngine:
                     maximum = max(maximum, 1 + depth(block.then_blocks))
                     maximum = max(maximum, 1 + depth(block.else_blocks or []))
                 elif isinstance(block, Table):
-                    for row in block.rows:
+                    for row in [*block.rows, *block.footer_rows]:
                         for cell in row.cells:
                             maximum = max(maximum, 1 + depth(cell.blocks))
                     for cell in block.row_template or []:

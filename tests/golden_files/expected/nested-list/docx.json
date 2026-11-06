@@ -64,7 +64,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=nested_list;digest=f21302a755de425f24cefc16189e1af6;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.2;target=generic-docx;schema=nested_list;digest=3be16aaf8af837271a2003746444d9e1;docentric-compatibility=not_tested",
     "subject": "document_template",
     "title": "Document"
   },

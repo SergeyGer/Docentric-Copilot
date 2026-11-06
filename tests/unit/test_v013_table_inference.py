@@ -227,3 +227,172 @@ def test_extra_data_rows_are_diagnosed_not_silently_dropped() -> None:
     assert any(
         item.code == "TABLE_MULTIPLE_REPEATED_ROWS" and item.blocking for item in result.diagnostics
     )
+
+
+def test_static_row_after_data_becomes_a_footer_row() -> None:
+    document = DocxDocument()
+    table = document.add_table(rows=3, cols=2)
+    table.cell(0, 0).text = "SKU"
+    table.cell(0, 1).text = "Amount"
+    table.cell(1, 0).paragraphs[0]._p.append(_sdt("A-1"))
+    table.cell(1, 1).paragraphs[0]._p.append(_sdt("10.00"))
+    table.cell(2, 0).text = "Total"
+    table.cell(2, 1).text = "10.00"
+    buffer = io.BytesIO()
+    document.save(buffer)
+
+    result = infer_tables(buffer.getvalue(), _elements())
+    assert result.tables
+    table_ir = result.tables[0].table
+    assert table_ir.repeat is not None
+    assert len(table_ir.footer_rows) == 1
+    assert table_ir.footer_rows[0].cells[0].blocks[0].runs[0].text == "Total"
+
+
+def test_footer_rows_render_after_the_repeated_rows(schema, sample_data) -> None:
+    import io
+
+    from docentric_copilot.docx_compiler import CompileOptions, GenericDocxCompiler
+    from docentric_copilot.template_ir import (
+        Cell,
+        Document,
+        DocumentMetadata,
+        FieldBinding,
+        Paragraph,
+        Section,
+        Table,
+        TableColumn,
+        TableRepeat,
+        TableRow,
+        TextRun,
+    )
+
+    document = Document(
+        title="Footer rows",
+        metadata=DocumentMetadata(
+            template_name="footer_rows",
+            source_schema_id=schema.schema_id,
+        ),
+        sections=[
+            Section(
+                name="Main",
+                body=[
+                    Table(
+                        columns=[TableColumn(header="Item", width_mm=80)],
+                        repeat=TableRepeat(path="MainData.QuotationLines.Line", alias="line"),
+                        row_template=[
+                            Cell(blocks=[Paragraph(runs=[FieldBinding(path="line.ItemId")])])
+                        ],
+                        footer_rows=[
+                            TableRow(cells=[Cell(blocks=[Paragraph(runs=[TextRun(text="TOTAL")])])])
+                        ],
+                    )
+                ],
+            )
+        ],
+    )
+    compiled = GenericDocxCompiler().compile(
+        document,
+        schema,
+        CompileOptions(document_name="footer.docx"),
+        sample_data=sample_data,
+    )
+    from docx import Document as DocxDocument
+
+    rendered = DocxDocument(io.BytesIO(compiled.content))
+    rows = [[cell.text for cell in row.cells] for row in rendered.tables[0].rows]
+    assert rows[0] == ["Item"]
+    assert rows[-1] == ["TOTAL"]
+    assert len(rows) > 2
+
+
+def test_nested_repeat_table_is_scoped_to_the_outer_row() -> None:
+    document = DocxDocument()
+    outer = document.add_table(rows=2, cols=1)
+    outer.cell(0, 0).text = "Item"
+    data_cell = outer.cell(1, 0)
+    data_cell.paragraphs[0]._p.append(_sdt("A-1"))
+    nested = data_cell.add_table(rows=2, cols=1)
+    nested.cell(0, 0).text = "Task"
+    nested.cell(1, 0).paragraphs[0]._p.append(_sdt("T-1"))
+    buffer = io.BytesIO()
+    document.save(buffer)
+
+    elements = [
+        _element(0, "MainData.Lines.Line.ItemId", label="SKU"),
+        _element(1, "MainData.Lines.Line.Tasks.Task.TaskId", label="Task"),
+        _element(99, "MainData.Lines.Line", collection=True, label="Lines"),
+        _element(
+            100,
+            "MainData.Lines.Line.Tasks.Task",
+            collection=True,
+            label="Tasks",
+        ),
+    ]
+    result = infer_tables(buffer.getvalue(), elements)
+    assert result.tables
+    outer_table = result.tables[0].table
+    assert outer_table.row_template is not None
+    nested_blocks = [
+        block
+        for block in outer_table.row_template[0].blocks
+        if getattr(block, "kind", "") == "table"
+    ]
+    assert nested_blocks
+    nested_table = nested_blocks[0]
+    assert nested_table.repeat is not None
+    assert nested_table.repeat.path == "line.Tasks.Task"
+    assert nested_table.repeat.alias == "task"
+    assert nested_table.row_template is not None
+    assert "task.TaskId" in str(nested_table.row_template[0].blocks[0].model_dump(mode="json"))
+
+
+def test_empty_collection_table_still_compiles_with_footer(schema, sample_data) -> None:
+    from docentric_copilot.docx_compiler import CompileOptions, GenericDocxCompiler
+    from docentric_copilot.template_ir import (
+        Cell,
+        Document,
+        DocumentMetadata,
+        FieldBinding,
+        Paragraph,
+        Section,
+        Table,
+        TableColumn,
+        TableRepeat,
+        TableRow,
+        TextRun,
+    )
+
+    empty = {**sample_data, "MainData": {**sample_data["MainData"], "QuotationLines": {"Line": []}}}
+    document = Document(
+        title="Empty rows",
+        metadata=DocumentMetadata(
+            template_name="empty_rows",
+            source_schema_id=schema.schema_id,
+        ),
+        sections=[
+            Section(
+                name="Main",
+                body=[
+                    Table(
+                        columns=[TableColumn(header="Item", width_mm=80)],
+                        repeat=TableRepeat(path="MainData.QuotationLines.Line", alias="line"),
+                        row_template=[
+                            Cell(blocks=[Paragraph(runs=[FieldBinding(path="line.ItemId")])])
+                        ],
+                        footer_rows=[
+                            TableRow(cells=[Cell(blocks=[Paragraph(runs=[TextRun(text="EMPTY")])])])
+                        ],
+                    )
+                ],
+            )
+        ],
+    )
+    compiled = GenericDocxCompiler().compile(
+        document,
+        schema,
+        CompileOptions(document_name="empty.docx"),
+        sample_data=empty,
+    )
+    assert compiled.package and not compiled.package["missing_entries"]
+    assert any("produced no rows" in warning for warning in compiled.warnings)

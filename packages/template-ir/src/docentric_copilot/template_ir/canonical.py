@@ -12,8 +12,8 @@ from pydantic import ValidationError
 
 from .models import Document
 
-IR_SCHEMA_VERSION = "1.1"
-_SUPPORTED_VERSIONS = {"1.0", "1.1"}
+IR_SCHEMA_VERSION = "1.2"
+_SUPPORTED_VERSIONS = {"1.0", "1.1", "1.2"}
 
 
 def migrate_1_0_to_1_1(payload: dict[str, Any]) -> dict[str, Any]:
@@ -30,6 +30,25 @@ def migrate_1_0_to_1_1(payload: dict[str, Any]) -> dict[str, Any]:
     _add_image_defaults(working.get("sections"))
     working["ir_version"] = "1.1"
     return working
+
+
+def migrate_1_1_to_1_2(payload: dict[str, Any]) -> dict[str, Any]:
+    """Upgrade v1.1 payloads with optional table footer rows."""
+    working = dict(payload)
+    _add_table_defaults(working.get("sections"))
+    working["ir_version"] = "1.2"
+    return working
+
+
+def _add_table_defaults(value: Any) -> None:
+    if isinstance(value, dict):
+        if value.get("kind") == "table":
+            value.setdefault("footer_rows", [])
+        for child in value.values():
+            _add_table_defaults(child)
+    elif isinstance(value, list):
+        for child in value:
+            _add_table_defaults(child)
 
 
 def _add_image_defaults(value: Any) -> None:
@@ -49,6 +68,7 @@ def _add_image_defaults(value: Any) -> None:
 #: Registry of ``from_version -> callable`` that upgrades a payload by one version.
 MIGRATIONS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "1.0": migrate_1_0_to_1_1,
+    "1.1": migrate_1_1_to_1_2,
 }
 
 

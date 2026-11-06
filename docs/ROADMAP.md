@@ -215,7 +215,7 @@ weakening the compatibility gate. Evidence:
 | --- | --- | --- | --- |
 | V013-01 | Feature Coverage Matrix | **Passed** | [FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md) |
 | V013-02 | Image family | **Passed** | [V013-02 tests](../tests/unit/test_v013_images_headers.py); synthetic scenarios IMG-01…09 |
-| V013-03 | Reference-to-IR table inference | **Partial** | Simple header + repeated row, static and nested tables; optional cells/footer rows/nested repeats deferred |
+| V013-03 | Reference-to-IR table inference | **Passed** | Header/repeated rows, optional cells, footer rows, static/nested tables and nested repeat under the outer row |
 | V013-04 | First-page header | **Passed** | `titlePg` + first-page header parts + preview; real Word sections, inheritance and per-section first pages tested |
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web validation | **Deferred** | Issue #53; no Microsoft 365/OneDrive access |
@@ -224,8 +224,8 @@ weakening the compatibility gate. Evidence:
 | V013-09 | Product demo video | **Deferred** | Issue #54; no production/publishing pipeline in this environment |
 | V013-10 | Technical deep-dive video | **Deferred** | Issue #54 |
 
-The release tag is not created while V013-03, V013-06 and the videos remain
-Partial/Deferred. The branch is an implementation candidate, not
+V013-06 and the videos remain Deferred; they are documented as external
+dependencies, not passes. The branch is an implementation candidate, not
 a claim that all P0 acceptance criteria are met.
 
 ## Next steps (ordered)

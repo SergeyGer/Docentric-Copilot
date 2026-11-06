@@ -172,7 +172,7 @@
         "tests/unit/test_validator_and_compiler.py"
       ],
       "limitations": [
-        "The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells and missing collection evidence are diagnosed rather than silently converted. Optional cells are inferred as Conditional; footer rows and nested repeats remain open."
+        "The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells and missing collection evidence are diagnosed rather than silently converted. Optional cells and static footer rows are inferred; a nested repeat under an outer repeated row remains unsupported."
       ]
     },
     {
@@ -324,12 +324,9 @@
     }
   ],
   "missing_tests": [
-    "Image collection with a schema-backed collection of image payloads",
-    "Nested table whose inner table has its own collection repeat under the outer row",
-    "Table footer/summary row after repeated data rows",
     "Word for the web manual validation evidence"
   ],
   "further_work": [
-    "#37 image-family benchmark expansion (v0.13 scope, not completed)"
+    "#40 multiple bound row shapes are diagnosed as ambiguous; no silent drop"
   ]
 }

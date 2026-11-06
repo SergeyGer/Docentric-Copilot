@@ -19,7 +19,7 @@ from __future__ import annotations
 __version__ = "0.13.0"
 
 #: Version of the Template IR contract produced by this build.
-IR_VERSION = "1.1"
+IR_VERSION = "1.2"
 
 #: Version of the compiler implementation. Changes invalidate golden files.
 COMPILER_VERSION = "0.2.1"

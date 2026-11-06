@@ -184,7 +184,9 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
                         "alias_conflict_resolved: code=alias_conflict_resolved "
                         f"location={location} alias={alias!r} replacement={replacement!r}"
                     )
-                    block = _rewrite_blocks([block], alias, replacement, inside=False)[0]
+                    rewritten = _rewrite_blocks([block], alias, replacement, inside=False)[0]
+                    assert isinstance(rewritten, Repeat)
+                    block = rewritten
                     alias = replacement
                 used.add(alias)
                 child_scope = {**scope, alias: block.path}
@@ -203,10 +205,13 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
                             "alias_conflict_resolved: code=alias_conflict_resolved "
                             f"location={location} alias={alias!r} replacement={replacement!r}"
                         )
-                        block = _rewrite_blocks([block], alias, replacement, inside=False)[0]
+                        rewritten = _rewrite_blocks([block], alias, replacement, inside=False)[0]
+                        assert isinstance(rewritten, Table)
+                        block = rewritten
                         repeat = block.repeat
                         alias = replacement
                     used.add(alias)
+                    assert repeat is not None
                     child_scope = {**scope, alias: repeat.path}
                 rows = [
                     row.model_copy(

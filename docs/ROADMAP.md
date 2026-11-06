@@ -6,8 +6,8 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.12.0 (published); Template IR 1.0 |
-| Overall status | M0–M4 implemented to the extent described below; M5 in progress; the AX gate is blocked |
+| Current release | 0.13.0 (implementation branch; release decision pending); Template IR 1.1 |
+| Overall status | M0–M4 implemented to the extent described below; v0.13 P0 work partially complete; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
 Milestones are cumulative. "Implemented" means the behaviour exists and is documented; it does not mean
@@ -204,6 +204,29 @@ compatibility. Full evidence: [RELEASE_EVIDENCE_V0_12](RELEASE_EVIDENCE_V0_12.md
 
 Docentric AX runtime compatibility remains **`not_tested`**; no item in M8
 changes that.
+
+## M9 — v0.13 feature release (0.13.0, 2026-11-06)
+
+**Goal:** support images, table inference and first-page headers without
+weakening the compatibility gate. Evidence:
+[RELEASE_EVIDENCE_V0_13](RELEASE_EVIDENCE_V0_13.md).
+
+| V013 ID | Deliverable | Status | Evidence |
+| --- | --- | --- | --- |
+| V013-01 | Feature Coverage Matrix | **Passed** | [FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md) |
+| V013-02 | Image family | **Passed** | [V013-02 tests](../tests/unit/test_v013_images_headers.py); synthetic scenarios IMG-01…09 |
+| V013-03 | Reference-to-IR table inference | **Partial** | Simple header + repeated row, static and nested tables; optional cells/footer rows/nested repeats deferred |
+| V013-04 | First-page header | **Partial** | `titlePg` + `headerReference type="first"` + preview; multi-section inheritance still flattened to one Word section |
+| V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
+| V013-06 | Word for the web validation | **Deferred** | Issue #53; no Microsoft 365/OneDrive access |
+| V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation state, download regression |
+| V013-08 | Final quality benchmark | **Passed** | [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08); 288 planned, 276 completed, 12 technical, 272 semantic passes |
+| V013-09 | Product demo video | **Deferred** | Issue #54; no production/publishing pipeline in this environment |
+| V013-10 | Technical deep-dive video | **Deferred** | Issue #54 |
+
+The release tag is not created while V013-03, V013-04, V013-06 and the
+videos remain Partial/Deferred. The branch is an implementation candidate, not
+a claim that all P0 acceptance criteria are met.
 
 ## Next steps (ordered)
 

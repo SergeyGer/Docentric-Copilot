@@ -21,11 +21,33 @@ and published with `python scripts/sync_wiki.py --push`.
 | Docentric AX runtime compatibility | **`not_tested`** — no execution claim |
 | Gold labels annotation | **AT-07 = `partial`** — owner self-review + deterministic proxy; no independent human review |
 | v0.12 reliability release | **Released** — [v0.12.0](https://github.com/SergeyGer/Docentric-Copilot/releases/tag/v0.12.0) |
-| Full benchmark (288 runs) | **Published** — [BENCHMARKS §10](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02) |
+| v0.13 feature candidate | **Implementation candidate, not tagged** — V013-03/V013-04 Partial; V013-06/V013-09/V013-10 Deferred |
+| Template IR | **`1.1`** — first-page header and image source/fallback; `1.0` migrates |
+| Feature coverage | **Published** — [FEATURE_COVERAGE_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/FEATURE_COVERAGE_V013.md) |
+| Reference Evaluation | **Published** — [REFERENCE_EVALUATION_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REFERENCE_EVALUATION_V013.md) |
+| v0.13 full benchmark | **Published** — 288 planned / 276 completed / 12 technical / 272 semantic passes |
 | D365 private-corpus regression | **11/11 local** — aggregate only, [D365_REGRESSION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/D365_REGRESSION.md) |
-| Deferred P1 items | **V012-03** (#37) and **V012-06** (#40), target v0.13 |
+| Open P0 gaps | Table inference edge cases, multi-section headers, Word Web (#53), videos (#54) |
 
-## v0.12 — current release status
+## v0.13 — implementation candidate
+
+Full evidence: [RELEASE_EVIDENCE_V0_13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md).
+The tag is deliberately not created while P0 items below are Partial/Deferred.
+
+| V013 ID | Workstream | Status | Evidence |
+| --- | --- | --- | --- |
+| V013-01 | Feature Coverage Matrix | **Passed** | [FEATURE_COVERAGE_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/FEATURE_COVERAGE_V013.md) |
+| V013-02 | Image family | **Passed** (synthetic scenarios) | `tests/unit/test_v013_images_headers.py`, `tests/unit/test_candidate_filtering.py` |
+| V013-03 | Reference-to-IR table inference | **Partial** | Simple header/repeated rows, static/nested tables; optional cells, footer rows, nested repeats open |
+| V013-04 | First-page header | **Partial** | `w:titlePg`, first header part, preview; multi-section inheritance still flattened |
+| V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REFERENCE_EVALUATION_V013.md) |
+| V013-06 | Word for the web | **Deferred** | Issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53); no Microsoft 365/OneDrive access |
+| V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation gating, download regression |
+| V013-08 | Final quality benchmark | **Passed** | 288 planned, 276 completed, 12 technical, 272 semantic passes; [BENCHMARKS §11](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/BENCHMARKS.md#11-v013-full-benchmark-v013-08) |
+| V013-09 | Product Demo video | **Deferred** | Issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+| V013-10 | Technical video | **Deferred** | Issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+
+## v0.12 — previous release status
 
 v0.12 is a release of **provable reliability**, not new surface area. Full evidence:
 [RELEASE_EVIDENCE_V0_12](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_12.md).

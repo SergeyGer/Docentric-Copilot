@@ -201,6 +201,7 @@ def _used_paths(document: Document, schema: NormalizedSchema) -> dict[str, str]:
     for section in document.sections:
         walk(section.body, Scope())
         walk(section.header or [], Scope())
+        walk(section.first_page_header or [], Scope())
         walk(section.footer or [], Scope())
     return used
 
@@ -736,6 +737,7 @@ def _binding_contexts(
     for section in document.sections:
         walk(section.body, Scope(), "body", repeat=False, conditional=False)
         walk(section.header or [], Scope(), "header", repeat=False, conditional=False)
+        walk(section.first_page_header or [], Scope(), "header", repeat=False, conditional=False)
         walk(section.footer or [], Scope(), "footer", repeat=False, conditional=False)
     return observed
 
@@ -975,8 +977,11 @@ def sanitize_document(
     for section in document.sections:
         body = sanitize_blocks(section.body, schema, root_scope, removed)
         header = sanitize_blocks(section.header or [], schema, root_scope, removed)
+        first_page_header = sanitize_blocks(
+            section.first_page_header or [], schema, root_scope, removed
+        )
         footer = sanitize_blocks(section.footer or [], schema, root_scope, removed)
-        if not body and not header and not footer:
+        if not body and not header and not first_page_header and not footer:
             removed.append(
                 RemovedBinding(
                     path=section.name,
@@ -987,7 +992,14 @@ def sanitize_document(
             continue
         sections.append(
             section.model_copy(
-                update={"body": body, "header": header or None, "footer": footer or None}
+                update={
+                    "body": body,
+                    "header": header or None,
+                    "first_page_header": (
+                        first_page_header if section.first_page_header is not None else None
+                    ),
+                    "footer": footer or None,
+                }
             )
         )
     if not sections:

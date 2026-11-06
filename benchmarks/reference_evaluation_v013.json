@@ -1,0 +1,72 @@
+{
+  "schema": "reference-evaluation/v1",
+  "release": "0.13.0",
+  "dataset": "official AX 2012 + D365FO local corpus",
+  "corpus": {
+    "documents": 17,
+    "docx_artifacts": 63,
+    "controls": 672,
+    "resolved": 650,
+    "unknown": 22,
+    "tables_observed": 30,
+    "table_diagnostics": 23
+  },
+  "metrics": {
+    "parsing_success_rate": {
+      "value": 1.0,
+      "numerator": 17,
+      "denominator": 17
+    },
+    "reference_resolution_rate": {
+      "value": 0.9673,
+      "numerator": 650,
+      "denominator": 672
+    },
+    "binding_evidence_rate": {
+      "value": 0.4807,
+      "numerator": 323,
+      "denominator": 672
+    },
+    "collection_scope_resolution_rate": {
+      "value": 0.8846,
+      "numerator": 23,
+      "denominator": 26
+    },
+    "image_binding_resolution_rate": {
+      "value": 1.0,
+      "numerator": 14,
+      "denominator": 14
+    },
+    "table_structure_accuracy": {
+      "value": 0.5667,
+      "numerator": 17,
+      "denominator": 30
+    },
+    "ir_coverage": {
+      "value": 0.9068,
+      "numerator": 564,
+      "denominator": 622
+    },
+    "import_validation_rate": {
+      "value": 1.0,
+      "numerator": 16,
+      "denominator": 16
+    },
+    "compilation_success_rate": {
+      "value": 0.9375,
+      "numerator": 15,
+      "denominator": 16
+    }
+  },
+  "failures": [
+    "10:CompilationFailedError",
+    "15:ReferenceImportEmptyError"
+  ],
+  "limitations": [
+    "AT-07 remains partial: binding evidence is deterministic schema/evidence matching, not independent human correctness labels.",
+    "Binding evidence rate counts only controls whose D365/DDSP path was actually checked; it is not a claim that every binding is semantically correct.",
+    "Table accuracy counts accepted inferred tables, not visually verified Word tables; merged/ragged/optional-cell cases are diagnosed and excluded.",
+    "Compilation uses a synthetic schema containing only imported paths and placeholder data; it proves structural compilation, not customer data correctness.",
+    "The corpus is private; only aggregate counts and rates are published."
+  ]
+}

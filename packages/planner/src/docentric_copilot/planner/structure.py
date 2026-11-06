@@ -158,6 +158,12 @@ def structural_findings(document: Document, requirement: str) -> list[dict[str, 
             in_table=False,
         )
         visit(
+            section.first_page_header or [],
+            prefix=f"section[{section_index}].first_page_header",
+            in_repeat=False,
+            in_table=False,
+        )
+        visit(
             section.footer or [],
             prefix=f"section[{section_index}].footer",
             in_repeat=False,

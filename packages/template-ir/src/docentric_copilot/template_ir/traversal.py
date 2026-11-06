@@ -51,6 +51,7 @@ def iter_blocks(blocks: list[Block], depth: int = 0) -> Iterator[tuple[Block, in
 def iter_section_blocks(section: Section) -> Iterator[tuple[Block, int]]:
     yield from iter_blocks(section.body)
     yield from iter_blocks(list(section.header or []))
+    yield from iter_blocks(list(section.first_page_header or []))
     yield from iter_blocks(list(section.footer or []))
 
 

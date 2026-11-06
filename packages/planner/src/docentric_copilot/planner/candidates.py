@@ -65,6 +65,7 @@ _DOCUMENT_TOKENS = frozenset(
         "purchase",
     }
 )
+_PLACEMENT_TOKENS = frozenset({"header", "footer", "page", "first", "firstpage", "title"})
 _GENERIC_ATTRIBUTES = frozenset(
     {
         "name",
@@ -574,6 +575,20 @@ _RULES: tuple[_AttributeRule, ...] = (
         ("image", "logo", "picture"),
         "image",
         "company_logo",
+    ),
+    _AttributeRule(
+        "product_image",
+        ("product", "image"),
+        ("product", "image", "picture", "line", "item"),
+        "image",
+        "product_image",
+    ),
+    _AttributeRule(
+        "product_image",
+        ("item", "image"),
+        ("product", "image", "picture", "line", "item"),
+        "image",
+        "product_image",
     ),
     _AttributeRule(
         "bank_details",
@@ -1303,6 +1318,7 @@ def _rank_atom(
         for token in _content_tokens(atom.text)
         if token not in schema_tokens
         and token not in _DOCUMENT_TOKENS
+        and token not in _PLACEMENT_TOKENS
         and token not in _ENTITY_LOOKUP
     }
     if atom.expected_type == "boolean" or atom.condition:

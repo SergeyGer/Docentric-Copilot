@@ -288,6 +288,18 @@ def optimize_layout(
                         prefix=f"sections[{index}].header",
                     )
                     or None,
+                    "first_page_header": (
+                        _optimise_blocks(
+                            list(section.first_page_header),
+                            text_width,
+                            fixes,
+                            sample_data=sample_data,
+                            prefix=f"sections[{index}].first_page_header",
+                        )
+                        or None
+                        if section.first_page_header is not None
+                        else None
+                    ),
                     "footer": _optimise_blocks(
                         list(section.footer or []),
                         text_width,

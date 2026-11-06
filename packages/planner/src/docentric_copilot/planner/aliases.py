@@ -291,6 +291,16 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
             if section.header is not None
             else None
         )
+        first_page_header = (
+            visit(
+                section.first_page_header,
+                {},
+                (),
+                f"section[{section_index}].first_page_header",
+            )
+            if section.first_page_header is not None
+            else None
+        )
         footer = (
             visit(section.footer, {}, (), f"section[{section_index}].footer")
             if section.footer is not None
@@ -301,6 +311,7 @@ def resolve_alias_conflicts(document: Document) -> tuple[Document, list[str]]:
                 update={
                     "body": body,
                     "header": header,
+                    "first_page_header": first_page_header,
                     "footer": footer,
                 }
             )

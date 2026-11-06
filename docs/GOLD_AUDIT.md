@@ -15,7 +15,7 @@
 | Dataset SHA-256 | `8489e4c07f9a8c87e76c0e7fa4a7da8c7f9d6ec0ca0b04eb36cfcd4fe003fd4b` |
 | Canonical cases SHA-256 | `a36cf286c0c8cad59a4e770927488f6d5a931d2d2423740277d5c7a3c77943ed` |
 | Audit log SHA-256 | `d7437a63b43252e2391a01d608fdd9ccda262ec6adbeee88c4c56063a2be84b2` |
-| Manifest SHA-256 | `6fd848e06431981c1d23933e5e769978fe7f2e3ebbe4ce12559ba2b4cfd54bf6` |
+| Manifest SHA-256 | `ecc2a07ab470dca6cfd4c201869497275a2a1df5183b2819769b4114675d61d8` |
 | Audit date | 2026-11-06 |
 | Reviewer | dataset owner (implementer) (owner self-review) |
 | Independent human review | **not performed** |
@@ -200,7 +200,7 @@ python benchmarks/adjudicate_labels.py --check
 
 The manifest pins the dataset hash, the audit-log hash, the prompt
 (`planner-v1`, compact `compact-ir-v2`), planner
-`0.12.1`, evaluator `1.0.1` and runner
+`0.13.0`, evaluator `1.0.1` and runner
 `1.0.0` versions.
 
 ## Limitations

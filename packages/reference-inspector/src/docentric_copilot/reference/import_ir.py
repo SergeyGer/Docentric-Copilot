@@ -50,13 +50,15 @@ from docentric_copilot.template_ir import (
     Section,
     TextRun,
     ValueFormat,
+    iter_blocks,
 )
 from docentric_copilot.template_validator import ValidationEngine
 from pydantic import BaseModel, ConfigDict, Field
 
 from .docx_controls import ElementKind
-from .graph import GraphStatus, ReferenceGraph
+from .graph import GraphStatus, NodeKind, ReferenceGraph
 from .projection import ProjectionElement, ReferenceDocument, project_graph
+from .table_inference import InferredTable, infer_tables
 
 IMPORT_VERSION: Final[Literal["1.0"]] = "1.0"
 RUNTIME_COMPATIBILITY: Final[Literal["not_tested"]] = "not_tested"
@@ -159,6 +161,7 @@ class ImportSkipCode(str, Enum):
     EMPTY_COLLECTION = "EMPTY_COLLECTION"
     LABEL_TEXT_UNAVAILABLE = "LABEL_TEXT_UNAVAILABLE"
     IMAGE_SOURCE_UNVERIFIED = "IMAGE_SOURCE_UNVERIFIED"
+    TABLE_DIAGNOSTIC = "TABLE_DIAGNOSTIC"
     PARENT_SKIPPED = "PARENT_SKIPPED"
     EMPTY_DOCUMENT = "EMPTY_DOCUMENT"
 
@@ -870,10 +873,120 @@ def _as_reference_document(
     raise TypeError("project_to_template_ir expects a ReferenceDocument or a ReferenceGraph")
 
 
+def _collection_paths(source: ReferenceDocument | ReferenceGraph) -> set[str]:
+    if isinstance(source, ReferenceGraph):
+        return {
+            node.schema_path
+            for node in source.nodes
+            if node.kind is NodeKind.SCHEMA_FIELD and node.collection and node.schema_path
+        }
+    return {
+        element.schema_path
+        for section in source.sections
+        for element in section.elements
+        if element.collection and element.schema_path
+    }
+
+
+def _add_table_schema(context: _Context, inferred: InferredTable) -> None:
+    table = inferred.table
+    repeat = table.repeat
+    if repeat is None:
+        return
+    context.schema_entries[repeat.path] = _SchemaEntry(
+        repeat.path, data_type="any", collection=True
+    )
+    for cell in table.row_template or []:
+        for block, _depth in iter_blocks(cell.blocks):
+            for binding in _inline_bindings(block):
+                path = binding.path
+                if path.startswith(f"{repeat.alias}."):
+                    full = f"{repeat.path}.{path[len(repeat.alias) + 1 :]}"
+                else:
+                    full = path
+                data_type = "image" if isinstance(binding, ImageBinding) else "string"
+                context.schema_entries[full] = _SchemaEntry(full, data_type=data_type)
+
+
+def _inline_bindings(block: Block) -> Iterable[FieldBinding | ImageBinding]:
+    if isinstance(block, Paragraph):
+        return (run for run in block.runs if isinstance(run, FieldBinding | ImageBinding))
+    if isinstance(block, ImageBinding):
+        return (block,)
+    return ()
+
+
+def _record_table(
+    context: _Context,
+    inferred: InferredTable,
+    *,
+    index: int,
+    source_sha256: str,
+    source_name: str,
+) -> None:
+    table = inferred.table
+    repeat = table.repeat
+    context.imported += 1
+    context.by_kind["table"] = context.by_kind.get("table", 0) + 1
+    context.provenance.append(
+        ImportProvenance(
+            ir_path=f"sections[0].body[{index}]",
+            node_kind="table",
+            source_reference_id=f"table:{source_sha256[:12]}:{index}",
+            document_sha256=source_sha256,
+            reference_kind="table",
+            schema_path=repeat.path if repeat is not None else None,
+            binding_status="inferred",
+        )
+    )
+    for offset, cell in enumerate(table.row_template or []):
+        for block in cell.blocks:
+            if isinstance(block, ImageBinding):
+                context.provenance.append(
+                    ImportProvenance(
+                        ir_path=f"sections[0].body[{index}].row_template[{offset}]",
+                        node_kind="image",
+                        source_reference_id=f"table:{source_sha256[:12]}:{index}",
+                        document_sha256=source_sha256,
+                        reference_kind="table",
+                        schema_path=repeat.path if repeat is not None else None,
+                        binding_status="inferred",
+                    )
+                )
+    if source_name:
+        context.by_kind.setdefault("table_source", 0)
+
+
+def _table_skips(
+    context: _Context,
+    result,
+    *,
+    source_sha256: str,
+) -> None:
+    for diagnostic in result.diagnostics:
+        if len(context.skipped) >= _MAX_SKIPPED:
+            break
+        context.skipped.append(
+            ImportSkipped(
+                source_reference_id=(f"table:{source_sha256[:12]}:{diagnostic.table_ordinal or 0}"),
+                kind="table",
+                label=f"Table {diagnostic.table_ordinal or 0}",
+                code=ImportSkipCode.TABLE_DIAGNOSTIC,
+                reason=f"{diagnostic.code}: {diagnostic.message}"[:400],
+                part=diagnostic.part,
+                ordinal=diagnostic.table_ordinal,
+            )
+        )
+        context.by_skip_code[ImportSkipCode.TABLE_DIAGNOSTIC.value] = (
+            context.by_skip_code.get(ImportSkipCode.TABLE_DIAGNOSTIC.value, 0) + 1
+        )
+
+
 def project_to_template_ir(
     reference_document_or_graph: ReferenceDocument | ReferenceGraph,
     *,
     allow_unsupported: bool = False,
+    docx_payload: bytes | None = None,
 ) -> ReferenceIRImport:
     """Project the fully resolved reference subset into Generic Template IR.
 
@@ -885,6 +998,13 @@ def project_to_template_ir(
     """
     reference = _as_reference_document(reference_document_or_graph)
     all_elements = [element for section in reference.sections for element in section.elements]
+    collection_paths = _collection_paths(reference_document_or_graph)
+    table_result = (
+        infer_tables(docx_payload, all_elements, collection_paths=collection_paths)
+        if docx_payload
+        else None
+    )
+    table_ordinals = table_result.ordinals if table_result is not None else set()
     lookup: dict[str, list[ProjectionElement]] = {}
     for element in all_elements:
         if element.element_id:
@@ -921,6 +1041,11 @@ def project_to_template_ir(
                 )
                 context.skip_subtree(element, "the document had no top-level supported construct")
         for element in top_level:
+            if (
+                element.source_location.part,
+                element.source_location.ordinal,
+            ) in table_ordinals:
+                continue
             block = _project_element(
                 element,
                 ir_path=f"sections[{index}].body[{len(blocks)}]",
@@ -941,6 +1066,22 @@ def project_to_template_ir(
                 body=blocks,
             )
         )
+
+    if table_result is not None and table_result.tables:
+        if not sections:
+            sections.append(Section(name="Reference", body=[]))
+        for inferred in table_result.tables:
+            sections[0].body.append(inferred.table)
+            _add_table_schema(context, inferred)
+            _record_table(
+                context,
+                inferred,
+                index=len(sections[0].body) - 1,
+                source_sha256=reference.source_sha256,
+                source_name=reference.source_name,
+            )
+    if table_result is not None and table_result.diagnostics:
+        _table_skips(context, table_result, source_sha256=reference.source_sha256)
 
     if not sections:
         raise ReferenceImportEmptyError(

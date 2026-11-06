@@ -66,7 +66,7 @@ COMPACT_V2_GENERATOR = "compact-ir-v2"
 COMPACT_V2_SCHEMA_TITLE = "CompactTemplatePlanV2"
 
 _TOP_KEYS = {"t", "l", "s"}
-_SECTION_KEYS = {"n", "b", "h", "f"}
+_SECTION_KEYS = {"n", "b", "h", "fh", "f"}
 _FIELD_RUN_KEYS = {"f", "fmt", "dp", "d", "b", "i", "sz", "size", "al", "align"}
 _BLOCK_FORMS = {"h", "p", "img", "tbl", "if", "rep", "pb"}
 _ALIAS_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,31}$")
@@ -571,6 +571,11 @@ def _expand_section(value: Any, path: str, *, currency_code: str | None) -> Sect
         if mapping.get("h") is not None
         else []
     )
+    first_page_header = (
+        _expand_blocks(mapping["fh"], f"{path}.fh", currency_code=currency_code)
+        if mapping.get("fh") is not None
+        else []
+    )
     footer = (
         _expand_blocks(mapping["f"], f"{path}.f", currency_code=currency_code)
         if mapping.get("f") is not None
@@ -581,6 +586,7 @@ def _expand_section(value: Any, path: str, *, currency_code: str | None) -> Sect
             name=name,
             body=body,
             header=header or None,
+            first_page_header=first_page_header if "fh" in mapping else None,
             footer=footer or None,
         )
     except ValidationError as exc:
@@ -694,7 +700,12 @@ def compact_schema_v2() -> dict[str, Any]:
                     "h": {
                         "type": "array",
                         "items": {"$ref": "#/$defs/Block"},
-                        "description": "Header blocks.",
+                        "description": "Header blocks for pages 2+.",
+                    },
+                    "fh": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/Block"},
+                        "description": "First-page-only header blocks (for example the logo).",
                     },
                     "f": {
                         "type": "array",
@@ -727,12 +738,14 @@ only structure, text and field paths.
 
 Shape:
 {"t": "Sales Quotation", "l": "en",
- "s": [{"n": "Main", "b": [BLOCK, ...], "h": [BLOCK, ...], "f": [BLOCK, ...]}]}
+ "s": [{"n": "Main", "b": [BLOCK, ...], "h": [BLOCK, ...], "fh": [BLOCK, ...], "f": [BLOCK, ...]}]}
 
 Every block is an ARRAY whose first item is the form tag:
 - ["h", 1, "Sales Quotation"]
 - ["p", "No.: ", {"f": "MainData.Quotation.QuotationId"}]
 - ["img", "GeneralData.Company.CompanyLogo", 42, "Company logo"]
+- Use "fh" for a first-page-only header (logo) and "h" for the header on later
+  pages (company name/VAT). Do not put the same logo in both.
 - ["tbl", "MainData.QuotationLines.Line",
    [["SKU", "line.ItemId"], ["Amount", "line.LineAmount", 30, "n", 2, "r"]]]
 - ["tbl", "MainData.ServiceOrderLines.Line",

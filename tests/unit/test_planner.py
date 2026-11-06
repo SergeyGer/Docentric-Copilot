@@ -41,7 +41,8 @@ class TestBaselinePlanner:
         section = document.sections[0]
         kinds = [block.kind for block in section.body]
         assert "heading" in kinds and "table" in kinds and "conditional" in kinds
-        assert any(block.kind == "image" for block in section.header or [])
+        assert any(block.kind == "image" for block in section.first_page_header or [])
+        assert not any(block.kind == "image" for block in section.header or [])
         assert section.footer, "bank details belong in the footer"
         assert document.metadata.generator == BASELINE_VERSION
 
@@ -118,7 +119,12 @@ class TestSanitizer:
             update={
                 "sections": [
                     document.sections[0].model_copy(
-                        update={"body": body, "header": [], "footer": []}
+                        update={
+                            "body": body,
+                            "header": [],
+                            "first_page_header": [],
+                            "footer": [],
+                        }
                     )
                 ]
             }
@@ -249,6 +255,10 @@ def test_conditional_and_table_present_in_ir(planned) -> None:
     assert any(isinstance(block, Conditional) for block in blocks)
     assert any(isinstance(block, Heading) for block in blocks)
     assert any(
+        isinstance(block, ImageBinding)
+        for block in planned.document.sections[0].first_page_header or []
+    )
+    assert not any(
         isinstance(block, ImageBinding) for block in planned.document.sections[0].header or []
     )
     assert Scope().aliases == {}

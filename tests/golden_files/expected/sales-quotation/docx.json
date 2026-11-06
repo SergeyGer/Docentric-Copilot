@@ -20,11 +20,6 @@
     {
       "alignment": "None",
       "style": "Header",
-      "text": ""
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
       "text": "Contoso Consulting AG"
     },
     {
@@ -37,7 +32,7 @@
     "word/media/image1.png"
   ],
   "package": {
-    "entry_count": 21,
+    "entry_count": 23,
     "has_document": true,
     "has_styles": true
   },
@@ -111,7 +106,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=sales_quotation;digest=933462042466c818aa24ffecd9cb5a5d;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=sales_quotation;digest=afa8e7c90a39d1ff71bf0e51c8dbee26;docentric-compatibility=not_tested",
     "subject": "quotation_template",
     "title": "Sales Quotation"
   },

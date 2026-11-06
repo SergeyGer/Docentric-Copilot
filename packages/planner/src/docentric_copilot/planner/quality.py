@@ -255,6 +255,7 @@ def find_text_fit_issues(
         for name, blocks in (
             ("body", section.body),
             ("header", list(section.header or [])),
+            ("first_page_header", list(section.first_page_header or [])),
             ("footer", list(section.footer or [])),
         ):
             if not blocks:
@@ -417,7 +418,11 @@ def analyze_quality(
         )
     )
 
-    headers_footers = [section for section in document.sections if section.header or section.footer]
+    headers_footers = [
+        section
+        for section in document.sections
+        if section.header or section.first_page_header or section.footer
+    ]
     checks.append(
         QualityCheck(
             id="header_footer",

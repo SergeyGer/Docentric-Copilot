@@ -7,9 +7,9 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | **v0.12.0** — [release notes](https://github.com/SergeyGer/Docentric-Copilot/releases/tag/v0.12.0) · [evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_12.md) |
-| Status | v0.10 P0, v0.11 P1 and v0.12 reliability work released; v0.13 planning |
-| Open issues | 7 (5 backlog + 2 deferred from v0.12) |
+| Current release | **v0.12.0** released; **v0.13.0 implementation candidate** — [v0.13 evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md) |
+| Status | v0.13 P0 partially complete; tag withheld until table/header edge cases and videos/Word Web are resolved |
+| Open issues | 9 (5 backlog + #37/#40 + #53 Word Web + #54 videos) |
 | Honest status | [Honest Status](Honest-Status) |
 
 ## Milestones
@@ -21,13 +21,32 @@
 | **M2 AI planning** | Template IR, gateway, mapping, expressions, validators | Done |
 | **M3 Compilation** | Generic DOCX, preview, golden files | Done |
 | **M4 Web + CLI** | API, workspace, jobs, artifacts, Docker | Done |
-| **M5 Release** | CI, security scans, docs, benchmarks, release | Done — latest **v0.12.0** |
+| **M5 Release** | CI, security scans, docs, benchmarks, release | Done — latest released **v0.12.0**; v0.13 candidate |
 | **v0.10 P0** | D365 embedded schema, binding resolver, gold benchmark, docs baseline | Done |
 | **v0.11 P1** | ReferenceGraph evidence, safe IR import, visual diff, persistence | Done — released in 0.11.0 |
 | **v0.12 reliability** | Audit trail, full benchmark, D365 regression, E2E, real visual CI | **Released** |
-| **v0.13** | Deferred image/table work and the open backlog | Planning |
+| **v0.13** | Image family, table inference, first-page header, coverage/evaluation | **Implementation candidate** — P0 gaps documented |
 
-## v0.12 — released status
+## v0.13 — implementation candidate status
+
+Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md).
+
+| ID | Deliverable | Status | Issue |
+| --- | --- | --- | --- |
+| V013-01 | Feature Coverage Matrix | **Passed** | — |
+| V013-02 | Image family | **Passed** (synthetic scenarios) | [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) partially addressed |
+| V013-03 | Reference-to-IR table inference | **Partial** | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) |
+| V013-04 | First-page header | **Partial** — multi-section inheritance open | — |
+| V013-05 | Reference Evaluation | **Passed** | — |
+| V013-06 | Word for the web | **Deferred** | [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) |
+| V013-07 | Live Demo reliability/UX | **Passed** | — |
+| V013-08 | Final quality benchmark | **Passed** — 276/288 completed, 272 semantic passes | — |
+| V013-09 | Product Demo video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+| V013-10 | Technical video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+
+`Partial` and `Deferred` are not `Passed`; no v0.13 tag exists yet.
+
+## v0.12 — previous released status
 
 Full evidence and limitations: [Release Evidence v0.12](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_12.md).
 
@@ -58,8 +77,10 @@ Open issues are listed in ascending number. “Planned” means no release targe
 | [#14](https://github.com/SergeyGer/Docentric-Copilot/issues/14) | Optional LibreOffice DOCX → PDF API renderer | Rendering | Open — planned (P2); renderer helpers exist, API endpoint does not |
 | [#15](https://github.com/SergeyGer/Docentric-Copilot/issues/15) | Line-item product images | Quality | Open — planned (P2) |
 | [#17](https://github.com/SergeyGer/Docentric-Copilot/issues/17) | Streamlit demo: upload your own DDSP | Demo | Open — planned (P3) |
-| [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) | Image-family benchmark expansion | Benchmark | **Deferred** to v0.13 |
-| [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) | Reference-to-IR table inference and diagnostics | Reference | **Deferred** to v0.13 |
+| [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) | Image-family benchmark expansion | Benchmark | **Partial** in v0.13; benchmark expansion open |
+| [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) | Reference-to-IR table inference and diagnostics | Reference | **Partial** in v0.13; edge cases open |
+| [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) | Word for the web targeted validation | Validation | **Deferred** — no Microsoft 365 access |
+| [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) | Product/technical videos | Docs | **Deferred** — no production/YouTube session |
 
 ### Deferred from v0.12 — target v0.13
 
@@ -119,7 +140,7 @@ Kubernetes without a measured need.
 ## How this page stays in sync
 
 - **GitHub Issues is authoritative.** This page was checked against the tracker on **2026-11-06**:
-  7 open issues (#12, #13, #14, #15, #17, #37, #40) and the closed v0.12/v0.11 items above.
+  9 open issues (#12, #13, #14, #15, #17, #37, #40, #53, #54) and the closed v0.12/v0.11 items above.
 - On every release and on every issue open/close/retarget, update this page and the repository copy
   [`docs/wiki/Roadmap.md`](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/wiki/Roadmap.md)
   in the same pull request, then publish with `python scripts/sync_wiki.py --push`.

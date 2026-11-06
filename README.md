@@ -141,15 +141,20 @@ assumption is a liability, not a deliverable.
 
 The **maintained status record** now lives in the Wiki:
 **[Honest Status →](https://github.com/SergeyGer/Docentric-Copilot/wiki/Honest-Status)**. It records the
-v0.10/v0.11/v0.12 workstream statuses, the gold-label audit (AT-07 = `partial`), benchmark and D365
-evidence, deferred P1 items and the known limitations. Update that page, not this README, when the
+v0.10/v0.11/v0.12/v0.13 workstream statuses, the gold-label audit (AT-07 = `partial`), benchmark and
+D365 evidence, feature coverage, reference evaluation, deferred P0/P1 items and the known limitations. Update that page, not this README, when the
 honest status changes.
 
 - **Generic DOCX** is delivered; **Docentric AX runtime compatibility is `not_tested`**.
 - **AT-07 remains `partial`** — there was no independent human review of the gold labels; the
   deterministic adjudicator is a documented proxy.
-- The v0.12 release evidence is in [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md); the full
-  benchmark is in [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).
+- **v0.13.0 is an implementation candidate, not a tagged release.** V013-03 table inference and
+  V013-04 multi-section headers are Partial; Word for the web (#53) and the videos (#54) are Deferred.
+  See [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).
+- v0.12 evidence: [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md); benchmark:
+  [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).
+- v0.13 audits: [FEATURE_COVERAGE_V013](docs/FEATURE_COVERAGE_V013.md) and
+  [REFERENCE_EVALUATION_V013](docs/REFERENCE_EVALUATION_V013.md).
 
 ---
 
@@ -216,7 +221,7 @@ The complete documentation lives in the **[project Wiki](https://github.com/Serg
 
 | | |
 | --- | --- |
-| **Version** | 0.12.0 |
+| **Version** | 0.13.0 |
 | **Licence** | Apache-2.0 |
 | **Interfaces** | Web workspace · command line · REST API |
 | **AI providers** | OpenAI · Anthropic · Google Gemini · offline deterministic assistant |

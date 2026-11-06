@@ -38,7 +38,7 @@ from .service import (
 #: Version of the planner behaviour that produced a benchmark plan. Bump when
 #: prompts, post-processing or repair behaviour can change the generated IR;
 #: benchmark manifests pin this value.
-PLANNER_VERSION = "0.12.1"
+PLANNER_VERSION = "0.13.0"
 
 __all__ = [
     "BASELINE_VERSION",

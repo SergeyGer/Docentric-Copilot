@@ -1,0 +1,89 @@
+# Word for the web targeted validation — v0.13
+
+**Status: Not performed (documented Deferred).**
+
+This environment has no Microsoft 365 account, OneDrive access or Word for the
+web session. The generator, the first-page header fix and the inspection
+fixtures are covered by automated tests, but the independent manual check
+required by V013-06 has not been performed. This page does **not** claim Word
+compatibility and must not be cited as a pass.
+
+## Why deferred
+
+| Prerequisite | Availability |
+| --- | --- |
+| Microsoft account with Word for the web | Not available in this environment |
+| OneDrive upload/export | Not available |
+| Independent human reviewer | Not available |
+| Automated browser access to Word for the web | Deliberately out of scope (V013-06 forbids a Word Web CI pipeline) |
+
+This is an external-access limitation, not a generator exception. The manual
+check remains open and is tracked by issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53).
+
+## Fixture to validate
+
+Generate a representative first-page-header DOCX and its LibreOffice PDF:
+
+```bash
+python - <<'PY'
+import asyncio
+from pathlib import Path
+from docentric_copilot.ddsp_parser import parse_ddsp
+from docentric_copilot.planner import PlanOptions, TemplatePlanner
+from docentric_copilot.llm import LLMGateway
+from docentric_copilot.docx_compiler import CompileOptions, GenericDocxCompiler
+
+package = Path("examples/quotation/sales-quotation.ddsp").read_bytes()
+parsed = parse_ddsp(package, "sales-quotation.ddsp")
+prompt = (
+    "Create an invoice with the company logo only on the first page, the company name "
+    "and VAT in the header on later pages, customer and line items with a product image "
+    "column, totals from the data, and page numbers in the footer."
+)
+outcome = asyncio.run(
+    TemplatePlanner(LLMGateway()).plan(
+        parsed.schema, prompt, provider="mock", options=PlanOptions(language="en")
+    )
+)
+compiled = GenericDocxCompiler().compile(
+    outcome.document,
+    parsed.schema,
+    CompileOptions(document_name="invoice-first-page.docx"),
+    sample_data=parsed.sample_data,
+)
+Path("invoice-first-page.docx").write_bytes(compiled.content)
+PY
+```
+
+The fixture is synthetic and contains no customer or Docentric corpus data. The
+logo is expected only in the first-page header; the default header carries the
+company identity without the logo.
+
+## Manual checklist (V013-06 §8.2)
+
+- [ ] Generate the DOCX with the command above.
+- [ ] Upload it to OneDrive.
+- [ ] Open it in Word for the web and switch to **Print Layout**.
+- [ ] Page 1: logo present, company name and VAT present.
+- [ ] Pages 2+: logo absent, company name and VAT present.
+- [ ] Footer and page numbers present on all pages.
+- [ ] All pages inspected for pagination, table and image defects.
+- [ ] Table headers and repeated rows correct.
+- [ ] Images preserve aspect ratio, no uncontrolled stretching.
+- [ ] Export the Word Web PDF.
+- [ ] Compare it with the LibreOffice PDF (page count, header/footer, table/image placement).
+- [ ] Record defects and screenshots below.
+
+## Evidence to attach when performed
+
+- `invoice-first-page.docx`
+- Word Web exported PDF
+- Screenshots of page 1 and page 2
+- Completed checklist
+- Defect list, split into **Word Web limitations** vs **generator defects**
+
+## What would change this status
+
+A human with Word for the web completes every checklist item and attaches the
+four evidence files above. Until then the status stays **Not performed**, and
+Docentric AX runtime compatibility stays **`not_tested`**.

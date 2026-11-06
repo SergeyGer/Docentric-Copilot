@@ -1,0 +1,92 @@
+{
+  "app_commit": "ff8c30130d2c66e579c9f1b6e8173d75c6649f86",
+  "app_version": "0.11.0",
+  "baseline": {
+    "bindings": 246,
+    "documents": 11,
+    "resolved": 233,
+    "source": "v0.11.0 audit aggregate (frozen in benchmarks/baseline_v011.json)",
+    "statuses": {
+      "ambiguous": 0,
+      "resolved": 233,
+      "schema_unavailable": 0,
+      "type_mismatch": 1,
+      "unknown_path": 4,
+      "unsupported_expression": 8
+    },
+    "unresolved": 13
+  },
+  "classification": {
+    "baseline_resolved": 233,
+    "baseline_unresolved": 13,
+    "current_resolved": 233,
+    "current_unresolved": 13,
+    "lost_resolved": 0,
+    "new_unresolved": 0,
+    "note": "The 233/13 baseline is the v0.11 audit observation, not a guarantee. Counts are aggregate; per-binding baseline details are not public.",
+    "previously_unresolved_now": {
+      "ambiguous": 0,
+      "schema_unavailable": 0,
+      "type_mismatch": 1,
+      "unknown_path": 4,
+      "unsupported_expression": 8
+    },
+    "status_deltas": {}
+  },
+  "current": {
+    "bindings": 246,
+    "diagnostics_by_code": {
+      "binding_type_mismatch": 1,
+      "binding_unknown_path": 4,
+      "binding_unsupported_expression": 8
+    },
+    "documents_processed": 11,
+    "duplicate_links": 0,
+    "evidence_coverage_ratio": 0.9243,
+    "graph_edges": 862,
+    "graph_nodes": 794,
+    "resolved_with_evidence": 233,
+    "resolved_without_evidence": 0,
+    "resolves_to_with_evidence": 233,
+    "scope_mismatches": 0,
+    "statuses": {
+      "ambiguous": 0,
+      "resolved": 233,
+      "schema_unavailable": 0,
+      "type_mismatch": 1,
+      "unknown_path": 4,
+      "unsupported_expression": 8
+    },
+    "unique_document_payloads": 10
+  },
+  "digest_stability": {
+    "documents_checked": 11,
+    "documents_with_changed_digest": 0,
+    "stable": true
+  },
+  "documents_discovered": 11,
+  "documents_failed": 0,
+  "documents_processed": 11,
+  "expected_documents": 11,
+  "extractor_version": "d365-binding-report/1.0+graph/1.0",
+  "generated_at": "2026-11-06T09:38:12+00:00",
+  "limitations": [
+    "The 11 files are a local private corpus; this summary proves the run, not their content.",
+    "233/13 is a v0.11 baseline observation, not a guarantee.",
+    "Docentric AX runtime compatibility remains not_tested.",
+    "The aggregate cannot be used to reconstruct a document, schema path or customer name."
+  ],
+  "notes": [
+    "all documents processed; aggregate matches or improves on the baseline"
+  ],
+  "privacy": {
+    "corpus_content_published": false,
+    "document_hashes_published": false,
+    "document_labels_published": false,
+    "private_output_directory": ".local-artifacts/d365-regression/",
+    "schema_paths_published": false
+  },
+  "runner_version": "1.0.0",
+  "schema": "d365-regression/v1",
+  "verdict": "passed"
+}

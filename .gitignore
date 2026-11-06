@@ -45,6 +45,9 @@ test-results/
 benchmark-results/
 *.log
 
+# Private D365 regression corpus and its full graph/diagnostic outputs
+.local-artifacts/
+
 # OS / editor
 .DS_Store
 .idea/

@@ -24,6 +24,13 @@ version (`1.0`) independent of the distribution version.
   paths, document hashes or credentials.
 - `PLANNER_VERSION` is now exported by the planner package and pinned by benchmark manifests;
   `benchmarks/versions.py` is the single source for evaluator and runner versions.
+- v0.12 PR-3 (#38) private D365 corpus regression: `scripts/d365_regression.py` expands the ignored
+  corpus, requires 11 DOCX, builds the ReferenceGraph, records private per-document hashes/digests/
+  diagnostics under `.local-artifacts/d365-regression/`, repeats the analysis for digest stability
+  and compares the aggregate with the frozen 246/233/13 baseline. The reviewed public summary
+  `benchmarks/d365_regression_v012.json` and `docs/D365_REGRESSION.md` contain counts only: 11/11
+  documents, 246 bindings, 233 resolved, 13 unresolved (4 unknown_path, 8 unsupported_expression,
+  1 type_mismatch), 0 lost, 0 new, 0 duplicate links, 0 scope mismatches, stable digests, passed.
 
 ## [0.11.0] - 2026-11-05
 

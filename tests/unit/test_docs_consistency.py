@@ -53,16 +53,30 @@ def test_changelog_documents_v010_release() -> None:
     assert "not_tested" in released
 
 
-def test_readme_and_roadmap_state_the_partial_v010_scope_truthfully() -> None:
+def test_readme_links_to_the_canonical_wiki_status_and_roadmap_is_truthful() -> None:
     readme = _read("README.md")
-    assert "v0.10 P0 status" in readme
-    assert "PR-02 D365 embedded schema extraction" in readme
-    assert "PR-03 canonical schema and binding resolver" in readme
-    assert "PR-04 gold semantic dataset" in readme
-    assert "PR-05 live gold benchmark" in readme
-    assert "single-annotator" in readme
+    assert "## Honest status" in readme
+    assert "wiki/Honest-Status" in readme
+    assert "Docentric AX compatibility is unverified" in readme
     assert "not_tested" in readme
+    # The detailed status tables moved to the wiki; README keeps a pointer only.
+    assert "| V012 ID | Workstream | Status |" not in readme
+    assert "PR-02 D365 embedded schema extraction" not in readme
     assert "Not started in this increment" not in readme
+
+    honest = _read("docs/wiki/Honest-Status.md")
+    for marker in (
+        "v0.10 P0",
+        "PR-02 D365 embedded schema extraction",
+        "PR-03 canonical schema and binding resolver",
+        "PR-04 gold semantic dataset",
+        "PR-05 live gold benchmark",
+        "single-annotator",
+        "not_tested",
+        "This page is the maintained status record",
+    ):
+        assert marker in honest
+    assert "Not started in this increment" not in honest
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M6 — Reference Template Intelligence completion (v0.10, in progress)" in roadmap
@@ -186,10 +200,15 @@ def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
     assert "planned p1" not in reference.casefold()
 
     readme = _read("README.md")
-    assert "v0.11 P1 status (released in 0.11.0)" in readme
-    assert "Docentric AX runtime compatibility | `not_tested`" in readme
-    assert "ADR-0016" in readme
-    assert "0.11.0" in readme
+    assert "wiki/Honest-Status" in readme
+    assert "not_tested" in readme
+
+    honest = _read("docs/wiki/Honest-Status.md")
+    assert "v0.11 P1 — released in 0.11.0" in honest
+    assert "Docentric AX runtime compatibility" in honest
+    assert "`not_tested`" in honest
+    assert "ADR-0016" in honest
+    assert "0.11.0" in honest
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M7 — v0.11 P1 reference workflow (released in 0.11.0)" in roadmap
@@ -265,10 +284,28 @@ def test_v012_release_evidence_and_version_alignment() -> None:
         assert marker in evidence
 
     readme = _read("README.md")
-    assert "v0.12 status" in readme
+    assert "Honest-Status" in readme
     assert "0.12.0" in readme
-    assert "Deferred" in readme
     assert "not_tested" in readme
+    assert "AT-07" in readme
+    assert "| V012 ID | Workstream | Status |" not in readme
+
+    honest = _read("docs/wiki/Honest-Status.md")
+    for v012 in (
+        "V012-01",
+        "V012-02",
+        "V012-03",
+        "V012-04",
+        "V012-05",
+        "V012-06",
+        "V012-07",
+        "V012-08",
+        "V012-09",
+        "V012-10",
+    ):
+        assert v012 in honest
+    for marker in ("Passed", "Deferred", "AT-07", "partial", "not_tested", "v0.13"):
+        assert marker in honest
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M8 — v0.12 reliability release" in roadmap
@@ -287,6 +324,52 @@ def test_v012_p1_items_have_honest_status_and_targets() -> None:
     assert "V012-09 | Report retention/deletion | **Passed**" in evidence
     assert "V012-10 | Responsive + release docs | **Passed**" in evidence
     assert "No status is represented as a single" in evidence
+
+    honest = _read("docs/wiki/Honest-Status.md")
+    assert "V012-03 | Image-family expansion | **Deferred**" in honest
+    assert "V012-06 | Reference → IR table inference | **Deferred**" in honest
+    assert "#37" in honest and "#40" in honest
+    assert "v0.13" in honest
+
+
+def test_wiki_honest_status_is_canonical_and_in_the_sidebar() -> None:
+    page = ROOT / "docs" / "wiki" / "Honest-Status.md"
+    assert page.exists()
+    body = page.read_text(encoding="utf-8")
+    assert "This page is the maintained status record" in body
+    assert "AT-07" in body and "partial" in body
+    assert "not_tested" in body
+    assert "docs/wiki/Honest-Status.md" in body
+    assert "Honest-Status" in _read("docs/wiki/_Sidebar.md")
+    assert "[Honest Status](Honest-Status)" in _read("docs/wiki/Home.md")
+    assert "Honest-Status" in _read("README.md")
+
+
+def test_wiki_roadmap_is_synchronized_with_github_issues() -> None:
+    roadmap = _read("docs/wiki/Roadmap.md")
+    assert "GitHub Issues is the source of truth" in roadmap
+    assert "7 open issues" in roadmap
+    for number in ("#12", "#13", "#14", "#15", "#17", "#37", "#40"):
+        assert number in roadmap, number
+    for number in (
+        "#24",
+        "#25",
+        "#27",
+        "#28",
+        "#29",
+        "#30",
+        "#35",
+        "#36",
+        "#38",
+        "#39",
+        "#41",
+        "#42",
+        "#43",
+        "#44",
+    ):
+        assert number in roadmap, number
+    assert "Deferred from v0.12 — target v0.13" in roadmap
+    assert "python scripts/sync_wiki.py --push" in roadmap
 
 
 def test_e2e_visual_and_retention_docs_are_present() -> None:

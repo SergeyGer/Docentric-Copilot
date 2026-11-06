@@ -1,29 +1,15 @@
 # Changelog
 
-The canonical history is [`CHANGELOG.md`](https://github.com/SergeyGer/Docentric-Copilot/blob/main/CHANGELOG.md)
-in the repository root (Keep a Changelog format).
+The canonical changelog is maintained in the repository:
+**[CHANGELOG.md](https://github.com/SergeyGer/Docentric-Copilot/blob/main/CHANGELOG.md)**.
 
-## 0.2.0 — documentation and hardening release
+| Release | Date | Summary |
+| --- | --- | --- |
+| **v0.12.0** | 2026-11-06 | Gold audit trail, full 288-run benchmark, D365 regression, V012-05 fixes, Playwright E2E, real LibreOffice/Poppler visual CI, report retention, release evidence |
+| v0.11.0 | 2026-11-05 | ReferenceGraph evidence, safe Reference → IR import, visual diff, persistence/export |
+| v0.10.0 | 2026-11-05 | D365 embedded schema, canonical binding resolver, 32-case gold dataset, 288-run benchmark |
+| v0.9.0 | 2026-11-04 | Reference inspector, diff and reference evaluation hardening |
+| v0.8.0 | 2026-11-04 | ReferenceDiff and reference-based evaluation |
+| v0.7.0 | 2026-11-04 | Real DDSP adapter and read-only ReferenceGraph |
 
-### Added
-- Complete project Wiki with a navigation sidebar and interface screenshots.
-- Social preview image and repository topics.
-- Dependabot configuration with grouped weekly updates.
-- Baseline security headers for the web workspace.
-
-### Changed
-- README rewritten for a non-technical audience; engineering detail moved to the Wiki.
-
-### Fixed
-- `postcss` and `minimatch` security advisories in the web dependency tree (`npm audit`: 0 vulnerabilities).
-
-## 0.1.0 — first public MVP
-
-### Added
-- Safe DDSP ingestion, normalized schema, semantic mapping.
-- Template IR v1.0 with canonical JSON, digest and JSON Schema.
-- Validation V1–V5 with `not_tested` semantics.
-- Deterministic generic DOCX compiler and independent HTML preview.
-- Provider gateway (OpenAI, Anthropic, Gemini) plus an offline deterministic planner.
-- FastAPI service, CLI, Next.js workspace.
-- 191 tests, golden files, benchmarks, evaluation harness, CI and Docker images.
+Full release notes and artifacts: [GitHub Releases](https://github.com/SergeyGer/Docentric-Copilot/releases).

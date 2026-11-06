@@ -1,6 +1,6 @@
 # Testing
 
-> 541 automated tests, 86% branch coverage on the deterministic core, and a golden-file corpus that
+> Full automated suite green in CI, coverage gate 85% on the deterministic core, a committed Playwright E2E suite, and a golden-file corpus that
 > compares structure rather than bytes.
 
 ## Running the suite

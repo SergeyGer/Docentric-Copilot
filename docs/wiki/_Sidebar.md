@@ -39,6 +39,7 @@
 ---
 
 **Project**
+- [Honest Status](Honest-Status)
 - [Roadmap](Roadmap)
 - [Contributing](Contributing)
 - [Release Process](Release-Process)

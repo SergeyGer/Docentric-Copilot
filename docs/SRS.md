@@ -254,8 +254,8 @@ byte-identically for identical inputs, and shall refuse every target it cannot p
    ≤ 5 MiB; undecodable images become placeholders with a warning.
 7. The produced package is inspected for required entries, VBA macros, embedded OLE/ActiveX objects
    and external relationships; an invalid package raises `compilation_failed`.
-8. Section headers/footers of secondary sections are not rendered (single Word section output) and a
-   warning is recorded.
+8. Each IR section becomes a real Word section; headers/footers set to `null` inherit from the
+   previous section, and first-page headers are per section.
 9. Compilation results expose target, filename, IR digest, `compatibility="not_tested"`, warnings,
    statistics and the package inspection summary.
 

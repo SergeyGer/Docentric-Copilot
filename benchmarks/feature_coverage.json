@@ -172,7 +172,7 @@
         "tests/unit/test_validator_and_compiler.py"
       ],
       "limitations": [
-        "The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells, footer rows and optional cells are diagnosed rather than silently converted."
+        "The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells and missing collection evidence are diagnosed rather than silently converted. Optional cells are inferred as Conditional; footer rows and nested repeats remain open."
       ]
     },
     {
@@ -210,7 +210,7 @@
         "tests/unit/test_v012_regressions.py"
       ],
       "limitations": [
-        "Static nested tables are preserved. A nested table with its own repeat inside an outer repeated row is not fully inferred in v0.13."
+        "Static nested tables are preserved. A nested table with its own repeat under an outer repeated row is not inferred; it is listed as unsupported rather than producing a wrong-scope table."
       ]
     },
     {
@@ -293,7 +293,7 @@
         "parsing": "supported",
         "reference_graph": "supported",
         "template_ir": "supported",
-        "compiler": "partial",
+        "compiler": "supported",
         "validation": "supported"
       },
       "evidence": [
@@ -301,9 +301,7 @@
         "docs/RELEASE_EVIDENCE_V0_12.md",
         "docs/RESPONSIVE.md"
       ],
-      "limitations": [
-        "The compiler emits one Word section; secondary IR-section headers are flattened with a warning. First-page header support covers the primary section only."
-      ]
+      "limitations": []
     },
     {
       "id": "multiple_datasources",
@@ -328,13 +326,10 @@
   "missing_tests": [
     "Image collection with a schema-backed collection of image payloads",
     "Nested table whose inner table has its own collection repeat under the outer row",
-    "Optional table cell with an If/Else control",
     "Table footer/summary row after repeated data rows",
-    "Secondary Word section header inheritance (compiler currently emits one Word section)",
     "Word for the web manual validation evidence"
   ],
   "further_work": [
-    "#37 image-family benchmark expansion (v0.13 scope, not completed)",
-    "#40 complex table inference follow-ups (optional cells, footer rows, nested repeats)"
+    "#37 image-family benchmark expansion (v0.13 scope, not completed)"
   ]
 }

@@ -116,10 +116,9 @@ Printable width used by V4: A4 = 210 mm, LETTER = 215.9 mm, minus left and right
 | `first_page_header` | array of `Block` \| null | no | ≤ 50 items; enables Word `titlePg`; `[]` suppresses the default header on page 1 | `null` |
 | `footer` | array of `Block` \| null | no | ≤ 50 items; same restriction | `null` |
 
-The compiler emits one Word section in v0.13. The first section's default header/footer and
-`first_page_header` are rendered; later IR sections start on a page break and their headers/footers
-are flattened with a warning. This is recorded as a Partial limitation in
-[FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md).
+Each IR section becomes a Word section on a new page. A `header`/`footer` of `null` inherits the
+previous section; an explicit empty list is an empty header/footer. `first_page_header` is evaluated
+per section and enables that section's `titlePg`. Preview applies the same inheritance.
 
 ## 3. Inline content
 

@@ -11,7 +11,7 @@ version (`1.1`) independent of the distribution version.
 ## [0.13.0] - 2026-11-06
 
 **Implementation candidate — see [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).**
-V013-03/V013-04 are Partial and V013-06/V013-09/V013-10 are Deferred; the tag is
+V013-03 is Partial and V013-06/V013-09/V013-10 are Deferred; the tag is
 not created while those P0 items are open.
 
 ### Added
@@ -24,8 +24,9 @@ not created while those P0 items are open.
   optional/missing images with placeholder/blank/alt-text fallback, aspect-ratio control,
   wrong-type and wrong-scope rejection, and product-image candidate scoping.
 - Reference-to-IR table inference for static tables, static header rows, repeated data rows,
-  alias-relative fields and static nested tables, with explicit diagnostics. Strict mode refuses
-  ambiguous/merged/unsupported structures; best-effort keeps them in `skipped[]`.
+  alias-relative fields, optional `If` cells (become `Conditional`) and static nested tables,
+  with explicit diagnostics. Strict mode refuses ambiguous/merged/unsupported structures;
+  best-effort keeps them in `skipped[]`.
 - Feature Coverage Matrix (`benchmarks/feature_coverage.json`,
   `docs/FEATURE_COVERAGE_V013.md`) and a Reference Evaluation over the official 17-document corpus
   (`benchmarks/reference_evaluation_v013.json`, `docs/REFERENCE_EVALUATION_V013.md`).
@@ -55,9 +56,8 @@ not created while those P0 items are open.
   global fields.
 
 ### Known limitations
-- V013-03 table inference does not yet support optional cells, footer/summary rows after a repeated
-  block, or a nested repeat inside an outer repeated row.
-- V013-04 still emits one Word section; secondary IR-section headers are flattened with a warning.
+- V013-03 table inference does not yet support footer/summary rows after a repeated block or a
+  nested repeat inside an outer repeated row.
 - V013-06 Word for the web validation and V013-09/V013-10 videos are Deferred.
 - Docentric AX runtime compatibility remains `not_tested`; AT-07 remains `partial`.
 

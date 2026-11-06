@@ -51,11 +51,12 @@ def _element(
     *,
     collection: bool = False,
     label: str = "Field",
+    kind: ElementKind = ElementKind.FIELD,
 ) -> ProjectionElement:
     return ProjectionElement(
         id=f"control:document:{ordinal}",
         display_label=label,
-        kind=ElementKind.FIELD,
+        kind=kind,
         binding_path=path,
         status=GraphStatus.RESOLVED,
         capability=ReferenceCapability.RESOLVED,
@@ -176,3 +177,39 @@ def test_import_integration_filters_table_controls_and_adds_table() -> None:
     assert tables[0].repeat is not None
     assert tables[0].repeat.path == "MainData.Lines.Line"
     assert result.validation["statuses"]["semantic"] in {"passed", "warning"}
+
+
+def _docx_with_optional_cell() -> bytes:
+    document = DocxDocument()
+    table = document.add_table(rows=2, cols=2)
+    table.cell(0, 0).text = "SKU"
+    table.cell(0, 1).text = "Note"
+    table.cell(1, 0).paragraphs[0]._p.append(_sdt("A-1"))
+    cell = table.cell(1, 1)
+    cell.paragraphs[0]._p.append(_sdt("Show note"))
+    cell.add_paragraph("Optional note")
+    buffer = io.BytesIO()
+    document.save(buffer)
+    return buffer.getvalue()
+
+
+def test_optional_cell_becomes_a_conditional() -> None:
+    elements = [
+        _element(0, "MainData.Lines.Line.ItemId", label="SKU"),
+        _element(
+            1,
+            "MainData.Lines.Line.ShowNote",
+            label="Show note",
+            kind=ElementKind.IF,
+        ),
+        _element(99, "MainData.Lines.Line", collection=True, label="Lines"),
+    ]
+    result = infer_tables(_docx_with_optional_cell(), elements)
+    assert result.tables
+    table = result.tables[0].table
+    assert table.row_template is not None
+    blocks = table.row_template[1].blocks
+    assert len(blocks) == 1
+    assert blocks[0].kind == "conditional"
+    assert blocks[0].condition.field == "line.ShowNote"
+    assert any(getattr(block, "kind", "") == "paragraph" for block in blocks[0].then_blocks)

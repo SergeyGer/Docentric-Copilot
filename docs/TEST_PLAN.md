@@ -29,7 +29,7 @@ adapters are tested with injected HTTP transports.
 | Benchmarks | `benchmarks/run_benchmarks.py` | Latency measurement, not an assertion of correctness | No (informational; budgets displayed only) |
 | Evaluation | `benchmarks/run_evaluation.py` | Planner quality metrics over the example fixtures | No (produces a report) |
 | Web static checks | `apps/web` | `npm run lint`, `npm run typecheck`, `npm run build` | Yes (build must succeed) |
-| Browser E2E | — | Manual Playwright/Chromium smoke run only; no committed suite | **Not automated** |
+| Browser E2E | `tests/e2e/` | Playwright/Chromium against the real API and built web app: inspect/save/reload/export and negative paths | Yes (dedicated CI job) |
 | Network | marker `network` | Tests that would call real providers | **Always skipped by policy** |
 
 ### 2.1 What each area covers
@@ -48,6 +48,7 @@ adapters are tested with injected HTTP transports.
 | CLI | Version, inspect text/JSON, missing file exit code, invalid file exit code, full pipeline, AX target rejection, missing prompt file, providers listing, IR schema output, invalid IR | `tests/unit/test_cli.py` |
 | API | Health/root, OpenAPI availability, providers, capabilities honesty, upload + schema, extension rejection, hostile XML, unknown source envelope, request-validation shape, full flow, revision flow, AX 409, artifact view sandboxing, missing artifact, unknown provider | `tests/integration/test_api.py` |
 | Reference / D365 | Inventory and metadata joins, DDSP evidence, graph/diff, embedded ProjectData extraction, canonical schema provenance, six-status taxonomy, negative fixtures, corpus counts only, CLI/API surfaces, docs consistency | `tests/unit/test_d365_*.py`, `tests/unit/test_reference_*.py`, `tests/integration/test_d365_api.py`, `tests/integration/test_reference_api.py` |
+| Browser E2E | `/reference` upload → inspect/save → Overview/Controls/Graph/Diff → reload → reopen by id → JSON/HTML export; invalid archive, oversized upload, unknown id, storage failure, unsupported construct | `tests/e2e/test_reference_e2e.py` |
 
 Counts are deliberately not frozen here: the suite is growing. Use
 `pytest --collect-only -q` for the current inventory.
@@ -94,8 +95,8 @@ Pytest configuration:
 
 ### 3.3 Web app
 
-`apps/web/package.json` exposes `dev`, `build`, `start`, `lint` and `typecheck`; there is **no `test`
-script** and no committed browser E2E suite, so `npm test` is not available. The verified checks are:
+`apps/web/package.json` exposes `dev`, `build`, `start`, `lint` and `typecheck`; there is still **no
+`test` script**. The static checks are:
 
 ```bash
 cd apps/web
@@ -106,11 +107,15 @@ npm run build         # static `/` route, ~145 kB first-load JS
 npm start             # serves on port 3000; HTTP 200 checked
 ```
 
-A manual real-browser smoke run (Playwright/Chromium against a live API) exercised upload → schema tree
-→ plan → preview → compile/download → revision → version load at 1024 px with zero console errors. The
-scripts, browser binaries and screenshots were temporary and are **not** committed; this is evidence of
-a one-off verification, not a regression test. Browser E2E and responsive checks below 1024 px remain
-open (see §7).
+A committed Playwright/Chromium suite in `tests/e2e/` now drives the reference inspector against the
+real API and the built web app: upload a synthetic DOCX, inspect and save, open Overview/Controls/
+Graph/Diff, reload, reopen by `?id=`, export JSON/HTML, and exercise invalid, oversized, missing-report
+and simulated storage-failure paths. It runs in the dedicated CI job and writes screenshots/traces on
+failure. Commands, ports, selectors and the artifact probe are documented in [E2E](E2E.md).
+
+The suite is a functional UI regression, not pixel fidelity. Responsive viewport checks are tracked
+separately in the v0.12 release evidence; the reference page is covered at the desktop viewport by
+this suite.
 
 ### 3.4 Docker
 

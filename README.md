@@ -217,6 +217,21 @@ docentric-copilot compile --ddsp examples/quotation/sales-quotation.ddsp \
 
 More options: [Quick Start](https://github.com/SergeyGer/Docentric-Copilot/wiki/Quick-Start).
 
+### Test the browser flow
+
+The committed Playwright suite drives the real API and web app with synthetic
+fixtures — no key, no provider call, no private corpus:
+
+```bash
+npm --prefix apps/web ci
+.venv/bin/pytest tests/e2e --e2e -q
+```
+
+It covers upload → inspect/save → Overview/Controls/Graph/Diff → reload → reopen
+→ JSON/HTML export, plus invalid, oversized, missing-report and storage-failure
+paths. See [E2E](docs/E2E.md) for ports, debugging and artifacts.
+
+
 ---
 
 ## Documentation

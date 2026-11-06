@@ -652,6 +652,7 @@ export function ReferenceDiffPanel() {
             <Button
               type="button"
               size="sm"
+              data-testid="reference-diff-compare"
               onClick={() => {
                 void handleCompare();
               }}

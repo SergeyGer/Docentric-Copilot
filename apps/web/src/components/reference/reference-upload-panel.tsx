@@ -71,6 +71,7 @@ export function ReferenceUploadPanel({
             <Button
               type="button"
               size="sm"
+              data-testid="reference-inspect-button"
               onClick={onInspect}
               disabled={!canInspect}
               aria-busy={inspecting}

@@ -409,12 +409,16 @@ export function ReferenceInspector() {
       <RuntimeCompatibilityNotice className="mt-4" />
 
       {reportId ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/15 px-3 py-2">
+        <div
+          data-testid="reference-saved-report"
+          className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/15 px-3 py-2"
+        >
           <span className="text-xs text-muted-foreground">
             Saved report <code className="break-all font-mono text-foreground">{reportId}</code>
           </span>
           <Select
             aria-label="Export format"
+            data-testid="reference-export-format"
             className="h-8 w-24"
             value={exportFormat}
             onChange={(event) =>
@@ -428,6 +432,7 @@ export function ReferenceInspector() {
             type="button"
             size="sm"
             variant="outline"
+            data-testid="reference-export-button"
             onClick={() =>
               triggerDownload(
                 referenceReportExportPath(reportId, exportFormat),
@@ -473,8 +478,10 @@ export function ReferenceInspector() {
           aria-label="Reference inspector results"
           className="h-auto w-full justify-start gap-1 overflow-x-auto p-1"
         >
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="controls">
+          <TabsTrigger value="overview" data-testid="reference-tab-overview">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="controls" data-testid="reference-tab-controls">
             Controls
             {report ? (
               <Badge variant="muted" className="ml-0.5">
@@ -482,7 +489,7 @@ export function ReferenceInspector() {
               </Badge>
             ) : null}
           </TabsTrigger>
-          <TabsTrigger value="graph">
+          <TabsTrigger value="graph" data-testid="reference-tab-graph">
             Graph
             {graph ? (
               <Badge variant="muted" className="ml-0.5">
@@ -490,7 +497,9 @@ export function ReferenceInspector() {
               </Badge>
             ) : null}
           </TabsTrigger>
-          <TabsTrigger value="diff">Diff</TabsTrigger>
+          <TabsTrigger value="diff" data-testid="reference-tab-diff">
+            Diff
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">

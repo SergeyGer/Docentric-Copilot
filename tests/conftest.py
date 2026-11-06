@@ -29,6 +29,24 @@ EXAMPLES = ROOT / "examples"
 FIXED_TIME = (2024, 1, 1, 0, 0, 0)
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--e2e",
+        action="store_true",
+        default=False,
+        help="run the Playwright browser end-to-end suite (skipped by default)",
+    )
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    if config.getoption("--e2e"):
+        return
+    skip = pytest.mark.skip(reason="E2E browser tests run with --e2e")
+    for item in items:
+        if "e2e" in item.keywords:
+            item.add_marker(skip)
+
+
 def build_zip(files: dict[str, bytes], *, compresslevel: int = 9) -> bytes:
     """Deterministic ZIP helper used by parser tests."""
     buffer = io.BytesIO()

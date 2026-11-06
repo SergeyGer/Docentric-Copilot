@@ -1,11 +1,15 @@
 # LibreOffice rendering evidence
 
-Status: **optional, labelled evidence.** The default API image and the CI build do not include
-LibreOffice. This page describes the optional `api-pdf` Docker target, the `scripts/docx_to_pdf.py`
-helper, and the two recorded page images in [assets](assets/).
+Status: **optional API-image evidence; mandatory v0.12 visual CI gate.** The default API image does
+not include LibreOffice. This page describes the optional `api-pdf` Docker target and the
+`scripts/docx_to_pdf.py` helper. The v0.12 gate installs a pinned LibreOffice/Poppler stack in the
+dedicated [Visual Diff workflow](../.github/workflows/visual.yml) and runs
+[scripts/visual_ci.py](../scripts/visual_ci.py); see [VISUAL_CI](VISUAL_CI.md) for fixtures,
+tolerance, statuses and artifacts.
 
 Everything produced this way is **LibreOffice rendering**. It is not a Microsoft Word fidelity proof
 and not a Docentric AX rendering proof.
+
 
 ## What the rendering proves
 

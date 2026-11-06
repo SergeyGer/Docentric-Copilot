@@ -48,6 +48,9 @@ benchmark-results/
 # Private D365 regression corpus and its full graph/diagnostic outputs
 .local-artifacts/
 
+# Local visual-diff evidence (CI uploads its own copy)
+visual-ci/
+
 # OS / editor
 .DS_Store
 .idea/

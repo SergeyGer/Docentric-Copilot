@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gold semantic benchmark</title>
+<style>
+:root { color-scheme: light; }
+body { margin: 0; padding: 32px 20px 64px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #172033; background: #f5f7fb; line-height: 1.45; }
+main { max-width: 1240px; margin: 0 auto; }
+h1 { font-size: 30px; margin: 0 0 6px; }
+h2 { font-size: 19px; margin: 0 0 8px; }
+.muted { color: #64748b; font-weight: 400; font-size: 13px; }
+.note { background: #fff7ed; border: 1px solid #fed7aa; border-left: 5px solid #ea580c; padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+.note strong { color: #9a3412; }
+.card { background: #fff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dfe5ef; border-radius: 8px; overflow: hidden; margin: 12px 0 24px; font-size: 13px; }
+th, td { padding: 8px 10px; border-bottom: 1px solid #edf1f7; text-align: left; vertical-align: top; }
+th { background: #eef3fa; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; color: #475569; }
+tr:last-child td { border-bottom: none; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.kv { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+.kv b { display: block; font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: .04em; }
+footer { color: #64748b; font-size: 12px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Gold semantic benchmark</h1>
+  <p class="muted">Dataset version 2.0.0 · 32 cases · split all · generated 2026-11-06T10:21:54.388630Z.</p>
+  <div class="note"><strong>Observations, not significance.</strong> These are observations from a fixed, synthetic case set, not statistical significance. Repeats are not independent samples of a population; they show run-to-run variation for the same prompt. No single winner is declared: each metric has its own leader, and ties are shown.</div>
+
+  <div class="grid">
+    <div class="kv"><b>Dataset cases</b>32<br><span class="muted">calibration 20 · holdout 12</span></div>
+    <div class="kv"><b>Runs completed / planned</b>27 / 27</div>
+    <div class="kv"><b>Repeats</b>{&quot;openai&quot;: 3, &quot;anthropic&quot;: 3, &quot;gemini&quot;: 3}</div>
+    <div class="kv"><b>Dataset SHA-256</b><span class="muted">a36cf286c0c8cad59a4e7709…</span></div>
+    <div class="kv"><b>Verified + estimated spend</b>$0.4761 (estimated)</div>
+    <div class="kv"><b>Budget</b>$3.0000 cap · warning at $2.0000</div>
+  </div>
+
+  <h2>Per-provider observations</h2>
+  <table class=""><thead><tr><th>Provider</th><th>Runs</th><th>Precision</th><th>Recall</th><th>F1</th><th>Coverage</th><th>Type/context</th><th>Blocks</th><th>Semantic pass</th><th>Valid template</th><th>p50 ms</th><th>Cost</th></tr></thead><tbody><tr><td><strong>openai</strong><br><span class='muted'>gpt-6-sol</span></td><td>9</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>8565.0</td><td>$0.1594 (verified)</td></tr><tr><td><strong>anthropic</strong><br><span class='muted'>claude-sonnet-5-5</span></td><td>9</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>9224.0</td><td>$0.3062 (verified)</td></tr><tr><td><strong>gemini</strong><br><span class='muted'>gemini-3.6-flash</span></td><td>9</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>3714.0</td><td>$0.0105 (estimated)</td></tr></tbody></table>
+
+  <h2>Calibration vs holdout</h2>
+  <table class=""><thead><tr><th>Split</th><th>Provider</th><th>Runs</th><th>Precision</th><th>Recall</th><th>F1</th><th>Coverage</th><th>Type/context</th><th>Semantic pass</th><th>Valid template</th><th>Cost</th></tr></thead><tbody><tr><td>calibration</td><td>openai</td><td>6</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.1063 (verified)</td></tr><tr><td>calibration</td><td>anthropic</td><td>6</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.1990 (verified)</td></tr><tr><td>calibration</td><td>gemini</td><td>6</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0080 (estimated)</td></tr><tr><td>holdout</td><td>openai</td><td>3</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0531 (verified)</td></tr><tr><td>holdout</td><td>anthropic</td><td>3</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.1072 (verified)</td></tr><tr><td>holdout</td><td>gemini</td><td>3</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0025 (estimated)</td></tr></tbody></table>
+
+  <h2>Error taxonomy (runs)</h2>
+  <table class=""><thead><tr><th>Code</th><th>Runs with code</th><th>Primary code runs</th></tr></thead><tbody><tr><td>structured_output</td><td>4</td><td>4</td></tr></tbody></table>
+  <p class="muted">A run can carry several semantic codes. Primary counts assign one dominant code per run with at least one code; the primary column is not the failed-run count.</p>
+
+  <h2>Cost and status</h2>
+  <div class="card">
+    <p>Verified cost: $0.4656 · Estimated cost: $0.0105 · Unknown runs: 4</p>
+    <p>Gemini 3.6-flash is unpriced in the product price table. Its cost is <strong>estimated</strong> with the documented proxy, never reported as $0.00. Unknown cost is rendered as N/A.</p>
+  </div>
+
+  <h2>By task family</h2>
+  <table class=""><thead><tr><th>Family</th><th>Cases</th><th>Provider</th><th>Precision</th><th>Recall</th><th>F1</th><th>Coverage</th><th>Type/context</th><th>Semantic pass</th><th>Valid template</th></tr></thead><tbody><tr><td>nested_lists</td><td>3</td><td>openai</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td>nested_lists</td><td>3</td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr><tr><td>nested_lists</td><td>3</td><td>gemini</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td></tr></tbody></table>
+
+  <h2>Cases</h2>
+  <table class=""><thead><tr><th>Case</th><th>Provider</th><th>Precision</th><th>Recall</th><th>Coverage</th><th>Type/context</th><th>Semantic pass</th><th>Valid template</th><th>Cost</th></tr></thead><tbody><tr><td><strong>cc-nested-service-tasks</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>openai</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0516 (verified)</td></tr><tr><td><strong>cc-nested-service-tasks</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0974 (verified)</td></tr><tr><td><strong>cc-nested-service-tasks</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>gemini</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0018 (estimated)</td></tr><tr><td><strong>cc-nested-task-effort</strong><br><span class='muted'>nested_lists · holdout · hard</span></td><td>openai</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0531 (verified)</td></tr><tr><td><strong>cc-nested-task-effort</strong><br><span class='muted'>nested_lists · holdout · hard</span></td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.1072 (verified)</td></tr><tr><td><strong>cc-nested-task-effort</strong><br><span class='muted'>nested_lists · holdout · hard</span></td><td>gemini</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0025 (estimated)</td></tr><tr><td><strong>cc-nested-service-amounts</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>openai</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0547 (verified)</td></tr><tr><td><strong>cc-nested-service-amounts</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>anthropic</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.1016 (verified)</td></tr><tr><td><strong>cc-nested-service-amounts</strong><br><span class='muted'>nested_lists · calibration · hard</span></td><td>gemini</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>100.0%</td><td>100.0%</td><td>$0.0062 (estimated)</td></tr></tbody></table>
+
+  <h2>Per provider</h2>
+  
+            <section class="card">
+              <h2>openai <span class="muted">gpt-6-sol</span></h2>
+              <p class="muted">Runs: 9 · planned: 9 · valid templates: 9 · correct: 9 · cost: $0.1594 (verified)</p>
+              <p>Precision 1.000 · Recall 1.000 · F1 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 100.0%</p>
+              <p>Valid template rate <strong>100.0%</strong> over completed runs is reported separately from the semantic metrics. Technical failures: 0 (0.0%).</p>
+              
+            </section>
+            
+            <section class="card">
+              <h2>anthropic <span class="muted">claude-sonnet-5-5</span></h2>
+              <p class="muted">Runs: 9 · planned: 9 · valid templates: 9 · correct: 9 · cost: $0.3062 (verified)</p>
+              <p>Precision 1.000 · Recall 1.000 · F1 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 100.0%</p>
+              <p>Valid template rate <strong>100.0%</strong> over completed runs is reported separately from the semantic metrics. Technical failures: 0 (0.0%).</p>
+              
+            </section>
+            
+            <section class="card">
+              <h2>gemini <span class="muted">gemini-3.6-flash</span></h2>
+              <p class="muted">Runs: 9 · planned: 5 · valid templates: 5 · correct: 5 · cost: $0.0105 (estimated)</p>
+              <p>Precision 1.000 · Recall 1.000 · F1 1.000 · Coverage 1.000 · Type/context 1.000 · Semantic pass 100.0%</p>
+              <p>Valid template rate <strong>100.0%</strong> over completed runs is reported separately from the semantic metrics. Technical failures: 4 (44.4%).</p>
+              <p class='muted'>Cost proxy: gemini-3.6-flash → gemini-3.8-flash</p>
+            </section>
+            
+
+  <h2>Settings</h2>
+  <div class="card">
+    <p>Full prompt: planner-v1 · Gemini: compact v2 · Repair attempts: Gemini 2, other 1 · Max output tokens: 16000 · Temperature: 0.0</p>
+    <p>Pricing: 2026-11-03 (2026-11-03) · Source: docs/PRICING.md</p>
+    <p>Runs file: benchmarks/gold_runs_v012_v01205.jsonl · SHA-256 3da25403c788852d2d988bac…</p>
+  </div>
+
+  <h2>Limits</h2>
+  <div class="card">
+    <p>Ground truth is authored by the implementer for synthetic fixtures and validated by a deterministic rule pass; there was no independent human double review. The labels encode this project's judgement, not a customer's. Repeats show run-to-run variation only; they are not a population sample. Verified Docentric AX compatibility remains <strong>not_tested</strong>.</p>
+  </div>
+  <footer>Generated by benchmarks/gold_evaluation.py · no credentials or raw model output are stored in this report.</footer>
+</main>
+</body>
+</html>

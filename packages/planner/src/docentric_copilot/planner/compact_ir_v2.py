@@ -331,6 +331,41 @@ def _column(value: Any, path: str, *, currency_code: str | None) -> tuple[TableC
     return column, Cell(blocks=[Paragraph(runs=[binding], style=style)])
 
 
+_NESTED_COLUMN_KEYS = {"h", "cell", "w", "align"}
+
+
+def _nested_column(
+    value: dict[str, Any], path: str, *, currency_code: str | None
+) -> tuple[TableColumn, Cell]:
+    """A table column whose cell contains nested blocks.
+
+    Wire form: ``{"h": "Tasks", "cell": [BLOCK, ...], "w": 40, "align": "l"}``.
+    The blocks expand inside the outer row scope, so a nested repeat may use the
+    outer alias in its collection path (for example ``line.Tasks.Task``).
+    """
+    v1._check_keys(value, _NESTED_COLUMN_KEYS, path)
+    header = v1._string(v1._required(value, "h", path), f"{path}.h", max_length=200)
+    raw_blocks = v1._required(value, "cell", path)
+    blocks = _expand_blocks(
+        raw_blocks,
+        f"{path}.cell",
+        currency_code=currency_code,
+        required=True,
+    )
+    width = (
+        v1._number(value["w"], f"{path}.w", minimum=5, maximum=200)
+        if value.get("w") is not None
+        else None
+    )
+    alignment = _align(value["align"], f"{path}.align") if value.get("align") is not None else None
+    column = TableColumn(
+        header=header,
+        width_mm=width if width is not None else v1._default_width(None, None),
+        alignment=alignment,
+    )
+    return column, Cell(blocks=blocks)
+
+
 def _expand_table(value: list[Any], path: str, *, currency_code: str | None) -> Table:
     _arity(value, path, minimum=3, maximum=5, form="tbl")
     collection = v1._string(value[1], f"{path}[1]", max_length=512)
@@ -371,15 +406,22 @@ def _expand_table(value: list[Any], path: str, *, currency_code: str | None) -> 
     explicit_width_mm = 0.0
     for index, raw_column in enumerate(columns_raw):
         column_path = v1._index(f"{path}[{columns_index}]", index)
-        column, cell = _column(raw_column, column_path, currency_code=currency_code)
-        if (
-            len(raw_column) >= 3
-            and isinstance(raw_column[2], int | float)
-            and not isinstance(raw_column[2], bool)
-        ):
-            explicit_width_mm += column.width_mm or 0.0
+        if isinstance(raw_column, dict):
+            column, cell = _nested_column(raw_column, column_path, currency_code=currency_code)
+            if raw_column.get("w") is not None:
+                explicit_width_mm += column.width_mm or 0.0
+            else:
+                auto_indexes.append(index)
         else:
-            auto_indexes.append(index)
+            column, cell = _column(raw_column, column_path, currency_code=currency_code)
+            if (
+                len(raw_column) >= 3
+                and isinstance(raw_column[2], int | float)
+                and not isinstance(raw_column[2], bool)
+            ):
+                explicit_width_mm += column.width_mm or 0.0
+            else:
+                auto_indexes.append(index)
         columns.append(column)
         template.append(cell)
 
@@ -693,6 +735,10 @@ Every block is an ARRAY whose first item is the form tag:
 - ["img", "GeneralData.Company.CompanyLogo", 42, "Company logo"]
 - ["tbl", "MainData.QuotationLines.Line",
    [["SKU", "line.ItemId"], ["Amount", "line.LineAmount", 30, "n", 2, "r"]]]
+- ["tbl", "MainData.ServiceOrderLines.Line",
+   [["Item", "line.ItemId"], {"h": "Tasks", "cell": [
+      ["rep", "line.Tasks.Task", "task", [["p", {"f": "task.TaskId"}], ["p", {"f": "task.Hours"}]]]
+   ]}]]
 - ["if", "MainData.Quotation.Customer.IsEU", "eq", true, [BLOCK, ...]]
 - ["rep", "MainData.QuotationLines.Line", [BLOCK, ...]]
 - ["pb"]
@@ -700,6 +746,9 @@ Every block is an ARRAY whose first item is the form tag:
 Blocks are never objects and never carry extra keys. A table is always
 ["tbl", collectionPath, columns, showHeader?, alias?].
 - columns: arrays [header, field, width?, fmt?, decimals?, align?].
+  A column may instead be an object {"h": header, "cell": [BLOCK, ...], "w": width?, "align": align?}
+  when its cell contains nested blocks. The cell blocks expand inside the outer
+  table row scope, so a nested repeat/table can use the outer alias prefix.
 - width is a number in mm; omit it (or use null) to get a default.
 - fmt codes: "n" number, "d" date_iso, "dl" date_long, "c" currency.
 - align codes: "l", "r", "c", "j". Numeric columns default to right.
@@ -736,7 +785,8 @@ Hard rules:
 8. When the requirement says "table", the outer collection MUST be a "tbl"
    block. Do not wrap the outer collection in "rep" and put the table inside
    it; that is a nested list, not the requested table. A nested task/list table
-   may be a "rep" or a "tbl" inside each outer table row.
+   may be a "rep" or a "tbl" inside an object column of the outer table row,
+   using the outer alias prefix and a unique inner alias.
 """
 
 

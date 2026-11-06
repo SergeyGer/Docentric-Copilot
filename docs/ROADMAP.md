@@ -6,7 +6,7 @@
 
 | Field | Value |
 | --- | --- |
-| Current release | 0.11.0 (published); v0.10 in progress (Template IR 1.0) |
+| Current release | 0.12.0 (published); Template IR 1.0 |
 | Overall status | M0–M4 implemented to the extent described below; M5 in progress; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
@@ -165,22 +165,45 @@ are complete for P0: the 32-case dataset and the 288-run report are committed, w
 holdout shown separately. The only open annotation item is independent double review (AT-07 stays
 partial); no runtime compatibility is claimed.
 
-## M7 — v0.11 P1 reference workflow (unreleased)
+## M7 — v0.11 P1 reference workflow (released in 0.11.0)
 
 **Goal:** make the read-only reference evidence usable without pretending it is a native Docentric
-or Word-fidelity result. The package version remains `0.11.0`; this work is under `[Unreleased]`.
+or Word-fidelity result. Released in `0.11.0`; the reliability work continues in M8 (v0.12).
 
 | Item | Status | Notes / partial scope |
 | --- | --- | --- |
 | #26 D365 evidence in ReferenceGraph | Done | `schema_source`/`source_id`/`part#xpath` on schema nodes; exact resolver status on `resolves_to`; evidence coverage and unresolved-by-status summary. Public tests are synthetic; corpus not re-run. |
 | #27 safe Reference → Generic Template IR | Done — partial | Field, Label, List→Repeat, If, Image; skips are explicit; strict/best-effort; no Table inference; generic DOCX only. |
-| #28 visual reference diff | Done — partial | LibreOffice rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; `renderer_unavailable` never pass/fail; not Word fidelity; no real renderer in CI. |
-| #29 persistence/reopen/export | Done — partial | Local SQLite TTL; `POST/GET /reports`; JSON/HTML export; web `?id=`; no committed Playwright E2E. |
+| #28 visual reference diff | Done — partial | LibreOffice rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; `renderer_unavailable` never pass/fail; not Word fidelity. Real pinned LibreOffice/Poppler CI added in v0.12 (V012-07). |
+| #29 persistence/reopen/export | Done — partial | Local SQLite TTL, delete/retention; `POST/GET/DELETE /reports`; JSON/HTML export; web `?id=`; committed Playwright E2E in v0.12 (V012-08/09). |
 | #30 hardening/docs | Done for branch | ADR-0016 (ADR-0015 was already assigned), CHANGELOG/README/REFERENCE_TEMPLATES/EVALUATION/wiki updates, OpenAPI regenerated. |
 | Docentric AX runtime compatibility | **Not tested** | Unchanged; `target=docentric-ax` remains fail-closed. |
 
-Remaining gaps tracked: browser E2E, real-renderer CI evidence, Table/Group/SubDocument/Barcode
-import, corpus-wide D365 graph re-run, and a durable multi-process report store.
+Remaining gaps tracked: Table/Group/SubDocument/Barcode import, image-family expansion and a
+durable multi-process report store. Browser E2E, real-renderer CI and the D365 corpus re-run are
+closed in v0.12 (M8).
+
+## M8 — v0.12 reliability release (0.12.0, 2026-11-06)
+
+**Goal:** make the existing mechanisms provable on the full dataset, a private
+D365 corpus, a real browser and a real renderer, without claiming runtime
+compatibility. Full evidence: [RELEASE_EVIDENCE_V0_12](RELEASE_EVIDENCE_V0_12.md).
+
+| V012 ID | Deliverable | Status | Evidence |
+| --- | --- | --- | --- |
+| V012-01 | Gold dataset audit trail | **Passed** | [GOLD_AUDIT](GOLD_AUDIT.md); AT-07 `partial` |
+| V012-02 | Full 32 × 3 × 3 benchmark | **Passed** | [BENCHMARKS §10](BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02) |
+| V012-03 | Image-family expansion | **Deferred** | Issue #37 → v0.13 |
+| V012-04 | D365 11-document regression | **Passed** | [D365_REGRESSION](D365_REGRESSION.md) |
+| V012-05 | Nested table / repeat alias | **Passed** | [V012-05](V012_05_REGRESSIONS.md) |
+| V012-06 | Reference → IR table inference | **Deferred** | Issue #40 → v0.13 |
+| V012-07 | Real LibreOffice/Poppler CI | **Passed** | [VISUAL_CI](VISUAL_CI.md) |
+| V012-08 | Playwright E2E | **Passed** | [E2E](E2E.md) |
+| V012-09 | Retention/deletion | **Passed** | [REPORT_RETENTION](REPORT_RETENTION.md) |
+| V012-10 | Responsive + release docs | **Passed** | [RESPONSIVE](RESPONSIVE.md) |
+
+Docentric AX runtime compatibility remains **`not_tested`**; no item in M8
+changes that.
 
 ## Next steps (ordered)
 
@@ -206,7 +229,7 @@ import, corpus-wide D365 graph re-run, and a durable multi-process report store.
 ### P2 — scope expansion
 
 10. Locale-aware formatting (dates/numbers) behind an explicit option.
-11. Retention/deletion API and a storage backend suitable for multiple processes.
+11. A storage backend suitable for multiple processes and production-scale retention (the v0.12 delete/TTL API is local SQLite only).
 12. Optional PDF export (requires a renderer and a separate fidelity statement).
 
 ## Blocked items and unblocking conditions
@@ -230,7 +253,7 @@ import, corpus-wide D365 graph re-run, and a durable multi-process report store.
 
 | Initiative | Status | Evidence |
 | --- | --- | --- |
-| Adaptive multi-LLM architecture | Router, policy, budgets and deterministic fallback implemented; 288-run live gold benchmark recorded | `docs/ROUTING.md`, `benchmarks/gold_report.json`, `tests/unit/test_routing_and_quality.py` |
+| Adaptive multi-LLM architecture | Router, policy, budgets and deterministic fallback implemented; 288-run live gold benchmark recorded | `docs/ROUTING.md`, `benchmarks/gold_report_v012.json`, `tests/unit/test_routing_and_quality.py` |
 | AI document quality and visual optimisation | IR-level quality checks and typed optimisation shipped; PDF renderer optional and not enabled | `docs/QUALITY.md`, ADR-0008 |
 | Docentric AX compatibility engine | Interface and capability matrix only, gated and `experimental` | ADR-0009, `docs/DOCENTRIC_AX_COMPATIBILITY.md` |
 

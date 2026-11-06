@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import dataclasses
 import json
-import time
 from pathlib import Path
 
 import pytest
@@ -168,7 +167,8 @@ def test_missing_expired_and_invalid_requests(client: TestClient) -> None:
     persisted = _persist(client)
     report_id = persisted.json()["id"]
     store = client.app.state.store
-    store.purge_expired(now=time.time() + 10_000)
+    record = store.get_reference_report(report_id)
+    store.purge_expired(now=record.expires_at + 1)
     expired = client.get(f"/api/v1/reference/reports/{report_id}")
     assert expired.status_code == 404
     assert expired.json()["error"]["code"] == "reference_report_not_found"
@@ -200,3 +200,50 @@ def test_persist_does_not_write_template_bytes(client: TestClient, tmp_path: Pat
     for path in data_dir.rglob("*"):
         if path.is_file() and path.name != "copilot.db":
             assert path.suffix not in {".docx", ".axpp", ".zip"}
+
+
+def test_delete_report_removes_it_and_verifies_not_found(client: TestClient) -> None:
+    persisted = _persist(client)
+    report_id = persisted.json()["id"]
+    deleted = client.delete(f"/api/v1/reference/reports/{report_id}")
+    assert deleted.status_code == 204, deleted.text
+    assert deleted.content == b""
+
+    missing = client.get(f"/api/v1/reference/reports/{report_id}")
+    assert missing.status_code == 404
+    assert missing.json()["error"]["code"] == "reference_report_not_found"
+    export = client.get(f"/api/v1/reference/reports/{report_id}/export", params={"format": "json"})
+    assert export.status_code == 404
+    assert export.json()["error"]["code"] == "reference_report_not_found"
+
+    again = client.delete(f"/api/v1/reference/reports/{report_id}")
+    assert again.status_code == 404
+    assert again.json()["error"]["code"] == "reference_report_not_found"
+
+
+def test_delete_unknown_report_is_404(client: TestClient) -> None:
+    response = client.delete("/api/v1/reference/reports/ref_does_not_exist")
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "reference_report_not_found"
+
+
+def test_report_ttl_is_independent_from_artifact_ttl(tmp_path: Path, corpus: Path) -> None:
+    settings = dataclasses.replace(
+        get_settings(),
+        data_dir=tmp_path / "ttl-data",
+        reference_corpus_roots=(corpus,),
+        artifact_ttl_seconds=60,
+        reference_report_ttl_seconds=7_200,
+    )
+    application = create_app(settings)
+    with TestClient(application) as test_client:
+        persisted = _persist(test_client)
+        assert persisted.status_code == 200, persisted.text
+        envelope = persisted.json()
+        assert envelope["expires_at"] - envelope["created_at"] == pytest.approx(7_200, abs=1)
+
+
+def test_public_settings_expose_the_report_retention() -> None:
+    view = get_settings().public_view()
+    assert view["reference_report_ttl_seconds"] >= 60
+    assert isinstance(view["reference_report_ttl_seconds"], int)

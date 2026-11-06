@@ -858,6 +858,7 @@ template, and always report `runtime_compatibility: "not_tested"`.
 | `POST` | `/api/v1/reference/reports` | Persist an inspection/graph/diff envelope (#29) |
 | `GET` | `/api/v1/reference/reports/{id}` | Reopen a persisted reference report |
 | `GET` | `/api/v1/reference/reports/{id}/export` | JSON or safe HTML export |
+| `DELETE` | `/api/v1/reference/reports/{id}` | Delete one report and its evidence (`204`; second delete `404`) |
 
 ### 8.1 `POST /api/v1/reference/d365`
 
@@ -968,7 +969,8 @@ enables `docentric-ax` and never claims Docentric AX runtime compatibility. See
 ### 8.3 `POST /api/v1/reference/reports`
 
 Runs the reference analysis server-side and persists the serialized envelope in local SQLite under
-the artifact TTL (default 3600 seconds). Query `kind` is `inspection` (report + graph, default),
+the report TTL `DC_REFERENCE_REPORT_TTL_SECONDS` (default 86400 seconds; separate from the artifact
+TTL). Query `kind` is `inspection` (report + graph, default),
 `graph` or `diff` (multipart `left`/`right` or `left_path`/`right_path`). No source template bytes
 are stored. The response contains `id`, `kind`, `schema_version`, `created_at`, `expires_at`,
 `source_name`, `source_sha256`, `report`, `graph`, `diff`, `warnings` and
@@ -976,5 +978,8 @@ are stored. The response contains `id`, `kind`, `schema_version`, `created_at`, 
 
 `GET /api/v1/reference/reports/{id}` reopens the same envelope; missing or expired ids return HTTP
 `404` with `reference_report_not_found`. `GET .../export?format=json|html` returns the complete JSON
-or a self-contained, HTML-escaped export suitable for review. See
+or a self-contained, HTML-escaped export suitable for review. `DELETE .../{id}` returns `204` and
+removes the row immediately; GET, export and a second delete then return `404` with the same stable
+code. Retention, storage contents, backup/restore and multi-process limits are documented in
+[REPORT_RETENTION](REPORT_RETENTION.md). See
 [REFERENCE_TEMPLATES §29](REFERENCE_TEMPLATES.md#29--persistence-reopen-and-export).

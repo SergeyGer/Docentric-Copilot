@@ -669,6 +669,26 @@ async def get_reference_report_endpoint(
     return _stored_envelope(store.get_reference_report(report_id))
 
 
+@router.delete("/reports/{report_id}", status_code=204)
+async def delete_reference_report_endpoint(
+    report_id: str,
+    store: Store = Depends(get_store),
+) -> Response:
+    """Delete one persisted reference report and its evidence.
+
+    A second delete, a missing id or an expired id returns 404 with the same
+    stable ``reference_report_not_found`` code. Deletion is immediate: GET and
+    export after a successful delete are 404.
+    """
+    if not store.delete_reference_report(report_id):
+        raise NotFoundError(
+            "Reference report not found",
+            code="reference_report_not_found",
+            details={"report_id": report_id},
+        )
+    return Response(status_code=204)
+
+
 @router.get("/reports/{report_id}/export")
 async def export_reference_report_endpoint(
     report_id: str,

@@ -18,7 +18,7 @@ def _read(relative: str) -> str:
 
 def test_versions_agree_across_the_distribution_and_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == __version__ == "0.11.0"
+    assert pyproject["project"]["version"] == __version__ == "0.12.0"
     assert json.loads(_read("apps/web/package.json"))["version"] == __version__
 
     readme = _read("README.md")
@@ -186,13 +186,13 @@ def test_v011_p1_docs_state_the_partial_scope_and_version_consistency() -> None:
     assert "planned p1" not in reference.casefold()
 
     readme = _read("README.md")
-    assert "v0.11 P1 status (unreleased)" in readme
+    assert "v0.11 P1 status (released in 0.11.0)" in readme
     assert "Docentric AX runtime compatibility | `not_tested`" in readme
     assert "ADR-0016" in readme
     assert "0.11.0" in readme
 
     roadmap = _read("docs/ROADMAP.md")
-    assert "M7 — v0.11 P1 reference workflow (unreleased)" in roadmap
+    assert "M7 — v0.11 P1 reference workflow (released in 0.11.0)" in roadmap
     assert "PR-06 safe Reference → generic Template IR" in roadmap
 
     evaluation = _read("docs/EVALUATION.md")
@@ -233,3 +233,79 @@ def test_no_corpus_material_is_referenced_in_committed_docs() -> None:
     assert "Docentric AX Examples.zip" not in reference
     for name in ("HcmNumberOfWorkersReport", "PurchPurchaseOrder", "RetailLabel"):
         assert name not in reference
+
+
+def test_v012_release_evidence_and_version_alignment() -> None:
+    changelog = _read("CHANGELOG.md")
+    assert "## [0.12.0] - 2026-11-06" in changelog
+    assert "## [Unreleased]" in changelog
+    evidence = _read("docs/RELEASE_EVIDENCE_V0_12.md")
+    for v012 in (
+        "V012-01",
+        "V012-02",
+        "V012-03",
+        "V012-04",
+        "V012-05",
+        "V012-06",
+        "V012-07",
+        "V012-08",
+        "V012-09",
+        "V012-10",
+    ):
+        assert v012 in evidence
+    for marker in (
+        "AT-07",
+        "partial",
+        "not_tested",
+        "Deferred",
+        "Passed",
+        "independent human review",
+        "v0.12.0",
+    ):
+        assert marker in evidence
+
+    readme = _read("README.md")
+    assert "v0.12 status" in readme
+    assert "0.12.0" in readme
+    assert "Deferred" in readme
+    assert "not_tested" in readme
+
+    roadmap = _read("docs/ROADMAP.md")
+    assert "M8 — v0.12 reliability release" in roadmap
+    assert "Current release | 0.12.0" in roadmap
+
+    openapi = json.loads(_read("docs/openapi.json"))
+    assert openapi["info"]["version"] == __version__ == "0.12.0"
+
+
+def test_v012_p1_items_have_honest_status_and_targets() -> None:
+    evidence = _read("docs/RELEASE_EVIDENCE_V0_12.md")
+    assert "V012-03 | Image-family expansion | **Deferred**" in evidence
+    assert "V012-06 | Reference → IR table inference | **Deferred**" in evidence
+    assert "#37" in evidence and "#40" in evidence
+    assert "v0.13" in evidence
+    assert "V012-09 | Report retention/deletion | **Passed**" in evidence
+    assert "V012-10 | Responsive + release docs | **Passed**" in evidence
+    assert "No status is represented as a single" in evidence
+
+
+def test_e2e_visual_and_retention_docs_are_present() -> None:
+    for path in (
+        "docs/E2E.md",
+        "docs/VISUAL_CI.md",
+        "docs/V012_05_REGRESSIONS.md",
+        "docs/REPORT_RETENTION.md",
+        "docs/RESPONSIVE.md",
+        "docs/D365_REGRESSION.md",
+        "docs/GOLD_AUDIT.md",
+        "benchmarks/visual_renderer_lock.json",
+    ):
+        assert (ROOT / path).exists(), path
+    e2e = _read("docs/E2E.md")
+    assert "trace.zip" in e2e and "failure.png" in e2e
+    visual = _read("docs/VISUAL_CI.md")
+    assert "visual_not_checked" in visual
+    assert "LibreOffice" in visual and "Poppler" in visual
+    retention = _read("docs/REPORT_RETENTION.md")
+    assert "DELETE /api/v1/reference/reports/{id}" in retention
+    assert "DC_REFERENCE_REPORT_TTL_SECONDS" in retention

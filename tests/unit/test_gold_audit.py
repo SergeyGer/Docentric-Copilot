@@ -227,7 +227,7 @@ def test_summary_drift_is_detected() -> None:
 def test_versions_are_imported_from_the_product_code() -> None:
     assert FULL_PROMPT_VERSION == PROMPT_VERSION == "planner-v1"
     assert COMPACT_PROMPT_VERSION == COMPACT_V2_GENERATOR == "compact-ir-v2"
-    assert PLANNER_VERSION == "0.12.0"
+    assert PLANNER_VERSION == "0.12.1"
 
 
 def test_seed_and_check_round_trip(tmp_path) -> None:

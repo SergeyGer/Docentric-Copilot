@@ -8,7 +8,33 @@ version (`1.0`) independent of the distribution version.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-06
+
 ### Added
+- v0.12 PR-5 (#39) V012-05 regressions: compact-v2 object columns now express an outer table
+  whose row contains a nested repeat/table (`{"h": ..., "cell": [...]}`); the planner runs a typed
+  structural validator (`plan_table_hierarchy`, `plan_nested_table_wrapper`,
+  `plan_table_without_rows`) before compile/export; repeat aliases are unique per real scope.
+  Conditional branches and independent table cells are separate scopes, and a same-scope conflict
+  is renamed deterministically (`line` -> `line_2`) with an `alias_conflict_resolved` repair note.
+  The targeted nested subset (27 runs, 3 providers × 3 repeats) completed 23/23 evaluable runs
+  correctly with 4 Gemini `structured_output` technical failures; spend $0.4761.
+- v0.12 PR-5 (#41) V012-07 real visual-diff CI: `scripts/visual_ci.py` requires a real
+  LibreOffice/Poppler stack matching `benchmarks/visual_renderer_lock.json`, generates identical /
+  page-break / table-width / image-displacement / missing-font fixtures, fails closed on renderer
+  unavailability or version drift, and publishes per-case PDFs, page PNGs, reports and
+  `summary.json`. The dedicated `Visual Diff` workflow pins `libreoffice-writer`
+  `4:24.2.7-0ubuntu0.24.04.7`, `poppler-utils` `24.02.0-1ubuntu9.11` and `fonts-dejavu-core`
+  `2.37-8`, and uploads the evidence.
+- v0.12 PR-5 (#43) V012-09 report retention and deletion: a dedicated
+  `DC_REFERENCE_REPORT_TTL_SECONDS` (default 86400, separate from the artifact TTL),
+  `DELETE /api/v1/reference/reports/{id}` returning 204, verified 404 after deletion, and
+  `docs/REPORT_RETENTION.md` covering stored data, expiry, backup/restore, SQLite limits and
+  deletion tests.
+- v0.12 PR-5 (#44) V012-10 responsive and release documentation: Playwright checks at
+  1280/768/390 px with no horizontal overflow, a 390 px minimum supported width, a v0.12 release
+  evidence package, aligned package/web/OpenAPI/README/ROADMAP versions and honest V012-03/V012-06
+  Deferred statuses with target v0.13.
 - v0.12 PR-2 (#36) full semantic benchmark: 32 cases × 3 providers × 3 repeats = 288 logical runs
   on dataset `2.0.0` (`8489e4c0...`), with 284 completed, 4 technical failures (`structured_output`,
   visible with reasons), 0 skipped, 277 semantic passes and 276 correct runs. Precision 0.9535,
@@ -25,8 +51,6 @@ version (`1.0`) independent of the distribution version.
 - Evaluator `1.0.1` separates technical failures from semantic denominators and adds
   `technical_failure_rate`, `valid_template_rate_executed`, cost per completed/semantic-pass run
   and explicit planned/completed/technical/skipped counters.
-
-### Added
 - v0.12 PR-1 (#35) gold dataset audit trail: `benchmarks/gold_audit.py` writes and verifies
   `benchmarks/gold_adjudication_log.json` (32/32 cases with before/after snapshots, status,
   change type, rationale, UTC timestamp and dataset SHA-256), `benchmarks/gold_manifest.json`

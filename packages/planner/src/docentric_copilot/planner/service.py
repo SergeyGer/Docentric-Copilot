@@ -66,6 +66,7 @@ from docentric_copilot.template_ir import (
 )
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from .aliases import resolve_alias_conflicts
 from .candidates import CandidateSet, retrieve_candidates, type_matches
 from .compact_ir import (
     COMPACT_GENERATOR,
@@ -83,6 +84,7 @@ from .heuristic import BASELINE_VERSION, build_document
 from .prompt import build_messages, build_repair_message
 from .revision_ops import apply_revision
 from .revisions import Change, diff_documents, summarize_changes
+from .structure import structural_findings
 
 _MAX_REQUIREMENTS = 12
 _CLAUSE_SPLIT = re.compile(r"(?:[,;\n]|\band\b|\.\s)", re.IGNORECASE)
@@ -1061,9 +1063,11 @@ class TemplatePlanner:
             compact_ir=resolved_options.compact_ir,
             compact_version=resolved_options.compact_version,
             domain_schema=schema,
+            requirement=requirement,
         )
 
         document = document.model_copy(update={"target": resolved_options.target})
+        document, alias_repairs = resolve_alias_conflicts(document)
         sanitized, removed = sanitize_document(document, schema)
         binding_reviews = (
             review_bindings(sanitized, schema, candidate_set) if candidate_set is not None else []
@@ -1076,12 +1080,14 @@ class TemplatePlanner:
             candidate_set=candidate_set,
             binding_reviews=[review.to_dict() for review in binding_reviews],
         )
-        repairs = (
-            [f"Removed {len(removed)} unresolvable reference(s) before compilation"]
-            if removed
-            else []
-        )
+        repairs = list(alias_repairs)
+        if removed:
+            repairs.append(f"Removed {len(removed)} unresolvable reference(s) before compilation")
         warnings: list[str] = []
+        if alias_repairs:
+            warnings.append(
+                f"{len(alias_repairs)} repeat alias conflict(s) resolved deterministically"
+            )
         if provider != "mock" and sanitized.metadata.generator != BASELINE_VERSION:
             sanitized = sanitized.model_copy(
                 update={
@@ -1181,6 +1187,7 @@ class TemplatePlanner:
         compact_ir: bool = False,
         compact_version: str = "v2",
         domain_schema: NormalizedSchema | None = None,
+        requirement: str | None = None,
     ) -> tuple[GenerationResult, Document]:
         """Generate, validate/expand, and retry repairable failures.
 
@@ -1236,6 +1243,16 @@ class TemplatePlanner:
                                 ]
                             },
                         ) from exc
+                if requirement:
+                    findings = structural_findings(document, requirement)
+                    if findings:
+                        raise PlanInvalidError(
+                            "The generated plan does not satisfy the requested table structure",
+                            details={
+                                "errors": findings,
+                                "path": findings[0]["location"],
+                            },
+                        )
                 return result, document
             except PlanInvalidError as exc:
                 last_error = exc

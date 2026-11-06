@@ -127,6 +127,9 @@ class Settings:
     data_dir: Path = Path(".data")
     limits: Limits = field(default_factory=Limits)
     artifact_ttl_seconds: int = 3600
+    #: Persisted reference reports are evidence, not artifacts: keep them longer
+    #: than generated files, and still delete them automatically on expiry.
+    reference_report_ttl_seconds: int = 86_400
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     enable_docentric_ax_adapter: bool = False
     #: Directories the reference inspector may read through the HTTP ``path``
@@ -159,6 +162,7 @@ class Settings:
             "environment": self.environment,
             "docentric_ax_adapter_enabled": self.enable_docentric_ax_adapter,
             "artifact_ttl_seconds": self.artifact_ttl_seconds,
+            "reference_report_ttl_seconds": self.reference_report_ttl_seconds,
             "providers": [
                 p.public_view() for p in sorted(self.providers.values(), key=lambda p: p.name)
             ],
@@ -227,6 +231,9 @@ def _build_settings() -> Settings:
             max_text_length=_env_int("DC_MAX_TEXT_LENGTH", 20_000, minimum=100),
         ),
         artifact_ttl_seconds=_env_int("DC_ARTIFACT_TTL_SECONDS", 3600, minimum=60),
+        reference_report_ttl_seconds=_env_int(
+            "DC_REFERENCE_REPORT_TTL_SECONDS", 86_400, minimum=60
+        ),
         cors_origins=tuple(origins),
         enable_docentric_ax_adapter=_env_bool("DC_ENABLE_AX_ADAPTER", False),
         reference_corpus_roots=tuple(

@@ -926,3 +926,40 @@ fixes. Those fixes are covered by deterministic regression fixtures and a
 separate targeted run; the 288-run artifacts are not spliced or edited. The
 v0.10 full report and the v0.11 affected subset remain historical artifacts for
 different datasets/repeat counts.
+
+## 2.11 V012-05 affected regression (nested tables and aliases)
+
+After the V012-05 changes, the three nested-list cases were re-run on all three
+providers with 3 repeats each (27 logical runs). The purpose is to verify the
+specific #39 defects, not to re-rank models; the result is **not** spliced into
+the full 288-run matrix.
+
+| Metric | Value |
+| --- | ---: |
+| Planned runs | 27 |
+| Completed (evaluable) | 23 |
+| Technical failures (`structured_output`, Gemini) | 4 |
+| Valid templates among completed | 23 / 23 |
+| Semantic passes among evaluable | 23 / 23 |
+| Precision / recall / F1 | 1.0000 / 1.0000 / 1.0000 |
+| Semantic pass rate (evaluable) | **100.0%** |
+| Valid-template rate (completed) | **100.0%** |
+| Technical-failure rate | 14.8% (4/27) |
+| Spend | $0.4761 (verified $0.4656 + estimated $0.0105) |
+| Report | [gold_report_v012_v01205.json](../benchmarks/gold_report_v012_v01205.json) |
+| Sanitized runs | [gold_runs_v012_v01205.jsonl](../benchmarks/gold_runs_v012_v01205.jsonl) |
+
+- **OpenAI**: 9/9 completed, 9/9 correct.
+- **Anthropic**: 9/9 completed, 9/9 correct. The previous V3-002 duplicate
+  alias valid-template miss does not occur; the alias scope/rename fix works.
+- **Gemini**: 9 planned, 5 completed, 5/5 semantically correct, 4
+  `structured_output` technical failures. No completed run fails the table
+  hierarchy or the semantic assertions. The compact-v2 object column now
+  expresses the nested table; the remaining Gemini failures are provider JSON
+  mode failures, reported as technical and excluded from the semantic
+  denominator, not as structural or semantic passes.
+
+The full 288-run matrix was produced before these fixes (commit `05bb713`). Its
+nested-list rows therefore show the pre-fix 2/9 Gemini semantic result and the
+Anthropic V3-002 miss. The two artifacts are shown separately and are not
+spliced; see [BENCHMARKS §10](BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).

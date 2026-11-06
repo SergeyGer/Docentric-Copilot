@@ -8,10 +8,10 @@
 | Status | **Implementation candidate — not tagged** |
 | Compatibility | Docentric AX runtime **`not_tested`**; AT-07 **`partial`** |
 
-> This is not a claim that every v0.13 P0 deliverable is complete. V013-03 and
-> V013-04 remain Partial, V013-06 is Deferred because no Word for the web access
-> exists, and V013-09/V013-10 are Deferred. The tag is deliberately not created
-> while those P0 items are open. See the honest status table below.
+> This is not a claim that every v0.13 P0 deliverable is complete. V013-03 remains
+> Partial, V013-06 is Deferred because no Word for the web access exists, and
+> V013-09/V013-10 are Deferred. The tag is deliberately not created while those
+> P0 items are open. See the honest status table below.
 
 ## 1. What was implemented
 
@@ -53,26 +53,29 @@ ordinals to the projected schema evidence. It supports:
 - repeated data rows backed by a schema collection (never inferred from similar names alone);
 - alias-relative field paths and image cells;
 - nested static tables;
-- explicit blocking diagnostics for merged/ragged cells, ambiguous headers, missing collection
-  evidence and unsupported cell structures;
+- optional cells with an `If` control become `Conditional` cells;
+- explicit blocking diagnostics for merged/ragged cells, ambiguous headers and missing collection
+  evidence;
 - strict mode refuses on diagnostics; best-effort returns the supported subset with `skipped[]`.
 
-Not complete: optional table cells (`If/Else` cell), footer/summary rows after a repeated block,
-nested table with its own repeat under the outer row alias, and multiple repeated row shapes. These
-are listed in the feature matrix and remain open work.
+Not complete: footer/summary rows after a repeated block, a nested table with its own repeat under
+the outer row alias, and multiple repeated row shapes. These are listed in the feature matrix and
+remain open work.
 
-### V013-04 — First-page header (Partial)
+### V013-04 — First-page header (Passed)
 
 - `Section.first_page_header` in IR 1.1 (`None` = normal header, `[]` = blank first-page header).
 - Compiler emits `w:titlePg`, a first-page header part and `headerReference w:type="first"`;
   the default header has no logo; the first-page footer keeps PAGE/NUMPAGES fields.
 - Preview renders the first-page header only on page 1 and the default header on later pages.
 - The planner (heuristic, compact v1 and compact v2 `fh`) can place the logo on the first page only.
-- Tests cover one-page, multi-page, blank first header, footer page fields, preview vs DOCX and
-  aspect-ratio behavior.
+Multi-section support is now real: each IR section becomes a Word section (`WD_SECTION.NEW_PAGE`),
+`None` headers/footers inherit from the previous section, an explicit empty list suppresses the
+first-page header, and each section can have its own `titlePg`/first-page header. Preview applies the
+same inheritance and selects the first-page header only on the first page of each section.
 
-Not complete: the compiler still emits one Word section; secondary IR sections are flattened with a
-warning. True multi-section header inheritance is a known limitation.
+Tests cover one-page, multi-page, blank first header, footer page fields, two-section inheritance,
+per-section first-page headers, preview vs DOCX and page numbering.
 
 ### V013-05 — Reference Evaluation (Passed)
 
@@ -106,7 +109,7 @@ independent correctness.
 | V013-01 | Feature Coverage Matrix | **Passed** | [FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md), `benchmarks/feature_coverage.json` |
 | V013-02 | Image family | **Passed** (synthetic scenarios) | `tests/unit/test_v013_images_headers.py`, `tests/unit/test_candidate_filtering.py` |
 | V013-03 | Table inference | **Partial** | `table_inference.py`, `tests/unit/test_v013_table_inference.py`; limitations above |
-| V013-04 | First-page header | **Partial** | `tests/unit/test_v013_images_headers.py`; multi-section limitation above |
+| V013-04 | First-page header | **Passed** | `tests/unit/test_v013_images_headers.py`; multi-section inheritance tested |
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web | **Deferred** | [WORD_WEB_VALIDATION_V013](WORD_WEB_VALIDATION_V013.md), #53 |
 | V013-07 | Live Demo | **Passed** | `tests/unit/test_v013_demo_state.py`, `tests/unit/test_v013_demo_app.py` |
@@ -157,13 +160,11 @@ separate artifact from the v0.12 288-run matrix and must not be spliced with it.
 
 ## 5. Known limitations
 
-- **Not a tagged release.** V013-03/V013-04 Partial and V013-06/V013-09/V013-10 Deferred are P0 gaps.
+- **Not a tagged release.** V013-03 Partial and V013-06/V013-09/V013-10 Deferred are P0 gaps.
 - **Docentric AX runtime compatibility remains `not_tested`.** No execution in a licensed environment.
 - **AT-07 remains `partial`.** No independent human review of the gold labels.
 - **Table inference is deliberately conservative.** It refuses merged/ragged tables, ambiguous
-  headers, missing collection evidence and unsupported cell structures instead of guessing.
-- **One Word section.** Secondary IR-section headers are flattened; first-page headers apply to the
-  primary section only.
+  headers, missing collection evidence and unsupported nested-repeat structures instead of guessing.
 - **Images are synthetic-tested.** The private D365 corpus has no dedicated product-image family.
 - **Word for the web not tested.** The manual checklist and fixture command exist; no pass is claimed.
 - **No videos.** Storyboard/outline exist; no MP4/YouTube claim.

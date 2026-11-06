@@ -404,3 +404,97 @@ def test_wrong_scope_image_is_rejected_inside_a_line_repeat() -> None:
     )
     report = ValidationEngine().validate(document, schema)
     assert "V2-003" in _codes(report)
+
+
+def test_multi_section_headers_and_footer_inheritance(planned, schema, sample_data):
+    from docentric_copilot.template_ir import Document, DocumentMetadata, Section
+
+    document = Document(
+        title="Multi-section invoice",
+        metadata=DocumentMetadata(
+            template_name="multi_section",
+            source_schema_id=schema.schema_id,
+        ),
+        sections=[
+            Section(
+                name="Main",
+                body=[
+                    Paragraph(runs=[TextRun(text="SECTION ONE")]),
+                    PageBreak(),
+                    Paragraph(runs=[TextRun(text="SECTION ONE PAGE TWO")]),
+                ],
+                header=[Paragraph(runs=[TextRun(text="DEFAULT-ONE")])],
+                first_page_header=[Paragraph(runs=[TextRun(text="FIRST-ONE")])],
+                footer=[Paragraph(runs=[TextRun(text="FOOTER-ONE")])],
+            ),
+            Section(
+                name="Terms",
+                body=[Paragraph(runs=[TextRun(text="SECTION TWO")])],
+                header=[Paragraph(runs=[TextRun(text="SECOND-HEADER")])],
+                footer=None,
+            ),
+        ],
+    )
+    compiled = _compile(document, schema, sample_data)
+    with zipfile.ZipFile(io.BytesIO(compiled.content)) as package:
+        xml = package.read("word/document.xml").decode("utf-8")
+    assert xml.count("<w:sectPr") == 2
+    assert xml.count("<w:titlePg") == 1
+    headers = _header_parts(compiled.content)
+    combined = "\n".join(headers.values())
+    assert "FIRST-ONE" in combined
+    assert "DEFAULT-ONE" in combined
+    assert "SECOND-HEADER" in combined
+
+    from docentric_copilot.preview import render_preview
+
+    preview = render_preview(document, schema, sample_data=sample_data)
+    html = preview.html
+    assert html.count('class="page"') == 3
+    assert html.count("FIRST-ONE") == 1
+    assert html.count("DEFAULT-ONE") == 1  # page 2 of section 1
+    assert html.count("SECOND-HEADER") == 1
+    # Section 2 has no footer blocks; it inherits the previous footer in Word.
+    assert html.count("FOOTER-ONE") == 2
+    assert "Page 1 of 3" in html and "Page 3 of 3" in html
+    assert html.index("FIRST-ONE") < html.index("DEFAULT-ONE") < html.index("SECOND-HEADER")
+
+
+def test_multi_section_first_page_header_is_per_section(planned, schema, sample_data):
+    from docentric_copilot.template_ir import Document, DocumentMetadata, Section
+
+    document = Document(
+        title="Two first pages",
+        metadata=DocumentMetadata(
+            template_name="two_first_pages",
+            source_schema_id=schema.schema_id,
+        ),
+        sections=[
+            Section(
+                name="One",
+                body=[Paragraph(runs=[TextRun(text="ONE")])],
+                header=[Paragraph(runs=[TextRun(text="H1")])],
+                first_page_header=[Paragraph(runs=[TextRun(text="F1")])],
+            ),
+            Section(
+                name="Two",
+                body=[Paragraph(runs=[TextRun(text="TWO")])],
+                header=[Paragraph(runs=[TextRun(text="H2")])],
+                first_page_header=[Paragraph(runs=[TextRun(text="F2")])],
+            ),
+        ],
+    )
+    compiled = _compile(document, schema, sample_data)
+    with zipfile.ZipFile(io.BytesIO(compiled.content)) as package:
+        xml = package.read("word/document.xml").decode("utf-8")
+    assert xml.count("<w:titlePg") == 2
+    headers = _header_parts(compiled.content)
+    combined = "\n".join(headers.values())
+    assert all(text in combined for text in ("F1", "H1", "F2", "H2"))
+    from docentric_copilot.preview import render_preview
+
+    preview = render_preview(document, schema, sample_data=sample_data)
+    assert preview.html.count("F1") == 1
+    assert preview.html.count("F2") == 1
+    assert preview.html.count("H1") == 0
+    assert preview.html.count("H2") == 0

@@ -30,6 +30,9 @@ from docentric_copilot.template_ir import (
     Alignment,
     Block,
     Cell,
+    Conditional,
+    Expression,
+    ExpressionOperator,
     FieldBinding,
     ImageBinding,
     Paragraph,
@@ -130,6 +133,8 @@ def _paragraph_blocks(
     cell: etree._Element,
     by_ordinal: dict[int, ProjectionElement],
     rewrite: Callable[[str], str | None],
+    *,
+    skip_kinds: frozenset[str] = frozenset(),
 ) -> list[Block]:
     blocks: list[Block] = []
     for paragraph in cell.findall(_q("p")):
@@ -139,7 +144,7 @@ def _paragraph_blocks(
             if ordinal is None:
                 continue
             element = by_ordinal.get(int(ordinal))
-            if element is not None:
+            if element is not None and element.kind.value not in skip_kinds:
                 controls.append(element)
         if controls:
             for element in controls:
@@ -391,14 +396,8 @@ class _TableParser:
             else [control.display_label for control in data_row.controls]
         )
         headers = [header or f"Column {index + 1}" for index, header in enumerate(headers)]
-        template = [
-            Cell(
-                blocks=cell.blocks if not cell.nested else [nested.table for nested in cell.nested]
-            )
-            for cell in data_row.cells
-        ]
-        # Rebuild bound cell blocks with the alias-relative paths. Nested tables
-        # were already rewritten by _parse_cell using the outer scope.
+        # Rebuild bound cell blocks with alias-relative paths. Conditional
+        # cells keep their condition and then/else blocks.
         template = [Cell(blocks=self._relative_blocks(cell, rewrite)) for cell in data_row.cells]
         width_mm = round(180.0 / column_count, 1)
         table = Table(
@@ -423,15 +422,8 @@ class _TableParser:
     def _relative_blocks(
         self, cell: _CellData, rewrite: Callable[[str], str | None]
     ) -> list[Block]:
-        blocks: list[Block] = []
-        for element in cell.controls:
-            block = _element_block(element, rewrite)
-            if block is not None:
-                blocks.append(block)
-        if not blocks:
-            blocks = cell.blocks
-        if cell.nested:
-            blocks.extend(nested.table for nested in cell.nested)
+        blocks = _relativize_blocks(cell.blocks, rewrite)
+        blocks.extend(nested.table for nested in cell.nested)
         return blocks
 
     def _parse_cell(
@@ -452,14 +444,15 @@ class _TableParser:
             for ordinal in sorted(ordinals)
             if (element := self._by_ordinal.get(ordinal)) is not None
         )
+        if_elements = [element for element in controls if element.kind.value == "if"]
         for element in controls:
-            if element.kind.value in {"list", "if"}:
+            if element.kind.value == "list":
                 self._diagnostics.append(
                     TableDiagnostic(
                         code="TABLE_CELL_STRUCTURE_UNSUPPORTED",
                         message=(
-                            f"Cell control '{element.display_label}' ({element.kind.value}) "
-                            "needs a repeat/conditional cell, which is not inferred in v0.13."
+                            f"Cell control '{element.display_label}' (list) needs a nested "
+                            "repeat cell, which is not inferred in v0.13."
                         ),
                         table_ordinal=table_ordinal,
                         blocking=False,
@@ -469,7 +462,25 @@ class _TableParser:
             collection=outer[0] if outer else None,
             alias=outer[1] if outer else None,
         )
-        blocks = _paragraph_blocks(cell, self._by_ordinal, rewrite)
+        blocks = _paragraph_blocks(
+            cell,
+            self._by_ordinal,
+            rewrite,
+            skip_kinds=frozenset({"if"}),
+        )
+        if if_elements:
+            condition_path = if_elements[0].schema_path or if_elements[0].binding_path
+            if condition_path:
+                condition_field = rewrite(condition_path) or _sanitize_path(condition_path)
+                blocks = [
+                    Conditional(
+                        condition=Expression(
+                            operator=ExpressionOperator.NOT_NULL,
+                            field=condition_field,
+                        ),
+                        then_blocks=blocks,
+                    )
+                ]
         nested: list[InferredTable] = []
         for nested_element in cell.findall(_q("tbl")):
             nested_result = self._parse_table(nested_element, outer=outer)
@@ -503,6 +514,51 @@ class _TableParser:
             ordinals=frozenset(ordinal for row in rows for ordinal in row.ordinals),
             provenance=((f"table:{table_ordinal}", "static-table"),),
         )
+
+
+def _relativize_blocks(
+    blocks: Sequence[Block], rewrite: Callable[[str], str | None]
+) -> list[Block]:
+    result: list[Block] = []
+    for block in blocks:
+        if isinstance(block, Paragraph):
+            runs: list[TextRun | FieldBinding] = []
+            for run in block.runs:
+                if isinstance(run, FieldBinding):
+                    path = rewrite(run.path)
+                    if path is None:
+                        continue
+                    runs.append(run.model_copy(update={"path": path}))
+                else:
+                    runs.append(run)
+            if runs:
+                result.append(block.model_copy(update={"runs": runs}))
+        elif isinstance(block, ImageBinding):
+            if block.source.value != "schema":
+                result.append(block)
+                continue
+            path = rewrite(block.path)
+            if path is not None:
+                result.append(block.model_copy(update={"path": path}))
+        elif isinstance(block, Conditional):
+            field = block.condition.field
+            new_condition = block.condition
+            if field:
+                rewritten = rewrite(field)
+                if rewritten is not None:
+                    new_condition = block.condition.model_copy(update={"field": rewritten})
+            result.append(
+                block.model_copy(
+                    update={
+                        "condition": new_condition,
+                        "then_blocks": _relativize_blocks(block.then_blocks, rewrite),
+                        "else_blocks": _relativize_blocks(block.else_blocks or [], rewrite) or None,
+                    }
+                )
+            )
+        else:
+            result.append(block)
+    return result
 
 
 def infer_tables(

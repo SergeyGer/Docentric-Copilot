@@ -156,31 +156,37 @@ class _PreviewRenderer:
     # ------------------------------------------------------------------ public
     def render(self, document: Document) -> PreviewResult:
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())
-        section = document.sections[0]
-        header = self._render_blocks(section.header or [], context)
-        first_header = (
-            self._render_blocks(section.first_page_header, context)
-            if section.first_page_header is not None
-            else None
-        )
-        footer = self._render_blocks(section.footer or [], context)
-        body_parts = [self._render_blocks(section.body, context)]
-        for extra in document.sections[1:]:
-            body_parts.append(
-                '<div style="page-break-before: always; border-top: 1px dashed #e2e8f0; '
-                'margin-top: 24px; padding-top: 16px;"></div>'
+        sections: list[tuple[str, str | None, str, list[str]]] = []
+        for section in document.sections:
+            header = self._render_blocks(section.header or [], context)
+            first_header = (
+                self._render_blocks(section.first_page_header, context)
+                if section.first_page_header is not None
+                else None
             )
-            body_parts.append(self._render_blocks(extra.body, context))
-        raw_body = "".join(body_parts)
-        chunks = list(raw_body.split('<div class="page-break" aria-hidden="true"></div>'))
-        total_pages = max(1, len(chunks))
+            footer = self._render_blocks(section.footer or [], context)
+            raw_body = self._render_blocks(section.body, context)
+            chunks = list(raw_body.split('<div class="page-break" aria-hidden="true"></div>')) or [
+                ""
+            ]
+            sections.append((header, first_header, footer, chunks))
+
+        pages = [
+            (section_index, chunk_index, chunk)
+            for section_index, (_header, _first, _footer, chunks) in enumerate(sections)
+            for chunk_index, chunk in enumerate(chunks)
+        ]
+        if not pages:
+            pages = [(0, 0, "")]
+        total_pages = len(pages)
         fallback_header = (
             f"<span>{html.escape(document.title)}</span>"
             f"<span>{html.escape(document.metadata.template_name.replace('_', ' ').title())}</span>"
         )
         pages_html = []
-        for index, chunk in enumerate(chunks):
-            use_first = index == 0 and first_header is not None
+        for page_index, (section_index, chunk_index, chunk) in enumerate(pages):
+            header, first_header, footer, _chunks = sections[section_index]
+            use_first = chunk_index == 0 and first_header is not None
             page_header = first_header if use_first else header
             header_html = page_header if page_header else fallback_header
             footer_html = (
@@ -194,7 +200,7 @@ class _PreviewRenderer:
                 f'<div class="page-body">{chunk}</div>'
                 '<div class="page-footer">'
                 f"{footer_html}"
-                f"<span>Page {index + 1} of {total_pages}</span>"
+                f"<span>Page {page_index + 1} of {total_pages}</span>"
                 "</div>"
                 "</section>"
             )
@@ -211,9 +217,9 @@ class _PreviewRenderer:
                     "bottom": page.margin_bottom_mm,
                     "left": page.margin_left_mm,
                 },
-                header=header,
+                header="",
                 body=body_html,
-                footer=footer,
+                footer="",
             ),
             warnings=self._warnings,
             stats=self._stats,

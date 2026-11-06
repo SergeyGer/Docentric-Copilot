@@ -47,6 +47,7 @@ from docentric_copilot.template_ir import (
 )
 from docx import Document as DocxDocument
 from docx.document import Document as DocxDocumentType
+from docx.enum.section import WD_SECTION
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
 from docx.oxml import OxmlElement, parse_xml
@@ -212,28 +213,15 @@ class _Renderer:
         doc = DocxDocument()
         self._doc = doc
         self._apply_document_styles(doc)
-        self._apply_page_settings(doc)
         self._apply_core_properties(doc)
-
-        first_section = self._document.sections[0]
-        self._render_header_footer(doc, first_section, is_header=True)
-        self._render_header_footer(doc, first_section, is_header=False)
-        self._decorate_header(doc.sections[0].header)
-        self._decorate_footer(doc.sections[0].footer)
-        if first_section.first_page_header is not None:
-            self._render_first_page(first_section)
-
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())
+
         for index, section in enumerate(self._document.sections):
-            if index:
-                doc.add_page_break()
-                if section.header or section.footer:
-                    self._warnings.append(
-                        "Headers and footers of secondary sections are not rendered "
-                        "(single Word section output)"
-                    )
+            word_section = doc.sections[0] if index == 0 else doc.add_section(WD_SECTION.NEW_PAGE)
+            self._render_section_headers(word_section, section, is_first=index == 0)
             self._render_blocks(doc, section.body, context)
 
+        self._apply_page_settings(doc)
         if self._options.include_compatibility_stamp:
             doc.add_paragraph()
             paragraph = doc.add_paragraph()
@@ -268,27 +256,44 @@ class _Renderer:
             style.paragraph_format.space_after = Pt(after)
             style.paragraph_format.keep_with_next = True
 
-    def _render_first_page(self, section: Section) -> None:
-        """Render a distinct page-1 header and keep the footer on page 1.
+    def _render_section_headers(
+        self, word_section: Any, section: Section, *, is_first: bool
+    ) -> None:
+        """Render one IR section's default, first-page and inherited headers.
 
-        ``first_page_header is not None`` enables Word's ``titlePg`` switch. An
-        empty list is meaningful: it suppresses the default header on page 1
-        while pages 2+ keep it. The first-page footer is populated explicitly so
-        page numbers do not disappear on page 1.
+        IR sections become real Word sections. A header/footer that is ``None``
+        stays linked to the previous section (Word inheritance); an empty list
+        on the first-page header is meaningful and suppresses it on page 1.
         """
-        word_section = self._document_section
-        word_section.different_first_page_header_footer = True
-        self._render_header_blocks(word_section.first_page_header, section.first_page_header or [])
-        self._decorate_header(word_section.first_page_header)
-        if section.footer:
-            self._render_header_blocks(word_section.first_page_footer, section.footer)
-        self._decorate_footer(word_section.first_page_footer)
+        if section.header is not None:
+            header = word_section.header
+            header.is_linked_to_previous = False
+            self._render_header_blocks(header, section.header)
+            self._decorate_header(header)
 
-    @property
-    def _document_section(self) -> Any:
-        # The compiler emits one Word section per document in v0.13; IR sections
-        # are represented by page breaks. See the secondary-section warning.
-        return self._doc.sections[0]
+        if section.footer is not None:
+            footer = word_section.footer
+            footer.is_linked_to_previous = False
+            self._render_header_blocks(footer, section.footer)
+            self._decorate_footer(footer)
+        elif is_first:
+            # Even without custom footer blocks, page numbers must be present.
+            self._decorate_footer(word_section.footer)
+
+        if section.first_page_header is None:
+            word_section.different_first_page_header_footer = False
+        else:
+            word_section.different_first_page_header_footer = True
+            first_header = word_section.first_page_header
+            first_header.is_linked_to_previous = False
+            self._render_header_blocks(first_header, section.first_page_header)
+            self._decorate_header(first_header)
+
+            first_footer = word_section.first_page_footer
+            first_footer.is_linked_to_previous = False
+            if section.footer:
+                self._render_header_blocks(first_footer, section.footer)
+            self._decorate_footer(first_footer)
 
     def _decorate_header(self, header: Any) -> None:
         paragraphs = [paragraph for paragraph in header.paragraphs if paragraph.text.strip()]
@@ -363,16 +368,6 @@ class _Renderer:
         props.modified = FIXED_DATETIME
         props.revision = 1
         props.language = self._document.language
-
-    def _render_header_footer(
-        self, doc: DocxDocumentType, section: Section, *, is_header: bool
-    ) -> None:
-        blocks = section.header if is_header else section.footer
-        if not blocks:
-            return
-        word_section = doc.sections[0]
-        container = word_section.header if is_header else word_section.footer
-        self._render_header_blocks(container, blocks)
 
     def _render_header_blocks(self, container: Any, blocks: list[Block]) -> None:
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())

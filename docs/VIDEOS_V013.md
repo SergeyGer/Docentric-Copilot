@@ -17,7 +17,7 @@ The v0.13 specification makes two videos P0 deliverables:
 - Publishing requires a YouTube channel/OAuth session that this environment does
   not have. Uploading is an external action, not a repository operation.
 - A 5–7 minute technical video needs a final, reviewed code walkthrough and
-  narration; producing it before the V013-03/V013-04 code is final would create
+  narration; producing it before the V013-03 code is final would create
   the same staleness problem.
 
 The videos are tracked by issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).

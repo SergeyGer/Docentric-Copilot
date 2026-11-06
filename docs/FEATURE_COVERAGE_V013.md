@@ -38,7 +38,7 @@ The table scan covered 9 parsed payloads and observed 17 tables, 32 rows and 1 n
 | Groups | 1 | Supported | Supported | Unsupported | Unsupported | Not Tested |
 | Barcode | 15 | Supported | Supported | Unsupported | Unsupported | Not Tested |
 | SummaryField | 9 | Supported | Supported | Unsupported | Unsupported | Not Tested |
-| Headers / Footers | 196 | Supported | Supported | Supported | Partial | Supported |
+| Headers / Footers | 196 | Supported | Supported | Supported | Supported | Supported |
 | Multiple DataSources | 1 | Supported | Supported | Partial | Supported | Supported |
 
 Supported means a regression test exists for the claimed level. Partial means the construct is represented but a listed limitation remains. Unsupported means the importer/compiler deliberately refuses the construct and lists it in `skipped[]`; it is never silently dropped.
@@ -97,7 +97,7 @@ Status: Parsing `partial`, ReferenceGraph `unsupported`, Template IR `supported`
 Evidence: `packages/reference-inspector/src/docentric_copilot/reference/table_inference.py`, `tests/unit/test_v013_table_inference.py`, `tests/unit/test_validator_and_compiler.py`.
 
 Limitations:
-- The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells, footer rows and optional cells are diagnosed rather than silently converted.
+- The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells and missing collection evidence are diagnosed rather than silently converted. Optional cells are inferred as Conditional; footer rows and nested repeats remain open.
 
 ### Repeated Table Rows
 
@@ -115,7 +115,7 @@ Status: Parsing `partial`, ReferenceGraph `unsupported`, Template IR `supported`
 Evidence: `tests/unit/test_v013_table_inference.py::test_nested_table_is_preserved_in_the_cell`, `tests/unit/test_v012_regressions.py`.
 
 Limitations:
-- Static nested tables are preserved. A nested table with its own repeat inside an outer repeated row is not fully inferred in v0.13.
+- Static nested tables are preserved. A nested table with its own repeat under an outer repeated row is not inferred; it is listed as unsupported rather than producing a wrong-scope table.
 
 ### SubDocuments
 
@@ -155,12 +155,9 @@ Limitations:
 
 ### Headers / Footers
 
-Status: Parsing `supported`, ReferenceGraph `supported`, Template IR `supported`, DOCX Compiler `partial`, Validation `supported`.
+Status: Parsing `supported`, ReferenceGraph `supported`, Template IR `supported`, DOCX Compiler `supported`, Validation `supported`.
 
 Evidence: `tests/unit/test_v013_images_headers.py`, `docs/RELEASE_EVIDENCE_V0_12.md`, `docs/RESPONSIVE.md`.
-
-Limitations:
-- The compiler emits one Word section; secondary IR-section headers are flattened with a warning. First-page header support covers the primary section only.
 
 ### Multiple DataSources
 
@@ -175,15 +172,12 @@ Limitations:
 
 - Image collection with a schema-backed collection of image payloads
 - Nested table whose inner table has its own collection repeat under the outer row
-- Optional table cell with an If/Else control
 - Table footer/summary row after repeated data rows
-- Secondary Word section header inheritance (compiler currently emits one Word section)
 - Word for the web manual validation evidence
 
 ## Further work
 
 - #37 image-family benchmark expansion (v0.13 scope, not completed)
-- #40 complex table inference follow-ups (optional cells, footer rows, nested repeats)
 
 ## Status vocabulary
 

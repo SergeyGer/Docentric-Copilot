@@ -11,7 +11,7 @@ from __future__ import annotations
 from docentric_copilot.planner import COMPACT_V2_GENERATOR, PLANNER_VERSION, PROMPT_VERSION
 
 #: Version of the evaluator/scoring rules in ``benchmarks/gold_evaluation.py``.
-EVALUATOR_VERSION = "1.0.0"
+EVALUATOR_VERSION = "1.0.1"
 
 #: Version of the benchmark runner entry point and its CLI contract.
 BENCHMARK_RUNNER_VERSION = "1.0.0"

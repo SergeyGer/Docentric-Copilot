@@ -907,3 +907,22 @@ must not be read as an improvement over the adjudicated gold benchmark.
 Consequently, the v0.10/2.0.0 gold results and the v0.11 affected-subset results remain the only
 measured semantic claims. Docentric AX runtime compatibility remains `not_tested`, and none of the
 P1 features is evidence for changing it.
+
+## 2.10 v0.12 full benchmark (V012-02)
+
+The v0.12 release re-runs the full 32-case × 3-provider × 3-repeat matrix on the
+frozen `gold-cases/v2` dataset. The committed manifest
+[gold_manifest_v012.json](../benchmarks/gold_manifest_v012.json) pins every
+logical run and the dataset/report/runs hashes; the aggregate result and its
+limits are in [BENCHMARKS §10](BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).
+
+Result: **284 completed + 4 technical + 0 skipped = 288 planned**, **277
+semantic passes**, precision **0.9535**, recall **1.0000**, semantic pass
+**97.54%** of evaluable runs, valid-template rate **99.65%** of completed runs.
+Technical failures are reported separately and are not semantic failures.
+
+This full run was produced on commit `05bb713` before the V012-05 alias/table
+fixes. Those fixes are covered by deterministic regression fixtures and a
+separate targeted run; the 288-run artifacts are not spliced or edited. The
+v0.10 full report and the v0.11 affected subset remain historical artifacts for
+different datasets/repeat counts.

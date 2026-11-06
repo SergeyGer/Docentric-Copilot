@@ -554,8 +554,9 @@ def _aggregate(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     excluded_semantic = len(all_semantic) - len(semantic)
     valid = [run for run in planned if run.get("valid_template")]
     correct = [run for run in planned if run.get("correct")]
-    abstained_runs = sum(1 for run in runs if run.get("abstained"))
-    review_runs = sum(1 for run in runs if run.get("review_requirements"))
+    technical_failures = len(runs) - len(planned)
+    abstained_runs = sum(1 for run in planned if run.get("abstained"))
+    review_runs = sum(1 for run in planned if run.get("review_requirements"))
 
     precision_tp = sum(int(item["true_positives"]) for item in semantic)
     precision_den = sum(
@@ -634,20 +635,24 @@ def _aggregate(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "block_coverage": _ratio(block_satisfied, block_total),
         "block_numerator": block_satisfied,
         "block_denominator": block_total,
-        "semantic_pass_rate": _ratio(semantic_passes, max(0, len(runs) - excluded_semantic)),
+        "semantic_pass_rate": _ratio(semantic_passes, len(semantic)),
+        "semantic_pass_rate_planned": _ratio(semantic_passes, len(planned)),
         "semantic_passes": semantic_passes,
         "semantic_excluded_runs": excluded_semantic,
-        "semantic_denominator": max(0, len(runs) - excluded_semantic),
+        "semantic_denominator": len(semantic),
+        "technical_failure_runs": technical_failures,
+        "technical_failure_rate": _ratio(technical_failures, len(runs)),
         "abstained_runs": abstained_runs,
-        "abstention_rate": _ratio(abstained_runs, len(runs)),
+        "abstention_rate": _ratio(abstained_runs, len(planned)),
         "review_runs": review_runs,
-        "review_rate": _ratio(review_runs, len(runs)),
+        "review_rate": _ratio(review_runs, len(planned)),
         "review_requirements": sum(len(run.get("review_requirements") or []) for run in runs),
         "pass_at_k": _pass_at_k(
             runs, max((int(run.get("repeat") or 1) for run in runs), default=1)
         ),
         "succeeded_runs": len(planned),
-        "valid_template_rate": _ratio(len(valid), len(runs)),
+        "valid_template_rate": _ratio(len(valid), len(planned)),
+        "valid_template_rate_executed": _ratio(len(valid), len(runs)),
         "validation_pass_rate": _ratio(
             sum(1 for run in planned if run.get("validation_passed")), len(planned)
         ),
@@ -671,6 +676,10 @@ def _aggregate(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "cost_complete": complete_cost,
         "cost_per_correct_result_usd": cost_per_correct,
         "cost_per_correct_result_status": cost_per_correct_status,
+        "cost_per_completed_run_usd": (round(total_cost / len(planned), 6) if planned else None),
+        "cost_per_semantic_pass_usd": (
+            round(total_cost / semantic_passes, 6) if semantic_passes else None
+        ),
         "error_counts": dict(sorted(error_counts.items())),
         "primary_error_counts": dict(sorted(primary_counts.items())),
     }
@@ -991,7 +1000,7 @@ def _write_html(path: Path, report: Mapping[str, Any]) -> None:
               <h2>{html.escape(provider["provider"])} <span class="muted">{html.escape(provider["model"] or "")}</span></h2>
               <p class="muted">Runs: {metrics["runs"]} · planned: {metrics["planned_runs"]} · valid templates: {metrics["valid_runs"]} · correct: {metrics["correct_runs"]} · cost: {_cost_cell(metrics)}</p>
               <p>Precision {_fmt(metrics["precision"])} · Recall {_fmt(metrics["recall"])} · F1 {_fmt(metrics["f1"])} · Coverage {_fmt(metrics["requirement_coverage"])} · Type/context {_fmt(metrics["type_context_correctness"])} · Semantic pass {_pct(metrics["semantic_pass_rate"])}</p>
-              <p>Valid template rate <strong>{_pct(metrics["valid_template_rate"])}</strong> is reported separately from the semantic metrics.</p>
+              <p>Valid template rate <strong>{_pct(metrics["valid_template_rate"])}</strong> over completed runs is reported separately from the semantic metrics. Technical failures: {metrics.get("technical_failure_runs", 0)} ({_pct(metrics.get("technical_failure_rate"))}).</p>
               {proxy_note}{status_note}
             </section>
             """
@@ -1512,6 +1521,7 @@ def main(argv: list[str] | None = None) -> int:
         "skipped_runs": max(0, planned_runs - len(runs)),
         "succeeded_runs": total_aggregate["succeeded_runs"],
         "failed_runs": total_aggregate["failed_runs"],
+        "technical_failure_runs": total_aggregate["technical_failure_runs"],
         "valid_template_runs": total_aggregate["valid_runs"],
         "semantic_pass_runs": total_aggregate["semantic_passes"],
         "semantic_excluded_runs": total_aggregate["semantic_excluded_runs"],
@@ -1561,6 +1571,7 @@ def main(argv: list[str] | None = None) -> int:
             "splits": dict(sorted(Counter(str(case.get("split")) for case in definitions).items())),
             "skipped_runs": max(0, planned_runs - len(runs)),
             "failed_runs": total_aggregate["failed_runs"],
+            "technical_failure_runs": total_aggregate["technical_failure_runs"],
             "succeeded_runs": total_aggregate["succeeded_runs"],
             "gap_cases": list(metadata.get("gap_cases") or []),
             "families": dict(
@@ -1655,7 +1666,7 @@ def main(argv: list[str] | None = None) -> int:
         "notes": [
             OBSERVATIONS_NOTE,
             "Labels were authored by the implementer and adjudicated by benchmarks/adjudicate_labels.py, a deterministic independent proxy. No second human annotator exists, so AT-07 remains partial.",
-            "valid_template_rate is the deterministic validation + compilation rate and is never folded into precision, recall or F1.",
+            "valid_template_rate is the deterministic validation + compilation rate over completed logical runs; technical failures are counted separately in technical_failure_rate and are not semantic failures. The rate is never folded into precision, recall or F1.",
             "Gemini 3.6-flash is unpriced; its cost is estimated with the named proxy and is never reported as $0.00.",
             "Ground truth is authored for synthetic fixtures and reflects this project's judgement.",
             "Image-family labels are reported separately; no image case is excluded as a label gap.",

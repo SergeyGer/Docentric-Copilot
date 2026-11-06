@@ -220,7 +220,7 @@ weakening the compatibility gate. Evidence:
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web validation | **Deferred** | Issue #53; no Microsoft 365/OneDrive access |
 | V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation state, download regression |
-| V013-08 | Final quality benchmark | **Pending** | Full 288-run benchmark in progress |
+| V013-08 | Final quality benchmark | **Passed** | [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08); 288 planned, 276 completed, 12 technical, 272 semantic passes |
 | V013-09 | Product demo video | **Deferred** | Issue #54; no production/publishing pipeline in this environment |
 | V013-10 | Technical deep-dive video | **Deferred** | Issue #54 |
 

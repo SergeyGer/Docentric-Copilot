@@ -38,7 +38,7 @@ The table scan covered 9 parsed payloads and observed 17 tables, 32 rows and 1 n
 | Groups | 1 | Supported | Supported | Unsupported | Unsupported | Not Tested |
 | Barcode | 15 | Supported | Supported | Unsupported | Unsupported | Not Tested |
 | SummaryField | 9 | Supported | Supported | Unsupported | Unsupported | Not Tested |
-| Headers / Footers | 196 | Supported | Supported | Supported | Supported | Supported |
+| Headers / Footers | 196 | Supported | Supported | Supported | Partial | Supported |
 | Multiple DataSources | 1 | Supported | Supported | Partial | Supported | Supported |
 
 Supported means a regression test exists for the claimed level. Partial means the construct is represented but a listed limitation remains. Unsupported means the importer/compiler deliberately refuses the construct and lists it in `skipped[]`; it is never silently dropped.
@@ -77,6 +77,9 @@ Evidence: `tests/unit/test_validator_and_compiler.py`, `tests/golden_files/expec
 Status: Parsing `supported`, ReferenceGraph `supported`, Template IR `supported`, DOCX Compiler `supported`, Validation `supported`.
 
 Evidence: `tests/unit/test_v013_images_headers.py`, `tests/unit/test_reference_import_ir.py`, `tests/golden_files/expected/image-binding/ir.json`.
+
+Limitations:
+- All IMG-01…IMG-09 scenarios are proven on synthetic schemas/fixtures; the private corpus has no dedicated product-image family, so corpus-level image correctness remains unmeasured.
 
 ### Image Collections
 
@@ -152,12 +155,12 @@ Limitations:
 
 ### Headers / Footers
 
-Status: Parsing `supported`, ReferenceGraph `supported`, Template IR `supported`, DOCX Compiler `supported`, Validation `supported`.
+Status: Parsing `supported`, ReferenceGraph `supported`, Template IR `supported`, DOCX Compiler `partial`, Validation `supported`.
 
 Evidence: `tests/unit/test_v013_images_headers.py`, `docs/RELEASE_EVIDENCE_V0_12.md`, `docs/RESPONSIVE.md`.
 
 Limitations:
-- The compiler emits one Word section; secondary IR-section headers are still flattened with a warning. First-page header support covers the primary section.
+- The compiler emits one Word section; secondary IR-section headers are flattened with a warning. First-page header support covers the primary section only.
 
 ### Multiple DataSources
 

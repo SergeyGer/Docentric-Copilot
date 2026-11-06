@@ -36,7 +36,13 @@
     "table_scan_documents": 9,
     "nested_list_controls": 4
   },
-  "levels": ["parsing", "reference_graph", "template_ir", "compiler", "validation"],
+  "levels": [
+    "parsing",
+    "reference_graph",
+    "template_ir",
+    "compiler",
+    "validation"
+  ],
   "features": [
     {
       "id": "field_value_binding",
@@ -49,7 +55,11 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_schema_and_ir.py", "tests/unit/test_validator_and_compiler.py", "tests/unit/test_reference_graph_d365.py"],
+      "evidence": [
+        "tests/unit/test_schema_and_ir.py",
+        "tests/unit/test_validator_and_compiler.py",
+        "tests/unit/test_reference_graph_d365.py"
+      ],
       "limitations": []
     },
     {
@@ -63,7 +73,11 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_schema_and_ir.py", "tests/unit/test_validator_and_compiler.py", "tests/golden_files/expected/nested-list/ir.json"],
+      "evidence": [
+        "tests/unit/test_schema_and_ir.py",
+        "tests/unit/test_validator_and_compiler.py",
+        "tests/golden_files/expected/nested-list/ir.json"
+      ],
       "limitations": []
     },
     {
@@ -77,8 +91,13 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_v012_regressions.py", "tests/golden_files/expected/nested-list/ir.json"],
-      "limitations": ["The graph preserves parent/child element ids; nested collection inference from tables is covered only for the simple table shape."]
+      "evidence": [
+        "tests/unit/test_v012_regressions.py",
+        "tests/golden_files/expected/nested-list/ir.json"
+      ],
+      "limitations": [
+        "The graph preserves parent/child element ids; nested collection inference from tables is covered only for the simple table shape."
+      ]
     },
     {
       "id": "if_else",
@@ -91,7 +110,10 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_validator_and_compiler.py", "tests/golden_files/expected/conditional-vat/ir.json"],
+      "evidence": [
+        "tests/unit/test_validator_and_compiler.py",
+        "tests/golden_files/expected/conditional-vat/ir.json"
+      ],
       "limitations": []
     },
     {
@@ -105,8 +127,14 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_v013_images_headers.py", "tests/unit/test_reference_import_ir.py", "tests/golden_files/expected/image-binding/ir.json"],
-      "limitations": []
+      "evidence": [
+        "tests/unit/test_v013_images_headers.py",
+        "tests/unit/test_reference_import_ir.py",
+        "tests/golden_files/expected/image-binding/ir.json"
+      ],
+      "limitations": [
+        "All IMG-01\u2026IMG-09 scenarios are proven on synthetic schemas/fixtures; the private corpus has no dedicated product-image family, so corpus-level image correctness remains unmeasured."
+      ]
     },
     {
       "id": "image_collections",
@@ -119,8 +147,13 @@
         "compiler": "supported",
         "validation": "partial"
       },
-      "evidence": ["tests/unit/test_v013_images_headers.py::test_static_images_expand_inside_repeat", "tests/unit/test_candidate_filtering.py::test_product_image_candidate_is_scoped_to_the_line_collection"],
-      "limitations": ["Image controls exist in Repeat and table row templates, but the corpus has no dedicated image-collection case and wrong-scope detection is proven on synthetic schemas only."]
+      "evidence": [
+        "tests/unit/test_v013_images_headers.py::test_static_images_expand_inside_repeat",
+        "tests/unit/test_candidate_filtering.py::test_product_image_candidate_is_scoped_to_the_line_collection"
+      ],
+      "limitations": [
+        "Image controls exist in Repeat and table row templates, but the corpus has no dedicated image-collection case and wrong-scope detection is proven on synthetic schemas only."
+      ]
     },
     {
       "id": "tables",
@@ -133,8 +166,14 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["packages/reference-inspector/src/docentric_copilot/reference/table_inference.py", "tests/unit/test_v013_table_inference.py", "tests/unit/test_validator_and_compiler.py"],
-      "limitations": ["The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells, footer rows and optional cells are diagnosed rather than silently converted."]
+      "evidence": [
+        "packages/reference-inspector/src/docentric_copilot/reference/table_inference.py",
+        "tests/unit/test_v013_table_inference.py",
+        "tests/unit/test_validator_and_compiler.py"
+      ],
+      "limitations": [
+        "The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells, footer rows and optional cells are diagnosed rather than silently converted."
+      ]
     },
     {
       "id": "repeated_table_rows",
@@ -147,8 +186,13 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_v013_table_inference.py::test_header_and_repeated_row_become_a_table_repeat", "tests/unit/test_validator_and_compiler.py::TestCompiler::test_document_content"],
-      "limitations": ["Header/data-row separation requires one static header row; multiple repeated row shapes are diagnosed as ambiguous rather than guessed."]
+      "evidence": [
+        "tests/unit/test_v013_table_inference.py::test_header_and_repeated_row_become_a_table_repeat",
+        "tests/unit/test_validator_and_compiler.py::TestCompiler::test_document_content"
+      ],
+      "limitations": [
+        "Header/data-row separation requires one static header row; multiple repeated row shapes are diagnosed as ambiguous rather than guessed."
+      ]
     },
     {
       "id": "nested_tables",
@@ -161,8 +205,13 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_v013_table_inference.py::test_nested_table_is_preserved_in_the_cell", "tests/unit/test_v012_regressions.py"],
-      "limitations": ["Static nested tables are preserved. A nested table with its own repeat inside an outer repeated row is not fully inferred in v0.13."]
+      "evidence": [
+        "tests/unit/test_v013_table_inference.py::test_nested_table_is_preserved_in_the_cell",
+        "tests/unit/test_v012_regressions.py"
+      ],
+      "limitations": [
+        "Static nested tables are preserved. A nested table with its own repeat inside an outer repeated row is not fully inferred in v0.13."
+      ]
     },
     {
       "id": "subdocuments",
@@ -175,8 +224,12 @@
         "compiler": "unsupported",
         "validation": "not_tested"
       },
-      "evidence": ["tests/unit/test_reference_import_ir.py"],
-      "limitations": ["Sub-documents remain reference-only; the importer lists them in skipped[] and never inlines them."]
+      "evidence": [
+        "tests/unit/test_reference_import_ir.py"
+      ],
+      "limitations": [
+        "Sub-documents remain reference-only; the importer lists them in skipped[] and never inlines them."
+      ]
     },
     {
       "id": "groups",
@@ -189,8 +242,12 @@
         "compiler": "unsupported",
         "validation": "not_tested"
       },
-      "evidence": ["tests/unit/test_reference_import_ir.py"],
-      "limitations": ["Group semantics are not confirmed for generic IR; groups are skipped explicitly."]
+      "evidence": [
+        "tests/unit/test_reference_import_ir.py"
+      ],
+      "limitations": [
+        "Group semantics are not confirmed for generic IR; groups are skipped explicitly."
+      ]
     },
     {
       "id": "barcode",
@@ -203,8 +260,12 @@
         "compiler": "unsupported",
         "validation": "not_tested"
       },
-      "evidence": ["tests/unit/test_reference_import_ir.py"],
-      "limitations": ["Barcode is reference-only and is never replaced by plain text."]
+      "evidence": [
+        "tests/unit/test_reference_import_ir.py"
+      ],
+      "limitations": [
+        "Barcode is reference-only and is never replaced by plain text."
+      ]
     },
     {
       "id": "summary_field",
@@ -217,8 +278,12 @@
         "compiler": "unsupported",
         "validation": "not_tested"
       },
-      "evidence": ["tests/unit/test_reference_import_ir.py"],
-      "limitations": ["Complex summary expressions are unsupported and preserved as reference data."]
+      "evidence": [
+        "tests/unit/test_reference_import_ir.py"
+      ],
+      "limitations": [
+        "Complex summary expressions are unsupported and preserved as reference data."
+      ]
     },
     {
       "id": "headers_footers",
@@ -228,11 +293,17 @@
         "parsing": "supported",
         "reference_graph": "supported",
         "template_ir": "supported",
-        "compiler": "supported",
+        "compiler": "partial",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_v013_images_headers.py", "docs/RELEASE_EVIDENCE_V0_12.md", "docs/RESPONSIVE.md"],
-      "limitations": ["The compiler emits one Word section; secondary IR-section headers are still flattened with a warning. First-page header support covers the primary section."]
+      "evidence": [
+        "tests/unit/test_v013_images_headers.py",
+        "docs/RELEASE_EVIDENCE_V0_12.md",
+        "docs/RESPONSIVE.md"
+      ],
+      "limitations": [
+        "The compiler emits one Word section; secondary IR-section headers are flattened with a warning. First-page header support covers the primary section only."
+      ]
     },
     {
       "id": "multiple_datasources",
@@ -245,8 +316,13 @@
         "compiler": "supported",
         "validation": "supported"
       },
-      "evidence": ["tests/unit/test_reference_graph_d365.py", "tests/unit/test_reference_import_ir.py"],
-      "limitations": ["The reference graph resolves multiple D365 DataSources, but an imported document uses a single synthetic schema id and a flat section."]
+      "evidence": [
+        "tests/unit/test_reference_graph_d365.py",
+        "tests/unit/test_reference_import_ir.py"
+      ],
+      "limitations": [
+        "The reference graph resolves multiple D365 DataSources, but an imported document uses a single synthetic schema id and a flat section."
+      ]
     }
   ],
   "missing_tests": [

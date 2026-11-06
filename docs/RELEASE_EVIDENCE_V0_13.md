@@ -110,7 +110,7 @@ independent correctness.
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
 | V013-06 | Word for the web | **Deferred** | [WORD_WEB_VALIDATION_V013](WORD_WEB_VALIDATION_V013.md), #53 |
 | V013-07 | Live Demo | **Passed** | `tests/unit/test_v013_demo_state.py`, `tests/unit/test_v013_demo_app.py` |
-| V013-08 | Final quality benchmark | **Pending** | Filled by the full 288-run run; see §4 |
+| V013-08 | Final quality benchmark | **Passed** | §4: 288 planned, 276 completed, 12 technical, 272 semantic passes |
 | V013-09 | Product Demo video | **Deferred** | [VIDEOS_V013](VIDEOS_V013.md), #54 |
 | V013-10 | Technical video | **Deferred** | [VIDEOS_V013](VIDEOS_V013.md), #54 |
 
@@ -123,9 +123,37 @@ D365 11/246/233/13 and tool versions. Checked by `tests/unit/test_v013_baseline.
 
 ## 4. Final quality benchmark
 
-**Pending in this candidate.** The full 32 × 3 × 3 run is executing on the frozen dataset with the
-v0.13 planner/IR. This section will be replaced with the completed counters, spend, hashes and
-limitations before any release decision.
+Full 32 × 3 × 3 run on the frozen `gold-cases/v2` `2.0.0` dataset (SHA-256 `8489e4c0…`).
+Artifacts: `benchmarks/gold_report_v013.json`, `.csv`, `.html`, `benchmarks/gold_runs_v013.jsonl`,
+`benchmarks/gold_manifest_v013.json` (manifest SHA-256
+`e393fea266db9e545a38303d2fec87121748df4e10852054bc0746c54718138d`).
+
+| Counter | Value |
+| --- | ---: |
+| Planned logical runs | 288 |
+| Completed | 276 |
+| Technical failures | 12 (all Gemini `structured_output`) |
+| Skipped | 0 |
+| Semantic passes | 272 |
+| Correct runs | 272 |
+| Valid-template runs | 276 |
+
+| Metric | Value |
+| --- | ---: |
+| Precision | 0.9552 |
+| Recall | 0.9988 |
+| F1 | 0.9765 |
+| Semantic pass rate (completed) | 98.55% (272/276) |
+| Valid-template rate (completed) | 100% (276/276) |
+| Technical-failure rate | 4.17% (12/288) |
+| pass@2 | 97.92% |
+| p50 / p95 latency | 3.643 s / 8.266 s |
+| Spend | $4.1669 = $4.0314 verified + $0.1355 estimated |
+
+The 12 Gemini failures are technical (`structured_output`), not semantic passes. The run was made
+from working-tree commit `d263402` with the v0.13 dirty paths recorded in the manifest; it is a
+separate artifact from the v0.12 288-run matrix and must not be spliced with it. AT-07 remains
+`partial`: the labels are owner-authored with a deterministic proxy, not independent human review.
 
 ## 5. Known limitations
 

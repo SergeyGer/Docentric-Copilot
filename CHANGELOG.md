@@ -31,6 +31,10 @@ not created while those P0 items are open.
   (`benchmarks/reference_evaluation_v013.json`, `docs/REFERENCE_EVALUATION_V013.md`).
 - Live demo version panel (application, git SHA, IR, provider, model, execution mode, build time),
   deterministic confirmation application, and a DOCX-download regression test.
+- Full v0.13 benchmark: 32 × 3 providers × 3 repeats, 288 planned / 276 completed / 12
+  Gemini `structured_output` technical failures / 0 skipped / 272 semantic passes; precision
+  0.9552, recall 0.9988, F1 0.9765, semantic pass 98.55% of completed, valid template 100%,
+  pass@2 97.92%, spend $4.1669. Manifest `e393fea2…`; the run is separate from v0.12.
 - Word-for-the-web and video status/checklist pages with issues #53/#54; both are explicitly
   Deferred and are not reported as passes.
 

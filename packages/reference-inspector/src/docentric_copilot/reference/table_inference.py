@@ -373,6 +373,24 @@ class _TableParser:
             return None
         metadata_row = rows[0] if data_index == 1 else None
         data_row = rows[data_index]
+        trailing = rows[data_index + 1 :]
+        if trailing:
+            code = (
+                "TABLE_MULTIPLE_REPEATED_ROWS"
+                if any(row.controls for row in trailing)
+                else "TABLE_FOOTER_UNSUPPORTED"
+            )
+            self._diagnostics.append(
+                TableDiagnostic(
+                    code=code,
+                    message=(
+                        "Rows after the first repeated data row are not represented; the table "
+                        "uses one repeated row template and lists this limitation."
+                    ),
+                    table_ordinal=table_ordinal,
+                    blocking=True,
+                )
+            )
         collection_raw = _collection_for(data_row.controls, self._collection_paths)
         if collection_raw is None:
             self._diagnostics.append(

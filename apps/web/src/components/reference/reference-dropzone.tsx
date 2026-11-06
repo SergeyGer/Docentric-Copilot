@@ -132,6 +132,7 @@ export function ReferenceDropzone({
         <input
           ref={inputRef}
           id={id}
+          data-testid={`${id}-input`}
           type="file"
           accept={accept}
           disabled={disabled}

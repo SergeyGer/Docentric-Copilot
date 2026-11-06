@@ -24,6 +24,15 @@ version (`1.0`) independent of the distribution version.
   paths, document hashes or credentials.
 - `PLANNER_VERSION` is now exported by the planner package and pinned by benchmark manifests;
   `benchmarks/versions.py` is the single source for evaluator and runner versions.
+- v0.12 PR-4 (#42) committed Playwright/Chromium E2E suite (`tests/e2e/`): the
+  `/reference` happy path (upload → inspect/save → Overview/Controls/Graph/Diff → reload → reopen
+  by `?id=` → JSON/HTML export) and negative paths (invalid DOCX, oversized upload, unknown report
+  id, simulated `storage_unavailable`, unsupported construct kept visible). The fixture starts the
+  real FastAPI and built Next.js apps on free fixed ports, clears provider keys, uses generated
+  synthetic fixtures, records the Chromium version and saves `failure.png` + `trace.zip` on failure;
+  an intentional probe proves the artifact mechanism in CI. A dedicated `E2E` CI job installs
+  pinned `playwright==1.64.1` + Chromium, uploads artifacts and asserts the probe files. Stable
+  `data-testid` selectors, `docs/E2E.md`, `make e2e` and README commands are included.
 - v0.12 PR-3 (#38) private D365 corpus regression: `scripts/d365_regression.py` expands the ignored
   corpus, requires 11 DOCX, builds the ReferenceGraph, records private per-document hashes/digests/
   diagnostics under `.local-artifacts/d365-regression/`, repeats the analysis for digest stability

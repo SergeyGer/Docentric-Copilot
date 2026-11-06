@@ -3,7 +3,7 @@ PYTHON ?= python3.12
 VENV ?= .venv
 BIN := $(VENV)/bin
 
-.PHONY: help install install-dev install-web test test-cov lint typecheck format bench eval openapi dev-api dev-web docker-up docker-down clean ci
+.PHONY: help install install-dev install-web test test-cov e2e lint typecheck format bench eval openapi dev-api dev-web docker-up docker-down clean ci
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -24,6 +24,9 @@ test: ## Run the test suite
 
 test-cov: ## Run tests with the coverage gate for the deterministic core
 	$(BIN)/pytest --cov=docentric_copilot --cov-report=term-missing --cov-report=xml --cov-fail-under=85
+
+e2e: ## Run the Playwright browser E2E suite (builds the web app if needed)
+	$(BIN)/pytest tests/e2e --e2e
 
 lint: ## Lint Python sources
 	$(BIN)/ruff check .

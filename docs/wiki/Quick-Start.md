@@ -35,7 +35,7 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 
 docentric-copilot version
-# docentric-copilot 0.9.0 (IR 1.0)
+# docentric-copilot 0.12.0 (IR 1.0)
 ```
 
 ### 1. Inspect the data source

@@ -132,85 +132,24 @@ a revision box that produces a new version instead of silently editing a file.
 
 > **Docentric AX compatibility is unverified.** This release produces **generic DOCX** documents.
 > The engine verifies its own correctness — structure, field bindings, logic and layout — and reports
-> Docentric AX compatibility as **not tested**. Compatibility requires an independent verification inside a
+> Docentric AX compatibility as **not tested**. Compatibility requires independent verification inside a
 > licensed Docentric environment that has not been performed.
 > [Read what would change this status →](https://github.com/SergeyGer/Docentric-Copilot/wiki/Docentric-AX-Compatibility)
 
 This is a deliberate product decision, not a missing feature: a beautiful document built on an unverified
 assumption is a liability, not a deliverable.
 
-### Reference Template Intelligence — v0.10 P0 status
+The **maintained status record** now lives in the Wiki:
+**[Honest Status →](https://github.com/SergeyGer/Docentric-Copilot/wiki/Honest-Status)**. It records the
+v0.10/v0.11/v0.12 workstream statuses, the gold-label audit (AT-07 = `partial`), benchmark and D365
+evidence, deferred P1 items and the known limitations. Update that page, not this README, when the
+honest status changes.
 
-The reference inspector is static analysis, not a Docentric runtime. The v0.10 P0 increment is
-deliberately partial and is reported as such:
-
-| Workstream | Status |
-| --- | --- |
-| PR-01 baseline docs, corpus manifest and consistency | Done — version strings, feature matrix and changelog now agree |
-| PR-02 D365 embedded schema extraction | Done — reads `ProjectData` XSD, `PreviewData` and field metadata with OOXML provenance |
-| PR-03 canonical schema and binding resolver | Done — six exact statuses; every `resolved` carries source, path, scope, type and evidence |
-| PR-04 gold semantic dataset | Done — 32 versioned cases, ten families, 20/12 calibration/holdout split, deterministic rule pass; single-annotator labels, no independent human double review |
-| PR-05 live gold benchmark | Done — 288-run matrix (32 cases × 3 providers × 3 repeats), calibration/holdout separated, cost and error taxonomy; see the [gold report](benchmarks/gold_report.json) |
-| Reference → generic Template IR, visual diff, persistence | Implemented P1, partial — see below |
-| Docentric AX runtime compatibility | `not_tested` — unchanged |
-
-The D365 adapter does not require a standalone DDSP when the document contains a usable embedded
-schema. Absence of evidence is returned as `schema_unavailable`; an unknown or unsupported
-construction is never reported as resolved. See
-[Reference Templates](docs/REFERENCE_TEMPLATES.md#d365-embedded-schema-and-binding-resolution-v010-p0)
-and [ADR-0013](docs/adr/0013-d365-embedded-schema-and-binding-resolution.md).
-
-The gold dataset and its annotation rules are in [GOLD_LABELS](docs/GOLD_LABELS.md); the measured
-run is in [EVALUATION §2.7](docs/EVALUATION.md#27-gold-semantic-benchmark-v010-pr-05). The committed
-run completed 288/288 planned calls for **$6.8849 verified + $0.2910 estimated = $7.1759**, under the
-$10 cap. Recall and coverage were saturated; precision separated the providers (0.226 OpenAI, 0.220
-Anthropic, 0.184 Gemini), and semantic pass was 55.2% / 69.8% / 64.6%. The labels were authored by
-the implementer and checked by a deterministic rule pass. There is no independent human double
-review, so the annotation gate is reported as partial, not passed. The benchmark is synthetic; it is
-not Docentric corpus content and it does not change the AX `not_tested` status.
-
-### Reference workflow — v0.11 P1 status (released in 0.11.0)
-
-The v0.11 P1 increment is implemented on top of the same read-only inspector. The distribution
-version was `0.11.0`; these changes are now released as `0.12.0`.
-
-| Workstream | Status |
-| --- | --- |
-| #26 D365 evidence in the unified ReferenceGraph | Done — `schema_source`, `source_id`, `part#xpath` evidence, exact binding status on `resolves_to` edges, evidence coverage and unresolved-by-status summary; synthetic tests plus the v0.12 11-document regression (V012-04) |
-| #27 safe Reference → Generic Template IR | Partial — Field, Label, List→Repeat, If, Image; every skip listed; strict/`--allow-unsupported`; generic DOCX target only |
-| #28 independent visual reference diff | Done — LibreOffice page rendering, page/blank/ink/shifted-region comparison, `report.json` + safe `report.html`; **not Word fidelity**; real pinned LibreOffice/Poppler CI (V012-07) |
-| #29 persistence, reopen and export | Done — local SQLite with a report-specific TTL, delete/retention, JSON/HTML export, web `?id=` reopen and committed Playwright E2E (V012-08/09) |
-| #30 hardening and docs | Done for this branch — ADR-0016 (ADR-0015 was already used), CHANGELOG/REFERENCE_TEMPLATES/EVALUATION/wiki/feature status |
-| Docentric AX runtime compatibility | `not_tested` — unchanged; `target=docentric-ax` remains fail-closed |
-
-The importer explicitly refuses to guess: unknown, ambiguous, type-mismatched, schema-unavailable
-and unsupported constructs become `skipped[]` entries instead of a wrong generic document. The
-visual diff reports `renderer_unavailable` rather than a pass or fail when LibreOffice/poppler is
-missing. Details and the full partial list:
-[Reference Templates](docs/REFERENCE_TEMPLATES.md#what-is-not-implemented-or-only-partial),
-[wiki: Safe IR import and visual diff](docs/wiki/Reference-IR-Import-and-Visual-Diff.md) and
-[ADR-0016](docs/adr/0016-ir-import-and-visual-diff.md).
-
-### Reference reliability — v0.12 status
-
-v0.12 is a release of **provable reliability**, not new surface area. The full
-evidence package is in [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md).
-
-| V012 ID | Workstream | Status |
-| --- | --- | --- |
-| V012-01 | Gold dataset audit trail, hashes, consistency report | **Passed** — [GOLD_AUDIT](docs/GOLD_AUDIT.md); AT-07 remains `partial` (owner self-review, no independent human) |
-| V012-02 | Full 32 × 3 × 3 semantic benchmark | **Passed** — [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02); 288 runs, 284 completed, 4 technical, 277 semantic passes |
-| V012-03 | Image-family expansion | **Deferred** — issue #37, target v0.13 (the v0.12 dataset is frozen for the 288-run benchmark) |
-| V012-04 | D365 real-corpus regression | **Passed** — [D365_REGRESSION](docs/D365_REGRESSION.md); 11/11, 246 bindings, 233 resolved, 13 unresolved, stable digests |
-| V012-05 | Gemini nested table / Anthropic Repeat alias | **Passed** — [V012-05](docs/V012_05_REGRESSIONS.md); targeted live subset 23/23 evaluable correct, 4 Gemini technical failures |
-| V012-06 | Reference → IR table inference | **Deferred** — issue #40, target v0.13 (skips stay explicit) |
-| V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** — [VISUAL_CI](docs/VISUAL_CI.md); real renderer, five fixtures, tolerance and artifacts |
-| V012-08 | Playwright E2E | **Passed** — [E2E](docs/E2E.md); happy path, negative paths and trace/screenshot probe in CI |
-| V012-09 | Report retention/deletion | **Passed** — [REPORT_RETENTION](docs/REPORT_RETENTION.md); 24 h default TTL, DELETE, verified 404 |
-| V012-10 | Responsive and release docs | **Passed** — [RESPONSIVE](docs/RESPONSIVE.md); 1280/768/390 px, version/changelog/roadmap/OpenAPI aligned |
-
-Docentric AX runtime compatibility remains **`not_tested`** and is outside the
-v0.12 scope. No P1 item is reported as passed without an artifact.
+- **Generic DOCX** is delivered; **Docentric AX runtime compatibility is `not_tested`**.
+- **AT-07 remains `partial`** — there was no independent human review of the gold labels; the
+  deterministic adjudicator is a documented proxy.
+- The v0.12 release evidence is in [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md); the full
+  benchmark is in [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).
 
 ---
 

@@ -238,6 +238,11 @@ The numbers are a reproducible baseline, not a quality score: non-resolved bindi
 where the available evidence was insufficient or the semantics were not evaluated. The command that
 produced them is recorded below; no file name, fragment, schema or template text leaves `.tools/`.
 
+v0.12 adds a regression runner that re-builds the graph from the same private 11-document corpus,
+checks the 233/13 comparison, proves digest stability and writes only a reviewed aggregate. See
+[D365_REGRESSION](D365_REGRESSION.md) for the privacy model, commands and the v0.12 result.
+
+
 ### Security boundary
 
 The adapter reuses the REF-00 limits: ZIP entry count, uncompressed size, compression ratio,

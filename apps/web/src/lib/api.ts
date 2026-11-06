@@ -336,6 +336,9 @@ export function referenceReportExportPath(
   reportId: string,
   format: ReferenceReportExportFormat,
 ): string {
+  if (format !== "json" && format !== "html") {
+    throw new Error("Unsupported reference report export format");
+  }
   const encoded = encodeURIComponent(reportId);
   return `/api/v1/reference/reports/${encoded}/export?format=${format}`;
 }
@@ -360,6 +363,24 @@ export function diffReferences(
 }
 
 /**
+ * Resolve an API download path to an absolute HTTP(S) URL.
+ *
+ * `path` can originate from a DOM value (for example the selected export
+ * format). Browsers treat `javascript:` and `data:` hrefs as executable or
+ * navigable content, so the protocol is checked against an allowlist before the
+ * value reaches an anchor. CodeQL flagged the previous direct assignment as
+ * `js/xss-through-dom` (code scanning alert #10).
+ */
+function resolveDownloadUrl(path: string): URL {
+  const base = typeof window === "undefined" ? "http://localhost/" : window.location.href;
+  const url = new URL(apiUrl(path), base);
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error(`Refusing to download a non-HTTP(S) URL: ${url.protocol}`);
+  }
+  return url;
+}
+
+/**
  * Start a browser download of an API artifact.
  *
  * The backend replies with `Content-Disposition: attachment`, so a synthetic
@@ -369,8 +390,12 @@ export function triggerDownload(path: string, filename?: string): void {
   if (typeof document === "undefined") {
     return;
   }
+  const href = resolveDownloadUrl(path).href;
+  if (!href.startsWith("http://") && !href.startsWith("https://")) {
+    throw new Error("Refusing to download a non-HTTP(S) URL");
+  }
   const anchor = document.createElement("a");
-  anchor.href = apiUrl(path);
+  anchor.setAttribute("href", href);
   anchor.rel = "noopener";
   if (filename) {
     anchor.download = filename;

@@ -421,9 +421,12 @@ export function ReferenceInspector() {
             data-testid="reference-export-format"
             className="h-8 w-24"
             value={exportFormat}
-            onChange={(event) =>
-              setExportFormat(event.target.value as ReferenceReportExportFormat)
-            }
+            onChange={(event) => {
+              const value = event.target.value;
+              if (value === "json" || value === "html") {
+                setExportFormat(value);
+              }
+            }}
           >
             <option value="json">JSON</option>
             <option value="html">HTML</option>

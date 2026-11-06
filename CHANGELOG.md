@@ -32,10 +32,10 @@ reported as passes.
   (`benchmarks/reference_evaluation_v013.json`, `docs/REFERENCE_EVALUATION_V013.md`).
 - Live demo version panel (application, git SHA, IR, provider, model, execution mode, build time),
   deterministic confirmation application, and a DOCX-download regression test.
-- Full v0.13 benchmark: 32 × 3 providers × 3 repeats, 288 planned / 276 completed / 12
-  Gemini `structured_output` technical failures / 0 skipped / 272 semantic passes; precision
-  0.9552, recall 0.9988, F1 0.9765, semantic pass 98.55% of completed, valid template 100%,
-  pass@2 97.92%, spend $4.1669. Manifest `e393fea2…`; the run is separate from v0.12.
+- Full v0.13 benchmark: 32 × 3 providers × 3 repeats, 288 planned / 278 completed / 10
+  Gemini `structured_output` technical failures / 0 skipped / 274 semantic passes; precision
+  0.9510, recall 0.9976, F1 0.9737, semantic pass 98.56% of completed, valid template 100%,
+  pass@2 95.83%, spend $4.1844. Manifest `e7f13c96…`; the run is separate from v0.12.
 - Word-for-the-web and video status/checklist pages with issues #53/#54; both are explicitly
   Deferred and are not reported as passes.
 
@@ -91,7 +91,7 @@ reported as passes.
   on dataset `2.0.0` (`8489e4c0...`), with 284 completed, 4 technical failures (`structured_output`,
   visible with reasons), 0 skipped, 277 semantic passes and 276 correct runs. Precision 0.9535,
   recall 1.0000, F1 0.9762, semantic pass 97.54% of evaluable runs, valid-template rate 99.65% of
-  completed runs, technical-failure rate 1.39%, pass@2 97.92%; spend $3.9251 (verified $3.7915 +
+  completed runs, technical-failure rate 1.39%, pass@2 95.83%; spend $3.9251 (verified $3.7915 +
   estimated $0.1336). Technical failures are no longer counted as semantic failures.
 - `benchmarks/benchmark_manifest.py` builds and verifies `benchmarks/gold_manifest_v012.json`:
   unique run ids, all 288 case/provider/repeat combinations, status/retry/token/cost/latency history,

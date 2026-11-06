@@ -20,11 +20,6 @@
     {
       "alignment": "None",
       "style": "Header",
-      "text": ""
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
       "text": "Contoso Consulting AG"
     }
   ],
@@ -32,7 +27,7 @@
     "word/media/image1.png"
   ],
   "package": {
-    "entry_count": 21,
+    "entry_count": 23,
     "has_document": true,
     "has_styles": true
   },
@@ -71,7 +66,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=purchase_order;digest=00c8385406090cef0e7885f9b153f48c;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=purchase_order;digest=13385d173815cfebfe6840fbd3c31d95;docentric-compatibility=not_tested",
     "subject": "purchase_order_template",
     "title": "Purchase Order"
   },

@@ -69,7 +69,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=missing_data;digest=6d3638c46f85b133a18a8ae308fe5e33;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=missing_data;digest=2155aa7a96f8bb96ea79ab3ee2c7240d;docentric-compatibility=not_tested",
     "subject": "invoice_template",
     "title": "Tax Invoice"
   },

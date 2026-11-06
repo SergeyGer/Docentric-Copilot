@@ -447,11 +447,16 @@ def build_document(
     accent = _ACCENTS.get(design_style, _ACCENTS["modern"])
     body: list = []
     header: list = []
+    first_page_header: list = []
     footer: list = []
 
     # ---------------------------------------------------------------- header
+    # The logo is a first-page element; later pages carry the company identity
+    # without repeating it. This is the v0.13 V013-04 contract.
     if roles.logo:
-        header.append(ImageBinding(path=roles.logo, width_mm=42, alt_text="Company logo"))
+        first_page_header.append(
+            ImageBinding(path=roles.logo, width_mm=42, alt_text="Company logo")
+        )
     if roles.company_name:
         header.append(
             Paragraph(runs=[FieldBinding(path=roles.company_name, style=_style(accent, 14, True))])
@@ -675,7 +680,13 @@ def build_document(
         page=PageSettings(),
         metadata=metadata,
         sections=[
-            Section(name="Main", body=body, header=header or None, footer=footer or None),
+            Section(
+                name="Main",
+                body=body,
+                header=header or None,
+                first_page_header=first_page_header or None,
+                footer=footer or None,
+            ),
         ],
     )
 

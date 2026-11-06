@@ -1,8 +1,8 @@
-# Template IR v1.0
+# Template IR v1.1
 
 | Field | Value |
 | --- | --- |
-| Contract | Template Intermediate Representation, version `1.0` |
+| Contract | Template Intermediate Representation, version `1.1` |
 | Model | [packages/template-ir/src/docentric_copilot/template_ir/models.py](../packages/template-ir/src/docentric_copilot/template_ir/models.py) |
 | Canonical form | [canonical.py](../packages/template-ir/src/docentric_copilot/template_ir/canonical.py) |
 | Traversal | [traversal.py](../packages/template-ir/src/docentric_copilot/template_ir/traversal.py) |
@@ -26,7 +26,7 @@ and `page` have defaults and may be omitted; `metadata`, `title` and `sections` 
 ```json
 {
   "kind": "document",
-  "ir_version": "1.0",
+  "ir_version": "1.1",
   "title": "Sales Quotation",
   "language": "en",
   "target": "generic-docx",
@@ -68,7 +68,7 @@ This document is model-valid. Semantic validity additionally requires that `sale
 | Field | Type | Required | Constraints | Default |
 | --- | --- | --- | --- | --- |
 | `kind` | literal `"document"` | no | fixed discriminator | `"document"` |
-| `ir_version` | literal `"1.0"` | no | only supported version | `"1.0"` |
+| `ir_version` | literal `"1.1"` | no | current version; `1.0` payloads are migrated | `"1.1"` |
 | `title` | string | **yes** | 1–200 chars, must not be blank after trimming | — |
 | `language` | string | no | `^[a-z]{2}(-[A-Z]{2})?$`, e.g. `en`, `en-US` | `"en"` |
 | `target` | enum | no | `generic-docx` \| `docentric-ax` | `generic-docx` |
@@ -113,10 +113,13 @@ Printable width used by V4: A4 = 210 mm, LETTER = 215.9 mm, minus left and right
 | `name` | string | **yes** | 1–80 chars, `^[A-Za-z0-9 _\-]{1,80}$`, unique across the document (V1-003) | — |
 | `body` | array of `Block` | no | ≤ 500 items; must be non-empty to pass V1-004 | `[]` |
 | `header` | array of `Block` \| null | no | ≤ 50 items; only paragraph/heading/image are rendered | `null` |
+| `first_page_header` | array of `Block` \| null | no | ≤ 50 items; enables Word `titlePg`; `[]` suppresses the default header on page 1 | `null` |
 | `footer` | array of `Block` \| null | no | ≤ 50 items; same restriction | `null` |
 
-Only the first section's header/footer is rendered. Later sections start on a new page (page break) and
-their headers/footers are ignored with a compile warning. See [ARCHITECTURE §11](ARCHITECTURE.md#11-known-architectural-constraints-and-debt).
+The compiler emits one Word section in v0.13. The first section's default header/footer and
+`first_page_header` are rendered; later IR sections start on a page break and their headers/footers
+are flattened with a warning. This is recorded as a Partial limitation in
+[FEATURE_COVERAGE_V013](FEATURE_COVERAGE_V013.md).
 
 ## 3. Inline content
 
@@ -154,14 +157,20 @@ Cross-field rules enforced by the model:
 | Field | Type | Required | Constraints |
 | --- | --- | --- | --- |
 | `kind` | literal `"image"` | no | discriminator |
-| `path` | string | **yes** | dotted path, ≤ 512 chars |
+| `source` | enum | no | `schema` (default) or `static` |
+| `path` | string | for `source=schema` | dotted path, ≤ 512 chars; empty for a static asset |
+| `static_asset` | string \| null | for `source=static` | reviewed asset key `^[a-z0-9][a-z0-9_-]{0,63}$`, never a path |
 | `alt_text` | string \| null | no | ≤ 200 chars |
 | `width_mm` | float \| null | no | 5–200 |
 | `height_mm` | float \| null | no | 5–200 |
 | `alignment` | enum \| null | no | `left` \| `center` \| `right` \| `justify` |
+| `fallback` | enum | no | `placeholder` (default) \| `blank` \| `alt_text` |
+| `preserve_aspect` | bool | no | default `true`; when false, both width and height stretch the image |
 
-The IR never embeds binary payloads. Sample values (base64 or `data:` URI) are decoded at compile
-time with magic-byte validation and a 5 MiB cap; otherwise a placeholder is rendered.
+The IR never embeds binary payloads. Schema values (base64 or `data:` URI) and compile-time static
+assets are decoded with magic-byte validation and a 5 MiB cap. Missing or invalid images follow the
+fallback policy without corrupting the DOCX; static assets are supplied through
+`CompileOptions.static_assets` and are looked up by key, never by filesystem path.
 
 ### 3.4 `TextStyle`
 
@@ -444,12 +453,15 @@ validates it. Validation errors are reported with at most 25 entries of the form
 
 ## 9. Versioning and migration policy
 
-- Current version: `IR_SCHEMA_VERSION = "1.0"`; supported set: `{"1.0"}`.
-- A payload without `ir_version` is assumed to be `1.0`.
+- Current version: `IR_SCHEMA_VERSION = "1.1"`; supported set: `{"1.0", "1.1"}`.
+- A payload without `ir_version` is assumed to be the current version.
+- `1.0 -> 1.1` migration adds `sections[*].first_page_header: null` and the image source/fallback
+  defaults; it never changes a binding path or a block.
 - The major/minor prefix (`"1.0"` from `"1.0.3"`) is checked against the supported set. Anything else
   raises `IRMigrationError` with code `ir_version_unsupported` (an `InvalidInputError`, HTTP 400).
 - Migrations are one-step functions keyed by the *from* version in `MIGRATIONS`; a chain is followed
-  until the current version is reached, with a cycle guard of 16 steps. The registry is empty today.
+  until the current version is reached, with a cycle guard of 16 steps. The registry currently
+  contains `1.0 -> 1.1`.
 - Policy for future changes:
   1. **Backwards-compatible addition** (new optional field with a default): increment the minor
      version, keep reading 1.0, and add a migration that fills the default explicitly.
@@ -493,7 +505,7 @@ IR-level bounds (enforced by pydantic; violation is a validation error):
 | Bound | Value |
 | --- | --- |
 | Sections per document | 10 |
-| Blocks per body / header / footer | 500 / 50 / 50 |
+| Blocks per body / header / first-page header / footer | 500 / 50 / 50 / 50 |
 | Blocks per repeat / conditional branch | 200 |
 | Table rows / columns / cells per row | 500 / 20 / 20 |
 | Blocks per table cell | 20 |

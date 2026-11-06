@@ -20,11 +20,6 @@
     {
       "alignment": "None",
       "style": "Header",
-      "text": ""
-    },
-    {
-      "alignment": "None",
-      "style": "Normal",
       "text": "Contoso AG"
     }
   ],
@@ -32,7 +27,7 @@
     "word/media/image1.png"
   ],
   "package": {
-    "entry_count": 21,
+    "entry_count": 23,
     "has_document": true,
     "has_styles": true
   },
@@ -56,7 +51,7 @@
   ],
   "properties": {
     "author": "Docentric Copilot",
-    "keywords": "docentric-copilot;ir=1.0;target=generic-docx;schema=image_binding;digest=dc9df21db06d23773253b997352a9592;docentric-compatibility=not_tested",
+    "keywords": "docentric-copilot;ir=1.1;target=generic-docx;schema=image_binding;digest=b742ee5988621a1a639231cea82221dd;docentric-compatibility=not_tested",
     "subject": "document_template",
     "title": "Document"
   },

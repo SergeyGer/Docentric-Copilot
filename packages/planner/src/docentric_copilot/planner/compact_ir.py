@@ -114,7 +114,7 @@ _BLOCK_KEYS: dict[str, set[str]] = {
 _ALL_BLOCK_KEYS = set().union(*_BLOCK_KEYS.values())
 _RUN_KEYS = {"f", "fmt", "d", "b", "i", "size", "align"}
 _TOP_LEVEL_KEYS = {"title", "language", "sections"}
-_SECTION_KEYS = {"name", "body", "header", "footer"}
+_SECTION_KEYS = {"name", "body", "header", "first_page_header", "footer"}
 _TABLE_KEYS = {"repeat", "alias", "hdr", "cols", "rows"}
 _COLUMN_KEYS = {"h", "f", "w", "fmt", "d", "align"}
 _CONDITION_KEYS = {"field", "op", "value"}
@@ -738,6 +738,15 @@ def _expand_section(value: Any, path: str, *, currency_code: str | None) -> Sect
         if mapping.get("header") is not None
         else []
     )
+    first_page_header = (
+        _expand_blocks(
+            mapping["first_page_header"],
+            _child(path, "first_page_header"),
+            currency_code=currency_code,
+        )
+        if mapping.get("first_page_header") is not None
+        else []
+    )
     footer = (
         _expand_blocks(mapping["footer"], _child(path, "footer"), currency_code=currency_code)
         if mapping.get("footer") is not None
@@ -748,6 +757,7 @@ def _expand_section(value: Any, path: str, *, currency_code: str | None) -> Sect
             name=name,
             body=body,
             header=header or None,
+            first_page_header=first_page_header if "first_page_header" in mapping else None,
             footer=footer or None,
         )
     except ValidationError as exc:
@@ -1165,7 +1175,7 @@ Hard rules:
 
 Top-level shape:
 {"title": "Sales Quotation", "language": "en",
- "sections": [{"name": "Main", "body": [...], "header": [...], "footer": [...]}]}
+ "sections": [{"name": "Main", "body": [...], "header": [...], "first_page_header": [...], "footer": [...]}]}
 
 Blocks:
 - Heading:            {"h": 1, "t": "Sales Quotation"}
@@ -1195,7 +1205,9 @@ Table columns: each column expands into one cell per row; "f" is the binding for
 that column. Columns without "w" get a deterministic width, and numeric formats
 are right-aligned by default. "rows" is optional and holds static rows as arrays
 of cells; omit it (or use []) for a data-driven table.
-Sections may carry "header" and "footer" block arrays.
+Sections may carry "header", "first_page_header" and "footer" block arrays. Use
+"first_page_header" for a logo that must appear only on page 1; keep the default
+"header" free of that logo.
 Omit absent optional keys entirely. Do not send null placeholders.
 
 Prefer a professional, compact business layout: company identity in the header,

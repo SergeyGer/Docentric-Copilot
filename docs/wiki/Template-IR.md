@@ -12,14 +12,15 @@ gives us three properties: **reviewable decisions**, **deterministic execution**
 
 ```text
 Document
-├── ir_version       "1.0"
+├── ir_version       "1.1"
 ├── title, language, target
 ├── page             size, orientation, margins
 ├── metadata         template_name, source_schema_id, design_style, generator
 └── sections[]
     ├── name
     ├── body[]       blocks
-    ├── header[]     blocks
+    ├── header[]     blocks (pages 2+)
+    ├── first_page_header[]  page-1-only blocks; null = no titlePg, [] = blank page 1
     └── footer[]     blocks
 ```
 
@@ -29,7 +30,7 @@ Document
 | --- | --- | --- |
 | `paragraph` | Static text and inline dynamic values | `runs[]`, `style`, `space_after_pt` |
 | `heading` | Section titles | `level` 1–3, `runs[]` |
-| `image` | Dynamic image | `path`, width/height, `alt_text` |
+| `image` | Schema or static image | `source`, `path`/`static_asset`, `fallback`, `preserve_aspect`, width/height, `alt_text` |
 | `repeat` | Iterate a collection | `path`, `alias`, `blocks[]`, `max_items` |
 | `conditional` | Show content when a typed expression holds | `condition`, `then_blocks`, `else_blocks` |
 | `table` | Static rows and/or a repeated row template | `columns`, `rows`, `repeat`, `row_template` |
@@ -42,7 +43,7 @@ the contract.
 ```json
 {
   "kind": "document",
-  "ir_version": "1.0",
+  "ir_version": "1.1",
   "title": "Sales Quotation",
   "language": "en",
   "target": "generic-docx",
@@ -120,7 +121,12 @@ cannot be represented at all.
 
 ## Versioning, canonical form, schema
 
-- `ir_version` is part of the document; unsupported versions raise `ir_version_unsupported`.
+- `ir_version` is part of the document; 1.0 payloads migrate to 1.1, unsupported versions raise
+  `ir_version_unsupported`.
+- `first_page_header` enables Word `titlePg`; the compiler writes a separate first-page header part and
+  `headerReference type="first"`. The preview selects it only for page 1.
+- Image `source=static` uses a reviewed `static_asset` key, never a path; `fallback` is
+  `placeholder`, `blank` or `alt_text`. `preserve_aspect` defaults to true.
 - A migration registry exists; version 1.0 is the only released schema today.
 - Canonical JSON = sorted keys, no insignificant whitespace, UTF-8. The SHA-256 of that string is the
   document digest used in artifacts and golden files.

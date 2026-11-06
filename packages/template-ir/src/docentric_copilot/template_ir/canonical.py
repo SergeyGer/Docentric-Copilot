@@ -12,12 +12,44 @@ from pydantic import ValidationError
 
 from .models import Document
 
-IR_SCHEMA_VERSION = "1.0"
-_SUPPORTED_VERSIONS = {"1.0"}
+IR_SCHEMA_VERSION = "1.1"
+_SUPPORTED_VERSIONS = {"1.0", "1.1"}
+
+
+def migrate_1_0_to_1_1(payload: dict[str, Any]) -> dict[str, Any]:
+    """Upgrade v1.0 payloads: first-page headers and image source/fallback.
+
+    The new fields are optional, so old documents keep their exact semantics.
+    """
+    working = dict(payload)
+    sections = working.get("sections")
+    if isinstance(sections, list):
+        for section in sections:
+            if isinstance(section, dict):
+                section.setdefault("first_page_header", None)
+    _add_image_defaults(working.get("sections"))
+    working["ir_version"] = "1.1"
+    return working
+
+
+def _add_image_defaults(value: Any) -> None:
+    if isinstance(value, dict):
+        if value.get("kind") == "image":
+            value.setdefault("source", "schema")
+            value.setdefault("static_asset", None)
+            value.setdefault("fallback", "placeholder")
+            value.setdefault("preserve_aspect", True)
+        for child in value.values():
+            _add_image_defaults(child)
+    elif isinstance(value, list):
+        for child in value:
+            _add_image_defaults(child)
+
 
 #: Registry of ``from_version -> callable`` that upgrades a payload by one version.
-#: A future 1.1 release adds ``{"1.0": migrate_1_0_to_1_1}``; nothing else changes.
-MIGRATIONS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {}
+MIGRATIONS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
+    "1.0": migrate_1_0_to_1_1,
+}
 
 
 class IRMigrationError(InvalidInputError):

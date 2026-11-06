@@ -10,10 +10,17 @@ mapper, validator and DOCX compiler the API and CLI use.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
+import os
+import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 
 import streamlit as st
+from docentric_copilot import IR_VERSION, __version__
+from docentric_copilot.api.demo_state import apply_confirmations
+from docentric_copilot.api.demo_state import compile_ready as demo_compile_ready
 from docentric_copilot.app.service import TemplateService
 from docentric_copilot.ddsp_parser import parse_ddsp
 from docentric_copilot.docx_compiler import CompileOptions
@@ -36,6 +43,32 @@ STATUS_STYLE = {
     "invalid": ("🔴", "Invalid"),
 }
 BLOCKING = {"needs_review", "conflict", "missing", "invalid"}
+
+
+def _git_sha() -> str:
+    value = os.environ.get("DC_GIT_SHA", "").strip()
+    if value:
+        return value[:12]
+    try:
+        return (
+            subprocess.run(
+                ["git", "rev-parse", "--short=12", "HEAD"],
+                cwd=Path(__file__).parent,
+                capture_output=True,
+                text=True,
+                timeout=2,
+                check=False,
+            ).stdout.strip()
+            or "unknown"
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+
+
+def _build_timestamp() -> str:
+    return os.environ.get("DC_BUILD_TIMESTAMP", "").strip() or datetime.now(UTC).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
 
 
 @st.cache_resource
@@ -65,6 +98,23 @@ def badged(status: str) -> str:
 
 st.sidebar.title("Docentric Copilot")
 st.sidebar.caption("Schema-aware brief → validated Word document")
+st.sidebar.markdown("---")
+st.sidebar.caption("DOCENTRIC COPILOT DEMO")
+st.sidebar.code(
+    "\n".join(
+        [
+            f"Application: v{__version__}",
+            f"Git Commit: {_git_sha()}",
+            f"Template IR: {IR_VERSION}",
+            "Provider: mock",
+            "Model: heuristic-baseline-v1",
+            "Execution Mode: Deterministic Demo",
+            f"Build: {_build_timestamp()}",
+            "Compatibility: Not tested with Docentric AX Runtime",
+        ]
+    ),
+    language="text",
+)
 case_ids = [item["id"] for item in CASES]
 case_id = st.sidebar.selectbox(
     "Demo package",
@@ -83,12 +133,13 @@ if generate:
 st.session_state.setdefault("confirmations", {})
 
 outcome, report, schema, sample_data = plan(case_id, prompt)
-document = st.session_state.get("document", outcome.document)
-if st.session_state.get("case_id") != case_id:
+prompt_key = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:16]
+if st.session_state.get("case_id") != case_id or st.session_state.get("prompt_key") != prompt_key:
     st.session_state["case_id"] = case_id
+    st.session_state["prompt_key"] = prompt_key
     st.session_state["document"] = outcome.document
     st.session_state["confirmations"] = {}
-    document = outcome.document
+document = st.session_state.get("document", outcome.document)
 
 st.title("From a business brief to a validated Word document")
 st.caption(
@@ -139,7 +190,10 @@ with tab_plan:
 
 # ------------------------------------------------------------------- review
 with tab_review:
-    mapping = build_mapping_report(schema, document, prompt)
+    mapping = apply_confirmations(
+        build_mapping_report(schema, document, prompt),
+        st.session_state["confirmations"],
+    )
     counts = mapping.counts()
     cols = st.columns(5)
     for column, status in zip(
@@ -162,7 +216,7 @@ with tab_review:
         hide_index=True,
     )
 
-    pending = [item for item in mapping.mappings if item.status.value in BLOCKING]
+    pending = mapping.blocking()
     if pending:
         st.warning(
             f"{len(pending)} mapping(s) need a decision before the DOCX can be compiled. "
@@ -210,24 +264,37 @@ with tab_review:
 # ---------------------------------------------------------------- preview
 with tab_preview:
     statuses = report.statuses() if hasattr(report, "statuses") else {}
-    compile_ready = not [item for item in mapping.mappings if item.status.value in BLOCKING]
+    compile_ready = demo_compile_ready(mapping)
     compiled = None
     if compile_ready:
-        compiled = get_service().compile(
-            document,
-            schema,
-            sample_data=sample_data,
-            options=CompileOptions(document_name=f"{case_id}.docx"),
-        )
-        st.download_button(
-            "⬇ Download DOCX",
-            data=compiled.content,
-            file_name=f"{case_id}.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            type="primary",
-        )
+        try:
+            compiled = get_service().compile(
+                document,
+                schema,
+                sample_data=sample_data,
+                options=CompileOptions(document_name=f"{case_id}.docx"),
+            )
+        except Exception as exc:  # surface the generator failure, do not hide it
+            st.error(f"Compilation failed: {type(exc).__name__}: {exc}")
+        if compiled is not None:
+            digest = hashlib.sha256(compiled.content).hexdigest()[:12]
+            st.caption(
+                f"DOCX ready — {len(compiled.content):,} bytes · SHA-256 {digest} · "
+                f"mapping status: {mapping.counts()['confirmed']} confirmed"
+            )
+            st.download_button(
+                "⬇ Download DOCX",
+                data=compiled.content,
+                file_name=f"{case_id}.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                type="primary",
+                key=f"download-{case_id}-{ir_digest(document)[:8]}",
+            )
     else:
-        st.info("Compile is locked until the mappings above are confirmed.")
+        st.info(
+            "Compile is locked until the mappings above are confirmed. "
+            f"{len(mapping.blocking())} mapping(s) still block compilation."
+        )
     preview = get_service().preview(document, schema, sample_data=sample_data)
     st.components.v1.html(preview.html, height=820, scrolling=True)
 

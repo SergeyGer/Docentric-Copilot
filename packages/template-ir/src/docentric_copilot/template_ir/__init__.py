@@ -1,4 +1,4 @@
-"""Template IR v1.0 — versioned, typed contract between AI and compiler."""
+"""Template IR v1.1 — versioned, typed contract between AI and compiler."""
 
 from __future__ import annotations
 
@@ -29,6 +29,8 @@ from .models import (
     FieldBinding,
     Heading,
     ImageBinding,
+    ImageFallback,
+    ImageSource,
     InlineContent,
     PageBreak,
     PageSettings,
@@ -78,6 +80,8 @@ __all__ = [
     "Heading",
     "IRMigrationError",
     "ImageBinding",
+    "ImageFallback",
+    "ImageSource",
     "InlineContent",
     "PageBreak",
     "PageSettings",

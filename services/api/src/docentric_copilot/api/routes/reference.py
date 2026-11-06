@@ -312,7 +312,16 @@ async def import_reference_ir_endpoint(
         target = _resolve_corpus_path(path or "", settings)
         bundle = inspect_reference_bundle(target, limits=limits, max_depth=max_depth)
     graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
-    return project_to_template_ir(graph, allow_unsupported=allow_unsupported)
+    docx_payload = (
+        payload
+        if file is not None
+        else bundle.payloads.get(graph.source_sha256) or next(iter(bundle.payloads.values()), None)
+    )
+    return project_to_template_ir(
+        graph,
+        allow_unsupported=allow_unsupported,
+        docx_payload=docx_payload,
+    )
 
 
 @router.post("/diff", response_model=ReferenceDiff)

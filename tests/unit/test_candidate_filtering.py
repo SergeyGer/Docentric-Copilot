@@ -59,6 +59,7 @@ def _schema(*, extra_line_fields: int = 0) -> NormalizedSchema:
         children=[
             _node("Name", "MainData.Company.Name", "string"),
             _node("VatNumber", "MainData.Company.VatNumber", "string"),
+            _node("Logo", "MainData.Company.Logo", "image"),
         ],
     )
     bank = _node(
@@ -76,6 +77,7 @@ def _schema(*, extra_line_fields: int = 0) -> NormalizedSchema:
         _node("Quantity", "MainData.Lines.Line.Quantity", "number"),
         _node("LineAmount", "MainData.Lines.Line.LineAmount", "number"),
         _node("Warehouse", "MainData.Lines.Line.Warehouse", "string"),
+        _node("ProductImage", "MainData.Lines.Line.ProductImage", "image"),
     ]
     for index in range(extra_line_fields):
         line_children.append(
@@ -250,3 +252,19 @@ def test_collection_scope_is_not_an_abstention() -> None:
         if mapping.status.value == "needs_review" and mapping.selected_field_path is None
     ]
     assert false_abstentions == []
+
+
+def test_product_image_candidate_is_scoped_to_the_line_collection() -> None:
+    candidates = retrieve_candidates(
+        _schema(), "Add the product image for each line item in the table."
+    )
+    paths = set(candidates.paths)
+    assert "MainData.Lines.Line.ProductImage" in paths
+    assert "MainData.Company.Logo" not in paths
+
+
+def test_company_logo_does_not_become_a_product_image() -> None:
+    candidates = retrieve_candidates(_schema(), "Show the company logo in the first-page header.")
+    paths = set(candidates.paths)
+    assert "MainData.Company.Logo" in paths
+    assert "MainData.Lines.Line.ProductImage" not in paths

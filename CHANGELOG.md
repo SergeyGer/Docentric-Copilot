@@ -4,9 +4,58 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The Template IR has its own
-version (`1.0`) independent of the distribution version.
+version (`1.1`) independent of the distribution version.
 
 ## [Unreleased]
+
+## [0.13.0] - 2026-11-06
+
+**Implementation candidate — see [RELEASE_EVIDENCE_V0_13](docs/RELEASE_EVIDENCE_V0_13.md).**
+V013-03/V013-04 are Partial and V013-06/V013-09/V013-10 are Deferred; the tag is
+not created while those P0 items are open.
+
+### Added
+- Template IR 1.1: `Section.first_page_header`, image `source`/`static_asset`/`fallback`/
+  `preserve_aspect`, and a `1.0 -> 1.1` migration that fills the new optional fields.
+- First-page header support: compiler emits `w:titlePg`, a first-page header part and
+  `headerReference type="first"`; the default header no longer needs the logo; the preview
+  selects the first-page header only on page 1; first-page footer keeps PAGE/NUMPAGES.
+- Image family: static compile assets, schema images, image collections in Repeat/table rows,
+  optional/missing images with placeholder/blank/alt-text fallback, aspect-ratio control,
+  wrong-type and wrong-scope rejection, and product-image candidate scoping.
+- Reference-to-IR table inference for static tables, static header rows, repeated data rows,
+  alias-relative fields and static nested tables, with explicit diagnostics. Strict mode refuses
+  ambiguous/merged/unsupported structures; best-effort keeps them in `skipped[]`.
+- Feature Coverage Matrix (`benchmarks/feature_coverage.json`,
+  `docs/FEATURE_COVERAGE_V013.md`) and a Reference Evaluation over the official 17-document corpus
+  (`benchmarks/reference_evaluation_v013.json`, `docs/REFERENCE_EVALUATION_V013.md`).
+- Live demo version panel (application, git SHA, IR, provider, model, execution mode, build time),
+  deterministic confirmation application, and a DOCX-download regression test.
+- Word-for-the-web and video status/checklist pages with issues #53/#54; both are explicitly
+  Deferred and are not reported as passes.
+
+### Changed
+- `PLANNER_VERSION` is `0.13.0`; package/web/OpenAPI/README/ROADMAP versions are `0.13.0`;
+  Template IR is `1.1`.
+- The heuristic planner places the logo in `first_page_header`; the default header keeps the
+  company identity without repeating the logo.
+- Compact v1/v2 plans accept an optional first-page header field (`first_page_header` / `fh`).
+- Candidate ranking ignores placement words (header/footer/page/first) and exposes product-image
+  candidates scoped to the line collection.
+
+### Fixed
+- The Sales Quotation demo's Download DOCX button is no longer blocked after a reviewer confirms a
+  `needs_review` binding; confirmations survive reruns and are applied before compile gating.
+- First-page footer page numbers are not lost when a distinct first-page header is used.
+- Image paths outside the active collection scope are rejected (V2-003) instead of being treated as
+  global fields.
+
+### Known limitations
+- V013-03 table inference does not yet support optional cells, footer/summary rows after a repeated
+  block, or a nested repeat inside an outer repeated row.
+- V013-04 still emits one Word section; secondary IR-section headers are flattened with a warning.
+- V013-06 Word for the web validation and V013-09/V013-10 videos are Deferred.
+- Docentric AX runtime compatibility remains `not_tested`; AT-07 remains `partial`.
 
 ## [0.12.0] - 2026-11-06
 

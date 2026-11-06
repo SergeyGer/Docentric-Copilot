@@ -15,6 +15,7 @@ from docentric_copilot.ddsp_parser.models import NormalizedSchema
 from docentric_copilot.schema_resolver.paths import (
     PathResolutionError,
     Scope,
+    absolute_path,
     resolve_collection,
     resolve_value,
 )
@@ -27,6 +28,7 @@ from docentric_copilot.template_ir import (
     FieldBinding,
     Heading,
     ImageBinding,
+    ImageSource,
     Paragraph,
     Repeat,
     Table,
@@ -113,6 +115,7 @@ def _walk(document: Document, schema: NormalizedSchema) -> list[_Node]:
     for section in document.sections:
         visit(section.body, Scope(), 0, ())
         visit(section.header or [], Scope(), 0, ())
+        visit(section.first_page_header or [], Scope(), 0, ())
         visit(section.footer or [], Scope(), 0, ())
     return nodes
 
@@ -367,9 +370,27 @@ class ValidationEngine:
             bindings: list[FieldBinding | ImageBinding] = []
             if isinstance(block, Paragraph | Heading):
                 bindings = [run for run in block.runs if isinstance(run, FieldBinding)]
-            elif isinstance(block, ImageBinding):
+            elif isinstance(block, ImageBinding) and block.source is ImageSource.SCHEMA:
                 bindings = [block]
             for binding in bindings:
+                if isinstance(binding, ImageBinding) and node.scope.aliases:
+                    absolute, _alias = absolute_path(binding.path, node.scope)
+                    if not any(
+                        absolute == collection or absolute.startswith(f"{collection}.")
+                        for collection in node.scope.aliases.values()
+                    ):
+                        findings.append(
+                            Finding(
+                                code="V2-003",
+                                severity=Severity.ERROR,
+                                message=(
+                                    f"Image binding '{binding.path}' is outside the active "
+                                    "collection scope"
+                                ),
+                                location=binding.path,
+                            )
+                        )
+                        continue
                 try:
                     resolved = resolve_value(schema, binding.path, node.scope)
                 except PathResolutionError as exc:

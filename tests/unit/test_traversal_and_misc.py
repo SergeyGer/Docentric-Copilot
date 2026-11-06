@@ -120,7 +120,7 @@ def test_document_walkers(document: Document) -> None:
 
 def test_pretty_and_dump(document: Document) -> None:
     payload = dump_document(document)
-    assert payload["ir_version"] == "1.0"
+    assert payload["ir_version"] == "1.1"
     pretty = pretty_ir_json(document)
     assert pretty.endswith("\n")
     assert json.loads(pretty)["title"] == "Doc"
@@ -128,8 +128,34 @@ def test_pretty_and_dump(document: Document) -> None:
 
 
 def test_migrate_current_version_is_a_noop() -> None:
-    payload = {"ir_version": "1.0", "title": "x"}
-    assert migrate(payload)["ir_version"] == "1.0"
+    payload = {"ir_version": "1.1", "title": "x"}
+    assert migrate(payload)["ir_version"] == "1.1"
+
+
+def test_migrate_v1_0_adds_v1_1_defaults() -> None:
+    payload = {
+        "ir_version": "1.0",
+        "title": "x",
+        "sections": [
+            {
+                "name": "Main",
+                "body": [
+                    {
+                        "kind": "image",
+                        "path": "MainData.Logo",
+                    }
+                ],
+            }
+        ],
+    }
+    migrated = migrate(payload)
+    assert migrated["ir_version"] == "1.1"
+    assert migrated["sections"][0]["first_page_header"] is None
+    image = migrated["sections"][0]["body"][0]
+    assert image["source"] == "schema"
+    assert image["static_asset"] is None
+    assert image["fallback"] == "placeholder"
+    assert image["preserve_aspect"] is True
 
 
 def test_migrate_without_path() -> None:

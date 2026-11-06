@@ -11,6 +11,7 @@ execution layer (FR-03, FR-04, FR-05). It is intentionally narrow:
 
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import Annotated, Literal
 
@@ -31,6 +32,8 @@ from pydantic import (
 # --------------------------------------------------------------------------- #
 
 PATH_PATTERN = r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$"
+ASSET_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,63}$"
+_PATH_RE = re.compile(PATH_PATTERN)
 ALIAS_PATTERN = r"^[a-z][a-z0-9_]{0,31}$"
 HEX_COLOR_PATTERN = r"^#[0-9A-Fa-f]{6}$"
 
@@ -48,6 +51,21 @@ class Alignment(str, Enum):
     CENTER = "center"
     RIGHT = "right"
     JUSTIFY = "justify"
+
+
+class ImageSource(str, Enum):
+    """Where an image payload comes from: schema data or a compile asset."""
+
+    SCHEMA = "schema"
+    STATIC = "static"
+
+
+class ImageFallback(str, Enum):
+    """What to emit when an image is missing or cannot be decoded."""
+
+    PLACEHOLDER = "placeholder"
+    BLANK = "blank"
+    ALT_TEXT = "alt_text"
 
 
 class DataType(str, Enum):
@@ -223,14 +241,39 @@ class FieldBinding(StrictModel):
 
 
 class ImageBinding(StrictModel):
-    """A dynamic image. The IR never embeds binary payloads."""
+    """An image from schema data or a compile-time static asset.
+
+    The IR never embeds binary payloads. ``static_asset`` names a reviewed
+    asset supplied to the compiler through ``CompileOptions.static_assets``;
+    it is not a filesystem path and cannot escape the compile sandbox.
+    """
 
     kind: Literal["image"] = "image"
-    path: str = Field(pattern=PATH_PATTERN, max_length=512)
+    source: ImageSource = ImageSource.SCHEMA
+    #: Schema path for ``source=schema``; empty for a static asset.
+    path: str = Field(default="", max_length=512)
+    #: Reviewed asset key for ``source=static``; never a path.
+    static_asset: str | None = Field(default=None, pattern=ASSET_PATTERN)
     alt_text: str | None = Field(default=None, max_length=200)
     width_mm: float | None = Field(default=None, ge=5, le=200)
     height_mm: float | None = Field(default=None, ge=5, le=200)
     alignment: Alignment | None = None
+    fallback: ImageFallback = ImageFallback.PLACEHOLDER
+    preserve_aspect: bool = True
+
+    @model_validator(mode="after")
+    def _validate_source(self) -> ImageBinding:
+        if self.source is ImageSource.SCHEMA:
+            if not self.path or _PATH_RE.fullmatch(self.path) is None:
+                raise ValueError("schema image requires a valid schema path")
+            if self.static_asset is not None:
+                raise ValueError("schema image must not carry a static asset")
+            return self
+        if not self.static_asset:
+            raise ValueError("static image requires a static asset key")
+        if self.path:
+            raise ValueError("static image must not carry a schema path")
+        return self
 
 
 InlineContent = Annotated[TextRun | FieldBinding, Field(discriminator="kind")]
@@ -365,6 +408,9 @@ class Section(StrictModel):
     name: str = Field(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9 _\-]{1,80}$")
     body: list[Block] = Field(default_factory=list, max_length=500)
     header: list[Block] | None = Field(default=None, max_length=50)
+    #: Header for page 1 only. ``None`` keeps the default header on every page;
+    #: an empty list deliberately suppresses the default header on page 1.
+    first_page_header: list[Block] | None = Field(default=None, max_length=50)
     footer: list[Block] | None = Field(default=None, max_length=50)
 
 
@@ -372,7 +418,7 @@ class Document(StrictModel):
     """Root of the IR. Serialized canonically, hashed for reproducibility."""
 
     kind: Literal["document"] = "document"
-    ir_version: Literal["1.0"] = "1.0"
+    ir_version: Literal["1.1"] = "1.1"
     title: str = Field(min_length=1, max_length=200)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(-[A-Z]{2})?$")
     target: CompileTarget = CompileTarget.GENERIC_DOCX
@@ -405,6 +451,7 @@ for _model in (
 
 __all__ = [
     "ALIAS_PATTERN",
+    "ASSET_PATTERN",
     "PATH_PATTERN",
     "Alignment",
     "Block",
@@ -420,6 +467,8 @@ __all__ = [
     "FieldBinding",
     "Heading",
     "ImageBinding",
+    "ImageFallback",
+    "ImageSource",
     "InlineContent",
     "PageBreak",
     "PageSettings",

@@ -111,6 +111,11 @@ def rebind_paths(
                 update={
                     "body": walk(list(section.body), Scope()),
                     "header": walk(list(section.header or []), Scope()) or None,
+                    "first_page_header": (
+                        walk(list(section.first_page_header), Scope())
+                        if section.first_page_header is not None
+                        else None
+                    ),
                     "footer": walk(list(section.footer or []), Scope()) or None,
                 }
             )

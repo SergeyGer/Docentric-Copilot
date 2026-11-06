@@ -35,6 +35,8 @@ from docentric_copilot.template_ir import (
     FieldBinding,
     Heading,
     ImageBinding,
+    ImageFallback,
+    ImageSource,
     PageBreak,
     Paragraph,
     Repeat,
@@ -89,6 +91,8 @@ class CompileOptions(BaseModel):
     include_compatibility_stamp: bool = False
     max_repeat_items: int = Field(default=200, ge=1, le=1_000)
     document_name: str = Field(default="document.docx", max_length=120)
+    #: Reviewed static image assets (key -> bytes). Keys are IR asset ids, not paths.
+    static_assets: dict[str, bytes] = Field(default_factory=dict)
 
 
 class CompilationResult(BaseModel):
@@ -206,6 +210,7 @@ class _Renderer:
     # ------------------------------------------------------------------ setup
     def render(self) -> DocxDocumentType:
         doc = DocxDocument()
+        self._doc = doc
         self._apply_document_styles(doc)
         self._apply_page_settings(doc)
         self._apply_core_properties(doc)
@@ -213,8 +218,10 @@ class _Renderer:
         first_section = self._document.sections[0]
         self._render_header_footer(doc, first_section, is_header=True)
         self._render_header_footer(doc, first_section, is_header=False)
-        self._decorate_header(doc)
-        self._decorate_footer(doc)
+        self._decorate_header(doc.sections[0].header)
+        self._decorate_footer(doc.sections[0].footer)
+        if first_section.first_page_header is not None:
+            self._render_first_page(first_section)
 
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())
         for index, section in enumerate(self._document.sections):
@@ -261,8 +268,29 @@ class _Renderer:
             style.paragraph_format.space_after = Pt(after)
             style.paragraph_format.keep_with_next = True
 
-    def _decorate_header(self, doc: DocxDocumentType) -> None:
-        header = doc.sections[0].header
+    def _render_first_page(self, section: Section) -> None:
+        """Render a distinct page-1 header and keep the footer on page 1.
+
+        ``first_page_header is not None`` enables Word's ``titlePg`` switch. An
+        empty list is meaningful: it suppresses the default header on page 1
+        while pages 2+ keep it. The first-page footer is populated explicitly so
+        page numbers do not disappear on page 1.
+        """
+        word_section = self._document_section
+        word_section.different_first_page_header_footer = True
+        self._render_header_blocks(word_section.first_page_header, section.first_page_header or [])
+        self._decorate_header(word_section.first_page_header)
+        if section.footer:
+            self._render_header_blocks(word_section.first_page_footer, section.footer)
+        self._decorate_footer(word_section.first_page_footer)
+
+    @property
+    def _document_section(self) -> Any:
+        # The compiler emits one Word section per document in v0.13; IR sections
+        # are represented by page breaks. See the secondary-section warning.
+        return self._doc.sections[0]
+
+    def _decorate_header(self, header: Any) -> None:
         paragraphs = [paragraph for paragraph in header.paragraphs if paragraph.text.strip()]
         if not paragraphs:
             return
@@ -270,10 +298,8 @@ class _Renderer:
         _paragraph_border(last, "bottom", color=_RULE, size=8, space=6)
         last.paragraph_format.space_after = Pt(10)
 
-    def _decorate_footer(self, doc: DocxDocumentType) -> None:
-        """Add a rule and ``Page X of Y`` to every page."""
-        section = doc.sections[0]
-        footer = section.footer
+    def _decorate_footer(self, footer: Any) -> None:
+        """Add a rule and ``Page X of Y`` to a footer container."""
         rule = footer.add_paragraph()
         _paragraph_border(rule, "top", color=_RULE, size=8, space=6)
         rule.paragraph_format.space_after = Pt(2)
@@ -346,6 +372,9 @@ class _Renderer:
             return
         word_section = doc.sections[0]
         container = word_section.header if is_header else word_section.footer
+        self._render_header_blocks(container, blocks)
+
+    def _render_header_blocks(self, container: Any, blocks: list[Block]) -> None:
         context = SampleContext(sample=self._sample or {}, schema=self._schema, scope=Scope())
         first = True
         for block in blocks:
@@ -456,33 +485,57 @@ class _Renderer:
         *,
         first_paragraph: bool,
     ) -> None:
-        value = context.value(block.path) if self._use_sample else None
-        payload = _decode_image(value)
+        value: Any = None
+        if block.source is ImageSource.STATIC:
+            payload = _validate_image_bytes(
+                self._options.static_assets.get(block.static_asset or "")
+            )
+        else:
+            value = context.value(block.path) if self._use_sample else None
+            payload = _decode_image(value)
         paragraph = self._new_paragraph(container, first_paragraph=first_paragraph)
         if block.alignment:
             paragraph.alignment = _ALIGN[block.alignment]
         if payload is None:
-            placeholder = f"[[{block.path}]]"
-            paragraph.add_run(f"{placeholder}").italic = True
-            self._stats["placeholders"] += 1
-            if value is not None:
-                self._warnings.append(
-                    f"Image value for '{block.path}' is not a decodable PNG/JPEG/GIF payload"
-                )
+            self._render_image_fallback(paragraph, block, value)
             return
         run = paragraph.add_run()
         try:
-            if block.width_mm:
-                run.add_picture(io.BytesIO(payload), width=Mm(block.width_mm))
-            elif block.height_mm:
-                run.add_picture(io.BytesIO(payload), height=Mm(block.height_mm))
+            width = Mm(block.width_mm) if block.width_mm else None
+            height = Mm(block.height_mm) if block.height_mm else None
+            if width is not None and height is not None and not block.preserve_aspect:
+                run.add_picture(io.BytesIO(payload), width=width, height=height)
+            elif width is not None:
+                run.add_picture(io.BytesIO(payload), width=width)
+            elif height is not None:
+                run.add_picture(io.BytesIO(payload), height=height)
             else:
                 run.add_picture(io.BytesIO(payload), width=Mm(42))
             self._stats["images"] += 1
         except Exception:
-            paragraph.add_run(f"[[{block.path}]]").italic = True
-            self._stats["placeholders"] += 1
-            self._warnings.append(f"Image for '{block.path}' could not be embedded")
+            self._render_image_fallback(paragraph, block, value)
+            self._warnings.append(f"Image for '{self._image_label(block)}' could not be embedded")
+
+    def _render_image_fallback(self, paragraph: Any, block: ImageBinding, value: Any) -> None:
+        label = self._image_label(block)
+        if block.source is ImageSource.STATIC:
+            if block.static_asset not in self._options.static_assets:
+                self._warnings.append(f"Static image asset '{label}' was not supplied")
+        elif value is not None:
+            self._warnings.append(
+                f"Image value for '{label}' is not a decodable PNG/JPEG/GIF payload"
+            )
+        if block.fallback is ImageFallback.BLANK:
+            return
+        if block.fallback is ImageFallback.ALT_TEXT and block.alt_text:
+            paragraph.add_run(block.alt_text).italic = True
+        else:
+            paragraph.add_run(f"[[{label}]]").italic = True
+        self._stats["placeholders"] += 1
+
+    @staticmethod
+    def _image_label(block: ImageBinding) -> str:
+        return block.static_asset or block.path or "image"
 
     def _render_repeat(self, container: Any, block: Repeat, context: SampleContext) -> None:
         try:
@@ -743,6 +796,14 @@ def _shade_cell(cell: _Cell, hex_color: str) -> None:
     )
 
 
+def _validate_image_bytes(data: bytes | None) -> bytes | None:
+    if not data or len(data) > MAX_IMAGE_BYTES:
+        return None
+    if not data.startswith(_IMAGE_MAGIC):
+        return None
+    return data
+
+
 def _decode_image(value: Any) -> bytes | None:
     if not isinstance(value, str) or not value.strip():
         return None
@@ -758,11 +819,7 @@ def _decode_image(value: Any) -> bytes | None:
         data = base64.b64decode(compact, validate=True)
     except (binascii.Error, ValueError):
         return None
-    if not data or len(data) > MAX_IMAGE_BYTES:
-        return None
-    if not data.startswith(_IMAGE_MAGIC):
-        return None
-    return data
+    return _validate_image_bytes(data)
 
 
 class DocentricAXCompiler:

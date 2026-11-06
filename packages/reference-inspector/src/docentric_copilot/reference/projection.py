@@ -1,6 +1,6 @@
 """Read-only Reference IR projection (REF-03).
 
-The projection is a deliberately separate contract from Template IR 1.0:
+The projection is a deliberately separate contract from Template IR 1.1:
 
 * it keeps raw binding paths and OOXML locations as **reference data**;
 * it is ``read-only`` and not compilable (``compilable: false``);
@@ -36,7 +36,7 @@ from .report import ReferenceDiagnostic
 PROJECTION_VERSION: Final[Literal["1.0"]] = "1.0"
 RUNTIME_COMPATIBILITY: Final[Literal["not_tested"]] = "not_tested"
 PROJECTION_NOTE: Final = (
-    "Read-only reference projection. This is not Template IR 1.0 and cannot be compiled."
+    "Read-only reference projection. This is not Template IR 1.1 and cannot be compiled."
 )
 
 

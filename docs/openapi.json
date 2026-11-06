@@ -2680,8 +2680,8 @@
         "description": "Root of the IR. Serialized canonically, hashed for reproducibility.",
         "properties": {
           "ir_version": {
-            "const": "1.0",
-            "default": "1.0",
+            "const": "1.1",
+            "default": "1.1",
             "title": "Ir Version",
             "type": "string"
           },
@@ -4163,7 +4163,7 @@
       },
       "ImageBinding": {
         "additionalProperties": false,
-        "description": "A dynamic image. The IR never embeds binary payloads.",
+        "description": "An image from schema data or a compile-time static asset.\n\nThe IR never embeds binary payloads. ``static_asset`` names a reviewed\nasset supplied to the compiler through ``CompileOptions.static_assets``;\nit is not a filesystem path and cannot escape the compile sandbox.",
         "properties": {
           "alignment": {
             "anyOf": [
@@ -4187,6 +4187,10 @@
             ],
             "title": "Alt Text"
           },
+          "fallback": {
+            "$ref": "#/components/schemas/ImageFallback",
+            "default": "placeholder"
+          },
           "height_mm": {
             "anyOf": [
               {
@@ -4207,10 +4211,31 @@
             "type": "string"
           },
           "path": {
+            "default": "",
             "maxLength": 512,
-            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
             "title": "Path",
             "type": "string"
+          },
+          "preserve_aspect": {
+            "default": true,
+            "title": "Preserve Aspect",
+            "type": "boolean"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ImageSource",
+            "default": "schema"
+          },
+          "static_asset": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static Asset"
           },
           "width_mm": {
             "anyOf": [
@@ -4226,11 +4251,27 @@
             "title": "Width Mm"
           }
         },
-        "required": [
-          "path"
-        ],
         "title": "ImageBinding",
         "type": "object"
+      },
+      "ImageFallback": {
+        "description": "What to emit when an image is missing or cannot be decoded.",
+        "enum": [
+          "placeholder",
+          "blank",
+          "alt_text"
+        ],
+        "title": "ImageFallback",
+        "type": "string"
+      },
+      "ImageSource": {
+        "description": "Where an image payload comes from: schema data or a compile asset.",
+        "enum": [
+          "schema",
+          "static"
+        ],
+        "title": "ImageSource",
+        "type": "string"
       },
       "ImportProvenance": {
         "additionalProperties": false,
@@ -4406,6 +4447,7 @@
           "EMPTY_COLLECTION",
           "LABEL_TEXT_UNAVAILABLE",
           "IMAGE_SOURCE_UNVERIFIED",
+          "TABLE_DIAGNOSTIC",
           "PARENT_SKIPPED",
           "EMPTY_DOCUMENT"
         ],
@@ -6755,6 +6797,55 @@
             "title": "Body",
             "type": "array"
           },
+          "first_page_header": {
+            "anyOf": [
+              {
+                "items": {
+                  "discriminator": {
+                    "mapping": {
+                      "conditional": "#/components/schemas/Conditional",
+                      "heading": "#/components/schemas/Heading",
+                      "image": "#/components/schemas/ImageBinding",
+                      "page_break": "#/components/schemas/PageBreak",
+                      "paragraph": "#/components/schemas/Paragraph",
+                      "repeat": "#/components/schemas/Repeat",
+                      "table": "#/components/schemas/Table"
+                    },
+                    "propertyName": "kind"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Paragraph"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Heading"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImageBinding"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Repeat"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Conditional"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Table"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PageBreak"
+                    }
+                  ]
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Page Header"
+          },
           "footer": {
             "anyOf": [
               {
@@ -7721,7 +7812,7 @@
   "info": {
     "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
     "title": "Docentric Copilot API",
-    "version": "0.12.0"
+    "version": "0.13.0"
   },
   "openapi": "3.1.0",
   "paths": {

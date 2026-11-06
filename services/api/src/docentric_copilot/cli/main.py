@@ -142,7 +142,7 @@ def _emit(payload: dict[str, Any], *, as_json: bool, message: str | None = None)
 @app.command()
 def version() -> None:
     """Print the CLI and IR versions."""
-    typer.echo(f"docentric-copilot {__version__} (IR 1.0)")
+    typer.echo(f"docentric-copilot {__version__} (IR 1.1)")
 
 
 @app.command()
@@ -673,8 +673,13 @@ def reference_import_ir(
         limits = ReferenceLimits.from_limits(get_settings().limits)
         bundle = inspect_reference_bundle(path, limits=limits, ddsp_path=ddsp)
         graph = build_reference_graph(bundle.report, bundle.schemas, documents=bundle.payloads)
+        docx_payload = bundle.payloads.get(graph.source_sha256) or next(
+            iter(bundle.payloads.values()), None
+        )
         result: ReferenceIRImport = project_to_template_ir(
-            graph, allow_unsupported=allow_unsupported
+            graph,
+            allow_unsupported=allow_unsupported,
+            docx_payload=docx_payload,
         )
     except CopilotError as exc:
         _fail(exc, as_json=as_json)

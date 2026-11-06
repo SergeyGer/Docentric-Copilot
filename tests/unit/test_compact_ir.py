@@ -211,7 +211,7 @@ class TestExpandCompact:
         assert isinstance(document, Document)
         assert document.title == "Sales Quotation"
         assert document.language == "en"
-        assert document.ir_version == "1.0"
+        assert document.ir_version == "1.1"
         assert document.target.value == "generic-docx"
         assert document.metadata.template_name == COMPACT_TEMPLATE_NAME
         assert document.metadata.source_schema_id == schema.schema_id
@@ -918,3 +918,21 @@ class TestExpandCompactV2:
         with pytest.raises(PlanInvalidError) as info:
             expand_compact_v2(payload, schema)
         assert info.value.details["path"] == "$.title"
+
+
+def test_compact_v1_expands_a_first_page_header(schema) -> None:
+    payload = _full_feature_payload()
+    payload["sections"][0]["first_page_header"] = [
+        {"img": {"f": "GeneralData.Company.CompanyLogo", "w": 42, "alt": "Logo"}}
+    ]
+    document = expand_compact(payload, schema)
+    assert document.sections[0].first_page_header is not None
+    assert document.sections[0].first_page_header[0].kind == "image"
+
+
+def test_compact_v2_expands_a_first_page_header(schema) -> None:
+    payload = _v2_full_feature_payload()
+    payload["s"][0]["fh"] = [["img", "GeneralData.Company.CompanyLogo", 42, "Logo"]]
+    document = expand_compact_v2(payload, schema)
+    assert document.sections[0].first_page_header is not None
+    assert document.sections[0].first_page_header[0].kind == "image"

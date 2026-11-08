@@ -1,15 +1,16 @@
 {
   "schema": "demo-smoke/v1",
   "verification_scope": "local AppTest; deployed Streamlit URL not verified",
-  "verified_at": "2026-11-08T16:14:02Z",
+  "verified_at": "2026-11-08T16:20:28Z",
   "application_version": "0.13.0",
-  "git_commit": "678622b392e7",
+  "git_commit": "72f455ced556",
+  "working_tree_dirty": false,
   "template_ir": "1.2",
   "provider": "mock",
   "execution_mode": "Deterministic Demo",
   "deployed_url": "https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app",
   "deployed_url_status": "HTTP 303 to Streamlit Cloud auth; interactive check unavailable in this environment",
-  "metadata_panel": "Application: v0.13.0\nGit Commit: 678622b392e7\nTemplate IR: 1.2\nProvider: mock\nModel: heuristic-baseline-v1\nExecution Mode: Deterministic Demo\nBuild: 2026-11-08T16:14:01Z\nCompatibility: Not tested with Docentric AX Runtime",
+  "metadata_panel": "Application: v0.13.0\nGit Commit: 72f455ced556\nTemplate IR: 1.2\nProvider: mock\nModel: heuristic-baseline-v1\nExecution Mode: Deterministic Demo\nBuild: 2026-11-08T16:20:27Z\nCompatibility: Not tested with Docentric AX Runtime",
   "scenarios": [
     {
       "case_id": "quotation",

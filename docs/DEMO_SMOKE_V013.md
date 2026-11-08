@@ -6,9 +6,10 @@
 
 | Field | Value |
 | --- | --- |
-| Verified at | `2026-11-08T16:14:02Z` |
+| Verified at | `2026-11-08T16:20:28Z` |
 | Application | `0.13.0` |
-| Git commit | `678622b392e7` |
+| Git commit | `72f455ced556` |
+| Working tree dirty | `False` |
 | Template IR | `1.2` |
 | Provider / model | `mock` / `heuristic-baseline-v1` |
 | Execution mode | `Deterministic Demo` |
@@ -19,12 +20,12 @@
 
 ```text
 Application: v0.13.0
-Git Commit: 678622b392e7
+Git Commit: 72f455ced556
 Template IR: 1.2
 Provider: mock
 Model: heuristic-baseline-v1
 Execution Mode: Deterministic Demo
-Build: 2026-11-08T16:14:01Z
+Build: 2026-11-08T16:20:27Z
 Compatibility: Not tested with Docentric AX Runtime
 ```
 
@@ -47,6 +48,8 @@ payload (AppTest does not expose the binary).
 ## What is not proven
 
 - The deployed Streamlit Cloud revision is not verified; it may run an older commit.
+- A dirty working tree means the local demo build contains changes not yet committed;
+  the metadata panel still reports the release tag's base commit.
 - No real LLM call was made; execution mode is `Deterministic Demo`.
 - This is not Word for the web or Docentric AX validation.
 

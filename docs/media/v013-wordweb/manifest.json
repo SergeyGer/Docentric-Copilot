@@ -6,7 +6,7 @@
   "word_web_screenshots": [],
   "application_version": "0.13.0",
   "template_ir": "1.2",
-  "git_commit": "678622b392e7",
+  "git_commit": "72f455ced556",
   "provider": "mock",
   "execution_mode": "Deterministic Demo",
   "docx": "invoice-first-page.docx",

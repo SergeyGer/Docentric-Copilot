@@ -166,7 +166,7 @@ Exports the JSON Schema of the current Template IR version.
 
 ```bash
 docentric-copilot version
-# docentric-copilot 0.13.0 (IR 1.1)
+# docentric-copilot 0.13.1 (IR 1.2)
 ```
 
 ## Secrets

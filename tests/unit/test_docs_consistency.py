@@ -18,7 +18,7 @@ def _read(relative: str) -> str:
 
 def test_versions_agree_across_the_distribution_and_docs() -> None:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == __version__ == "0.13.0"
+    assert pyproject["project"]["version"] == __version__ == "0.13.1"
     assert json.loads(_read("apps/web/package.json"))["version"] == __version__
 
     readme = _read("README.md")
@@ -285,7 +285,7 @@ def test_v012_release_evidence_and_version_alignment() -> None:
 
     readme = _read("README.md")
     assert "Honest-Status" in readme
-    assert "0.13.0" in readme
+    assert "0.13.1" in readme
     assert "not_tested" in readme
     assert "AT-07" in readme
     assert "| V012 ID | Workstream | Status |" not in readme
@@ -309,10 +309,10 @@ def test_v012_release_evidence_and_version_alignment() -> None:
 
     roadmap = _read("docs/ROADMAP.md")
     assert "M8 — v0.12 reliability release" in roadmap
-    assert "Current release | 0.13.0" in roadmap
+    assert "Current release | 0.13.1" in roadmap
 
     openapi = json.loads(_read("docs/openapi.json"))
-    assert openapi["info"]["version"] == __version__ == "0.13.0"
+    assert openapi["info"]["version"] == __version__ == "0.13.1"
 
 
 def test_v012_p1_items_have_honest_status_and_targets() -> None:

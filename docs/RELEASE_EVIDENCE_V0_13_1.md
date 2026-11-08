@@ -1,0 +1,101 @@
+# Release evidence — Docentric Copilot v0.13.1
+
+| Field | Value |
+| --- | --- |
+| Version | `0.13.1` |
+| Status | Released |
+| Tag | `v0.13.1` |
+| Base feature release | `v0.13.0` |
+| Template IR | `1.2` |
+| Compatibility | `not_tested` |
+| AT-07 | `partial` |
+
+This is a corrective diagnostic release on top of
+[v0.13.0](RELEASE_EVIDENCE_V0_13.md). It does not change the planner or the
+published benchmark; it makes the remaining v0.13 audit findings explicit and
+reproducible.
+
+## 1. Changes
+
+| Area | Evidence |
+| --- | --- |
+| Nested collection boundary | `packages/reference-inspector/.../import_ir.py`; `tests/unit/test_v013_reference_evaluation.py` |
+| Table outcomes and merged-cell refusal | `packages/reference-inspector/.../table_inference.py`; `tests/unit/test_v013_table_inference.py` |
+| Reference failure classification | `scripts/reference_evaluation.py`; `benchmarks/reference_evaluation_v013.json` |
+| Gemini failure classification | `scripts/gemini_failures.py`; `docs/GEMINI_FAILURES_V013.md` |
+| Documentation/IR sync | `docs/FEATURE_COVERAGE_V013.md`, `docs/RELEASE_EVIDENCE_V0_13.md`, `CHANGELOG.md` |
+| Deployed demo (T-08) | `docs/DEMO_SMOKE_V013.md`; `scripts/deployed_demo_smoke.py` |
+| Word Web kit (T-01) | `docs/media/v013-wordweb/`; `docs/WORD_WEB_VALIDATION_V013.md` |
+| Video draft kit (T-02/T-03) | `docs/media/demo-v013.mp4`, `technical-v013.mp4`; `scripts/build_v013_videos.py` |
+
+## 2. T-04 — Reference Evaluation pipeline failures
+
+17 documents parsed, 16 reached import, 15 compiled. The two pipeline failures
+are classified and tested:
+
+1. `CompilationFailedError` — an unenclosed nested collection is refused instead
+   of being bound at document root.
+2. `ReferenceImportEmptyError` — the document contains only unsupported
+   constructs; the importer reports an empty safe subset.
+
+See [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md#failure-classification).
+
+## 3. T-05 — Table classification
+
+30 observed body tables:
+
+| Class | Count |
+| --- | ---: |
+| Accepted inferred tables | 15 |
+| Deliberately unsupported | 15 |
+| Defect | 0 |
+| Not evaluable | 0 |
+
+Reasons: `TABLE_COLLECTION_NOT_EVIDENCED` 7, `TABLE_MERGED_OR_RAGGED` 7,
+`TABLE_MULTIPLE_REPEATED_ROWS` 4, `TABLE_ROW_EMPTY` 1. The audit baseline 17/30
+predates explicit merged-cell rejection.
+
+## 4. T-06 — Gemini failures
+
+10 v0.13 technical failures vs 4 in v0.12; all Gemini compact-v2
+`structured_output`. Classes: root-level section keys 5, unknown root `v` 2,
+malformed nested cell block 2, wrong nested cell scalar 1. See
+[GEMINI_FAILURES_V013](GEMINI_FAILURES_V013.md).
+
+## 5. T-08 — Deployed demo
+
+The Streamlit Cloud app was woken and exercised in Chromium:
+
+- Application `0.13.0`, Git commit `1cbe073239f6`, Template IR `1.2`,
+  deterministic demo.
+- Sales quotation (confirm `req_09`), tax invoice and purchase order each download
+  DOCX.
+- Downloaded SHA-256 values match the local deterministic build.
+
+See [DEMO_SMOKE_V013](DEMO_SMOKE_V013.md).
+
+## 6. P0 items still open
+
+| ID | Status | Blocker |
+| --- | --- | --- |
+| V013-06 / #53 Word for the web | Deferred | Microsoft 365/OneDrive access; local kit is not Word Web evidence |
+| V013-09/V013-10 / #54 videos | Deferred | No human review/final polish/YouTube publication; Product Demo needs T-01 |
+
+The draft videos are 2:52 and 5:18, 1080p H.264/AAC with SRT, but the manifest
+records `human_review: false` and `youtube_published: false`.
+
+## 7. Verification
+
+- Main CI green: Python lint/types/tests (85% coverage gate), Web, Security,
+  CodeQL, E2E, Visual Diff, Docker.
+- Release workflow builds the wheel/sdist, installs and inspects the example, and
+  builds both images.
+- Benchmark metrics are unchanged from v0.13.0; see
+  [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08).
+
+## 8. Limitations
+
+- Docentric AX runtime compatibility remains `not_tested`; Word Desktop not tested.
+- AT-07 remains `partial`; there is no independent human review of the gold labels.
+- The demo build is main commit `1cbe073`, not the v0.13.0 tag commit.
+- v0.13.1 does not claim that every v0.13 P0 deliverable is complete.

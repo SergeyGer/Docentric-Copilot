@@ -4,9 +4,35 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The Template IR has its own
-version (`1.1`) independent of the distribution version.
+version (`1.2`) independent of the distribution version.
 
 ## [Unreleased]
+
+## [0.13.1] - 2026-11-08
+
+Corrective diagnostic release. Word for the web (#53) and the two videos (#54)
+remain Deferred external dependencies; they are not reported as passes.
+See [RELEASE_EVIDENCE_V0_13_1](docs/RELEASE_EVIDENCE_V0_13_1.md).
+
+### Fixed
+- Reference import no longer emits an unenclosed nested collection at document
+  root; the boundary is explicit (`NESTED_COLLECTION_WITHOUT_PARENT`).
+- Empty conditional table cells are no longer constructed with zero blocks.
+- Reference table inference records one outcome per observed body table
+  (accepted / deliberately unsupported / defect / not evaluable); merged and
+  ragged cells are explicitly refused.
+
+### Added
+- Table outcomes and reason-code classification (30 observed body tables).
+- Two Reference Evaluation pipeline-failure classifications with regression tests.
+- Gemini `structured_output` failure classification (10 v0.13 vs 4 v0.12).
+- Playwright verification of the deployed Streamlit demo (T-08) with matching
+  DOCX hashes.
+- Synthetic Word Web evidence kit and draft Product/Technical video kit.
+
+### Changed
+- Release Evidence now states Template IR 1.2; feature matrix and docs distinguish
+  IR/compiler support from automatic reference inference.
 
 ## [0.13.0] - 2026-11-06
 
@@ -15,8 +41,8 @@ V013-06/V013-09/V013-10 are Deferred external dependencies; they are not
 reported as passes.
 
 ### Added
-- Template IR 1.1: `Section.first_page_header`, image `source`/`static_asset`/`fallback`/
-  `preserve_aspect`, and a `1.0 -> 1.1` migration that fills the new optional fields.
+- Template IR 1.2: `Section.first_page_header`, image `source`/`static_asset`/`fallback`/
+  `preserve_aspect`, `Table.footer_rows`, and deterministic `1.0 -> 1.1 -> 1.2` migrations.
 - First-page header support: compiler emits `w:titlePg`, a first-page header part and
   `headerReference type="first"`; the default header no longer needs the logo; the preview
   selects the first-page header only on page 1; first-page footer keeps PAGE/NUMPAGES.
@@ -26,7 +52,7 @@ reported as passes.
 - Reference-to-IR table inference for static tables, static header rows, repeated data rows,
   alias-relative fields, optional `If` cells (become `Conditional`), static nested tables and
   `footer_rows` after the repeat, with explicit diagnostics. Strict mode refuses ambiguous/merged/unsupported structures;
-  best-effort keeps them in `skipped[]`.
+  best-effort keeps them in `skipped[]`. IR 1.2 added the footer-row block.
 - Feature Coverage Matrix (`benchmarks/feature_coverage.json`,
   `docs/FEATURE_COVERAGE_V013.md`) and a Reference Evaluation over the official 17-document corpus
   (`benchmarks/reference_evaluation_v013.json`, `docs/REFERENCE_EVALUATION_V013.md`).

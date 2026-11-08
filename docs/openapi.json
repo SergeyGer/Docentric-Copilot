@@ -7821,7 +7821,7 @@
   "info": {
     "description": "Schema-aware prompt-to-template engine. Generates validated Template IR and deterministic generic DOCX documents from a DDSP data source. Docentric AX compatibility is unverified and reported as `not_tested`.",
     "title": "Docentric Copilot API",
-    "version": "0.13.0"
+    "version": "0.13.1"
   },
   "openapi": "3.1.0",
   "paths": {

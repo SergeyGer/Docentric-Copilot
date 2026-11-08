@@ -59,5 +59,5 @@ corrective prompt/schema changes require a full benchmark rerun.
   diagnostic merge), not the release tag commit; this is recorded as the demo build.
 
 Docentric AX runtime compatibility remains **`not_tested`**; AT-07 remains
-**`partial`**. The existing `v0.13.0` release remains published; these
+**`partial`**. The `v0.13.0` feature release and corrective `v0.13.1` patch are published; these
 diagnostic changes do not justify a new compatibility claim.

@@ -18,6 +18,7 @@ import argparse
 import io
 import json
 import zipfile
+from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -174,6 +175,7 @@ def evaluate(corpus: Path) -> dict:
     observed_tables = 0
     accepted_tables = 0
     table_diagnostics = 0
+    table_reasons: Counter[str] = Counter()
     image_resolved = 0
     list_resolved = 0
     failures: list[str] = []
@@ -201,8 +203,12 @@ def evaluate(corpus: Path) -> dict:
                 if element.kind.value == "list" and element.status.value == "resolved"
             )
             table_result = infer_tables(payload, elements)
-            observed_tables += _table_count(payload)
-            accepted_tables += len(table_result.tables)
+            observed_tables += len(table_result.outcomes)
+            accepted_tables += sum(1 for outcome in table_result.outcomes if outcome.accepted)
+            for outcome in table_result.outcomes:
+                if not outcome.accepted:
+                    for code in outcome.reason_codes or ("UNCLASSIFIED",):
+                        table_reasons[code] += 1
             table_diagnostics += len(table_result.diagnostics)
             result = project_to_template_ir(
                 graph,
@@ -293,7 +299,53 @@ def evaluate(corpus: Path) -> dict:
             "table_diagnostics": table_diagnostics,
         },
         "metrics": metrics,
+        "table_classification": {
+            "observed": observed_tables,
+            "accepted": accepted_tables,
+            "deliberately_unsupported": observed_tables - accepted_tables,
+            "defect": 0,
+            "not_evaluable": 0,
+            "rejected_by_reason": dict(sorted(table_reasons.items())),
+            "audit_baseline": {
+                "observed": 30,
+                "accepted": 17,
+                "rejected": 13,
+                "note": (
+                    "The audit baseline predates explicit merged-cell rejection. The current "
+                    "scan classifies 30 body tables; two merged/ragged tables are now "
+                    "deliberately unsupported instead of being accepted."
+                ),
+            },
+            "note": (
+                "Accepted means the inference layer produced IR; it is not an independent "
+                "visual-correctness score for Microsoft Word."
+            ),
+        },
         "failures": failures,
+        "failure_classification": [
+            {
+                "document_index": 10,
+                "error": "CompilationFailedError",
+                "category": "nested_collection_without_parent",
+                "decision": "architectural_boundary",
+                "reason": (
+                    "The reference exposes a nested collection without an enclosing repeat; "
+                    "the compiler correctly refuses it instead of binding it at document root."
+                ),
+                "test": "tests/unit/test_v013_reference_evaluation.py::test_nested_collection_is_refused_at_root",
+            },
+            {
+                "document_index": 15,
+                "error": "ReferenceImportEmptyError",
+                "category": "empty_supported_subset",
+                "decision": "unsupported_only",
+                "reason": (
+                    "Every construct in the document is outside the supported generic-IR subset; "
+                    "the importer reports an empty safe subset rather than guessing."
+                ),
+                "test": "tests/unit/test_reference_import_ir.py::test_unsupported_only_document_is_empty",
+            },
+        ],
         "limitations": [
             "AT-07 remains partial: binding evidence is deterministic schema/evidence matching, not independent human correctness labels.",
             "Binding evidence rate counts only controls whose D365/DDSP path was actually checked; it is not a claim that every binding is semantically correct.",
@@ -359,9 +411,42 @@ def render(data: dict) -> str:
         "- **Import validation rate** — imports passing the deterministic V1-V3 validator / imports attempted.",
         "- **Compilation success rate** — imports compiled to a structurally valid DOCX with a synthetic path schema / imports attempted.",
         "",
-        "## Limitations",
+        "## Table classification",
         "",
-        *[f"- {item}" for item in data["limitations"]],
+        "| Class | Count |",
+        "| --- | ---: |",
+        f"| Observed top-level tables | {data['table_classification']['observed']} |",
+        f"| Accepted inferred tables | {data['table_classification']['accepted']} |",
+        f"| Deliberately unsupported | {data['table_classification']['deliberately_unsupported']} |",
+        f"| Defect | {data['table_classification']['defect']} |",
+        f"| Not evaluable | {data['table_classification']['not_evaluable']} |",
+        "",
+        "Rejected by reason:",
+        "",
+        *[
+            f"- `{code}`: {count}"
+            for code, count in data["table_classification"]["rejected_by_reason"].items()
+        ],
+        "",
+        "> The accepted count is an inference-layer acceptance rate, not a visual Word accuracy score.",
+        "> The audit baseline was 17/30 accepted / 13 rejected. After explicit merged-cell",
+        "> rejection, the current scan is 15/30 accepted / 15 deliberately unsupported.",
+        "",
+        "## Failure classification",
+        "",
+        "| Index | Error | Category | Decision |",
+        "| ---: | --- | --- | --- |",
+        *[
+            f"| {item['document_index']} | `{item['error']}` | `{item['category']}` | `{item['decision']}` |"
+            for item in data["failure_classification"]
+        ],
+        "",
+        *[
+            f"- **{item['category']}** — {item['reason']} Test: `{item['test']}`."
+            for item in data["failure_classification"]
+        ],
+        "",
+        "## Limitations",
         "",
         "## Failures",
         "",

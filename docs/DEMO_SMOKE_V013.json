@@ -1,0 +1,50 @@
+{
+  "schema": "demo-smoke/v1",
+  "verification_scope": "local AppTest; deployed Streamlit URL not verified",
+  "verified_at": "2026-11-08T16:14:02Z",
+  "application_version": "0.13.0",
+  "git_commit": "678622b392e7",
+  "template_ir": "1.2",
+  "provider": "mock",
+  "execution_mode": "Deterministic Demo",
+  "deployed_url": "https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app",
+  "deployed_url_status": "HTTP 303 to Streamlit Cloud auth; interactive check unavailable in this environment",
+  "metadata_panel": "Application: v0.13.0\nGit Commit: 678622b392e7\nTemplate IR: 1.2\nProvider: mock\nModel: heuristic-baseline-v1\nExecution Mode: Deterministic Demo\nBuild: 2026-11-08T16:14:01Z\nCompatibility: Not tested with Docentric AX Runtime",
+  "scenarios": [
+    {
+      "case_id": "quotation",
+      "title": "Sales quotation",
+      "mapping_blocking_after_local_confirmations": 1,
+      "docx_size_bytes": 41911,
+      "docx_sha256": "22d69712d2d1bfbef765caa98ba5f2207728310efffd704139cb5347e4f470dd",
+      "ir_version": "1.2",
+      "generator": "heuristic-baseline-v1",
+      "app_test_passed": true,
+      "confirmations_clicked": [
+        "confirm-req_09"
+      ]
+    },
+    {
+      "case_id": "invoice",
+      "title": "Tax invoice",
+      "mapping_blocking_after_local_confirmations": 0,
+      "docx_size_bytes": 41660,
+      "docx_sha256": "643bf9bbe95733ceece260120cb47094c442f855745b4078d9fde0e294f43c0f",
+      "ir_version": "1.2",
+      "generator": "heuristic-baseline-v1",
+      "app_test_passed": true,
+      "confirmations_clicked": []
+    },
+    {
+      "case_id": "purchase-order",
+      "title": "Purchase order",
+      "mapping_blocking_after_local_confirmations": 0,
+      "docx_size_bytes": 41501,
+      "docx_sha256": "9c509595dc98784aea8ca9af4285d1172cca1310298a281c49e7b5152ca5561c",
+      "ir_version": "1.2",
+      "generator": "heuristic-baseline-v1",
+      "app_test_passed": true,
+      "confirmations_clicked": []
+    }
+  ]
+}

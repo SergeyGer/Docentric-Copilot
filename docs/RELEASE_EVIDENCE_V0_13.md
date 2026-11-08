@@ -4,7 +4,7 @@
 | --- | --- |
 | Base release | `0.12.0` (tag `v0.12.0`, commit `a4d3eb9`) |
 | Candidate version | `0.13.0` |
-| Template IR | `1.1` (migration from `1.0`) |
+| Template IR | `1.2` (migrations `1.0 → 1.1 → 1.2`) |
 | Status | **Released** |
 | Tag | `v0.13.0` |
 | Compatibility | Docentric AX runtime **`not_tested`**; AT-07 **`partial`** |
@@ -27,7 +27,7 @@
 
 ### V013-02 — Image family (Passed for the synthetic scenarios)
 
-IR 1.1 extends `ImageBinding` with:
+IR 1.2 extends `ImageBinding` with:
 
 - `source: schema | static`, `static_asset` (reviewed compile asset key, never a path);
 - `fallback: placeholder | blank | alt_text`;
@@ -57,7 +57,7 @@ ordinals to the projected schema evidence. It supports:
 - optional cells with an `If` control become `Conditional` cells;
 - static rows after the repeated row become `footer_rows`, rendered after the repeat;
 - a nested table with its own repeat under the outer row alias is inferred with a relative
-  Repeat path and relative row fields;
+  Repeat path and relative row fields (limited to the tested shape);
 - explicit blocking diagnostics for merged/ragged cells, ambiguous headers and missing collection
   evidence;
 - strict mode refuses on diagnostics; best-effort returns the supported subset with `skipped[]`.
@@ -68,7 +68,7 @@ best-effort mode. No row or table is silently dropped.
 
 ### V013-04 — First-page header (Passed)
 
-- `Section.first_page_header` in IR 1.1 (`None` = normal header, `[]` = blank first-page header).
+- `Section.first_page_header` in IR 1.2 (`None` = normal header, `[]` = blank first-page header).
 - Compiler emits `w:titlePg`, a first-page header part and `headerReference w:type="first"`;
   the default header has no logo; the first-page footer keeps PAGE/NUMPAGES fields.
 - Preview renders the first-page header only on page 1 and the default header on later pages.

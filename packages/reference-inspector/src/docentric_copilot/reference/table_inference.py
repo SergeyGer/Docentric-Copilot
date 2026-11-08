@@ -71,6 +71,15 @@ class TableDiagnostic(BaseModel):
 
 
 @dataclass(frozen=True)
+class TableOutcome:
+    """One top-level table's acceptance decision and reason codes."""
+
+    index: int
+    accepted: bool
+    reason_codes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class InferredTable:
     table: Table
     ordinals: frozenset[int]
@@ -81,6 +90,7 @@ class InferredTable:
 class TableInferenceResult:
     tables: list[InferredTable] = field(default_factory=list)
     diagnostics: list[TableDiagnostic] = field(default_factory=list)
+    outcomes: list[TableOutcome] = field(default_factory=list)
     ordinals: set[tuple[str, int]] = field(default_factory=set)
 
     @property
@@ -268,10 +278,23 @@ class _TableParser:
         for ordinal, sdt in enumerate(root.iter(_q("sdt"))):
             sdt.set("__dc_ordinal", str(ordinal))
         result = TableInferenceResult()
-        for table_element in root.iter(_q("tbl")):
+        table_index = 0
+        body = root.find(_q("body"))
+        top_level_tables = body.findall(_q("tbl")) if body is not None else []
+        for table_element in top_level_tables:
             if self._is_nested(table_element):
                 continue
+            before = len(self._diagnostics)
             inferred = self._parse_table(table_element, outer=None)
+            new_codes = tuple(sorted({item.code for item in self._diagnostics[before:]}))
+            result.outcomes.append(
+                TableOutcome(
+                    index=table_index,
+                    accepted=inferred is not None,
+                    reason_codes=() if inferred is not None else new_codes,
+                )
+            )
+            table_index += 1
             if inferred is not None:
                 result.tables.append(inferred)
         for item in result.tables:
@@ -309,6 +332,25 @@ class _TableParser:
                 )
             )
             return None
+        for row_element in row_elements:
+            for cell_element in row_element.findall(_q("tc")):
+                properties = cell_element.find(_q("tcPr"))
+                if properties is not None and (
+                    properties.find(_q("gridSpan")) is not None
+                    or properties.find(_q("vMerge")) is not None
+                ):
+                    self._diagnostics.append(
+                        TableDiagnostic(
+                            code="TABLE_MERGED_OR_RAGGED",
+                            message=(
+                                "Merged table cells are not inferred; the table is listed as "
+                                "deliberately unsupported."
+                            ),
+                            table_ordinal=table_ordinal,
+                            blocking=True,
+                        )
+                    )
+                    return None
         rows: list[_RowData] = []
         for row_element in row_elements:
             cells = [
@@ -511,7 +553,7 @@ class _TableParser:
             rewrite,
             skip_kinds=frozenset({"if"}),
         )
-        if if_elements:
+        if if_elements and blocks:
             condition_path = if_elements[0].schema_path or if_elements[0].binding_path
             if condition_path:
                 condition_field = rewrite(condition_path) or _sanitize_path(condition_path)
@@ -641,5 +683,6 @@ __all__ = [
     "InferredTable",
     "TableDiagnostic",
     "TableInferenceResult",
+    "TableOutcome",
     "infer_tables",
 ]

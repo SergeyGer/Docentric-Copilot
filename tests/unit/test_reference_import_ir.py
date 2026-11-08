@@ -294,3 +294,12 @@ def test_import_json_is_deterministic(tmp_path: Path) -> None:
     assert payload["runtime_compatibility"] == "not_tested"
     assert payload["ir"]["target"] == "generic-docx"
     assert payload["skipped"] == []
+
+
+def test_unsupported_only_document_is_empty(tmp_path: Path) -> None:
+    from docentric_copilot.reference import ReferenceImportEmptyError
+
+    (tmp_path / "Unsupported.docx").write_bytes(_unsupported_docx())
+    graph, _ = _graph_for(tmp_path)
+    with pytest.raises(ReferenceImportEmptyError):
+        project_to_template_ir(graph, allow_unsupported=True)

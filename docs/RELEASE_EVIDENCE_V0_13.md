@@ -186,3 +186,5 @@ ruff check . && ruff format --check .
 mypy packages services
 python scripts/check_docs_links.py
 ```
+
+Open-task follow-up: [OPEN_TASKS_V013](OPEN_TASKS_V013.md).

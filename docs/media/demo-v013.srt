@@ -1,0 +1,111 @@
+1
+00:00:00,000 --> 00:00:06,535
+Docentric Copilot turns a business brief and a data source into a generic Word document.
+
+2
+00:00:06,535 --> 00:00:09,134
+The planner proposes the structure.
+
+3
+00:00:09,134 --> 00:00:13,590
+Deterministic code validates, compiles and reports evidence.
+
+4
+00:00:13,590 --> 00:00:20,496
+Docentric AX runtime compatibility is not tested, and this video is a draft production asset.
+
+5
+00:00:20,496 --> 00:00:22,840
+Start with a real DDSP package.
+
+6
+00:00:22,840 --> 00:00:27,226
+The inspector exposes fields, collections and sample data.
+
+7
+00:00:27,226 --> 00:00:35,544
+The brief is split into typed requirements, and the planner receives only bounded, evidence-backed candidates.
+
+8
+00:00:35,544 --> 00:00:40,738
+The mapping review shows what is confirmed, schema-valid, ambiguous or missing.
+
+9
+00:00:40,738 --> 00:00:49,680
+A reviewer can confirm the correct field; the confirmation is preserved and the document compiles only when no blocking mapping remains.
+
+10
+00:00:49,680 --> 00:00:52,071
+The workflow has three steps.
+
+11
+00:00:52,071 --> 00:00:57,183
+First, understand the brief and the available schema evidence.
+
+12
+00:00:57,183 --> 00:01:01,058
+Second, let a person review ambiguous mappings.
+
+13
+00:01:01,058 --> 00:01:05,675
+Third, validate the typed template and compile the DOCX.
+
+14
+00:01:05,675 --> 00:01:08,808
+The model never writes OOXML directly.
+
+15
+00:01:08,808 --> 00:01:13,049
+The preview is built from the same Template IR as the DOCX.
+
+16
+00:01:13,049 --> 00:01:22,824
+The live demo now exposes the download button after confirmation and records the artifact hash, fixing the earlier Sales Quotation flow.
+
+17
+00:01:22,824 --> 00:01:25,895
+Template IR 1.2 adds a first-page header.
+
+18
+00:01:25,895 --> 00:01:29,641
+The compiler writes a real title-page header part.
+
+19
+00:01:29,641 --> 00:01:38,256
+Page one carries the logo, later pages keep the company identity without it, and footer page numbers remain intact.
+
+20
+00:01:38,256 --> 00:01:45,645
+Version zero thirteen adds the image family, conservative reference table inference and first-page headers.
+
+21
+00:01:45,645 --> 00:01:55,728
+It also turns IR sections into real Word sections, fixes the live demo confirmation flow, and adds honest evidence for every remaining limitation.
+
+22
+00:01:55,728 --> 00:02:02,331
+The image family supports static assets, schema images, image collections and fallback policy.
+
+23
+00:02:02,331 --> 00:02:13,992
+Reference table inference produces header and repeated rows, optional cells, footer rows and nested repeat structures, with explicit diagnostics for ambiguous shapes.
+
+24
+00:02:13,992 --> 00:02:22,821
+The final benchmark records two hundred eighty-eight planned runs, with ten Gemini structured-output failures separated from semantics.
+
+25
+00:02:22,821 --> 00:02:34,920
+Precision is zero point nine five one, semantic pass is ninety-eight point five six percent, and the reference evaluation classifies every observed table, including deliberate refusals.
+
+26
+00:02:34,920 --> 00:02:40,505
+Word for the web validation still requires a human with Microsoft 365.
+
+27
+00:02:40,505 --> 00:02:45,930
+These videos are drafts without human review or YouTube publication.
+
+28
+00:02:45,930 --> 00:02:52,392
+AT-07 remains partial, and Docentric AX runtime compatibility remains not tested.

@@ -1,0 +1,72 @@
+{
+  "schema": "v013-video-kit/v1",
+  "status": "draft_production_kit",
+  "human_review": false,
+  "youtube_published": false,
+  "voice": "en-US-AriaNeural",
+  "fps": 30,
+  "resolution": "1920x1080",
+  "product": {
+    "name": "demo",
+    "mp4": "docs/media/demo-v013.mp4",
+    "srt": "docs/media/demo-v013.srt",
+    "narration": "docs/media/demo-v013-narration.md",
+    "duration_seconds": 172.39,
+    "sha256": "4b21a5b4ca87d19ef881f46bba62f092d93904132c3054bb5f6656227faa0ff1",
+    "bytes": 5102155,
+    "probe": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "30/1"
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "r_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "172.369336"
+      }
+    }
+  },
+  "technical": {
+    "name": "technical",
+    "mp4": "docs/media/technical-v013.mp4",
+    "srt": "docs/media/technical-v013.srt",
+    "narration": "docs/media/technical-v013-narration.md",
+    "duration_seconds": 318.55,
+    "sha256": "b9293fb5192514fc9513d764916ab2c68a9ea607c0a2ac0efb6374ff89e9af93",
+    "bytes": 8815462,
+    "probe": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "30/1"
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "r_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "318.474667"
+      }
+    }
+  },
+  "limitations": [
+    "Draft assets; no human review and no YouTube publication.",
+    "Product Demo uses deployed-demo screenshots and LibreOffice page evidence; Word for the web is still pending.",
+    "No Docentric AX runtime claim; AT-07 remains partial."
+  ]
+}

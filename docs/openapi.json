@@ -4448,6 +4448,7 @@
           "LABEL_TEXT_UNAVAILABLE",
           "IMAGE_SOURCE_UNVERIFIED",
           "TABLE_DIAGNOSTIC",
+          "NESTED_COLLECTION_WITHOUT_PARENT",
           "PARENT_SKIPPED",
           "EMPTY_DOCUMENT"
         ],

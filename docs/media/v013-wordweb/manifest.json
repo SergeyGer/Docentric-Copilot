@@ -1,0 +1,22 @@
+{
+  "schema": "wordweb-evidence/v1",
+  "status": "local_candidate_only",
+  "word_web_performed": false,
+  "word_web_pdf": null,
+  "word_web_screenshots": [],
+  "application_version": "0.13.0",
+  "template_ir": "1.2",
+  "git_commit": "72f455ced556",
+  "provider": "mock",
+  "execution_mode": "Deterministic Demo",
+  "docx": "invoice-first-page.docx",
+  "docx_sha256": "c47ecf0079e894511fd87d897cd97a23ac96e791c8e6490c369738cf903edbc9",
+  "docx_bytes": 41744,
+  "libreoffice_pdf": "invoice-first-page.pdf",
+  "libreoffice_pdf_pages": 3,
+  "page_images": [
+    "libreoffice-page-1.png",
+    "libreoffice-page-2.png"
+  ],
+  "note": "The DOCX/PDF/PNGs are synthetic local evidence. Word for the web PDF, Word Web screenshots and the completed checklist are still required."
+}

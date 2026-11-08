@@ -162,6 +162,7 @@ class ImportSkipCode(str, Enum):
     LABEL_TEXT_UNAVAILABLE = "LABEL_TEXT_UNAVAILABLE"
     IMAGE_SOURCE_UNVERIFIED = "IMAGE_SOURCE_UNVERIFIED"
     TABLE_DIAGNOSTIC = "TABLE_DIAGNOSTIC"
+    NESTED_COLLECTION_WITHOUT_PARENT = "NESTED_COLLECTION_WITHOUT_PARENT"
     PARENT_SKIPPED = "PARENT_SKIPPED"
     EMPTY_DOCUMENT = "EMPTY_DOCUMENT"
 
@@ -985,6 +986,59 @@ def _table_skips(
         )
 
 
+def _drop_ungrounded_nested_repeats(sections: list[Section], context: _Context) -> list[Section]:
+    """Remove top-level repeats whose collection has an unenclosed parent.
+
+    A nested collection is only valid inside a repeat of its parent. The
+    reference graph can expose such a list without the parent control; emitting
+    it at the root would produce IR that the compiler correctly refuses. Keep
+    the boundary explicit instead of crashing during compilation.
+    """
+    collections = {entry.path for entry in context.schema_entries.values() if entry.collection}
+    retained: list[Section] = []
+    for section in sections:
+        blocks: list[Block] = []
+        for block in section.body:
+            if isinstance(block, Repeat):
+                parent = next(
+                    (
+                        path
+                        for path in collections
+                        if block.path != path and block.path.startswith(f"{path}.")
+                    ),
+                    None,
+                )
+                if parent is not None:
+                    if len(context.skipped) < _MAX_SKIPPED:
+                        context.skipped.append(
+                            ImportSkipped(
+                                source_reference_id=f"repeat:{block.path}",
+                                kind="list",
+                                label=block.path.rsplit(".", 1)[-1][:200],
+                                code=ImportSkipCode.NESTED_COLLECTION_WITHOUT_PARENT,
+                                reason=(
+                                    f"Nested collection '{block.path}' has parent '{parent}' "
+                                    "but no enclosing repeat; it is not emitted at document root."
+                                )[:400],
+                                binding_status="nested_collection",
+                                schema_path=block.path,
+                            )
+                        )
+                        context.by_skip_code[
+                            ImportSkipCode.NESTED_COLLECTION_WITHOUT_PARENT.value
+                        ] = (
+                            context.by_skip_code.get(
+                                ImportSkipCode.NESTED_COLLECTION_WITHOUT_PARENT.value, 0
+                            )
+                            + 1
+                        )
+                    continue
+            blocks.append(block)
+        if blocks:
+            retained.append(section.model_copy(update={"body": blocks}))
+    return retained
+
+
 def project_to_template_ir(
     reference_document_or_graph: ReferenceDocument | ReferenceGraph,
     *,
@@ -1085,6 +1139,8 @@ def project_to_template_ir(
             )
     if table_result is not None and table_result.diagnostics:
         _table_skips(context, table_result, source_sha256=reference.source_sha256)
+
+    sections = _drop_ungrounded_nested_repeats(sections, context)
 
     if not sections:
         raise ReferenceImportEmptyError(

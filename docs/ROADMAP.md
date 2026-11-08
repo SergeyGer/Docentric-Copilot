@@ -228,6 +228,13 @@ V013-06 and the videos remain Deferred; they are documented as external
 dependencies, not passes. The branch is an implementation candidate, not
 a claim that all P0 acceptance criteria are met.
 
+## v0.13 open-task closure
+
+The audit follow-up is tracked in [OPEN_TASKS_V013](OPEN_TASKS_V013.md): T-01
+Word Web and T-02/T-03 videos remain P0 external blockers; T-04/T-05/T-06 are
+classified P1 diagnostics; T-07 is complete; T-08 has local smoke evidence but
+the deployed Streamlit revision could not be verified headlessly.
+
 ## Next steps (ordered)
 
 ### P0 — before anyone else runs this in production

@@ -13,7 +13,7 @@
 | Resolved controls | 650 |
 | Unknown paths | 22 |
 | Observed tables | 30 |
-| Table diagnostics | 23 |
+| Table diagnostics | 19 |
 
 ## Metrics
 
@@ -24,8 +24,8 @@
 | Binding evidence rate | 0.4807 | 323 / 672 |
 | Collection scope resolution rate | 0.8846 | 23 / 26 |
 | Image binding resolution rate | 1.0000 | 14 / 14 |
-| Table structure accuracy | 0.5667 | 17 / 30 |
-| IR coverage | 0.9068 | 564 / 622 |
+| Table structure accuracy | 0.5000 | 15 / 30 |
+| IR coverage | 0.9035 | 562 / 622 |
 | Import validation rate | 1.0000 | 16 / 16 |
 | Compilation success rate | 0.9375 | 15 / 16 |
 
@@ -41,13 +41,38 @@
 - **Import validation rate** — imports passing the deterministic V1-V3 validator / imports attempted.
 - **Compilation success rate** — imports compiled to a structurally valid DOCX with a synthetic path schema / imports attempted.
 
-## Limitations
+## Table classification
 
-- AT-07 remains partial: binding evidence is deterministic schema/evidence matching, not independent human correctness labels.
-- Binding evidence rate counts only controls whose D365/DDSP path was actually checked; it is not a claim that every binding is semantically correct.
-- Table accuracy counts accepted inferred tables, not visually verified Word tables; merged/ragged/optional-cell cases are diagnosed and excluded.
-- Compilation uses a synthetic schema containing only imported paths and placeholder data; it proves structural compilation, not customer data correctness.
-- The corpus is private; only aggregate counts and rates are published.
+| Class | Count |
+| --- | ---: |
+| Observed top-level tables | 30 |
+| Accepted inferred tables | 15 |
+| Deliberately unsupported | 15 |
+| Defect | 0 |
+| Not evaluable | 0 |
+
+Rejected by reason:
+
+- `TABLE_COLLECTION_NOT_EVIDENCED`: 7
+- `TABLE_MERGED_OR_RAGGED`: 7
+- `TABLE_MULTIPLE_REPEATED_ROWS`: 4
+- `TABLE_ROW_EMPTY`: 1
+
+> The accepted count is an inference-layer acceptance rate, not a visual Word accuracy score.
+> The audit baseline was 17/30 accepted / 13 rejected. After explicit merged-cell
+> rejection, the current scan is 15/30 accepted / 15 deliberately unsupported.
+
+## Failure classification
+
+| Index | Error | Category | Decision |
+| ---: | --- | --- | --- |
+| 10 | `CompilationFailedError` | `nested_collection_without_parent` | `architectural_boundary` |
+| 15 | `ReferenceImportEmptyError` | `empty_supported_subset` | `unsupported_only` |
+
+- **nested_collection_without_parent** — The reference exposes a nested collection without an enclosing repeat; the compiler correctly refuses it instead of binding it at document root. Test: `tests/unit/test_v013_reference_evaluation.py::test_nested_collection_is_refused_at_root`.
+- **empty_supported_subset** — Every construct in the document is outside the supported generic-IR subset; the importer reports an empty safe subset rather than guessing. Test: `tests/unit/test_reference_import_ir.py::test_unsupported_only_document_is_empty`.
+
+## Limitations
 
 ## Failures
 

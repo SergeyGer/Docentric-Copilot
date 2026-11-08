@@ -44,7 +44,9 @@ Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Do
 | V013-09 | Product Demo video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 | V013-10 | Technical video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 
-`Partial` and `Deferred` are not `Passed`; no v0.13 tag exists yet.
+The audit follow-up is tracked in
+[Open Tasks v0.13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/OPEN_TASKS_V013.md):
+Word Web and videos remain P0 external blockers; T-04/T-05/T-06 are classified P1 diagnostics.
 
 ## v0.12 — previous released status
 

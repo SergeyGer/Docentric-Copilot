@@ -97,7 +97,7 @@ Status: Parsing `partial`, ReferenceGraph `unsupported`, Template IR `supported`
 Evidence: `packages/reference-inspector/src/docentric_copilot/reference/table_inference.py`, `tests/unit/test_v013_table_inference.py`, `tests/unit/test_validator_and_compiler.py`.
 
 Limitations:
-- The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer; merged/ragged cells and missing collection evidence are diagnosed rather than silently converted. Optional cells and static footer rows are inferred; a nested repeat under an outer repeated row remains unsupported.
+- The graph is control-centric and does not model table geometry. v0.13 adds a DOCX table inference layer for static/repeated/footer rows, optional cells and the tested nested-repeat shape. Merged/ragged geometry, missing collection evidence and multiple bound row shapes are explicit diagnostics, not guesses.
 
 ### Repeated Table Rows
 
@@ -115,7 +115,7 @@ Status: Parsing `partial`, ReferenceGraph `unsupported`, Template IR `supported`
 Evidence: `tests/unit/test_v013_table_inference.py::test_nested_table_is_preserved_in_the_cell`, `tests/unit/test_v012_regressions.py`.
 
 Limitations:
-- Static nested tables are preserved. A nested table with its own repeat under an outer repeated row is not inferred; it is listed as unsupported rather than producing a wrong-scope table.
+- Static nested tables and a nested repeat under the outer repeated row are covered by tests. Other nested/ambiguous shapes are refused with diagnostics; automatic inference from every reference DOCX is not claimed.
 
 ### SubDocuments
 

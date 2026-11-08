@@ -396,3 +396,19 @@ def test_empty_collection_table_still_compiles_with_footer(schema, sample_data) 
     )
     assert compiled.package and not compiled.package["missing_entries"]
     assert any("produced no rows" in warning for warning in compiled.warnings)
+
+
+def test_merged_cells_are_deliberately_unsupported() -> None:
+    document = DocxDocument()
+    table = document.add_table(rows=3, cols=2)
+    table.cell(0, 0).merge(table.cell(0, 1))
+    table.cell(1, 0).paragraphs[0]._p.append(_sdt("A-1"))
+    table.cell(1, 1).paragraphs[0]._p.append(_sdt("10.00"))
+    buffer = io.BytesIO()
+    document.save(buffer)
+
+    result = infer_tables(buffer.getvalue(), _elements())
+    assert not result.tables
+    assert result.outcomes
+    assert "TABLE_MERGED_OR_RAGGED" in result.outcomes[0].reason_codes
+    assert any(item.blocking for item in result.diagnostics)

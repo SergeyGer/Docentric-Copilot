@@ -9,7 +9,7 @@
     "resolved": 650,
     "unknown": 22,
     "tables_observed": 30,
-    "table_diagnostics": 23
+    "table_diagnostics": 19
   },
   "metrics": {
     "parsing_success_rate": {
@@ -38,13 +38,13 @@
       "denominator": 14
     },
     "table_structure_accuracy": {
-      "value": 0.5667,
-      "numerator": 17,
+      "value": 0.5,
+      "numerator": 15,
       "denominator": 30
     },
     "ir_coverage": {
-      "value": 0.9068,
-      "numerator": 564,
+      "value": 0.9035,
+      "numerator": 562,
       "denominator": 622
     },
     "import_validation_rate": {
@@ -58,9 +58,47 @@
       "denominator": 16
     }
   },
+  "table_classification": {
+    "observed": 30,
+    "accepted": 15,
+    "deliberately_unsupported": 15,
+    "defect": 0,
+    "not_evaluable": 0,
+    "rejected_by_reason": {
+      "TABLE_COLLECTION_NOT_EVIDENCED": 7,
+      "TABLE_MERGED_OR_RAGGED": 7,
+      "TABLE_MULTIPLE_REPEATED_ROWS": 4,
+      "TABLE_ROW_EMPTY": 1
+    },
+    "audit_baseline": {
+      "observed": 30,
+      "accepted": 17,
+      "rejected": 13,
+      "note": "The audit baseline predates explicit merged-cell rejection. The current scan classifies 30 body tables; two merged/ragged tables are now deliberately unsupported instead of being accepted."
+    },
+    "note": "Accepted means the inference layer produced IR; it is not an independent visual-correctness score for Microsoft Word."
+  },
   "failures": [
     "10:CompilationFailedError",
     "15:ReferenceImportEmptyError"
+  ],
+  "failure_classification": [
+    {
+      "document_index": 10,
+      "error": "CompilationFailedError",
+      "category": "nested_collection_without_parent",
+      "decision": "architectural_boundary",
+      "reason": "The reference exposes a nested collection without an enclosing repeat; the compiler correctly refuses it instead of binding it at document root.",
+      "test": "tests/unit/test_v013_reference_evaluation.py::test_nested_collection_is_refused_at_root"
+    },
+    {
+      "document_index": 15,
+      "error": "ReferenceImportEmptyError",
+      "category": "empty_supported_subset",
+      "decision": "unsupported_only",
+      "reason": "Every construct in the document is outside the supported generic-IR subset; the importer reports an empty safe subset rather than guessing.",
+      "test": "tests/unit/test_reference_import_ir.py::test_unsupported_only_document_is_empty"
+    }
   ],
   "limitations": [
     "AT-07 remains partial: binding evidence is deterministic schema/evidence matching, not independent human correctness labels.",

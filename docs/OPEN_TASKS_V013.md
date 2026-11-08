@@ -13,7 +13,7 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |
 | T-06 | 10 Gemini structured_output failures | P1 | **Classified** | `docs/GEMINI_FAILURES_V013.md`; all Gemini compact-v2, 10 vs 4 in v0.12 |
 | T-07 | Documentation/Template IR/nested-repeat sync | P1 (before video) | **Done** | IR 1.2 aligned in release evidence; feature matrix distinguishes IR/compiler support from automatic reference inference |
-| T-08 | Live Demo release consistency | P0 (before video) | **Partial — local pass, deployed blocked** | `docs/DEMO_SMOKE_V013.md`; deployed Streamlit URL returns HTTP 303 auth, cannot be headless-checked |
+| T-08 | Live Demo release consistency | P0 (before video) | **Done** | `docs/DEMO_SMOKE_V013.md`; `scripts/deployed_demo_smoke.py`: v0.13.0, commit `1cbe073`, IR 1.2, deterministic, all 3 downloads, hashes match local |
 
 ## T-04 details
 
@@ -55,8 +55,8 @@ corrective prompt/schema changes require a full benchmark rerun.
   and attach the Word Web PDF/screenshots.
 - A production/YouTube session must record and publish both videos, after T-01
   and T-08 are truly closed.
-- The deployed Streamlit revision must be verified interactively or redeployed
-  from the release commit.
+- The deployed Streamlit revision is verified at commit `1cbe073` (main after the
+  diagnostic merge), not the release tag commit; this is recorded as the demo build.
 
 Docentric AX runtime compatibility remains **`not_tested`**; AT-07 remains
 **`partial`**. The existing `v0.13.0` release remains published; these

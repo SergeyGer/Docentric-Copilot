@@ -1,27 +1,26 @@
 # Demo videos — v0.13 status and production plan
 
-**Status: Deferred, not produced.**
+**Status: draft kit built; not reviewed or published.**
 
 The v0.13 specification makes two videos P0 deliverables:
 
 | Video | Target | Status |
 | --- | --- | --- |
-| Product Demo | 2:30–3:00, 1080p, English voiceover + subtitles | **Not produced** |
-| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + subtitles | **Not produced** |
+| Product Demo | 2:30–3:00, 1080p, English voiceover + subtitles | **Draft 2:52; publication blocked** |
+| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + subtitles | **Draft 5:18; publication blocked** |
 
-## Why this is deferred
+## Why publication is still blocked
 
-- The existing `docs/media/demo-v4.mp4` is a v0.11/v0.12-era video. Relabelling it
-  as a v0.13 product demo would show stale features and benchmark numbers; it is
-  not reused.
+- Draft MP4s/SRTs are built by `scripts/build_v013_videos.py` and recorded in
+  `docs/media/v013-video-kit.json`; they are not human-reviewed final videos.
+- The existing `docs/media/demo-v4.mp4` is a v0.11/v0.12-era video and is not reused.
 - Publishing requires a YouTube channel/OAuth session that this environment does
   not have. Uploading is an external action, not a repository operation.
-- A 5–7 minute technical video needs a final, reviewed code walkthrough and
-  narration; producing it before the V013-03 code is final would create
-  the same staleness problem.
+- Product Demo also depends on the Word for the web confirmation (T-01), which
+  needs Microsoft 365/OneDrive access.
 
 The videos are tracked by issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
-Until they exist, v0.13 must not claim that every P0 deliverable is complete.
+Until final videos are published, v0.13 must not claim that every P0 deliverable is complete.
 
 ## Product Demo — required storyboard
 
@@ -67,3 +66,36 @@ artifacts, not typed by hand.
 Both MP4/SRT pairs exist, a human has watched them end-to-end, every shown
 number matches the release evidence, and the YouTube URLs are recorded in the
 README and release notes. Until then the status stays **Deferred**.
+
+## Draft production kit (built)
+
+A reproducible draft kit now exists:
+
+| Asset | Duration | Path |
+| --- | ---: | --- |
+| Product Demo | 2:52 | `docs/media/demo-v013.mp4` |
+| Technical Deep-Dive | 5:18 | `docs/media/technical-v013.mp4` |
+| Product SRT | — | `docs/media/demo-v013.srt` |
+| Technical SRT | — | `docs/media/technical-v013.srt` |
+| Product narration | — | `docs/media/demo-v013-narration.md` |
+| Technical narration | — | `docs/media/technical-v013-narration.md` |
+| Manifest / hashes | — | `docs/media/v013-video-kit.json` |
+
+Rebuild:
+
+```bash
+PLAYWRIGHT_BROWSERS_PATH=.tools/pw-browsers \
+  python scripts/build_v013_videos.py --write
+```
+
+The videos are 1920×1080, 30 fps, H.264/AAC with English Edge TTS narration and
+SRT sidecars. Product Demo uses the deployed-demo screenshots, the v0.13
+first-page invoice kit and the final benchmark numbers. Technical Deep-Dive uses
+the architecture, IR 1.2, images, tables, headers, reference evaluation and
+quality-gate evidence.
+
+**These are drafts, not publication-ready videos.** `human_review: false` and
+`youtube_published: false` are recorded in the manifest. Product Demo still lacks
+the Word for the web confirmation (T-01). Both videos still need human review,
+final voice/visual polish and YouTube publication before T-02/T-03 can be marked
+Passed. Issue #54 remains open.

@@ -46,7 +46,7 @@ Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Do
 
 The audit follow-up is tracked in
 [Open Tasks v0.13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/OPEN_TASKS_V013.md):
-#53 and #54 are closed; T-04/T-05/T-06 are classified P1 diagnostics.
+[#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) and [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) are closed; T-04/T-05/T-06 are classified P1 diagnostics.
 
 ## v0.12 — previous released status
 
@@ -59,7 +59,7 @@ Full evidence and limitations: [Release Evidence v0.12](https://github.com/Serge
 | V012-03 | Image-family expansion | **Deferred** to v0.13 | [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) open |
 | V012-04 | D365 real-corpus regression | **Passed** | [#38](https://github.com/SergeyGer/Docentric-Copilot/issues/38) closed |
 | V012-05 | Gemini nested table / Anthropic Repeat alias | **Passed** | [#39](https://github.com/SergeyGer/Docentric-Copilot/issues/39) closed |
-| V012-06 | Reference → IR table inference | **Deferred** to v0.13 | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) open |
+| V012-06 | Reference → IR table inference | **Delivered in v0.13** | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) closed |
 | V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** | [#41](https://github.com/SergeyGer/Docentric-Copilot/issues/41) closed |
 | V012-08 | Playwright E2E | **Passed** | [#42](https://github.com/SergeyGer/Docentric-Copilot/issues/42) closed |
 | V012-09 | Report retention/deletion | **Passed** | [#43](https://github.com/SergeyGer/Docentric-Copilot/issues/43) closed |

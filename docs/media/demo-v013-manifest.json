@@ -22,9 +22,9 @@
   "srt": "docs/media/demo-v013.srt",
   "narration": "docs/media/demo-v013-narration.md",
   "thumbnail": "docs/media/demo-v013-thumb.png",
-  "duration_seconds": 156.67,
-  "sha256": "b06299bbde4e319ba55a4d8c9536d09de08859e198aee24a0ecc2213901ec1a7",
-  "bytes": 7569708,
+  "duration_seconds": 178.46,
+  "sha256": "2de5aca468519207ab6a8583d061efbcbf01be43566337a63bab254995e50329",
+  "bytes": 8854896,
   "probe": {
     "programs": [],
     "streams": [
@@ -42,15 +42,17 @@
       }
     ],
     "format": {
-      "duration": "156.621333"
+      "duration": "178.410667"
     }
   },
   "features": [
     "real recorded LLM plan",
-    "brief \u2192 typed requirements \u2192 Template IR",
-    "Auto routing",
+    "brief typing \u2192 typed requirements \u2192 Template IR",
+    "Auto routing pages",
     "image per repeated row",
     "reference table inference",
+    "layout repair",
+    "version history + rollback",
     "32-case benchmark",
     "artifact evidence"
   ]

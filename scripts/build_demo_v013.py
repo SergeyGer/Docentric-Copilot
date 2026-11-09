@@ -110,6 +110,11 @@ def v4_auto(variant: str) -> str:
     return shell(body)
 
 
+def v4_stage(html: str, index: int, label: str) -> str:
+    body = html.replace(v4.top(index), top(label))
+    return shell(body)
+
+
 # --------------------------------------------------------------------------- #
 # Scene bodies
 # --------------------------------------------------------------------------- #
@@ -362,6 +367,30 @@ def reference_scene() -> str:
     </div>""")
 
 
+def repair_frames() -> tuple[str, ...]:
+    return tuple(
+        v4_stage(v4.scene_7(variant), 7, "LAYOUT REPAIR")
+        for variant in ("before", "compare", "after")
+    )
+
+
+def version_frames() -> tuple[str, ...]:
+    full = v4_stage(v4.scene_8(), 8, "VERSION HISTORY")
+    image = uri(ASSETS / "revision-v1-v2.png", crop=(215, 25, 1385, 895))
+    chain = shell(f"""
+    <div class="stage">
+      {top("VERSION HISTORY")}
+      <div class="main">
+        <div class="eyebrow">Revision + rollback</div>
+        <h1>Every edit is a version.</h1>
+        <p class="lede" style="max-width:1600px;">V1 is the original. A revision creates V2 with a structural diff. Either version can be restored into the workspace; the history is not an afterthought.</p>
+        <div style="display:flex;gap:28px;align-items:flex-start;margin-top:14px;"><div class="shotframe" style="flex:1;"><img src="{image}" alt="Compare V1 and V2 with diff and restore"></div><div style="width:620px;flex:0 0 620px;"><div style="background:#fff;border:1px solid #d6e0ec;border-radius:18px;padding:24px;"><div style="font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;font-weight:700;">Version chain</div><div style="display:flex;gap:12px;align-items:center;margin-top:18px;"><span class="pill">V1 original</span><span style="font-size:28px;color:#2563eb;">→</span><span class="pill green">V2 revision</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;"><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;"><div style="font-size:34px;font-weight:700;color:#0f2a54;">{v4.REVISION_CHANGES}</div><div style="font-size:15px;color:#64748b;">changed fields</div></div><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;"><div style="font-size:34px;font-weight:700;color:#0f2a54;">0</div><div style="font-size:15px;color:#64748b;">added / removed</div></div></div><div style="margin-top:16px;border-left:4px solid #16a34a;background:#f0fdf4;border-radius:0 12px 12px 0;padding:14px 18px;font-size:20px;line-height:1.4;color:#166534;"><b>Restore version</b><br>loads either V1 or V2 back into the workspace.</div></div></div></div>
+      </div>
+      {claim("The version history, diff and rollback are part of the deliverable.")}
+    </div>""")
+    return (full, chain)
+
+
 def benchmark_scene() -> str:
     def row(provider: str) -> str:
         item = PROVIDERS[provider]
@@ -480,12 +509,20 @@ SCENES = (
         "The reference table becomes typed IR.",
     ),
     Scene(
-        "reference",
-        "Reference evaluation",
-        "Reference evaluation is separate from semantic quality. Seventeen official documents parse, sixteen reach import, fifteen compile. Thirty tables are classified, and the two residual pipeline failures are named rather than hidden.",
-        (reference_scene(),),
-        (1.0,),
-        "The reference corpus has its own denominators.",
+        "repair",
+        "Layout repair",
+        "Here is a layout defect: the description column is too narrow, the text wraps past its line budget, and the checker flags a text-fit warning. Optimize layout applies typed changes—rebalanced columns, a wider description and a smaller table font—then reruns the checks. The after render uses fewer lines. The change is reviewable in the diff, not hidden in a binary.",
+        repair_frames(),
+        (0.22, 0.5, 0.28),
+        "A visual defect becomes a typed, reviewable repair.",
+    ),
+    Scene(
+        "versions",
+        "Version history",
+        "Every revision creates an immutable version. Compare versions names each changed field; restore brings either version back into the workspace. The version history, diff and rollback are part of the deliverable, not an afterthought.",
+        version_frames(),
+        (0.55, 0.45),
+        "V1 and V2 remain reviewable and restorable.",
     ),
     Scene(
         "benchmark",
@@ -623,8 +660,9 @@ def build() -> dict:
             v4.render_html(shell(html), path)
             frames.append(path)
         weights = scene.weights
-        durations = [duration * weight for weight in weights]
-        durations[-1] += duration - sum(durations)
+        total_weight = sum(weights)
+        durations = [duration * weight / total_weight for weight in weights]
+        durations[-1] = duration - sum(durations[:-1])
         segment = WORK / f"{index:02d}-{scene.key}.mp4"
         _encode_frames(frames, durations, audio, segment, duration)
         segments.append(segment)

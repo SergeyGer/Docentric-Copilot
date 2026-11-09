@@ -7,7 +7,7 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 | ID | Task | Priority | Status | Evidence / blocker |
 | --- | --- | --- | --- | --- |
 | T-01 | Word for the web invoice check | P0 | **Closed — Word desktop accepted by maintainer** | User-provided Word desktop DOCX + page 1/2 screenshots (`docs/media/v013-wordweb/user-word-desktop/`); Word Web itself not performed. #53 closed |
-| T-02 | Product Demo video | P0 | **Publish-ready draft 2:37 — awaiting review/upload** | `docs/media/demo-v013.mp4`; v4-style live UI, real recorded LLM plan, router pages; no bullets/version numbers/Word screenshots; no human review/YouTube. Issue #54 |
+| T-02 | Product Demo video | P0 | **Publish-ready draft 2:58 — awaiting review/upload** | `docs/media/demo-v013.mp4`; v4-style live UI, real recorded LLM plan, router pages; no bullets/version numbers/Word screenshots; no human review/YouTube. Issue #54 |
 | T-03 | Technical Deep-Dive video | P0 | **Publish-ready draft 5:11 — awaiting review/upload** | `docs/media/technical-v013.mp4`; Mermaid diagrams from the Wiki; no human review/YouTube. Issue #54 |
 | T-04 | Two Reference Evaluation pipeline failures | P1 | **Classified** | `docs/REFERENCE_EVALUATION_V013.md` failure table; tests for both boundaries |
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |

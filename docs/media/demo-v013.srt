@@ -83,45 +83,61 @@ Reference tables are read as geometry plus schema evidence: header, repeated row
 Ambiguous and merged tables are refused with diagnostics instead of guessed.
 
 22
-00:01:42,336 --> 00:01:46,069
-Reference evaluation is separate from semantic quality.
+00:01:42,336 --> 00:01:51,273
+Here is a layout defect: the description column is too narrow, the text wraps past its line budget, and the checker flags a text-fit warning.
 
 23
-00:01:46,069 --> 00:01:51,092
-Seventeen official documents parse, sixteen reach import, fifteen compile.
+00:01:51,273 --> 00:01:59,259
+Optimize layout applies typed changes—rebalanced columns, a wider description and a smaller table font—then reruns the checks.
 
 24
-00:01:51,092 --> 00:01:57,744
-Thirty tables are classified, and the two residual pipeline failures are named rather than hidden.
+00:01:59,259 --> 00:02:01,414
+The after render uses fewer lines.
 
 25
-00:01:57,744 --> 00:02:02,360
-The benchmark runs thirty-two cases across three providers and three repeats.
+00:02:01,414 --> 00:02:05,280
+The change is reviewable in the diff, not hidden in a binary.
 
 26
-00:02:02,360 --> 00:02:11,712
-Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
+00:02:05,280 --> 00:02:08,019
+Every revision creates an immutable version.
 
 27
-00:02:11,712 --> 00:02:13,543
-Download and open the file.
+00:02:08,019 --> 00:02:14,058
+Compare versions names each changed field; restore brings either version back into the workspace.
 
 28
-00:02:13,543 --> 00:02:21,407
-The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves.
+00:02:14,058 --> 00:02:19,536
+The version history, diff and rollback are part of the deliverable, not an afterthought.
 
 29
-00:02:21,407 --> 00:02:23,712
-This is not a Word fidelity claim.
+00:02:19,536 --> 00:02:24,152
+The benchmark runs thirty-two cases across three providers and three repeats.
 
 30
-00:02:23,712 --> 00:02:27,024
-Docentric Copilot is open source under Apache.
+00:02:24,152 --> 00:02:33,504
+Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
 
 31
-00:02:27,024 --> 00:02:33,720
-The schema, the live decision, the typed template and the evidence are all in the repository.
+00:02:33,504 --> 00:02:35,335
+Download and open the file.
 
 32
-00:02:33,720 --> 00:02:36,672
+00:02:35,335 --> 00:02:43,199
+The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves.
+
+33
+00:02:43,199 --> 00:02:45,504
+This is not a Word fidelity claim.
+
+34
+00:02:45,504 --> 00:02:48,816
+Docentric Copilot is open source under Apache.
+
+35
+00:02:48,816 --> 00:02:55,512
+The schema, the live decision, the typed template and the evidence are all in the repository.
+
+36
+00:02:55,512 --> 00:02:58,464
 Docentric AX compatibility is not tested.

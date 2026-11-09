@@ -44,7 +44,7 @@ The release tags `v0.13.0` and `v0.13.1` are published; the Deferred items below
 | V013-06 | Word for the web | **Closed by maintainer decision** — Word desktop accepted; Word Web not performed | User-provided Word desktop pages; [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) closed; [WORD_WEB_VALIDATION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/WORD_WEB_VALIDATION_V013.md) |
 | V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation gating, download regression |
 | V013-08 | Final quality benchmark | **Passed** | 288 planned, 278 completed, 10 technical, 274 semantic passes; [BENCHMARKS §11](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/BENCHMARKS.md#11-v013-full-benchmark-v013-08) |
-| V013-09 | Product Demo video | **Deferred** — publish-ready draft 2:36 | [VIDEOS_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VIDEOS_V013.md); issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+| V013-09 | Product Demo video | **Deferred** — publish-ready draft 2:58 | [VIDEOS_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VIDEOS_V013.md); issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 | V013-10 | Technical video | **Deferred** — publish-ready draft 5:11 | [VIDEOS_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VIDEOS_V013.md); issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
 
 ## v0.12 — previous release status

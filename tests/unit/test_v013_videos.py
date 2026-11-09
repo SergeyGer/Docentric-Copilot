@@ -67,3 +67,16 @@ def test_word_desktop_evidence_is_distinct_from_word_web() -> None:
     assert data["checks"]["pages_2_plus_logo_absent"] is True
     assert data["checks"]["footer_and_page_numbers"] is True
     assert data["document"]["pages"] == 2
+
+
+def test_live_llm_call_is_separate_and_real() -> None:
+    data = json.loads(
+        (ROOT / "docs" / "media" / "live-v013" / "manifest.json").read_text(encoding="utf-8")
+    )
+    assert data["status"] == "recorded_live_call"
+    assert data["actual_provider"] == "anthropic"
+    assert data["actual_model"] == "claude-sonnet-5-5"
+    assert data["match"] is True and data["fallback"] is False
+    assert data["elapsed_seconds"] > 0
+    assert (ROOT / data["video"]).is_file()
+    assert (ROOT / data["screenshot"]).is_file()

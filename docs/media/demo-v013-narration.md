@@ -32,18 +32,22 @@ The image family is typed too. A company logo, a schema image, or one product im
 
 Reference tables are read as geometry plus schema evidence: header, repeated row, footer total. Ambiguous and merged tables are refused with diagnostics instead of guessed.
 
-## 9. Reference evaluation (15.4s)
+## 9. Layout repair (22.9s)
 
-Reference evaluation is separate from semantic quality. Seventeen official documents parse, sixteen reach import, fifteen compile. Thirty tables are classified, and the two residual pipeline failures are named rather than hidden.
+Here is a layout defect: the description column is too narrow, the text wraps past its line budget, and the checker flags a text-fit warning. Optimize layout applies typed changes—rebalanced columns, a wider description and a smaller table font—then reruns the checks. The after render uses fewer lines. The change is reviewable in the diff, not hidden in a binary.
 
-## 10. Benchmark (14.0s)
+## 10. Version history (14.3s)
+
+Every revision creates an immutable version. Compare versions names each changed field; restore brings either version back into the workspace. The version history, diff and rollback are part of the deliverable, not an afterthought.
+
+## 11. Benchmark (14.0s)
 
 The benchmark runs thirty-two cases across three providers and three repeats. Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
 
-## 11. Artifact (12.0s)
+## 12. Artifact (12.0s)
 
 Download and open the file. The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves. This is not a Word fidelity claim.
 
-## 12. Closing (13.0s)
+## 13. Closing (13.0s)
 
 Docentric Copilot is open source under Apache. The schema, the live decision, the typed template and the evidence are all in the repository. Docentric AX compatibility is not tested.

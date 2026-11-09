@@ -11,7 +11,14 @@ issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
 | Product Demo | `docs/media/demo-v013.mp4` | `docs/media/demo-v013-thumb.png` | `docs/media/demo-v013.srt` |
 | Technical Deep-Dive | `docs/media/technical-v013.mp4` | `docs/media/technical-v013-thumb.png` | `docs/media/technical-v013.srt` |
 
-1920×1080, H.264/AAC, 30 fps. Product Demo 2:37; Technical Deep-Dive 5:11.
+1920×1080, H.264/AAC, 30 fps. Product Demo 2:58; Technical Deep-Dive 5:11.
+
+## Optional separate live insert
+
+`docs/media/live-v013/live-call.mp4` — 21 s silent screen capture of a new paid
+Auto plan (`run_e056896782cf4fb2b96d`, `claude-sonnet-5-5`, 11.24 s). Use it as a
+short insert if a live-call proof is wanted; it is not part of the 2:58 cut and
+has no narration.
 
 ## Suggested YouTube titles
 
@@ -28,8 +35,7 @@ document. The demo shows the plan, binding review, preview, download and the
 resulting invoice pages in Microsoft Word.
 
 Generic DOCX output only. Docentric AX runtime compatibility is not tested.
-Microsoft Word desktop was used for the manual page check; Word for the web is
-not claimed.
+Word for the web was not performed; no Word Web fidelity is claimed.
 
 Docs: https://github.com/SergeyGer/Docentric-Copilot
 ```
@@ -60,10 +66,11 @@ Product Demo:
 01:08 Auto picked the model. It ran.
 01:19 An image per repeated row
 01:31 A reference table becomes typed IR
-01:42 Seventeen documents. Three outcomes.
-01:58 One case set. Three providers. Three repeats.
-02:12 Download. Open. Check.
-02:24 Open source. Evidence first.
+01:42 Typed changes. Rerun checks. Fewer lines.
+02:05 Every edit is a version.
+02:19 One case set. Three providers. Three repeats.
+02:33 Download. Open. Check.
+02:45 Open source. Evidence first.
 ```
 
 Technical Deep-Dive:

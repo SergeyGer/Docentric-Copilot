@@ -1,10 +1,10 @@
 # Demo videos — v0.13 production status
 
-**Status: publish-ready drafts (2:37 and 5:11), not reviewed or published.**
+**Status: publish-ready drafts (2:58 and 5:11), not reviewed or published.**
 
 | Video | Target | Draft | Publication |
 | --- | --- | --- | --- |
-| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:37** | Awaiting human review and the maintainer's YouTube upload |
+| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:58** | Awaiting human review and the maintainer's YouTube upload |
 | Technical Deep-Dive | 5–7 min, 1080p, English voiceover + SRT | **5:11** | Same |
 
 The maintainer will publish both videos to YouTube and provide the links. This
@@ -30,7 +30,7 @@ not perform the upload.
 
 | Asset | Duration / role | Path |
 | --- | ---: | --- |
-| Product Demo | 2:37 | `docs/media/demo-v013.mp4` |
+| Product Demo | 2:58 | `docs/media/demo-v013.mp4` |
 | Technical Deep-Dive | 5:11 | `docs/media/technical-v013.mp4` |
 | Product SRT | — | `docs/media/demo-v013.srt` |
 | Technical SRT | — | `docs/media/technical-v013.srt` |
@@ -58,20 +58,39 @@ The builder also renders the Wiki diagrams with
 | --- | --- | --- |
 | 0:00–0:17 | Hook / business problem | Two-page quotation preview, 274/278 semantic passes, 32×3×3 |
 | 0:17–0:31 | Grounded schema | Live schema explorer, typed fields and sample data |
-| 0:31–0:44 | Brief typing | Recorded live prompt panel, 281 characters |
+| 0:31–0:44 | Brief typing | Recorded live prompt panel, 281 characters typed visibly |
 | 0:44–0:58 | Typed template | 12 requirements, 16 IR blocks, repeating table, conditions |
 | 0:58–1:08 | Auto selected | "Let the router choose", no provider override |
 | 1:08–1:19 | Auto decision | "Auto picked the model. It ran." Router match, fallback false |
 | 1:19–1:31 | Image family | Product image per repeated row |
 | 1:31–1:42 | Reference tables | Source table → typed inferred table with footer |
-| 1:42–1:58 | Reference evaluation | 17 parsed → 16 imported → 15 compiled; 30 tables |
-| 1:58–2:12 | Benchmark | 32 cases × 3 × 3, 274/278 semantic, 95.1% precision |
-| 2:12–2:24 | Artifact | Independent preview and LibreOffice render |
-| 2:24–2:37 | Closing | Open source, evidence first, AX not tested |
+| 1:42–2:05 | Layout repair | Before/after LibreOffice render, text-fit warning → pass |
+| 2:05–2:19 | Version history | V1/V2 diff, changed IR paths, restore |
+| 2:19–2:33 | Benchmark | 32 cases × 3 × 3, 274/278 semantic, 95.1% precision |
+| 2:33–2:45 | Artifact | Independent preview and LibreOffice render |
+| 2:45–2:58 | Closing | Open source, evidence first, AX not tested |
 
 The brief/template and Auto scenes use the **recorded live Anthropic plan** in
 `docs/media/auto-plan-response.json` (run `run_6c3e5b0fc256424c8549`), not the
-offline Streamlit mock.
+offline Streamlit mock. A **new live call** is provided separately:
+`docs/media/live-v013/live-call.mp4` (21 s, run `run_e056896782cf4fb2b96d`).
+
+## Separate live LLM call
+
+A new paid live Auto call was recorded separately from the main product cut:
+
+| Field | Value |
+| --- | --- |
+| File | `docs/media/live-v013/live-call.mp4` (21 s, 1600×940, silent screen capture) |
+| Run | `run_e056896782cf4fb2b96d` |
+| Model | `claude-sonnet-5-5` (Anthropic), match / no fallback |
+| Result | structural, semantic and logical validation passed; visual skipped; AX `not_tested` |
+| Elapsed | 11.24 s model call |
+| Evidence | `docs/media/live-v013/manifest.json`, `plan-response.json`, `live-result.png` |
+
+It shows the real web workspace from the empty state through Auto selection, Plan,
+the routing spinner and the decision card. It has no narration and is optional as
+a separate insert; it is not claimed to be part of the 2:58 cut.
 
 ## Technical Deep-Dive — actual sequence
 
@@ -87,10 +106,11 @@ offline Streamlit mock.
 10. DOCX package: real headers, footers and media parts.
 11. First-page header in the Word desktop check.
 12. Table classification: 30 observed, 15 accepted, 15 deliberately unsupported.
-13. Reference pipeline: 17 parsed → 16 imported → 15 compiled.
-14. Benchmark: precision 95.1%, semantic pass 98.6%, technical failures separated.
-15. Limits: videos not published, AT-07 partial, AX runtime `not_tested`; Word Web itself was not performed (the Word desktop check is separate).
-16. Close.
+13. Layout repair: text-fit warning → typed changes → pass.
+14. Version history: V1/V2 diff and restore.
+15. Benchmark: precision 95.1%, semantic pass 98.6%, technical failures separated.
+16. Limits: videos not published, AT-07 partial, AX runtime `not_tested`; Word Web itself was not performed (the Word desktop check is separate).
+17. Close.
 
 ## Production contract
 

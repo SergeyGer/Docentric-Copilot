@@ -13,7 +13,7 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |
 | T-06 | 10 Gemini structured_output failures | P1 | **Classified** | `docs/GEMINI_FAILURES_V013.md`; all Gemini compact-v2, 10 vs 4 in v0.12 |
 | T-07 | Documentation/Template IR/nested-repeat sync | P1 (before video) | **Done** | IR 1.2 aligned in release evidence; feature matrix distinguishes IR/compiler support from automatic reference inference |
-| T-08 | Live Demo release consistency | P0 (before video) | **Done** | `docs/DEMO_SMOKE_V013.md`; deployed app v0.13.1, commit `5a173b5`, IR 1.2, deterministic; invoice download rerun after dependency merges, hash matches local |
+| T-08 | Live Demo release consistency | P0 (before video) | **Done** | `docs/DEMO_SMOKE_V013.md`; deployed app v0.13.1, commit `d91eda9`, IR 1.2, deterministic; invoice download rerun after dependency merges, hash matches local |
 
 ## T-04 details
 

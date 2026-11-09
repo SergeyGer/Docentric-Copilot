@@ -6,21 +6,21 @@
 
 | Field | Value |
 | --- | --- |
-| Verified at | `2026-11-09T15:12:00Z` (current deployment recheck) |
+| Verified at | `2026-11-09T15:27:00Z` (current deployment recheck) |
 | Application | `0.13.1` |
-| Git commit | `5a173b5ce9f3` |
+| Git commit | `d91eda9e2c82` |
 | Working tree dirty | `False` |
 | Template IR | `1.2` |
 | Provider / model | `mock` / `heuristic-baseline-v1` |
 | Execution mode | `Deterministic Demo` |
 | Deployed URL | https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app |
-| Deployed status | **Verified current deployment** — commit `5a173b5ce9f3`, version 0.13.1, IR 1.2, `Deterministic Demo` |
+| Deployed status | **Verified current deployment** — commit `d91eda9e2c82`, version 0.13.1, IR 1.2, `Deterministic Demo` |
 
 ## Metadata panel
 
 ```text
 Application: v0.13.1
-Git Commit: 5a173b5ce9f3
+Git Commit: d91eda9e2c82
 Template IR: 1.2
 Provider: mock
 Model: heuristic-baseline-v1
@@ -61,7 +61,7 @@ The live app was woken again and now shows:
 
 ```text
 Application: v0.13.1
-Git Commit: 5a173b5ce9f3
+Git Commit: d91eda9e2c82
 Template IR: 1.2
 Provider: mock
 Model: heuristic-baseline-v1
@@ -94,7 +94,7 @@ Compatibility: Not tested with Docentric AX Runtime
 ```
 
 The downloaded DOCX hashes are **identical** to the local deterministic build.
-The deployed commit is now `5a173b5` (main after dependency merges), version `0.13.1`, Template IR `1.2`.
+The deployed app was rechecked at commit `d91eda9`, version `0.13.1`, Template IR `1.2`. Later docs-only commits may advance the displayed SHA without changing app behavior.
 
 Screenshots and downloaded DOCX: [`media/v013-demo/`](media/v013-demo/).
 Reproduce with:

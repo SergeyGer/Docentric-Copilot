@@ -1,8 +1,8 @@
 {
   "schema": "v013-product-video/v1",
   "status": "publish_ready_draft",
-  "human_review": false,
-  "youtube_published": false,
+  "human_review": true,
+  "youtube_published": true,
   "llm_evidence": {
     "provider": "anthropic",
     "model": "claude-sonnet-5-5",
@@ -55,5 +55,9 @@
     "version history + rollback",
     "32-case benchmark",
     "artifact evidence"
-  ]
+  ],
+  "publication": {
+    "youtube": "https://youtu.be/HZcP_lrjcrw",
+    "published": true
+  }
 }

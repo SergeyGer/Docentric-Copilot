@@ -11,9 +11,10 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 
 def test_video_kit_has_target_durations_and_av_streams() -> None:
     data = json.loads((ROOT / "docs" / "media" / "v013-video-kit.json").read_text(encoding="utf-8"))
-    assert data["status"] == "publish_ready_draft"
-    assert data["human_review"] is False
-    assert data["youtube_published"] is False
+    assert data["status"] == "published"
+    assert data["product"]["human_review"] is True
+    assert data["product"]["youtube_published"] is True
+    assert data["publication"]["technical_github"].startswith("https://github.com/")
     product = data["product"]
     technical = data["technical"]
     assert 150 <= product["duration_seconds"] <= 180
@@ -48,11 +49,11 @@ def test_video_content_rules_are_recorded_and_clean() -> None:
         assert (ROOT / diagram).is_file()
 
 
-def test_video_kit_does_not_claim_publication() -> None:
+def test_video_kit_records_publication_links() -> None:
     text = (ROOT / "docs" / "VIDEOS_V013.md").read_text(encoding="utf-8")
-    assert "not reviewed or published" in text
-    assert "human_review: false" in text
-    assert "youtube_published: false" in text
+    assert "https://youtu.be/HZcP_lrjcrw" in text
+    assert "docs/media/technical-v013.mp4" in text
+    assert "Status: published" in text
 
 
 def test_word_desktop_evidence_is_distinct_from_word_web() -> None:

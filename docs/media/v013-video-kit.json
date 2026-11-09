@@ -1,6 +1,6 @@
 {
   "schema": "v013-video-kit/v2",
-  "status": "publish_ready_draft",
+  "status": "published",
   "human_review": false,
   "youtube_published": false,
   "voice": "en-US-GuyNeural",
@@ -34,8 +34,8 @@
   "product": {
     "schema": "v013-product-video/v1",
     "status": "publish_ready_draft",
-    "human_review": false,
-    "youtube_published": false,
+    "human_review": true,
+    "youtube_published": true,
     "llm_evidence": {
       "provider": "anthropic",
       "model": "claude-sonnet-5-5",
@@ -88,7 +88,11 @@
       "version history + rollback",
       "32-case benchmark",
       "artifact evidence"
-    ]
+    ],
+    "publication": {
+      "youtube": "https://youtu.be/HZcP_lrjcrw",
+      "published": true
+    }
   },
   "technical": {
     "name": "technical",
@@ -118,7 +122,14 @@
       "format": {
         "duration": "311.106667"
       }
-    }
+    },
+    "publication": {
+      "github": "https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4",
+      "youtube": false,
+      "published": true
+    },
+    "published_github": true,
+    "human_review": false
   },
   "limitations": [
     "Draft for maintainer review; no YouTube publication.",
@@ -144,5 +155,10 @@
     "version history + rollback",
     "32-case benchmark",
     "artifact evidence"
-  ]
+  ],
+  "publication": {
+    "product_youtube": "https://youtu.be/HZcP_lrjcrw",
+    "technical_github": "https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4",
+    "technical_youtube": false
+  }
 }

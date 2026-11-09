@@ -232,7 +232,7 @@ backlog items.
 
 The audit follow-up is tracked in [OPEN_TASKS_V013](OPEN_TASKS_V013.md):
 T-01/T-02/T-03 are closed; T-04/T-05/T-06 are P1 diagnostics; T-07 is complete;
-T-08 is verified on the deployed Streamlit app (v0.13.1, commit `5a173b5`, IR 1.2).
+T-08 is verified on the deployed Streamlit app (v0.13.1, commit `d91eda9`, IR 1.2).
 
 ## Next steps (ordered)
 

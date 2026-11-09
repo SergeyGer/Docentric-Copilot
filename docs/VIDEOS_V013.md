@@ -1,10 +1,10 @@
 # Demo videos — v0.13 production status
 
-**Status: publish-ready drafts (2:36 and 5:11), not reviewed or published.**
+**Status: publish-ready drafts (2:37 and 5:11), not reviewed or published.**
 
 | Video | Target | Draft | Publication |
 | --- | --- | --- | --- |
-| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:36** | Awaiting human review and the maintainer's YouTube upload |
+| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:37** | Awaiting human review and the maintainer's YouTube upload |
 | Technical Deep-Dive | 5–7 min, 1080p, English voiceover + SRT | **5:11** | Same |
 
 The maintainer will publish both videos to YouTube and provide the links. This
@@ -22,14 +22,15 @@ not perform the upload.
   `docs/wiki/Architecture.md`: planning path, compilation path, request
   lifecycle, Template IR contract, block taxonomy and validation ladder. Charts
   use the committed benchmark/reference JSON, not hand-typed numbers.
-- The Word desktop screenshots supplied by the maintainer are used as a manual
-  Word check. They are **not** Word for the web; the video says so in its limits.
+- The maintainer's Word desktop evidence is documented separately; the product
+  video deliberately does **not** use those screenshots or mention the
+  page-two logo detail.
 
 ## Assets
 
 | Asset | Duration / role | Path |
 | --- | ---: | --- |
-| Product Demo | 2:36 | `docs/media/demo-v013.mp4` |
+| Product Demo | 2:37 | `docs/media/demo-v013.mp4` |
 | Technical Deep-Dive | 5:11 | `docs/media/technical-v013.mp4` |
 | Product SRT | — | `docs/media/demo-v013.srt` |
 | Technical SRT | — | `docs/media/technical-v013.srt` |
@@ -55,16 +56,22 @@ The builder also renders the Wiki diagrams with
 
 | Time (approx.) | Scene | Visual |
 | --- | --- | --- |
-| 0:00–0:22 | A brief is not a document | Word desktop pages 1 and 2 side by side |
-| 0:22–0:38 | Start with evidence | Live invoice plan, schema excerpt |
-| 0:38–0:55 | The schema is the source of truth | Requirements and schema excerpt |
-| 0:55–1:08 | The brief becomes typed requirements | Live plan/requirements |
-| 1:08–1:25 | Every binding is visible | Mapping review |
-| 1:25–1:39 | One structure, two outputs | Preview and Download DOCX |
-| 1:39–1:55 | The download is evidence | Preview/download, artifact context |
-| 1:55–2:08 | The logo stays on page one | Word page 1 |
-| 2:08–2:20 | Later pages keep the identity | Word page 2 |
-| 2:20–2:36 | The brief became a checked document | Document output and close |
+| 0:00–0:17 | Hook / business problem | Two-page quotation preview, 274/278 semantic passes, 32×3×3 |
+| 0:17–0:31 | Grounded schema | Live schema explorer, typed fields and sample data |
+| 0:31–0:44 | Brief typing | Recorded live prompt panel, 281 characters |
+| 0:44–0:58 | Typed template | 12 requirements, 16 IR blocks, repeating table, conditions |
+| 0:58–1:08 | Auto selected | "Let the router choose", no provider override |
+| 1:08–1:19 | Auto decision | "Auto picked the model. It ran." Router match, fallback false |
+| 1:19–1:31 | Image family | Product image per repeated row |
+| 1:31–1:42 | Reference tables | Source table → typed inferred table with footer |
+| 1:42–1:58 | Reference evaluation | 17 parsed → 16 imported → 15 compiled; 30 tables |
+| 1:58–2:12 | Benchmark | 32 cases × 3 × 3, 274/278 semantic, 95.1% precision |
+| 2:12–2:24 | Artifact | Independent preview and LibreOffice render |
+| 2:24–2:37 | Closing | Open source, evidence first, AX not tested |
+
+The brief/template and Auto scenes use the **recorded live Anthropic plan** in
+`docs/media/auto-plan-response.json` (run `run_6c3e5b0fc256424c8549`), not the
+offline Streamlit mock.
 
 ## Technical Deep-Dive — actual sequence
 
@@ -82,7 +89,7 @@ The builder also renders the Wiki diagrams with
 12. Table classification: 30 observed, 15 accepted, 15 deliberately unsupported.
 13. Reference pipeline: 17 parsed → 16 imported → 15 compiled.
 14. Benchmark: precision 95.1%, semantic pass 98.6%, technical failures separated.
-15. Limits: Word for the web pending, videos not published, AT-07 partial, AX runtime `not_tested`.
+15. Limits: videos not published, AT-07 partial, AX runtime `not_tested`; Word Web itself was not performed (the Word desktop check is separate).
 16. Close.
 
 ## Production contract
@@ -100,5 +107,5 @@ after a human watches them end-to-end and the YouTube links are recorded in the
 README, release notes and issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
 The manifest records `human_review: false` and `youtube_published: false`.
 
-Word for the web remains a separate open item (#53); the supplied Word desktop
-evidence does not close it.
+Word for the web itself remains untested; #53 was closed by the maintainer on
+the supplied Word desktop evidence.

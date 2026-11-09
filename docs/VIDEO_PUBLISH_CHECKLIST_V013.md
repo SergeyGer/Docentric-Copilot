@@ -11,7 +11,7 @@ issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
 | Product Demo | `docs/media/demo-v013.mp4` | `docs/media/demo-v013-thumb.png` | `docs/media/demo-v013.srt` |
 | Technical Deep-Dive | `docs/media/technical-v013.mp4` | `docs/media/technical-v013-thumb.png` | `docs/media/technical-v013.srt` |
 
-1920×1080, H.264/AAC, 30 fps. Product Demo 2:36; Technical Deep-Dive 5:11.
+1920×1080, H.264/AAC, 30 fps. Product Demo 2:37; Technical Deep-Dive 5:11.
 
 ## Suggested YouTube titles
 
@@ -52,16 +52,18 @@ Docs: https://github.com/SergeyGer/Docentric-Copilot
 Product Demo:
 
 ```text
-00:00 A brief is not a document
-00:22 Start with evidence
-00:38 The schema is the source of truth
-00:55 Typed requirements
-01:08 Every binding is visible
-01:25 One structure, two outputs
-01:39 The download is evidence
-01:55 The logo stays on page one
-02:08 Later pages keep the identity
-02:20 The brief became a checked document
+00:00 From a business brief to a reviewable DOCX
+00:17 Grounded in the customer's own schema
+00:31 One paragraph in. Typed requirements out.
+00:44 The brief becomes a typed template
+00:58 Let the router choose
+01:08 Auto picked the model. It ran.
+01:19 An image per repeated row
+01:31 A reference table becomes typed IR
+01:42 Seventeen documents. Three outcomes.
+01:58 One case set. Three providers. Three repeats.
+02:12 Download. Open. Check.
+02:24 Open source. Evidence first.
 ```
 
 Technical Deep-Dive:

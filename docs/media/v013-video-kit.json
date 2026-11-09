@@ -11,8 +11,8 @@
     "spoken_version_numbers": false,
     "on_screen_version_numbers": false,
     "bullet_slides": false,
-    "real_ui_screenshots": true,
-    "wiki_mermaid_diagrams": true
+    "real_llm_evidence": true,
+    "no_word_screenshots": true
   },
   "diagrams": [
     "docs/media/diagrams/architecture-data-flow.png",
@@ -32,14 +32,32 @@
   "word_desktop_evidence": "docs/media/v013-wordweb/user-word-desktop/manifest.json",
   "word_web_pending": true,
   "product": {
-    "name": "demo",
+    "schema": "v013-product-video/v1",
+    "status": "publish_ready_draft",
+    "human_review": false,
+    "youtube_published": false,
+    "llm_evidence": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "run_id": "run_6c3e5b0fc256424c8549",
+      "match": true,
+      "fallback": false,
+      "source": "docs/media/auto-plan-response.json"
+    },
+    "content_rules": {
+      "spoken_version_numbers": false,
+      "on_screen_version_numbers": false,
+      "bullet_slides": false,
+      "real_llm_evidence": true,
+      "no_word_screenshots": true
+    },
     "mp4": "docs/media/demo-v013.mp4",
     "srt": "docs/media/demo-v013.srt",
     "narration": "docs/media/demo-v013-narration.md",
     "thumbnail": "docs/media/demo-v013-thumb.png",
-    "duration_seconds": 156.5,
-    "sha256": "415790e4fb371d4465c7490a991eb5e583792748e507e0e3bc3418d7fabcfa9e",
-    "bytes": 30834460,
+    "duration_seconds": 156.67,
+    "sha256": "b06299bbde4e319ba55a4d8c9536d09de08859e198aee24a0ecc2213901ec1a7",
+    "bytes": 7569708,
     "probe": {
       "programs": [],
       "streams": [
@@ -57,9 +75,18 @@
         }
       ],
       "format": {
-        "duration": "156.492000"
+        "duration": "156.621333"
       }
-    }
+    },
+    "features": [
+      "real recorded LLM plan",
+      "brief \u2192 typed requirements \u2192 Template IR",
+      "Auto routing",
+      "image per repeated row",
+      "reference table inference",
+      "32-case benchmark",
+      "artifact evidence"
+    ]
   },
   "technical": {
     "name": "technical",
@@ -95,5 +122,23 @@
     "Draft for maintainer review; no YouTube publication.",
     "Word for the web remains an external manual step; the Word desktop check is separate.",
     "No Docentric AX runtime claim."
+  ],
+  "llm_evidence": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "run_id": "run_6c3e5b0fc256424c8549",
+    "match": true,
+    "fallback": false,
+    "source": "docs/media/auto-plan-response.json"
+  },
+  "product_manifest": "docs/media/demo-v013-manifest.json",
+  "features": [
+    "real recorded LLM plan",
+    "brief \u2192 typed requirements \u2192 Template IR",
+    "Auto routing",
+    "image per repeated row",
+    "reference table inference",
+    "32-case benchmark",
+    "artifact evidence"
   ]
 }

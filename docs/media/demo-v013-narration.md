@@ -1,41 +1,49 @@
-# demo narration
+# Product Demo narration
 
-## 1. A brief is not a document. (22.4s)
+## 1. Hook (16.6s)
 
-A business brief looks simple: a logo, customer and supplier details, line items, totals, payment terms. The hard part is turning it into a Word document that survives the real file. The logo must stay on the first page. Later pages need the company identity, but not the logo again. And every number must come from the right field.
+A business brief should become a document a team can review, not a black box. One paragraph in, a reviewable DOCX out, with schema, validation and routing evidence attached. This is not a mock: the next scenes use a recorded live LLM plan and its trace.
 
-## 2. Start with evidence, not a blank prompt. (15.1s)
+## 2. Schema (14.4s)
 
-Here is the same brief in the live demo. The data source is a DDSP package: typed fields, collections and sample values. The planner is not allowed to invent a field. It can only choose from schema evidence.
+Here is a synthetic package with sample data, parser diagnostics and a normalized field tree. The schema is typed, so every field the document can bind has a type and a source. Nothing is invented from the prompt alone.
 
-## 3. The schema is the source of truth. (17.6s)
+## 3. Brief (12.6s)
 
-The schema is the source of truth. Fields have types, collections have scope, and sample data shows how values are shaped. The planner can search those candidates, but the resolver decides whether a path is legal. That is why a confident sentence cannot become a wrong binding.
+The brief is the only input: plain language naming the fields, totals, VAT notice and footer. The planner turns each requirement into a typed field. No model is chosen by hand.
 
-## 4. The brief becomes typed requirements. (13.4s)
+## 4. Template (13.9s)
 
-Generate the document and the brief becomes concrete requirements. Each requirement points to a candidate field, with its type and scope visible. That is the difference between a prompt and a reviewable plan.
+The result is not prose. It is a Template IR: one section, sixteen typed blocks, a repeating line table and conditional notices. The same structure feeds validation, preview and the DOCX compiler.
 
-## 5. Every binding is visible. (16.8s)
+## 5. Auto selected (10.9s)
 
-The mapping review separates confirmed bindings from ambiguous or missing ones. When a choice is ambiguous, a reviewer can confirm the correct field. The decision is recorded, and a blocking mapping stops compilation. Nothing silently falls through.
+Auto does the choosing. It classifies the brief, recommends a provider, and sends no manual override. The decision is recorded before the model runs.
 
-## 6. One structure, two outputs. (14.2s)
+## 6. Auto result (10.8s)
 
-The preview and the Word file are built from the same template structure, so headers and layout follow the same rules. When the mapping is ready, download the document. The demo also records the artifact hash for verification.
+The live run selected Anthropic and executed Claude Sonnet. Recommendation, execution, match and fallback are separate recorded facts, with a run identifier.
 
-## 7. The download is evidence, not a trick. (16.1s)
+## 7. Images (11.7s)
 
-The demo does not stop at pixels. Downloading the file records its size and SHA-256. The same hash is reproduced by the deterministic local build, so a reviewer can verify that the demo and the evidence describe the same artifact.
+The image family is typed too. A company logo, a schema image, or one product image per repeated line item use the same binding model, with explicit fallback and aspect ratio.
 
-## 8. The logo stays on page one. (12.5s)
+## 8. Reference tables (11.3s)
 
-Open the result in Word. The logo appears only on the first page. The invoice number, customer and supplier details, items and totals are all there, and the table stays aligned.
+Reference tables are read as geometry plus schema evidence: header, repeated row, footer total. Ambiguous and merged tables are refused with diagnostics instead of guessed.
 
-## 9. Later pages keep the identity, not the logo. (12.2s)
+## 9. Reference evaluation (15.4s)
 
-Page two keeps the company name and VAT in the header, without repeating the logo. The footer keeps its page numbers. That is the first-page header rule working in a real document.
+Reference evaluation is separate from semantic quality. Seventeen official documents parse, sixteen reach import, fifteen compile. Thirty tables are classified, and the two residual pipeline failures are named rather than hidden.
 
-## 10. The brief became a checked document. (16.3s)
+## 10. Benchmark (14.0s)
 
-The brief became a typed plan, the plan became a validated document, and every binding has evidence. The same pipeline covers quotations, invoices and purchase orders. Docentric Copilot is a narrow AI boundary around a deterministic document engine.
+The benchmark runs thirty-two cases across three providers and three repeats. Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
+
+## 11. Artifact (12.0s)
+
+Download and open the file. The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves. This is not a Word fidelity claim.
+
+## 12. Closing (13.0s)
+
+Docentric Copilot is open source under Apache. The schema, the live decision, the typed template and the evidence are all in the repository. Docentric AX compatibility is not tested.

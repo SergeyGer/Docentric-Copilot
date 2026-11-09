@@ -1,139 +1,127 @@
 1
-00:00:00,000 --> 00:00:07,100
-A business brief looks simple: a logo, customer and supplier details, line items, totals, payment terms.
+00:00:00,000 --> 00:00:05,102
+A business brief should become a document a team can review, not a black box.
 
 2
-00:00:07,100 --> 00:00:12,357
-The hard part is turning it into a Word document that survives the real file.
+00:00:05,102 --> 00:00:11,397
+One paragraph in, a reviewable DOCX out, with schema, validation and routing evidence attached.
 
 3
-00:00:12,357 --> 00:00:14,882
-The logo must stay on the first page.
+00:00:11,397 --> 00:00:16,632
+This is not a mock: the next scenes use a recorded live LLM plan and its trace.
 
 4
-00:00:14,882 --> 00:00:19,115
-Later pages need the company identity, but not the logo again.
+00:00:16,632 --> 00:00:22,824
+Here is a synthetic package with sample data, parser diagnostics and a normalized field tree.
 
 5
-00:00:19,115 --> 00:00:22,392
-And every number must come from the right field.
+00:00:22,824 --> 00:00:28,284
+The schema is typed, so every field the document can bind has a type and a source.
 
 6
-00:00:22,392 --> 00:00:25,352
-Here is the same brief in the live demo.
+00:00:28,284 --> 00:00:31,080
+Nothing is invented from the prompt alone.
 
 7
-00:00:25,352 --> 00:00:31,198
-The data source is a DDSP package: typed fields, collections and sample values.
+00:00:31,080 --> 00:00:37,789
+The brief is the only input: plain language naming the fields, totals, VAT notice and footer.
 
 8
-00:00:31,198 --> 00:00:34,528
-The planner is not allowed to invent a field.
+00:00:37,789 --> 00:00:41,684
+The planner turns each requirement into a typed field.
 
 9
-00:00:34,528 --> 00:00:37,488
-It can only choose from schema evidence.
+00:00:41,684 --> 00:00:43,632
+No model is chosen by hand.
 
 10
-00:00:37,488 --> 00:00:39,668
-The schema is the source of truth.
+00:00:43,632 --> 00:00:45,357
+The result is not prose.
 
 11
-00:00:39,668 --> 00:00:45,246
-Fields have types, collections have scope, and sample data shows how values are shaped.
+00:00:45,357 --> 00:00:52,760
+It is a Template IR: one section, sixteen typed blocks, a repeating line table and conditional notices.
 
 12
-00:00:45,246 --> 00:00:51,017
-The planner can search those candidates, but the resolver decides whether a path is legal.
+00:00:52,760 --> 00:00:57,576
+The same structure feeds validation, preview and the DOCX compiler.
 
 13
-00:00:51,017 --> 00:00:55,056
-That is why a confident sentence cannot become a wrong binding.
+00:00:57,576 --> 00:00:59,288
+Auto does the choosing.
 
 14
-00:00:55,056 --> 00:00:59,354
-Generate the document and the brief becomes concrete requirements.
+00:00:59,288 --> 00:01:05,021
+It classifies the brief, recommends a provider, and sends no manual override.
 
 15
-00:00:59,354 --> 00:01:04,434
-Each requirement points to a candidate field, with its type and scope visible.
+00:01:05,021 --> 00:01:08,520
+The decision is recorded before the model runs.
 
 16
-00:01:04,434 --> 00:01:08,472
-That is the difference between a prompt and a reviewable plan.
+00:01:08,520 --> 00:01:12,623
+The live run selected Anthropic and executed Claude Sonnet.
 
 17
-00:01:08,472 --> 00:01:13,867
-The mapping review separates confirmed bindings from ambiguous or missing ones.
+00:01:12,623 --> 00:01:19,368
+Recommendation, execution, match and fallback are separate recorded facts, with a run identifier.
 
 18
-00:01:13,867 --> 00:01:18,579
-When a choice is ambiguous, a reviewer can confirm the correct field.
+00:01:19,368 --> 00:01:21,387
+The image family is typed too.
 
 19
-00:01:18,579 --> 00:01:23,155
-The decision is recorded, and a blocking mapping stops compilation.
+00:01:21,387 --> 00:01:31,080
+A company logo, a schema image, or one product image per repeated line item use the same binding model, with explicit fallback and aspect ratio.
 
 20
-00:01:23,155 --> 00:01:25,272
-Nothing silently falls through.
+00:01:31,080 --> 00:01:37,333
+Reference tables are read as geometry plus schema evidence: header, repeated row, footer total.
 
 21
-00:01:25,272 --> 00:01:32,744
-The preview and the Word file are built from the same template structure, so headers and layout follow the same rules.
+00:01:37,333 --> 00:01:42,336
+Ambiguous and merged tables are refused with diagnostics instead of guessed.
 
 22
-00:01:32,744 --> 00:01:35,847
-When the mapping is ready, download the document.
+00:01:42,336 --> 00:01:46,069
+Reference evaluation is separate from semantic quality.
 
 23
-00:01:35,847 --> 00:01:39,456
-The demo also records the artifact hash for verification.
+00:01:46,069 --> 00:01:51,092
+Seventeen official documents parse, sixteen reach import, fifteen compile.
 
 24
-00:01:39,456 --> 00:01:41,780
-The demo does not stop at pixels.
+00:01:51,092 --> 00:01:57,744
+Thirty tables are classified, and the two residual pipeline failures are named rather than hidden.
 
 25
-00:01:41,780 --> 00:01:45,301
-Downloading the file records its size and SHA-256.
+00:01:57,744 --> 00:02:02,360
+The benchmark runs thirty-two cases across three providers and three repeats.
 
 26
-00:01:45,301 --> 00:01:55,512
-The same hash is reproduced by the deterministic local build, so a reviewer can verify that the demo and the evidence describe the same artifact.
+00:02:02,360 --> 00:02:11,712
+Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
 
 27
-00:01:55,512 --> 00:01:57,220
-Open the result in Word.
+00:02:11,712 --> 00:02:13,543
+Download and open the file.
 
 28
-00:01:57,220 --> 00:02:00,067
-The logo appears only on the first page.
+00:02:13,543 --> 00:02:21,407
+The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves.
 
 29
-00:02:00,067 --> 00:02:07,968
-The invoice number, customer and supplier details, items and totals are all there, and the table stays aligned.
+00:02:21,407 --> 00:02:23,712
+This is not a Word fidelity claim.
 
 30
-00:02:07,968 --> 00:02:13,596
-Page two keeps the company name and VAT in the header, without repeating the logo.
+00:02:23,712 --> 00:02:27,024
+Docentric Copilot is open source under Apache.
 
 31
-00:02:13,596 --> 00:02:15,929
-The footer keeps its page numbers.
+00:02:27,024 --> 00:02:33,720
+The schema, the live decision, the typed template and the evidence are all in the repository.
 
 32
-00:02:15,929 --> 00:02:20,184
-That is the first-page header rule working in a real document.
-
-33
-00:02:20,184 --> 00:02:26,791
-The brief became a typed plan, the plan became a validated document, and every binding has evidence.
-
-34
-00:02:26,791 --> 00:02:31,152
-The same pipeline covers quotations, invoices and purchase orders.
-
-35
-00:02:31,152 --> 00:02:36,504
-Docentric Copilot is a narrow AI boundary around a deterministic document engine.
+00:02:33,720 --> 00:02:36,672
+Docentric AX compatibility is not tested.

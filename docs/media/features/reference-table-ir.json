@@ -1,0 +1,134 @@
+{
+  "kind": "table",
+  "columns": [
+    {
+      "header": "SKU",
+      "width_mm": 60.0,
+      "alignment": "left"
+    },
+    {
+      "header": "Description",
+      "width_mm": 60.0,
+      "alignment": "left"
+    },
+    {
+      "header": "Amount",
+      "width_mm": 60.0,
+      "alignment": "left"
+    }
+  ],
+  "rows": [],
+  "footer_rows": [
+    {
+      "cells": [
+        {
+          "blocks": []
+        },
+        {
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "runs": [
+                {
+                  "kind": "text",
+                  "text": "Total",
+                  "style": null
+                }
+              ],
+              "style": null,
+              "space_after_pt": null
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "runs": [
+                {
+                  "kind": "text",
+                  "text": "1,240.00",
+                  "style": null
+                }
+              ],
+              "style": null,
+              "space_after_pt": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "repeat": {
+    "path": "MainData.Lines.Line",
+    "alias": "line",
+    "max_items": null
+  },
+  "row_template": [
+    {
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "runs": [
+            {
+              "kind": "field",
+              "path": "line.ItemId",
+              "label": null,
+              "format": null,
+              "date_pattern": null,
+              "currency_code": null,
+              "decimals": null,
+              "style": null
+            }
+          ],
+          "style": null,
+          "space_after_pt": null
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "runs": [
+            {
+              "kind": "field",
+              "path": "line.Description",
+              "label": null,
+              "format": null,
+              "date_pattern": null,
+              "currency_code": null,
+              "decimals": null,
+              "style": null
+            }
+          ],
+          "style": null,
+          "space_after_pt": null
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "runs": [
+            {
+              "kind": "field",
+              "path": "line.Amount",
+              "label": null,
+              "format": null,
+              "date_pattern": null,
+              "currency_code": null,
+              "decimals": null,
+              "style": null
+            }
+          ],
+          "style": null,
+          "space_after_pt": null
+        }
+      ]
+    }
+  ],
+  "show_header": true,
+  "style": null
+}

@@ -80,7 +80,7 @@ compiler may import `template_ir`. `core` imports nothing from the other layers.
 | `packages/evaluation` | `docentric_copilot.evaluation` | Planner quality metrics (`evaluate`, `MetricsReport`); the runner lives in `benchmarks/run_evaluation.py` | core (stdlib/pydantic) |
 | `packages/reference-inspector` | `docentric_copilot.reference` | Read-only REF-00 inventory/dedup, OOXML content-control scan, REF-02 ProjectData resolver, stable report, REF-03 ReferenceGraph/projection and REF-04 diff; no execution and no AX writer | core, lxml, pydantic |
 | `services/api` | `docentric_copilot.app`, `.api`, `.api.routes`, `.cli`, `.storage` | Application service, HTTP routes and schemas, CLI, SQLite + artifacts | everything above |
-| `apps/web` | — | Next.js 15 single-page workspace; HTTP client of the API, build-time `NEXT_PUBLIC_API_BASE_URL`, sandboxed preview iframe | HTTP API |
+| `apps/web` | — | Next.js 16 single-page workspace; HTTP client of the API, build-time `NEXT_PUBLIC_API_BASE_URL`, sandboxed preview iframe | HTTP API |
 
 The unusual layout — many source roots, one distribution — is deliberate: each directory is an
 independently reviewable work package while the import namespace stays flat for users. The mapping is
@@ -108,7 +108,7 @@ the normative ownership map.
 | SOW-12 CLI | `services/api/src/docentric_copilot/cli` | `docentric_copilot.cli` | `app`, commands in `main.py` |
 | SOW-13 Storage | `services/api/src/docentric_copilot/storage` | `docentric_copilot.storage` | `Store`, `SourceRecord`, `VersionRecord`, `ArtifactRecord` |
 | SOW-14 Examples/tooling | `scripts`, `examples` | — | `build_examples.py`, synthetic packages |
-| SOW-15 Web frontend | `apps/web` | — | Delivered: Next.js 15 workspace (`npm run build`), API client, workspace panels |
+| SOW-15 Web frontend | `apps/web` | — | Delivered: Next.js 16 workspace (`npm run build`), API client, workspace panels |
 | SOW-16 Reference inspection | `packages/reference-inspector` | `docentric_copilot.reference` | `inspect_reference`, `scan_docx`, `load_project_data`, `resolve_controls`, `ReferenceReport`, `build_reference_graph`, `build_reference_diff` |
 | SOW-17 Reference evaluation | `benchmarks` | — | `reference_evaluation.py`, `reference_cases.json`, synthetic REF-05 fixtures |
 

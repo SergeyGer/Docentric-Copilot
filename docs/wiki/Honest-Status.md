@@ -29,10 +29,10 @@ and published with `python scripts/sync_wiki.py --push`.
 | D365 private-corpus regression | **11/11 local** — aggregate only, [D365_REGRESSION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/D365_REGRESSION.md) |
 | Open P0 gaps | **None** — #53 and #54 are closed; Word Web itself remains untested |
 
-## v0.13 — implementation candidate
+## v0.13 — released status
 
 Full evidence: [RELEASE_EVIDENCE_V0_13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13.md).
-The release tags `v0.13.0` and `v0.13.1` are published; the Deferred items below are external dependencies, not passes.
+The release tags `v0.13.0` and `v0.13.1` are published. P0 is closed; #37 remains a P1 benchmark expansion.
 
 | V013 ID | Workstream | Status | Evidence |
 | --- | --- | --- | --- |
@@ -56,10 +56,10 @@ v0.12 is a release of **provable reliability**, not new surface area. Full evide
 | --- | --- | --- | --- |
 | V012-01 | Gold dataset audit trail, hashes, consistency report | **Passed** | [GOLD_AUDIT](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/GOLD_AUDIT.md); AT-07 `partial` |
 | V012-02 | Full 32 × 3 × 3 semantic benchmark | **Passed** | [BENCHMARKS §10](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02); 288 runs, 284 completed, 4 technical, 277 semantic passes |
-| V012-03 | Image-family expansion | **Deferred** | Issue [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37), target v0.13 |
+| V012-03 | Image-family expansion | **Partial in v0.13** | Synthetic image scenarios passed; benchmark expansion [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) remains open |
 | V012-04 | D365 real-corpus regression | **Passed** | [D365_REGRESSION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/D365_REGRESSION.md); 11/11, 246 bindings, 233 resolved, 13 unresolved |
 | V012-05 | Gemini nested table / Anthropic Repeat alias | **Passed** | [V012-05](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/V012_05_REGRESSIONS.md); targeted subset 23/23 evaluable correct |
-| V012-06 | Reference → IR table inference | **Deferred** | Issue [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40), target v0.13 |
+| V012-06 | Reference → IR table inference | **Delivered in v0.13** | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) closed; 30 tables classified |
 | V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** | [VISUAL_CI](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VISUAL_CI.md); real renderer, five fixtures, fail-closed statuses |
 | V012-08 | Playwright E2E | **Passed** | [E2E](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/E2E.md); happy path, negative paths, trace/screenshot probe |
 | V012-09 | Report retention/deletion | **Passed** | [REPORT_RETENTION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REPORT_RETENTION.md); 24 h default TTL, DELETE, verified 404 |
@@ -80,7 +80,7 @@ document, per-document hash, schema path or graph payload is in Git. Runtime com
 | Workstream | Status |
 | --- | --- |
 | #26 D365 evidence in the unified ReferenceGraph | Done — `schema_source`, `source_id`, `part#xpath`, exact binding status; real v0.12 11-document regression |
-| #27 safe Reference → Generic Template IR | Partial by design — Field, Label, List→Repeat, If, Image; explicit `skipped[]`; **no Table inference** (deferred #40) |
+| #27 safe Reference → Generic Template IR | Field, Label, List→Repeat, If, Image and Table inference; explicit `skipped[]` for ambiguous shapes |
 | #28 independent visual reference diff | Done — LibreOffice rendering, not Word fidelity; real pinned LibreOffice/Poppler CI since v0.12 |
 | #29 persistence, reopen and export | Done — report TTL, delete/retention, JSON/HTML export, committed Playwright E2E |
 | #30 hardening and docs | Done — superseded by V012-10 for the v0.12 version/docs alignment |
@@ -123,7 +123,7 @@ It used dataset `1.0.0` and must not be spliced with the v0.12 result. The v0.11
 - **Gemini technical failures.** `structured_output` failures are technical, not semantic passes.
 - **Image subtypes not covered.** Company logo only; product image, image collection, optional/missing
   and wrong-type images are deferred (#37).
-- **No table inference.** Reference → IR Table/Row/Cell inference is deferred (#40); skips remain explicit.
+- **Ambiguous table shapes.** Reference → IR Table/Row/Cell inference is delivered; merged/ragged/multiple-bound-row shapes are diagnosed and refused, not guessed.
 - **Private D365 corpus.** The 11 documents cannot be published; the aggregate proves the local run,
   not their content.
 - **Runtime not tested.** Docentric AX compatibility remains `not_tested`.

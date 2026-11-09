@@ -1,6 +1,6 @@
 # Web Workspace
 
-> A single-page Next.js 15 application that drives the REST API end to end.
+> A single-page Next.js 16 application that drives the REST API end to end.
 
 ![Workspace](https://raw.githubusercontent.com/SergeyGer/Docentric-Copilot/main/docs/assets/workspace-hero.png)
 

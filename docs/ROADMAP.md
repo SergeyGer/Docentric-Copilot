@@ -7,7 +7,7 @@
 | Field | Value |
 | --- | --- |
 | Current release | 0.13.1 (published corrective patch); Template IR 1.2 |
-| Overall status | M0–M4 implemented to the extent described below; v0.13 P0 work partially complete; the AX gate is blocked |
+| Overall status | M0–M4 implemented to the extent described below; v0.13 released (v0.13.1); P0 closed; the AX gate is blocked |
 | Related | [PRD](PRD.md), [SRS](SRS.md), [FEASIBILITY](FEASIBILITY.md), [DOCENTRIC_AX_COMPATIBILITY](DOCENTRIC_AX_COMPATIBILITY.md) |
 
 Milestones are cumulative. "Implemented" means the behaviour exists and is documented; it does not mean
@@ -106,7 +106,7 @@ has not been demonstrated.
 | Benchmark runner | Done — [BENCHMARKS](BENCHMARKS.md) |
 | Static OpenAPI export (`docs/openapi.json`) | Done — `scripts/export_openapi.py` |
 | Documentation set (PRD, SRS, architecture, IR, API, DDSP, AX, threat model, test plan, evaluation, benchmarks, feasibility, ADRs) | Done |
-| Web UI (`apps/web`) | Delivered: Next.js 15 workspace; lint, typecheck and build pass; manual real-browser smoke run passed; no committed browser E2E; layouts below 1024 px untested |
+| Web UI (`apps/web`) | Delivered: Next.js 16 workspace; lint, typecheck and build pass; manual real-browser smoke run passed; no committed browser E2E; layouts below 1024 px untested |
 | Browser E2E suite | Not committed: a manual Playwright/Chromium smoke run passed, but the scripts and artefacts were temporary and no test suite is in the repository |
 | CI workflows (`.github/workflows/`) | Present: `ci.yml` (python, web, docker, security) and `release.yml`; the Docker job builds both images |
 
@@ -193,10 +193,10 @@ compatibility. Full evidence: [RELEASE_EVIDENCE_V0_12](RELEASE_EVIDENCE_V0_12.md
 | --- | --- | --- | --- |
 | V012-01 | Gold dataset audit trail | **Passed** | [GOLD_AUDIT](GOLD_AUDIT.md); AT-07 `partial` |
 | V012-02 | Full 32 × 3 × 3 benchmark | **Passed** | [BENCHMARKS §10](BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02) |
-| V012-03 | Image-family expansion | **Deferred** | Issue #37 → v0.13 |
+| V012-03 | Image-family expansion | **Partial in v0.13** | Synthetic scenarios passed; issue #37 benchmark expansion open |
 | V012-04 | D365 11-document regression | **Passed** | [D365_REGRESSION](D365_REGRESSION.md) |
 | V012-05 | Nested table / repeat alias | **Passed** | [V012-05](V012_05_REGRESSIONS.md) |
-| V012-06 | Reference → IR table inference | **Deferred** | Issue #40 → v0.13 |
+| V012-06 | Reference → IR table inference | **Delivered in v0.13** | Issue #40 closed |
 | V012-07 | Real LibreOffice/Poppler CI | **Passed** | [VISUAL_CI](VISUAL_CI.md) |
 | V012-08 | Playwright E2E | **Passed** | [E2E](E2E.md) |
 | V012-09 | Retention/deletion | **Passed** | [REPORT_RETENTION](REPORT_RETENTION.md) |
@@ -224,16 +224,15 @@ weakening the compatibility gate. Evidence:
 | V013-09 | Product demo video | **Passed — published** | [YouTube](https://youtu.be/HZcP_lrjcrw) · 2:58 |
 | V013-10 | Technical deep-dive video | **Passed — published** | [GitHub](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) · 5:11 |
 
-The videos are published and #53 is closed on the accepted Word desktop check;
-dependencies, not passes. The branch is an implementation candidate, not
-a claim that all P0 acceptance criteria are met.
+The videos are published and #53 is closed on the accepted Word desktop check.
+All P0 acceptance items are accounted for; the remaining open issues are P1/P2
+backlog items.
 
 ## v0.13 open-task closure
 
-The audit follow-up is tracked in [OPEN_TASKS_V013](OPEN_TASKS_V013.md): T-01
-No P0 items remain; T-04/T-05/T-06 are
-classified P1 diagnostics; T-07 is complete; T-08 has local smoke evidence but
-the deployed Streamlit revision could not be verified headlessly.
+The audit follow-up is tracked in [OPEN_TASKS_V013](OPEN_TASKS_V013.md):
+T-01/T-02/T-03 are closed; T-04/T-05/T-06 are P1 diagnostics; T-07 is complete;
+T-08 is verified on the deployed Streamlit app (v0.13.1, commit `5a173b5`, IR 1.2).
 
 ## Next steps (ordered)
 

@@ -212,7 +212,7 @@ objects returned by the API and written by the CLI.
 | Validation | V1 structural, V2 semantic, V3 logical, V4 table-width visual check, V5 `not_tested` |
 | Compilation | `generic-docx` only; deterministic OOXML package |
 | Preview | Self-contained HTML content preview |
-| Interfaces | FastAPI HTTP API, Typer CLI, Next.js 15 web workspace (`apps/web`), SQLite persistence, TTL artifacts |
+| Interfaces | FastAPI HTTP API, Typer CLI, Next.js 16 web workspace (`apps/web`), SQLite persistence, TTL artifacts |
 | Docs | This document set, including explicit non-claims |
 
 ### Out of scope

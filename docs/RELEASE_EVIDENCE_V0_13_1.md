@@ -74,15 +74,15 @@ The Streamlit Cloud app was woken and exercised in Chromium:
 
 See [DEMO_SMOKE_V013](DEMO_SMOKE_V013.md).
 
-## 6. P0 items still open
+## 6. P0 item closure
 
-| ID | Status | Blocker |
+| ID | Status | Evidence |
 | --- | --- | --- |
 | V013-06 / #53 Word for the web | Closed by maintainer decision | Microsoft Word desktop check accepted; Word for the web itself not performed |
-| V013-09/V013-10 / #54 videos | Deferred | No human review/final polish/YouTube publication; Product Demo needs T-01 |
+| V013-09 / #54 Product Demo | Published | [YouTube](https://youtu.be/HZcP_lrjcrw) · 2:58 |
+| V013-10 / #54 Technical Deep-Dive | Published on GitHub | [technical-v013.mp4](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) · 5:11; not uploaded to YouTube |
 
-Publish-ready draft videos are 1080p H.264/AAC with SRT, but the manifest
-records `human_review: false` and `youtube_published: false`.
+No P0 item is deferred.
 
 ## 7. Verification
 
@@ -97,8 +97,8 @@ records `human_review: false` and `youtube_published: false`.
 
 - Docentric AX runtime compatibility remains `not_tested`; Word Desktop not tested.
 - AT-07 remains `partial`; there is no independent human review of the gold labels.
-- The demo build is main commit `1cbe073`, not the v0.13.0 tag commit.
-- v0.13.1 does not claim that every v0.13 P0 deliverable is complete.
+- The deployed demo was rechecked on main commit `5a173b5` (v0.13.1, IR 1.2).
+- v0.13.1 does not claim Word for the web or Docentric AX runtime compatibility.
 
 ## 9. Post-release evidence rework
 
@@ -115,5 +115,6 @@ therefore contains:
   from the committed benchmark/reference JSON.
 
 These additions are on `main` after the v0.13.1 tag and do not change the
-release assets or the P0 status: Word for the web itself remains untested, while #53 is closed by the maintainer on the Word desktop evidence; the
-videos still need human review/YouTube publication (#54).
+release assets. Word for the web itself remains untested; #53 is closed by the
+maintainer on the Word desktop evidence, and #54 is closed with the published
+YouTube/GitHub links.

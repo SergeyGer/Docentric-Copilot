@@ -326,8 +326,8 @@ def test_v012_p1_items_have_honest_status_and_targets() -> None:
     assert "No status is represented as a single" in evidence
 
     honest = _read("docs/wiki/Honest-Status.md")
-    assert "V012-03 | Image-family expansion | **Deferred**" in honest
-    assert "V012-06 | Reference → IR table inference | **Deferred**" in honest
+    assert "V012-03 | Image-family expansion | **Partial in v0.13**" in honest
+    assert "V012-06 | Reference → IR table inference | **Delivered in v0.13**" in honest
     assert "#37" in honest and "#40" in honest
     assert "v0.13" in honest
 
@@ -370,7 +370,7 @@ def test_wiki_roadmap_is_synchronized_with_github_issues() -> None:
         "#44",
     ):
         assert number in roadmap, number
-    assert "Deferred from v0.12 — target v0.13" in roadmap
+    assert "v0.12 follow-ups" in roadmap
     assert "python scripts/sync_wiki.py --push" in roadmap
 
 

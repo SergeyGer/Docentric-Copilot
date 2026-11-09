@@ -13,7 +13,7 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |
 | T-06 | 10 Gemini structured_output failures | P1 | **Classified** | `docs/GEMINI_FAILURES_V013.md`; all Gemini compact-v2, 10 vs 4 in v0.12 |
 | T-07 | Documentation/Template IR/nested-repeat sync | P1 (before video) | **Done** | IR 1.2 aligned in release evidence; feature matrix distinguishes IR/compiler support from automatic reference inference |
-| T-08 | Live Demo release consistency | P0 (before video) | **Done** | `docs/DEMO_SMOKE_V013.md`; `scripts/deployed_demo_smoke.py`: v0.13.0, commit `1cbe073`, IR 1.2, deterministic, all 3 downloads, hashes match local |
+| T-08 | Live Demo release consistency | P0 (before video) | **Done** | `docs/DEMO_SMOKE_V013.md`; deployed app v0.13.1, commit `5a173b5`, IR 1.2, deterministic; invoice download rerun after dependency merges, hash matches local |
 
 ## T-04 details
 
@@ -55,7 +55,7 @@ Nothing. T-01, T-02 and T-03 are closed:
 - #53 closed on the accepted Word desktop check; Word for the web itself was not performed.
 - #54 closed with the Product Demo YouTube link and the Technical Deep-Dive GitHub link.
 
-P1 residuals (#37 image benchmark, #40 table edge shapes) stay in the backlog.
+P1 residual #37 (image-family benchmark expansion) stays in the backlog; #40 table inference is closed.
 
 Docentric AX runtime compatibility remains **`not_tested`**; AT-07 remains
 **`partial`**. The `v0.13.0` feature release and corrective `v0.13.1` patch are published. The

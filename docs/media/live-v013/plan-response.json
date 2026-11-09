@@ -1,0 +1,844 @@
+{
+  "job_id": "job_rj22gljeqb451oy9cyu3",
+  "status": "completed",
+  "template_id": "tpl_j0zobzmzfwseoeqdl1zp",
+  "version": 1,
+  "ir_digest": "0853617d0bdcc07e13cbe4b48a6eec379f6c4e8264a0528013841f4e35f1207b",
+  "ir": {
+    "kind": "document",
+    "ir_version": "1.2",
+    "title": "Sales Quotation",
+    "language": "en",
+    "target": "generic-docx",
+    "page": {
+      "size": "A4",
+      "orientation": "portrait",
+      "margin_top_mm": 20.0,
+      "margin_right_mm": 20.0,
+      "margin_bottom_mm": 20.0,
+      "margin_left_mm": 20.0
+    },
+    "metadata": {
+      "template_name": "Sales Quotation",
+      "source_schema_id": "sales_quotation",
+      "design_style": "modern",
+      "intent": "Sales quotation with logo, number, date, lines, total, VAT number, bank footer and EU VAT notice",
+      "generator": "anthropic/claude-sonnet-5-5",
+      "notes": null
+    },
+    "sections": [
+      {
+        "kind": "section",
+        "name": "MainData",
+        "body": [
+          {
+            "kind": "heading",
+            "level": 1,
+            "runs": [
+              {
+                "kind": "text",
+                "text": "Sales Quotation",
+                "style": {
+                  "bold": true,
+                  "italic": null,
+                  "underline": null,
+                  "font_size_pt": 24.0,
+                  "color": "#1F3A5F",
+                  "alignment": null
+                }
+              }
+            ],
+            "style": null
+          },
+          {
+            "kind": "paragraph",
+            "runs": [
+              {
+                "kind": "field",
+                "path": "MainData.Quotation.QuotationId",
+                "label": "Quotation No: ",
+                "format": null,
+                "date_pattern": null,
+                "currency_code": null,
+                "decimals": null,
+                "style": {
+                  "bold": true,
+                  "italic": null,
+                  "underline": null,
+                  "font_size_pt": null,
+                  "color": null,
+                  "alignment": null
+                }
+              }
+            ],
+            "style": null,
+            "space_after_pt": 2.0
+          },
+          {
+            "kind": "paragraph",
+            "runs": [
+              {
+                "kind": "field",
+                "path": "MainData.Quotation.QuotationDate",
+                "label": "Date: ",
+                "format": "date_short",
+                "date_pattern": null,
+                "currency_code": null,
+                "decimals": null,
+                "style": null
+              }
+            ],
+            "style": null,
+            "space_after_pt": 12.0
+          },
+          {
+            "kind": "table",
+            "columns": [
+              {
+                "header": "Unit price",
+                "width_mm": null,
+                "alignment": "right"
+              },
+              {
+                "header": "Line amount",
+                "width_mm": null,
+                "alignment": "right"
+              }
+            ],
+            "rows": [],
+            "footer_rows": [],
+            "repeat": {
+              "path": "MainData.QuotationLines.Line",
+              "alias": "line",
+              "max_items": null
+            },
+            "row_template": [
+              {
+                "blocks": [
+                  {
+                    "kind": "paragraph",
+                    "runs": [
+                      {
+                        "kind": "field",
+                        "path": "line.UnitPrice",
+                        "label": null,
+                        "format": "number",
+                        "date_pattern": null,
+                        "currency_code": null,
+                        "decimals": 2,
+                        "style": null
+                      }
+                    ],
+                    "style": {
+                      "bold": null,
+                      "italic": null,
+                      "underline": null,
+                      "font_size_pt": null,
+                      "color": null,
+                      "alignment": "right"
+                    },
+                    "space_after_pt": null
+                  }
+                ]
+              },
+              {
+                "blocks": [
+                  {
+                    "kind": "paragraph",
+                    "runs": [
+                      {
+                        "kind": "field",
+                        "path": "line.LineAmount",
+                        "label": null,
+                        "format": "number",
+                        "date_pattern": null,
+                        "currency_code": null,
+                        "decimals": 2,
+                        "style": null
+                      }
+                    ],
+                    "style": {
+                      "bold": null,
+                      "italic": null,
+                      "underline": null,
+                      "font_size_pt": null,
+                      "color": null,
+                      "alignment": "right"
+                    },
+                    "space_after_pt": null
+                  }
+                ]
+              }
+            ],
+            "show_header": true,
+            "style": {
+              "borders": false,
+              "header_background": "#1F3A5F",
+              "zebra": true,
+              "font_size_pt": 10.0
+            }
+          },
+          {
+            "kind": "paragraph",
+            "runs": [
+              {
+                "kind": "field",
+                "path": "MainData.Quotation.TotalAmount",
+                "label": "Total amount: ",
+                "format": "number",
+                "date_pattern": null,
+                "currency_code": null,
+                "decimals": 2,
+                "style": {
+                  "bold": true,
+                  "italic": null,
+                  "underline": null,
+                  "font_size_pt": 12.0,
+                  "color": null,
+                  "alignment": null
+                }
+              }
+            ],
+            "style": {
+              "bold": null,
+              "italic": null,
+              "underline": null,
+              "font_size_pt": null,
+              "color": null,
+              "alignment": "right"
+            },
+            "space_after_pt": 12.0
+          },
+          {
+            "kind": "conditional",
+            "condition": {
+              "operator": "equals",
+              "field": "MainData.Quotation.Customer.IsEU",
+              "value": true,
+              "operands": null
+            },
+            "then_blocks": [
+              {
+                "kind": "paragraph",
+                "runs": [
+                  {
+                    "kind": "text",
+                    "text": "EU VAT notice: This supply may be subject to the reverse charge mechanism. The customer is liable for VAT in their member state.",
+                    "style": {
+                      "bold": null,
+                      "italic": true,
+                      "underline": null,
+                      "font_size_pt": 9.0,
+                      "color": null,
+                      "alignment": null
+                    }
+                  }
+                ],
+                "style": null,
+                "space_after_pt": null
+              }
+            ],
+            "else_blocks": null
+          }
+        ],
+        "header": [
+          {
+            "kind": "image",
+            "source": "schema",
+            "path": "GeneralData.Company.CompanyLogo",
+            "static_asset": null,
+            "alt_text": "Company logo",
+            "width_mm": 40.0,
+            "height_mm": 20.0,
+            "alignment": "left",
+            "fallback": "blank",
+            "preserve_aspect": true
+          }
+        ],
+        "first_page_header": null,
+        "footer": [
+          {
+            "kind": "paragraph",
+            "runs": [
+              {
+                "kind": "field",
+                "path": "GeneralData.Company.VatNumber",
+                "label": "VAT number: ",
+                "format": null,
+                "date_pattern": null,
+                "currency_code": null,
+                "decimals": null,
+                "style": {
+                  "bold": null,
+                  "italic": null,
+                  "underline": null,
+                  "font_size_pt": 9.0,
+                  "color": null,
+                  "alignment": null
+                }
+              }
+            ],
+            "style": null,
+            "space_after_pt": 2.0
+          },
+          {
+            "kind": "paragraph",
+            "runs": [
+              {
+                "kind": "field",
+                "path": "MainData.Quotation.BankDetails.BankName",
+                "label": "Bank: ",
+                "format": null,
+                "date_pattern": null,
+                "currency_code": null,
+                "decimals": null,
+                "style": {
+                  "bold": null,
+                  "italic": null,
+                  "underline": null,
+                  "font_size_pt": 9.0,
+                  "color": null,
+                  "alignment": null
+                }
+              }
+            ],
+            "style": null,
+            "space_after_pt": null
+          }
+        ]
+      }
+    ]
+  },
+  "mapping": {
+    "mappings": [
+      {
+        "requirement_id": "req_00",
+        "requirement": "Create a professional sales quotation with the company logo",
+        "concept": "company_logo",
+        "placement": null,
+        "candidate_field_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "selected_field_path": "GeneralData.Company.CompanyLogo",
+        "supporting_field_paths": [
+          "GeneralData.Company.CompanyLogo"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "image",
+        "schema_evidence": "GeneralData.Company.CompanyLogo:image",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_01",
+        "requirement": "customer details",
+        "concept": "customer_name",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.Customer.Name",
+          "GeneralData.Company.Name",
+          "MainData.QuotationLines.Line.Description"
+        ],
+        "selected_field_path": null,
+        "supporting_field_paths": [],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": null,
+        "data_type": null,
+        "schema_evidence": null,
+        "confidence_score": 0.2772727272727273,
+        "status": "missing",
+        "explanation": "No field in the schema satisfies this requirement."
+      },
+      {
+        "requirement_id": "req_02",
+        "requirement": "quotation number",
+        "concept": "document_number",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.Quotation.QuotationId",
+          "MainData.Quotation.Customer.VatNumber",
+          "GeneralData.Company.VatNumber"
+        ],
+        "selected_field_path": "MainData.Quotation.QuotationId",
+        "supporting_field_paths": [
+          "MainData.Quotation.QuotationId"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.8,
+        "data_type": "string",
+        "schema_evidence": "MainData.Quotation.QuotationId:string",
+        "confidence_score": 0.8,
+        "status": "schema_valid",
+        "explanation": "Schema-valid binding with partial semantic evidence; review is recommended."
+      },
+      {
+        "requirement_id": "req_03",
+        "requirement": "date",
+        "concept": "document_date",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.Quotation.QuotationDate"
+        ],
+        "selected_field_path": "MainData.Quotation.QuotationDate",
+        "supporting_field_paths": [
+          "MainData.Quotation.QuotationDate"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "date",
+        "schema_evidence": "MainData.Quotation.QuotationDate:date",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_04",
+        "requirement": "product lines with quantities",
+        "concept": "line_items",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.QuotationLines.Line"
+        ],
+        "selected_field_path": "MainData.QuotationLines.Line",
+        "supporting_field_paths": [
+          "MainData.QuotationLines.Line"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "collection",
+        "schema_evidence": "MainData.QuotationLines.Line:collection",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_05",
+        "requirement": "product lines with quantities",
+        "concept": "line_quantity",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.QuotationLines.Line.Quantity",
+          "MainData.QuotationLines.Line.LineAmount",
+          "MainData.QuotationLines.Line.UnitPrice"
+        ],
+        "selected_field_path": null,
+        "supporting_field_paths": [],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": null,
+        "data_type": null,
+        "schema_evidence": null,
+        "confidence_score": 0.2576923076923077,
+        "status": "missing",
+        "explanation": "No field in the schema satisfies this requirement."
+      },
+      {
+        "requirement_id": "req_06",
+        "requirement": "unit prices",
+        "concept": "line_price",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.QuotationLines.Line.UnitPrice"
+        ],
+        "selected_field_path": "MainData.QuotationLines.Line.UnitPrice",
+        "supporting_field_paths": [
+          "MainData.QuotationLines.Line.UnitPrice"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "number",
+        "schema_evidence": "MainData.QuotationLines.Line.UnitPrice:number",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_07",
+        "requirement": "line amounts",
+        "concept": "line_amount",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.QuotationLines.Line.LineAmount",
+          "MainData.Quotation.TotalAmount",
+          "MainData.Quotation.TaxAmount"
+        ],
+        "selected_field_path": "MainData.QuotationLines.Line.LineAmount",
+        "supporting_field_paths": [
+          "MainData.QuotationLines.Line.LineAmount"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "number",
+        "schema_evidence": "MainData.QuotationLines.Line.LineAmount:number",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_08",
+        "requirement": "the final amount",
+        "concept": "total_amount",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.Quotation.TotalAmount",
+          "MainData.Quotation.TaxAmount",
+          "MainData.QuotationLines.Line.LineAmount"
+        ],
+        "selected_field_path": "MainData.Quotation.TotalAmount",
+        "supporting_field_paths": [
+          "MainData.Quotation.TotalAmount"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "number",
+        "schema_evidence": "MainData.Quotation.TotalAmount:number",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_09",
+        "requirement": "the VAT number",
+        "concept": "customer_vat",
+        "placement": null,
+        "candidate_field_paths": [
+          "MainData.Quotation.Customer.VatNumber",
+          "GeneralData.Company.VatNumber",
+          "MainData.Quotation.Customer.AccountNum"
+        ],
+        "selected_field_path": null,
+        "supporting_field_paths": [],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": null,
+        "data_type": null,
+        "schema_evidence": null,
+        "confidence_score": 0.36538461538461536,
+        "status": "needs_review",
+        "explanation": "Several fields match the requirement equally well; confirm the choice."
+      },
+      {
+        "requirement_id": "req_10",
+        "requirement": "bank details in the footer",
+        "concept": "bank_details",
+        "placement": "footer",
+        "candidate_field_paths": [
+          "MainData.Quotation.BankDetails.BankName",
+          "MainData.Quotation.BankDetails.Iban",
+          "MainData.Quotation.BankDetails.Swift",
+          "MainData.QuotationLines.Line.ItemId"
+        ],
+        "selected_field_path": "MainData.Quotation.BankDetails.BankName",
+        "supporting_field_paths": [
+          "MainData.Quotation.BankDetails.BankName"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.99,
+        "data_type": "string",
+        "schema_evidence": "MainData.Quotation.BankDetails.BankName:string",
+        "confidence_score": 0.99,
+        "status": "confirmed",
+        "explanation": "Bound. The field name matches the requested concept; The value type matches; The brief names the object explicitly."
+      },
+      {
+        "requirement_id": "req_11",
+        "requirement": "an EU VAT notice when the customer is in the EU",
+        "concept": "vat_notice",
+        "placement": null,
+        "candidate_field_paths": [
+          "Parameters.ShowVatNotice",
+          "MainData.Quotation.Customer.IsEU"
+        ],
+        "selected_field_path": "MainData.Quotation.Customer.IsEU",
+        "supporting_field_paths": [
+          "MainData.Quotation.Customer.IsEU"
+        ],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": 0.8,
+        "data_type": "boolean",
+        "schema_evidence": "MainData.Quotation.Customer.IsEU:boolean",
+        "confidence_score": 0.8,
+        "status": "schema_valid",
+        "explanation": "Schema-valid binding with partial semantic evidence; review is recommended."
+      },
+      {
+        "requirement_id": "req_cand_req_08",
+        "requirement": "the vat number",
+        "concept": "vat_number",
+        "placement": "footer",
+        "candidate_field_paths": [
+          "GeneralData.Company.VatNumber",
+          "MainData.Quotation.Customer.VatNumber"
+        ],
+        "selected_field_path": "GeneralData.Company.VatNumber",
+        "supporting_field_paths": [],
+        "conflict": false,
+        "conflicts_with": [],
+        "evidence_score": null,
+        "data_type": null,
+        "schema_evidence": null,
+        "confidence_score": 1.0,
+        "status": "needs_review",
+        "explanation": "Genuine ambiguity: more than one schema path is defensible; confirm the choice."
+      }
+    ],
+    "schema_id": "sales_quotation"
+  },
+  "report": {
+    "schema_id": "sales_quotation",
+    "target": "generic-docx",
+    "ir_digest": "0853617d0bdcc07e13cbe4b48a6eec379f6c4e8264a0528013841f4e35f1207b",
+    "checks": [
+      {
+        "id": "V1-001",
+        "level": "structural",
+        "name": "IR size limits",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V1-002",
+        "level": "structural",
+        "name": "IR nesting depth",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V1-003",
+        "level": "structural",
+        "name": "Section uniqueness",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V1-004",
+        "level": "structural",
+        "name": "Section content",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V1-005",
+        "level": "structural",
+        "name": "Text length",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V1-006",
+        "level": "structural",
+        "name": "OOXML package structure",
+        "status": "skipped",
+        "summary": "no compiled package supplied",
+        "findings": []
+      },
+      {
+        "id": "V2-001",
+        "level": "semantic",
+        "name": "Binding paths exist",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V2-002",
+        "level": "semantic",
+        "name": "Binding types are scalar",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V2-003",
+        "level": "semantic",
+        "name": "Collection context is explicit",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V2-004",
+        "level": "semantic",
+        "name": "Format matches data type",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V3-001",
+        "level": "logical",
+        "name": "Repeat targets a collection",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V3-002",
+        "level": "logical",
+        "name": "Repeat aliases are unique",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V3-003",
+        "level": "logical",
+        "name": "Condition operands are type correct",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V3-004",
+        "level": "logical",
+        "name": "Condition fields exist",
+        "status": "passed",
+        "summary": "no findings",
+        "findings": []
+      },
+      {
+        "id": "V4-001",
+        "level": "visual",
+        "name": "Layout fits the page",
+        "status": "skipped",
+        "summary": "visual checks require sample data and a renderer",
+        "findings": []
+      },
+      {
+        "id": "V5-001",
+        "level": "compatibility",
+        "name": "Docentric AX compatibility",
+        "status": "not_tested",
+        "summary": "Docentric AX compatibility requires execution inside a licensed Docentric environment; this build cannot verify it.",
+        "findings": [
+          {
+            "code": "V5-001",
+            "severity": "info",
+            "message": "Docentric AX compatibility requires execution inside a licensed Docentric environment; this build cannot verify it.",
+            "location": null
+          }
+        ]
+      }
+    ],
+    "package": null
+  },
+  "validation": {
+    "structural": "passed",
+    "semantic": "passed",
+    "logical": "passed",
+    "visual": "skipped",
+    "docentric_compatibility": "not_tested"
+  },
+  "warnings": [
+    "4 requirement(s) need review before compilation"
+  ],
+  "removed_bindings": [],
+  "generation": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "usage": {
+      "prompt_tokens": 11358,
+      "completion_tokens": 1696,
+      "estimated_cost_usd": 0.039676
+    },
+    "latency_ms": 11136,
+    "finish_reason": "tool_use",
+    "attempts": 1
+  },
+  "routing": {
+    "decision": {
+      "complexity": "ambiguous",
+      "provider": "anthropic",
+      "model": null,
+      "reason": [
+        "ambiguous binding(s): 0 flagged, 1 party-scoped requirement(s)",
+        "tier 'advanced' prefers anthropic, openai, mock"
+      ],
+      "budget_usd": 0.3,
+      "requires_review": true,
+      "fallback_used": false
+    },
+    "actual_provider": "anthropic",
+    "actual_model": "claude-sonnet-5-5",
+    "fallback": false,
+    "match": true,
+    "run_id": "run_e056896782cf4fb2b96d",
+    "started_at": "2026-11-09T12:50:35.828780Z",
+    "finished_at": "2026-11-09T12:50:47.064292Z",
+    "usage": {
+      "prompt_tokens": 11358,
+      "completion_tokens": 1696,
+      "estimated_cost_usd": 0.039676
+    }
+  },
+  "artifacts": [
+    {
+      "id": "art_rxgupkxl48abhi6820md",
+      "kind": "ir",
+      "filename": "tpl_j0zobzmzfwseoeqdl1zp-v1.ir.json",
+      "media_type": "application/json",
+      "size_bytes": 4128,
+      "digest": "937ea0bd4ae18a655ecc183ac7dc08fd43d3f1546e776de7e6f82b9296fba437",
+      "url": "/api/v1/artifacts/art_rxgupkxl48abhi6820md",
+      "expires_at": 1794315047.0871065
+    },
+    {
+      "id": "art_vymw2ll0dil10e7003z8",
+      "kind": "mapping",
+      "filename": "tpl_j0zobzmzfwseoeqdl1zp-v1.mapping.json",
+      "media_type": "application/json",
+      "size_bytes": 10236,
+      "digest": "6056b89377f3b35b5c5e1cc89052258dcb15597a0219757c4b838f41fa564b51",
+      "url": "/api/v1/artifacts/art_vymw2ll0dil10e7003z8",
+      "expires_at": 1794315047.0929737
+    },
+    {
+      "id": "art_1dewwr9e5ygcm988553s",
+      "kind": "validation",
+      "filename": "tpl_j0zobzmzfwseoeqdl1zp-v1.validation.json",
+      "media_type": "application/json",
+      "size_bytes": 3505,
+      "digest": "f6916fcb9a041c8baa8ef7729428cd4be7da1446cce1ab888f3b4046af147b9a",
+      "url": "/api/v1/artifacts/art_1dewwr9e5ygcm988553s",
+      "expires_at": 1794315047.098344
+    },
+    {
+      "id": "art_5lg0opi59rpc899748c9",
+      "kind": "validation_html",
+      "filename": "tpl_j0zobzmzfwseoeqdl1zp-v1.validation.html",
+      "media_type": "text/html",
+      "size_bytes": 6605,
+      "digest": "280100bfc52ffb9c38addce9e74d9d9ba8d5021d46014923f053ce05d5ebda21",
+      "url": "/api/v1/artifacts/art_5lg0opi59rpc899748c9",
+      "expires_at": 1794315047.1030147
+    },
+    {
+      "id": "art_rgh6puts0v66qd0gs2u2",
+      "kind": "preview",
+      "filename": "tpl_j0zobzmzfwseoeqdl1zp-v1.preview.html",
+      "media_type": "text/html",
+      "size_bytes": 6232,
+      "digest": "393894a35652afaa654d7c7dc14a7d77eeee16880533fad6ce0b40931289d364",
+      "url": "/api/v1/artifacts/art_rgh6puts0v66qd0gs2u2",
+      "expires_at": 1794315047.1083868
+    }
+  ]
+}

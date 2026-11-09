@@ -21,13 +21,13 @@ and published with `python scripts/sync_wiki.py --push`.
 | Docentric AX runtime compatibility | **`not_tested`** — no execution claim |
 | Gold labels annotation | **AT-07 = `partial`** — owner self-review + deterministic proxy; no independent human review |
 | v0.12 reliability release | **Released** — [v0.12.0](https://github.com/SergeyGer/Docentric-Copilot/releases/tag/v0.12.0) |
-| v0.13 release | **Released `v0.13.0`; corrective `v0.13.1`** — V013-01…05/07/08 Passed; V013-06/V013-09/V013-10 Deferred |
-| Template IR | **`1.1`** — first-page header and image source/fallback; `1.0` migrates |
+| v0.13 release | **Released `v0.13.0`; corrective `v0.13.1`** — V013-01…05/07/08 Passed; V013-06 closed on Word desktop; V013-09/V013-10 Passed/published |
+| Template IR | **`1.2`** — first-page header, image source/fallback and table footer rows; `1.0`/`1.1` migrate |
 | Feature coverage | **Published** — [FEATURE_COVERAGE_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/FEATURE_COVERAGE_V013.md) |
 | Reference Evaluation | **Published** — [REFERENCE_EVALUATION_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REFERENCE_EVALUATION_V013.md) |
 | v0.13 full benchmark | **Published** — 288 planned / 278 completed / 10 technical / 274 semantic passes |
 | D365 private-corpus regression | **11/11 local** — aggregate only, [D365_REGRESSION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/D365_REGRESSION.md) |
-| Open P0 gaps | Word Web (#53), videos (#54) — external access |
+| Open P0 gaps | **None** — #53 and #54 are closed; Word Web itself remains untested |
 
 ## v0.13 — implementation candidate
 
@@ -41,11 +41,11 @@ The release tags `v0.13.0` and `v0.13.1` are published; the Deferred items below
 | V013-03 | Reference-to-IR table inference | **Passed** | Header/repeated rows, optional cells, footer rows, static/nested tables and nested repeat; ambiguous shapes diagnosed |
 | V013-04 | First-page header | **Passed** | `w:titlePg`, first header part, per-section headers and preview inheritance; multi-section tests |
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/REFERENCE_EVALUATION_V013.md) |
-| V013-06 | Word for the web | **Deferred** | Issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53); no Microsoft 365/OneDrive access |
+| V013-06 | Word for the web | **Closed by maintainer decision** — Word desktop accepted; Word Web not performed | User-provided Word desktop pages; [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) closed; [WORD_WEB_VALIDATION](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/WORD_WEB_VALIDATION_V013.md) |
 | V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation gating, download regression |
 | V013-08 | Final quality benchmark | **Passed** | 288 planned, 278 completed, 10 technical, 274 semantic passes; [BENCHMARKS §11](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/BENCHMARKS.md#11-v013-full-benchmark-v013-08) |
-| V013-09 | Product Demo video | **Deferred** | Issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
-| V013-10 | Technical video | **Deferred** | Issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+| V013-09 | Product Demo video | **Passed — published on YouTube** | [watch](https://youtu.be/HZcP_lrjcrw) · [VIDEOS_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VIDEOS_V013.md) |
+| V013-10 | Technical video | **Passed — published on GitHub** | [technical-v013.mp4](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) · [VIDEOS_V013](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/VIDEOS_V013.md) |
 
 ## v0.12 — previous release status
 

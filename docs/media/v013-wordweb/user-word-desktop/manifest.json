@@ -1,0 +1,39 @@
+{
+  "schema": "word-desktop-evidence/v1",
+  "status": "user_provided_manual_check",
+  "application": "Microsoft Word desktop (screenshots)",
+  "word_for_the_web": false,
+  "performed_by": "project maintainer",
+  "received": "2026-11-09",
+  "document": {
+    "name": "invoice-work-desktop.docx",
+    "pages": 2,
+    "words": 71
+  },
+  "checks": {
+    "page_1_logo_present": true,
+    "pages_2_plus_logo_absent": true,
+    "company_name_and_vat_header": true,
+    "footer_and_page_numbers": true,
+    "tables_images_no_unexplained_defects": true
+  },
+  "files": {
+    "invoice-page-1.png": {
+      "bytes": 44231,
+      "sha256": "dd9ad142e206923bd128fa62ebfb43bd4dd24cf2ed4c79b21a7429bdb73f1314"
+    },
+    "invoice-page-2.png": {
+      "bytes": 35962,
+      "sha256": "cfb08b9ea3c0bbca927e33f2378bdc1cb4471547692f94f00e4a1046ace99d49"
+    },
+    "invoice-work-desktop.docx": {
+      "bytes": 41660,
+      "sha256": "643bf9bbe95733ceece260120cb47094c442f855745b4078d9fde0e294f43c0f"
+    }
+  },
+  "limitations": [
+    "Screenshots show the Microsoft Word desktop application, not Word for the web.",
+    "No browser URL, Word Web PDF export or Word Web page screenshots were provided.",
+    "This is not Docentric AX runtime validation."
+  ]
+}

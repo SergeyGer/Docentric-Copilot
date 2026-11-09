@@ -1,73 +1,69 @@
 # technical narration
 
-## 1. Technical Deep-Dive — v0.13 (10.2s)
+## 1. One deterministic core. (19.3s)
 
-This deep-dive explains how Docentric Copilot turns a brief into a checked Word document, what changed in version zero thirteen, and where the honest boundaries are.
+The system is built around one deterministic core. A business brief and a DDSP package enter. The parser normalizes the schema. The planner, and only the planner, is inside the narrow AI boundary. It produces a typed document contract, never OOXML.
 
-## 2. Pipeline (16.8s)
+## 2. The contract has two paths. (15.7s)
 
-The pipeline is deliberately boring. The parser normalizes the schema, the reference inspector builds evidence, the planner emits a typed Template IR, the validator checks structure, semantics and logic, and only then does the compiler produce DOCX.
+The contract then takes two paths: validation and preview. If structural, semantic and logical checks pass, the compiler writes a deterministic DOCX. Preview and DOCX share the same structure, so they cannot drift by design.
 
-## 3. Schema evidence (17.4s)
+## 3. The parser turns a package into a schema. (18.4s)
 
-The schema layer is not a prompt dump. The parser records controls, types, collection scope and sample values. The planner receives bounded candidates with evidence, so a field can be recommended, but only the validator decides whether a path is legal.
+The parser reads the DDSP package, validates its XML boundaries and normalizes controls into a schema. Types, collection scope and sample values become explicit. Every later stage sees the same normalized view, so a path cannot mean one thing to the planner and another to the compiler.
 
-## 4. Planner contract (16.1s)
+## 4. A request is a chain of contracts. (19.2s)
 
-The planner emits a typed Template IR or a compact transport representation that expands into it. Compact mode is not a second document model; it is schema-validated, expanded deterministically, and repaired only within a bounded budget.
+A request is a sequence of narrow contracts. The web app, CLI or API calls TemplateService. Planning gets schema evidence and the brief; validation gets the typed template; compilation gets only a validated template and sample data. A blocking report returns without a document.
 
-## 5. Validation layers (18.4s)
+## 5. Evidence before generation. (13.6s)
 
-Validation is layered. Structural rules catch malformed blocks, schema rules reject unknown paths, semantic rules check the brief, and logic rules enforce condition scope, collection nesting and image placement. A report is evidence, not an optimistic score.
+In the live demo, the brief is split into requirements. Candidate fields carry type and scope; the reviewer sees confirmed, ambiguous and missing bindings. The planner cannot bind arbitrary strings.
 
-## 6. Compiler and OOXML (18.8s)
+## 6. The preview is an independent rendering. (15.0s)
 
-The compiler owns OOXML. It writes sections, headers, footers, tables, relationships and media, then packages a deterministic DOCX. The preview uses the same IR and inheritance rules, so preview and Word output do not drift by design.
+The preview is not a screenshot of Word. It is an independent renderer that consumes the same template structure. That gives the reviewer a fast, visible check of order, hierarchy and conditional content before downloading the DOCX.
 
-## 7. Live demo evidence (19.6s)
+## 7. A small typed document model. (15.9s)
 
-The deployed Streamlit demo was woken and exercised in Chromium. It reports version zero thirteen, commit one c b e zero seven three and IR one point two. Quotation, invoice and purchase order all download DOCX, and the hashes match the local deterministic build.
+The contract is a small typed model: document, sections, blocks. Tables carry repeated rows, row templates and footer rows. Repeats carry a path and alias; conditions carry typed expressions; images carry source and fallback policy.
 
-## 8. Template IR 1.2 (17.4s)
+## 8. Every block has one legal shape. (21.1s)
 
-Template IR is the contract between AI and deterministic code. Version one point two adds the first-page header, image source and fallback policy, and table footer rows. Older payloads migrate deterministically; unknown versions are refused.
+Every block has one legal shape. Paragraphs and headings carry runs. Tables own their rows and optional footer rows. Repeats and conditions own nested blocks. Images carry source, fallback and aspect-ratio policy. The validator can check those rules because they are types, not conventions.
 
-## 9. Image family (18.5s)
+## 9. The gate is explicit. (22.9s)
 
-Images can come from schema data or from reviewed compile assets. Missing images follow an explicit fallback policy. The validator rejects wrong types and images outside the active collection scope, and the compiler preserves aspect ratio unless stretching is explicit.
+Validation is layered. Structural checks reject malformed IR. Semantic checks reject unknown or incompatible paths. Logical checks enforce collection scope, condition types and image placement. V1 to V3 block compilation. Visual checks use sample data; compatibility with Docentric AX remains a separate untreated gate.
 
-## 10. Reference table inference (20.0s)
+## 10. Compile only after the gate. (16.9s)
 
-Table inference reads bounded DOCX geometry and joins it to schema evidence. It handles static headers, repeated rows, optional conditional cells, footer rows and a nested repeat under the outer row. Merged, ragged or ambiguous tables are blocking diagnostics, not guesses.
+After the blocking gate, the visual check uses sample data when it is available. The compatibility level is separate and remains not tested. That distinction matters: a valid generic DOCX is not a claim that the document will run inside a third-party reporting runtime.
 
-## 11. First-page and multi-section headers (15.0s)
+## 11. The compiler owns OOXML. (15.6s)
 
-The first-page header is a real Word header part selected by titlePg. Each IR section becomes a Word section; a null header inherits the previous section, an empty list clears it, and the preview follows the same inheritance.
+The compiler owns OOXML. It resolves relationships, writes real sections, headers and footers, embeds media and normalizes the ZIP. The output has stable ordering and fixed timestamps, so the same inputs produce the same bytes.
 
-## 12. Reference Evaluation (18.2s)
+## 12. First-page headers are real parts. (16.3s)
 
-The reference evaluation is separate from the gold semantic benchmark. Seventeen official documents parse, sixteen reach import and fifteen compile. The two remaining pipeline failures are classified: an unenclosed nested collection and an unsupported-only document.
+First-page headers are real Word parts. The section sets titlePg and points to a first-page header. Later sections can inherit a header or clear it. That is why the logo appears once, while the company identity stays in the default header.
 
-## 13. Final benchmark (20.9s)
+## 13. Tables are inferred, or refused. (21.2s)
 
-The final benchmark uses thirty-two cases, three providers and three repeats. Two hundred seventy-eight runs completed, ten Gemini structured-output failures remain technical, and two hundred seventy-four runs pass semantically. Precision is zero point nine five one and total spend is four dollars eighteen.
+Table inference reads bounded geometry and joins it to schema evidence. It handles static headers, repeated rows, optional conditional cells, footer rows and a tested nested repeat. Merged or ambiguous tables are refused with diagnostics. Images support schema data, static assets, fallback and aspect ratio.
 
-## 14. Quality gates (15.7s)
+## 14. Seventeen documents, three outcomes. (27.1s)
 
-Every change passes lint, typing, unit tests with an eighty-five percent coverage gate, browser E2E, a real LibreOffice visual diff and security analysis. The release workflow builds and verifies the wheel and the images.
+Reference evaluation is separate from semantic quality. Seventeen official documents parse, sixteen import and fifteen compile. The two residual failures are an unenclosed nested collection and an unsupported-only document. Thirty observed tables are classified: fifteen accepted, fifteen deliberately unsupported, zero silently dropped. The pipeline counts are deliberately separate from the semantic benchmark.
 
-## 15. Determinism and security (18.0s)
+## 15. Quality is measured, not asserted. (25.9s)
 
-The demo runs on a deterministic mock provider and never needs a model key. Artifact uploads are bounded and signature-checked, provider errors are sanitized, and logs redact credentials. The benchmark records spend and technical failures separately from semantic quality.
+The semantic benchmark runs thirty-two cases across three providers and three repeats, with technical failures separated. Two hundred seventy-four runs pass semantically. Precision is ninety-five percent; recall and F1 are higher; ten Gemini structured-output failures remain technical, not semantic. The report keeps the technical and semantic views separate, so a missing structured response cannot inflate quality.
 
-## 16. Release evidence (18.3s)
+## 16. The proof stops where the evidence stops. (18.8s)
 
-The release is backed by a wheel, source archive, CI, visual diffs and a published evidence page. The deployed demo is verified, but Word for the web and the final videos remain external open tasks. Those gaps stay visible instead of being converted into a pass.
+The honest limits: Word for the web still needs a manual browser check; the videos are drafts; AT-07 remains partial because the gold labels lack independent human review; and Docentric AX runtime compatibility is not tested. A deterministic document engine can prove the document, not somebody else's runtime.
 
-## 17. Reading the metrics (19.5s)
+## 17. One deterministic core. A narrow AI boundary. (7.9s)
 
-Read the benchmark carefully. Technical failures are excluded from semantic scoring but still reported. An accepted table means the inference layer produced IR, not that Microsoft Word renders it perfectly. A semantic pass is not a Docentric AX runtime compatibility proof.
-
-## 18. Boundaries (19.6s)
-
-The remaining gaps are external or explicit: Word for the web needs a human with Microsoft 365, videos need review and publishing, AT-07 remains partial, and Docentric AX runtime compatibility remains not tested. No semantic score is a runtime compatibility proof.
+One deterministic core, a narrow AI boundary, and evidence at every step. That is Docentric Copilot.

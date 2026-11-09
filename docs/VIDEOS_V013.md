@@ -1,85 +1,45 @@
-# Demo videos — v0.13 status and production plan
+# Demo videos — v0.13 production status
 
-**Status: draft kit built; not reviewed or published.**
+**Status: published.** Product Demo on YouTube; Technical Deep-Dive on GitHub.
 
-The v0.13 specification makes two videos P0 deliverables:
+| Video | Target | Draft | Publication |
+| --- | --- | --- | --- |
+| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:58** | [YouTube](https://youtu.be/HZcP_lrjcrw) |
+| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + SRT | **5:11** | [GitHub](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) |
 
-| Video | Target | Status |
-| --- | --- | --- |
-| Product Demo | 2:30–3:00, 1080p, English voiceover + subtitles | **Draft 2:52; publication blocked** |
-| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + subtitles | **Draft 5:18; publication blocked** |
+The Product Demo is published on YouTube. The Technical Deep-Dive was not
+uploaded to YouTube at the maintainer's request; the GitHub media file is the
+canonical link.
 
-## Why publication is still blocked
+## Content rules applied
 
-- Draft MP4s/SRTs are built by `scripts/build_v013_videos.py` and recorded in
-  `docs/media/v013-video-kit.json`; they are not human-reviewed final videos.
-- The existing `docs/media/demo-v4.mp4` is a v0.11/v0.12-era video and is not reused.
-- Publishing requires a YouTube channel/OAuth session that this environment does
-  not have. Uploading is an external action, not a repository operation.
-- Product Demo also depends on the Word for the web confirmation (T-01), which
-  needs Microsoft 365/OneDrive access.
+- No spoken version numbers and no version numbers on screen.
+- No bullet-point slides and no narration that reads a bullet list.
+- Real UI screenshots, real Word document pages, real DOCX package evidence.
+- Product story is problem → solution: a brief is not a document; the demo shows
+  the plan, review, preview, download and the resulting pages in Word.
+- Technical story uses professional Mermaid diagrams rendered from
+  `docs/wiki/Architecture.md`: planning path, compilation path, request
+  lifecycle, Template IR contract, block taxonomy and validation ladder. Charts
+  use the committed benchmark/reference JSON, not hand-typed numbers.
+- The maintainer's Word desktop evidence is documented separately; the product
+  video deliberately does **not** use those screenshots or mention the
+  page-two logo detail.
 
-The videos are tracked by issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
-Until final videos are published, v0.13 must not claim that every P0 deliverable is complete.
+## Assets
 
-## Product Demo — required storyboard
-
-| Time | Scene | Evidence to show |
-| --- | --- | --- |
-| 0:00–0:15 | Problem | Brief + data source, no Word design session |
-| 0:15–0:35 | Upload/inspect | Real DDSP, schema fields, collections |
-| 0:35–1:05 | Plan/mapping | Candidate evidence, confidence, abstention |
-| 1:05–1:30 | Preview/DOCX | First-page logo, later-page header without logo |
-| 1:30–1:55 | Images/table | Product image per row, dynamic table rows |
-| 1:55–2:15 | Validation/evidence | V1–V3, compatibility `not_tested` |
-| 2:15–2:45 | Reference import | Table inference and explicit skips |
-| 2:45–3:00 | Honest limits | Runtime not tested; AT-07 partial; no false claim |
-
-Narration and on-screen numbers must be generated from the **final** release
-artifacts, not typed by hand.
-
-## Technical Deep-Dive — required outline
-
-1. Architecture: parser → resolver → planner → validator → compiler → preview.
-2. Template IR 1.1: first-page header, image source/fallback, migration.
-3. Deterministic guards: no raw XPath, no guessed binding, strict/abstain.
-4. Image family: schema/static/collection/fallback/aspect, wrong-scope decoys.
-5. Table inference: DOCX geometry + schema evidence; diagnostics and strict mode.
-6. First-page header OOXML: `w:titlePg`, `headerReference type="first"`, parts/relationships.
-7. Reference Evaluation: definitions/denominators and honest limitations.
-8. Quality gates: lint/types/tests/E2E/visual/security; release evidence.
-9. What is still not tested: Docentric AX runtime, Word Desktop, Word Web.
-
-## Production contract
-
-- 1920×1080, 30 fps, H.264 MP4, AAC 48 kHz stereo.
-- English voiceover, English SRT; no unverified compatibility claim.
-- Every benchmark number read from a committed generated artifact.
-- Product Demo: 2:30–3:00. Technical Deep-Dive: 5:00–7:00.
-- Output files: `docs/media/demo-v013.mp4`, `demo-v013.srt`,
-  `technical-v013.mp4`, `technical-v013.srt`.
-- README links both; release assets include both; YouTube publication is a
-  separate, credentialed step.
-
-## What would change this status
-
-Both MP4/SRT pairs exist, a human has watched them end-to-end, every shown
-number matches the release evidence, and the YouTube URLs are recorded in the
-README and release notes. Until then the status stays **Deferred**.
-
-## Draft production kit (built)
-
-A reproducible draft kit now exists:
-
-| Asset | Duration | Path |
+| Asset | Duration / role | Path |
 | --- | ---: | --- |
-| Product Demo | 2:52 | `docs/media/demo-v013.mp4` |
-| Technical Deep-Dive | 5:18 | `docs/media/technical-v013.mp4` |
+| Product Demo | 2:58 | `docs/media/demo-v013.mp4` |
+| Technical Deep-Dive | 5:11 | `docs/media/technical-v013.mp4` |
 | Product SRT | — | `docs/media/demo-v013.srt` |
 | Technical SRT | — | `docs/media/technical-v013.srt` |
 | Product narration | — | `docs/media/demo-v013-narration.md` |
 | Technical narration | — | `docs/media/technical-v013-narration.md` |
+| Product thumbnail | 1280×720 | `docs/media/demo-v013-thumb.png` |
+| Technical thumbnail | 1280×720 | `docs/media/technical-v013-thumb.png` |
 | Manifest / hashes | — | `docs/media/v013-video-kit.json` |
+| Upload checklist | — | `docs/VIDEO_PUBLISH_CHECKLIST_V013.md` |
 
 Rebuild:
 
@@ -88,14 +48,86 @@ PLAYWRIGHT_BROWSERS_PATH=.tools/pw-browsers \
   python scripts/build_v013_videos.py --write
 ```
 
-The videos are 1920×1080, 30 fps, H.264/AAC with English Edge TTS narration and
-SRT sidecars. Product Demo uses the deployed-demo screenshots, the v0.13
-first-page invoice kit and the final benchmark numbers. Technical Deep-Dive uses
-the architecture, IR 1.2, images, tables, headers, reference evaluation and
-quality-gate evidence.
+The builder also renders the Wiki diagrams with
+`scripts/render_wiki_diagrams.py` and the evidence charts with
+`scripts/build_v013_charts.py`.
 
-**These are drafts, not publication-ready videos.** `human_review: false` and
-`youtube_published: false` are recorded in the manifest. Product Demo still lacks
-the Word for the web confirmation (T-01). Both videos still need human review,
-final voice/visual polish and YouTube publication before T-02/T-03 can be marked
-Passed. Issue #54 remains open.
+## Product Demo — actual sequence
+
+| Time (approx.) | Scene | Visual |
+| --- | --- | --- |
+| 0:00–0:17 | Hook / business problem | Two-page quotation preview, 274/278 semantic passes, 32×3×3 |
+| 0:17–0:31 | Grounded schema | Live schema explorer, typed fields and sample data |
+| 0:31–0:44 | Brief typing | Recorded live prompt panel, 281 characters typed visibly |
+| 0:44–0:58 | Typed template | 12 requirements, 16 IR blocks, repeating table, conditions |
+| 0:58–1:08 | Auto selected | "Let the router choose", no provider override |
+| 1:08–1:19 | Auto decision | "Auto picked the model. It ran." Router match, fallback false |
+| 1:19–1:31 | Image family | Product image per repeated row |
+| 1:31–1:42 | Reference tables | Source table → typed inferred table with footer |
+| 1:42–2:05 | Layout repair | Before/after LibreOffice render, text-fit warning → pass |
+| 2:05–2:19 | Version history | V1/V2 diff, changed IR paths, restore |
+| 2:19–2:33 | Benchmark | 32 cases × 3 × 3, 274/278 semantic, 95.1% precision |
+| 2:33–2:45 | Artifact | Independent preview and LibreOffice render |
+| 2:45–2:58 | Closing | Open source, evidence first, AX not tested |
+
+The brief/template and Auto scenes use the **recorded live Anthropic plan** in
+`docs/media/auto-plan-response.json` (run `run_6c3e5b0fc256424c8549`), not the
+offline Streamlit mock. A **new live call** is provided separately:
+`docs/media/live-v013/live-call.mp4` (21 s, run `run_e056896782cf4fb2b96d`).
+
+## Separate live LLM call
+
+A new paid live Auto call was recorded separately from the main product cut:
+
+| Field | Value |
+| --- | --- |
+| File | `docs/media/live-v013/live-call.mp4` (21 s, 1600×940, silent screen capture) |
+| Run | `run_e056896782cf4fb2b96d` |
+| Model | `claude-sonnet-5-5` (Anthropic), match / no fallback |
+| Result | structural, semantic and logical validation passed; visual skipped; AX `not_tested` |
+| Elapsed | 11.24 s model call |
+| Evidence | `docs/media/live-v013/manifest.json`, `plan-response.json`, `live-result.png` |
+
+It shows the real web workspace from the empty state through Auto selection, Plan,
+the routing spinner and the decision card. It has no narration and is optional as
+a separate insert; it is not claimed to be part of the 2:58 cut.
+
+## Technical Deep-Dive — actual sequence
+
+1. Architecture: planning path with the narrow AI boundary.
+2. Architecture: compilation path, validation and independent preview.
+3. Parser and normalized schema.
+4. Request lifecycle sequence diagram.
+5. Live plan and candidate evidence.
+6. Preview renderer.
+7. Template IR contract: document → section → block → table/repeat/condition/image.
+8. Block taxonomy.
+9. Validation ladder: V1–V3 block compilation; V4 sample-data visual check; V5 compatibility remains `not_tested`.
+10. DOCX package: real headers, footers and media parts.
+11. First-page header in the Word desktop check.
+12. Table classification: 30 observed, 15 accepted, 15 deliberately unsupported.
+13. Layout repair: text-fit warning → typed changes → pass.
+14. Version history: V1/V2 diff and restore.
+15. Benchmark: precision 95.1%, semantic pass 98.6%, technical failures separated.
+16. Limits: videos not published, AT-07 partial, AX runtime `not_tested`; Word Web itself was not performed (the Word desktop check is separate).
+17. Close.
+
+## Production contract
+
+- 1920×1080, 30 fps, H.264 MP4, AAC 48 kHz stereo.
+- English Edge TTS voiceover and English SRT.
+- Product Demo: 2:30–3:00. Technical Deep-Dive: 5:00–7:00.
+- Every shown number comes from a committed generated artifact.
+- No compatibility claim beyond the evidence.
+
+## Publication
+
+- **Product Demo:** https://youtu.be/HZcP_lrjcrw
+- **Technical Deep-Dive:** https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4
+
+T-02/T-03 are **Passed** on these links. Issue
+[#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) is closed. The
+technical cut is not a YouTube upload; it is published as a repository media file.
+
+Word for the web itself remains untested; #53 was closed by the maintainer on
+the supplied Word desktop evidence.

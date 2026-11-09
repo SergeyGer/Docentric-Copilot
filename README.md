@@ -5,7 +5,7 @@
 [![CI](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/SergeyGer/Docentric-Copilot/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/SergeyGer/Docentric-Copilot?color=2563eb)](https://github.com/SergeyGer/Docentric-Copilot/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-2563eb)](LICENSE)
-[![Demo video](https://img.shields.io/badge/demo%20video-2%3A46-0f2a54)](docs/media/demo-v4.mp4)
+[![Demo video](https://img.shields.io/badge/demo%20video-2%3A58-0f2a54)](https://youtu.be/HZcP_lrjcrw)
 [![Live demo](https://img.shields.io/badge/live%20demo-Streamlit-ff4b4b)](https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app)
 [![Docs](https://img.shields.io/badge/documentation-wiki-0f172a)](https://github.com/SergeyGer/Docentric-Copilot/wiki)
 [![Compatibility](https://img.shields.io/badge/Docentric%20AX%20compatibility-unverified-d97706)](https://github.com/SergeyGer/Docentric-Copilot/wiki/Docentric-AX-Compatibility)
@@ -50,7 +50,7 @@ compilation and revision — on the deterministic provider. No API key, no model
 | Change it in plain language | A targeted revision with a before/after preview |
 | Check the evidence | Validation statuses and the honest `not tested` compatibility note |
 
-Prefer to watch first? **[Watch the 2:46 demo video](docs/media/demo-v4.mp4)** — a typed brief, a live Auto
+Prefer to watch first? **[Watch the 2:58 demo video](https://youtu.be/HZcP_lrjcrw)** — a typed brief, a live Auto
 routing decision, an honest 20-case benchmark, zoomed document checks and revision.
 
 Prefer to run it yourself? `streamlit run streamlit_app.py` serves the same demo locally.
@@ -149,9 +149,11 @@ honest status changes.
 - **AT-07 remains `partial`** — there was no independent human review of the gold labels; the
   deterministic adjudicator is a documented proxy.
 - **v0.13.1 is released as a corrective diagnostic patch.** v0.13.0 remains the
-  feature release; V013-01…05/07/08 are Passed, while Word for the web (#53) and the
-  videos (#54) remain Deferred with documented external access limits.
+  feature release; V013-01…08 are Passed/closed, the Product Demo is published on
+  YouTube and the Technical Deep-Dive is available on GitHub. Word for the web
+  itself was not tested; #53 was closed on an accepted Word desktop check.
   See [RELEASE_EVIDENCE_V0_13_1](docs/RELEASE_EVIDENCE_V0_13_1.md).
+  Videos: [Product Demo](https://youtu.be/HZcP_lrjcrw) · [Technical Deep-Dive](docs/media/technical-v013.mp4).
 - v0.12 evidence: [RELEASE_EVIDENCE_V0_12](docs/RELEASE_EVIDENCE_V0_12.md); benchmark:
   [BENCHMARKS §10](docs/BENCHMARKS.md#10-v012-full-benchmark-32--3--3-v012-02).
 - v0.13 audits: [FEATURE_COVERAGE_V013](docs/FEATURE_COVERAGE_V013.md) and

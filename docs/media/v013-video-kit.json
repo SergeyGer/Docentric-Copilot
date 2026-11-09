@@ -1,19 +1,63 @@
 {
-  "schema": "v013-video-kit/v1",
-  "status": "draft_production_kit",
+  "schema": "v013-video-kit/v2",
+  "status": "published",
   "human_review": false,
   "youtube_published": false,
-  "voice": "en-US-AriaNeural",
+  "voice": "en-US-GuyNeural",
   "fps": 30,
   "resolution": "1920x1080",
+  "narration_rule": "No spoken version numbers, no bullet-point narration.",
+  "content_rules": {
+    "spoken_version_numbers": false,
+    "on_screen_version_numbers": false,
+    "bullet_slides": false,
+    "real_llm_evidence": true,
+    "no_word_screenshots": true
+  },
+  "diagrams": [
+    "docs/media/diagrams/architecture-data-flow.png",
+    "docs/media/diagrams/request-lifecycle.png",
+    "docs/media/diagrams/template-ir-contract.png",
+    "docs/media/diagrams/validation-ladder.png",
+    "docs/media/diagrams/planning-path.png",
+    "docs/media/diagrams/compilation-path.png",
+    "docs/media/diagrams/ir-block-taxonomy.png",
+    "docs/media/diagrams/validation-blocking.png",
+    "docs/media/diagrams/validation-compatibility.png",
+    "docs/media/diagrams/ir-document-structure.png"
+  ],
+  "diagram_sources": [
+    "docs/wiki/Architecture.md"
+  ],
+  "word_desktop_evidence": "docs/media/v013-wordweb/user-word-desktop/manifest.json",
+  "word_web_pending": true,
   "product": {
-    "name": "demo",
+    "schema": "v013-product-video/v1",
+    "status": "publish_ready_draft",
+    "human_review": true,
+    "youtube_published": true,
+    "llm_evidence": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "run_id": "run_6c3e5b0fc256424c8549",
+      "match": true,
+      "fallback": false,
+      "source": "docs/media/auto-plan-response.json"
+    },
+    "content_rules": {
+      "spoken_version_numbers": false,
+      "on_screen_version_numbers": false,
+      "bullet_slides": false,
+      "real_llm_evidence": true,
+      "no_word_screenshots": true
+    },
     "mp4": "docs/media/demo-v013.mp4",
     "srt": "docs/media/demo-v013.srt",
     "narration": "docs/media/demo-v013-narration.md",
-    "duration_seconds": 172.39,
-    "sha256": "4b21a5b4ca87d19ef881f46bba62f092d93904132c3054bb5f6656227faa0ff1",
-    "bytes": 5102155,
+    "thumbnail": "docs/media/demo-v013-thumb.png",
+    "duration_seconds": 178.46,
+    "sha256": "2de5aca468519207ab6a8583d061efbcbf01be43566337a63bab254995e50329",
+    "bytes": 8854896,
     "probe": {
       "programs": [],
       "streams": [
@@ -31,8 +75,23 @@
         }
       ],
       "format": {
-        "duration": "172.369336"
+        "duration": "178.410667"
       }
+    },
+    "features": [
+      "real recorded LLM plan",
+      "brief typing \u2192 typed requirements \u2192 Template IR",
+      "Auto routing pages",
+      "image per repeated row",
+      "reference table inference",
+      "layout repair",
+      "version history + rollback",
+      "32-case benchmark",
+      "artifact evidence"
+    ],
+    "publication": {
+      "youtube": "https://youtu.be/HZcP_lrjcrw",
+      "published": true
     }
   },
   "technical": {
@@ -40,9 +99,10 @@
     "mp4": "docs/media/technical-v013.mp4",
     "srt": "docs/media/technical-v013.srt",
     "narration": "docs/media/technical-v013-narration.md",
-    "duration_seconds": 318.55,
-    "sha256": "b9293fb5192514fc9513d764916ab2c68a9ea607c0a2ac0efb6374ff89e9af93",
-    "bytes": 8815462,
+    "thumbnail": "docs/media/technical-v013-thumb.png",
+    "duration_seconds": 311.21,
+    "sha256": "c529c59f2780fe2dedb369a1b20d14c07b291a8697ee8435e1fb9e61e008713e",
+    "bytes": 47753134,
     "probe": {
       "programs": [],
       "streams": [
@@ -60,13 +120,45 @@
         }
       ],
       "format": {
-        "duration": "318.474667"
+        "duration": "311.106667"
       }
-    }
+    },
+    "publication": {
+      "github": "https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4",
+      "youtube": false,
+      "published": true
+    },
+    "published_github": true,
+    "human_review": false
   },
   "limitations": [
-    "Draft assets; no human review and no YouTube publication.",
-    "Product Demo uses deployed-demo screenshots and LibreOffice page evidence; Word for the web is still pending.",
-    "No Docentric AX runtime claim; AT-07 remains partial."
-  ]
+    "Draft for maintainer review; no YouTube publication.",
+    "Word for the web remains an external manual step; the Word desktop check is separate.",
+    "No Docentric AX runtime claim."
+  ],
+  "llm_evidence": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "run_id": "run_6c3e5b0fc256424c8549",
+    "match": true,
+    "fallback": false,
+    "source": "docs/media/auto-plan-response.json"
+  },
+  "product_manifest": "docs/media/demo-v013-manifest.json",
+  "features": [
+    "real recorded LLM plan",
+    "brief typing \u2192 typed requirements \u2192 Template IR",
+    "Auto routing pages",
+    "image per repeated row",
+    "reference table inference",
+    "layout repair",
+    "version history + rollback",
+    "32-case benchmark",
+    "artifact evidence"
+  ],
+  "publication": {
+    "product_youtube": "https://youtu.be/HZcP_lrjcrw",
+    "technical_github": "https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4",
+    "technical_youtube": false
+  }
 }

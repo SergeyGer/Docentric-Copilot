@@ -1,41 +1,53 @@
-# demo narration
+# Product Demo narration
 
-## 1. Docentric Copilot v0.13.0 (20.5s)
+## 1. Hook (16.6s)
 
-Docentric Copilot turns a business brief and a data source into a generic Word document. The planner proposes the structure. Deterministic code validates, compiles and reports evidence. Docentric AX runtime compatibility is not tested, and this video is a draft production asset.
+A business brief should become a document a team can review, not a black box. One paragraph in, a reviewable DOCX out, with schema, validation and routing evidence attached. This is not a mock: the next scenes use a recorded live LLM plan and its trace.
 
-## 2. From brief to schema (15.0s)
+## 2. Schema (14.4s)
 
-Start with a real DDSP package. The inspector exposes fields, collections and sample data. The brief is split into typed requirements, and the planner receives only bounded, evidence-backed candidates.
+Here is a synthetic package with sample data, parser diagnostics and a normalized field tree. The schema is typed, so every field the document can bind has a type and a source. Nothing is invented from the prompt alone.
 
-## 3. Review before compile (14.1s)
+## 3. Brief (12.6s)
 
-The mapping review shows what is confirmed, schema-valid, ambiguous or missing. A reviewer can confirm the correct field; the confirmation is preserved and the document compiles only when no blocking mapping remains.
+The brief is the only input: plain language naming the fields, totals, VAT notice and footer. The planner turns each requirement into a typed field. No model is chosen by hand.
 
-## 4. Three deterministic steps (19.1s)
+## 4. Template (13.9s)
 
-The workflow has three steps. First, understand the brief and the available schema evidence. Second, let a person review ambiguous mappings. Third, validate the typed template and compile the DOCX. The model never writes OOXML directly.
+The result is not prose. It is a Template IR: one section, sixteen typed blocks, a repeating line table and conditional notices. The same structure feeds validation, preview and the DOCX compiler.
 
-## 5. Preview and DOCX (14.0s)
+## 5. Auto selected (10.9s)
 
-The preview is built from the same Template IR as the DOCX. The live demo now exposes the download button after confirmation and records the artifact hash, fixing the earlier Sales Quotation flow.
+Auto does the choosing. It classifies the brief, recommends a provider, and sends no manual override. The decision is recorded before the model runs.
 
-## 6. First-page header only (15.4s)
+## 6. Auto result (10.8s)
 
-Template IR 1.2 adds a first-page header. The compiler writes a real title-page header part. Page one carries the logo, later pages keep the company identity without it, and footer page numbers remain intact.
+The live run selected Anthropic and executed Claude Sonnet. Recommendation, execution, match and fallback are separate recorded facts, with a run identifier.
 
-## 7. What v0.13 adds (17.5s)
+## 7. Images (11.7s)
 
-Version zero thirteen adds the image family, conservative reference table inference and first-page headers. It also turns IR sections into real Word sections, fixes the live demo confirmation flow, and adds honest evidence for every remaining limitation.
+The image family is typed too. A company logo, a schema image, or one product image per repeated line item use the same binding model, with explicit fallback and aspect ratio.
 
-## 8. Images and tables (18.3s)
+## 8. Reference tables (11.3s)
 
-The image family supports static assets, schema images, image collections and fallback policy. Reference table inference produces header and repeated rows, optional cells, footer rows and nested repeat structures, with explicit diagnostics for ambiguous shapes.
+Reference tables are read as geometry plus schema evidence: header, repeated row, footer total. Ambiguous and merged tables are refused with diagnostics instead of guessed.
 
-## 9. Benchmark and reference evidence (20.9s)
+## 9. Layout repair (22.9s)
 
-The final benchmark records two hundred eighty-eight planned runs, with ten Gemini structured-output failures separated from semantics. Precision is zero point nine five one, semantic pass is ninety-eight point five six percent, and the reference evaluation classifies every observed table, including deliberate refusals.
+Here is a layout defect: the description column is too narrow, the text wraps past its line budget, and the checker flags a text-fit warning. Optimize layout applies typed changes—rebalanced columns, a wider description and a smaller table font—then reruns the checks. The after render uses fewer lines. The change is reviewable in the diff, not hidden in a binary.
 
-## 10. Honest limits (17.5s)
+## 10. Version history (14.3s)
 
-Word for the web validation still requires a human with Microsoft 365. These videos are drafts without human review or YouTube publication. AT-07 remains partial, and Docentric AX runtime compatibility remains not tested.
+Every revision creates an immutable version. Compare versions names each changed field; restore brings either version back into the workspace. The version history, diff and rollback are part of the deliverable, not an afterthought.
+
+## 11. Benchmark (14.0s)
+
+The benchmark runs thirty-two cases across three providers and three repeats. Two hundred seventy-eight runs completed; two hundred seventy-four pass semantically, and ten Gemini technical failures are reported, not counted as passes.
+
+## 12. Artifact (12.0s)
+
+Download and open the file. The preview and the LibreOffice render are independent views of the same document, each labelled for what it proves. This is not a Word fidelity claim.
+
+## 13. Closing (13.0s)
+
+Docentric Copilot is open source under Apache. The schema, the live decision, the typed template and the evidence are all in the repository. Docentric AX compatibility is not tested.

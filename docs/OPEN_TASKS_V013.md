@@ -6,9 +6,9 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 
 | ID | Task | Priority | Status | Evidence / blocker |
 | --- | --- | --- | --- | --- |
-| T-01 | Word for the web invoice check | P0 | **Blocked — external** | Local candidate kit in `docs/media/v013-wordweb/`; no Microsoft 365/OneDrive session. Issue #53 |
-| T-02 | Product Demo video | P0 | **Draft kit built — publication/review blocked** | 2:52 draft `docs/media/demo-v013.mp4`; Word Web still pending, no human review/YouTube. Issue #54 |
-| T-03 | Technical Deep-Dive video | P0 | **Draft kit built — publication/review blocked** | 5:18 draft `docs/media/technical-v013.mp4`; no human review/YouTube. Issue #54 |
+| T-01 | Word for the web invoice check | P0 | **Closed — Word desktop accepted by maintainer** | User-provided Word desktop DOCX + page 1/2 screenshots (`docs/media/v013-wordweb/user-word-desktop/`); Word Web itself not performed. #53 closed |
+| T-02 | Product Demo video | P0 | **Passed — published** | [YouTube](https://youtu.be/HZcP_lrjcrw) · 2:58; v4-style, real recorded LLM plan, router pages; no bullets/version numbers/Word screenshots |
+| T-03 | Technical Deep-Dive video | P0 | **Passed — published on GitHub** | [technical-v013.mp4](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) · 5:11; Mermaid diagrams from the Wiki |
 | T-04 | Two Reference Evaluation pipeline failures | P1 | **Classified** | `docs/REFERENCE_EVALUATION_V013.md` failure table; tests for both boundaries |
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |
 | T-06 | 10 Gemini structured_output failures | P1 | **Classified** | `docs/GEMINI_FAILURES_V013.md`; all Gemini compact-v2, 10 vs 4 in v0.12 |
@@ -51,13 +51,12 @@ corrective prompt/schema changes require a full benchmark rerun.
 
 ## What remains for P0
 
-- A human with Microsoft 365/OneDrive must perform the Word for the web checklist
-  and attach the Word Web PDF/screenshots.
-- The draft videos must be reviewed, polished, published to YouTube and linked;
-  Product Demo still needs the Word Web confirmation.
-- The deployed Streamlit revision is verified at commit `1cbe073` (main after the
-  diagnostic merge), not the release tag commit; this is recorded as the demo build.
+Nothing. T-01, T-02 and T-03 are closed:
+- #53 closed on the accepted Word desktop check; Word for the web itself was not performed.
+- #54 closed with the Product Demo YouTube link and the Technical Deep-Dive GitHub link.
+
+P1 residuals (#37 image benchmark, #40 table edge shapes) stay in the backlog.
 
 Docentric AX runtime compatibility remains **`not_tested`**; AT-07 remains
-**`partial`**. The `v0.13.0` feature release and corrective `v0.13.1` patch are published; these
-diagnostic changes do not justify a new compatibility claim.
+**`partial`**. The `v0.13.0` feature release and corrective `v0.13.1` patch are published. The
+videos are now published; no compatibility claim changed.

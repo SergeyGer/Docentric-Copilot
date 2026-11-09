@@ -29,7 +29,7 @@ P0 Word for the web and video tasks: they remain Deferred external dependencies.
   v0.13.0 metadata, commit `1cbe073`, IR 1.2, deterministic mode, three DOCX
   downloads whose hashes match the local build.
 - **Evidence kits:** a synthetic Word Web kit (DOCX/LibreOffice PDF/page PNGs) and
-  draft Product/Technical videos (2:52 and 5:18, 1080p, SRT) are committed.
+  draft Product/Technical videos (publish-ready drafts, 1080p, SRT) are committed.
 
 ## Still Deferred
 

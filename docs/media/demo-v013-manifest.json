@@ -1,0 +1,63 @@
+{
+  "schema": "v013-product-video/v1",
+  "status": "publish_ready_draft",
+  "human_review": true,
+  "youtube_published": true,
+  "llm_evidence": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "run_id": "run_6c3e5b0fc256424c8549",
+    "match": true,
+    "fallback": false,
+    "source": "docs/media/auto-plan-response.json"
+  },
+  "content_rules": {
+    "spoken_version_numbers": false,
+    "on_screen_version_numbers": false,
+    "bullet_slides": false,
+    "real_llm_evidence": true,
+    "no_word_screenshots": true
+  },
+  "mp4": "docs/media/demo-v013.mp4",
+  "srt": "docs/media/demo-v013.srt",
+  "narration": "docs/media/demo-v013-narration.md",
+  "thumbnail": "docs/media/demo-v013-thumb.png",
+  "duration_seconds": 178.46,
+  "sha256": "2de5aca468519207ab6a8583d061efbcbf01be43566337a63bab254995e50329",
+  "bytes": 8854896,
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "178.410667"
+    }
+  },
+  "features": [
+    "real recorded LLM plan",
+    "brief typing \u2192 typed requirements \u2192 Template IR",
+    "Auto routing pages",
+    "image per repeated row",
+    "reference table inference",
+    "layout repair",
+    "version history + rollback",
+    "32-case benchmark",
+    "artifact evidence"
+  ],
+  "publication": {
+    "youtube": "https://youtu.be/HZcP_lrjcrw",
+    "published": true
+  }
+}

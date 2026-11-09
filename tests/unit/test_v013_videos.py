@@ -1,8 +1,9 @@
-"""T-02/T-03 draft video production kit."""
+"""T-02/T-03 publish-ready video drafts and Word desktop evidence."""
 
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -10,9 +11,10 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 
 def test_video_kit_has_target_durations_and_av_streams() -> None:
     data = json.loads((ROOT / "docs" / "media" / "v013-video-kit.json").read_text(encoding="utf-8"))
-    assert data["status"] == "draft_production_kit"
-    assert data["human_review"] is False
-    assert data["youtube_published"] is False
+    assert data["status"] == "published"
+    assert data["product"]["human_review"] is True
+    assert data["product"]["youtube_published"] is True
+    assert data["publication"]["technical_github"].startswith("https://github.com/")
     product = data["product"]
     technical = data["technical"]
     assert 150 <= product["duration_seconds"] <= 180
@@ -20,6 +22,7 @@ def test_video_kit_has_target_durations_and_av_streams() -> None:
     for item in (product, technical):
         assert (ROOT / item["mp4"]).is_file()
         assert (ROOT / item["srt"]).is_file()
+        assert (ROOT / item["thumbnail"]).is_file()
         assert item["bytes"] > 1_000_000
         streams = {stream["codec_type"]: stream for stream in item["probe"]["streams"]}
         assert streams["video"]["codec_name"] == "h264"
@@ -28,8 +31,53 @@ def test_video_kit_has_target_durations_and_av_streams() -> None:
         assert streams["audio"]["codec_name"] == "aac"
 
 
-def test_video_kit_does_not_claim_publication() -> None:
+def test_video_content_rules_are_recorded_and_clean() -> None:
+    data = json.loads((ROOT / "docs" / "media" / "v013-video-kit.json").read_text(encoding="utf-8"))
+    rules = data["content_rules"]
+    assert rules["spoken_version_numbers"] is False
+    assert rules["on_screen_version_numbers"] is False
+    assert rules["bullet_slides"] is False
+    assert rules["real_llm_evidence"] is True
+    assert rules["no_word_screenshots"] is True
+    assert data["llm_evidence"]["model"] == "claude-sonnet-5-5"
+    assert data["llm_evidence"]["match"] is True
+    for name in ("demo", "technical"):
+        text = (ROOT / "docs" / "media" / f"{name}-v013-narration.md").read_text(encoding="utf-8")
+        assert not re.search(r"v0?\.\d+|zero thirteen|version\s+\d", text, flags=re.IGNORECASE)
+    assert "docs/wiki/Architecture.md" in data["diagram_sources"]
+    for diagram in data["diagrams"]:
+        assert (ROOT / diagram).is_file()
+
+
+def test_video_kit_records_publication_links() -> None:
     text = (ROOT / "docs" / "VIDEOS_V013.md").read_text(encoding="utf-8")
-    assert "publication blocked" in text
-    assert "human_review: false" in text
-    assert "youtube_published: false" in text
+    assert "https://youtu.be/HZcP_lrjcrw" in text
+    assert "docs/media/technical-v013.mp4" in text
+    assert "Status: published" in text
+
+
+def test_word_desktop_evidence_is_distinct_from_word_web() -> None:
+    data = json.loads(
+        (
+            ROOT / "docs" / "media" / "v013-wordweb" / "user-word-desktop" / "manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert data["status"] == "user_provided_manual_check"
+    assert data["word_for_the_web"] is False
+    assert data["checks"]["page_1_logo_present"] is True
+    assert data["checks"]["pages_2_plus_logo_absent"] is True
+    assert data["checks"]["footer_and_page_numbers"] is True
+    assert data["document"]["pages"] == 2
+
+
+def test_live_llm_call_is_separate_and_real() -> None:
+    data = json.loads(
+        (ROOT / "docs" / "media" / "live-v013" / "manifest.json").read_text(encoding="utf-8")
+    )
+    assert data["status"] == "recorded_live_call"
+    assert data["actual_provider"] == "anthropic"
+    assert data["actual_model"] == "claude-sonnet-5-5"
+    assert data["match"] is True and data["fallback"] is False
+    assert data["elapsed_seconds"] > 0
+    assert (ROOT / data["video"]).is_file()
+    assert (ROOT / data["screenshot"]).is_file()

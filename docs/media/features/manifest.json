@@ -1,0 +1,23 @@
+{
+  "schema": "v013-feature-assets/v1",
+  "product_images": {
+    "docx": "docs/media/features/product-images.docx",
+    "png": "docs/media/features/product-images.png",
+    "image_count": 3,
+    "rows": 3
+  },
+  "reference_table": {
+    "source_docx": "docs/media/features/reference-table-source.docx",
+    "source_png": "docs/media/features/reference-table-source.png",
+    "output_docx": "docs/media/features/reference-table-output.docx",
+    "output_png": "docs/media/features/reference-table-output.png",
+    "ir": "docs/media/features/reference-table-ir.json",
+    "columns": [
+      "SKU",
+      "Description",
+      "Amount"
+    ],
+    "footer_rows": 1,
+    "diagnostics": []
+  }
+}

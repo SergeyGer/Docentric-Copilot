@@ -1,12 +1,12 @@
 # Word for the web targeted validation — v0.13
 
-**Status: Not performed (documented Deferred).**
+**Status: Closed by maintainer decision — Microsoft Word desktop check accepted.**
 
-This environment has no Microsoft 365 account, OneDrive access or Word for the
-web session. The generator, the first-page header fix and the inspection
-fixtures are covered by automated tests, but the independent manual check
-required by V013-06 has not been performed. This page does **not** claim Word
-compatibility and must not be cited as a pass.
+The maintainer supplied a Microsoft Word desktop DOCX and two page screenshots
+and explicitly accepted them for closing issue #53. This page records the
+accepted evidence and the distinction from Word for the web. It does **not**
+claim that Word for the web was performed, and it does not claim Docentric AX
+runtime compatibility.
 
 ## Independent Microsoft Word desktop check (user-provided)
 
@@ -22,9 +22,10 @@ two screenshots plus the DOCX:
 
 This is valuable independent **Word desktop** rendering evidence, but it is **not
 Word for the web**: the screenshots show the Microsoft Word desktop ribbon and
-status bar, with no browser URL or Word Web PDF. V013-06 therefore remains
-**not performed** until Word Web evidence is supplied. The separate Word desktop
-observation does not change the Docentric AX `not_tested` status.
+status bar, with no browser URL or Word Web PDF. V013-06 is nevertheless
+**closed by maintainer decision** on the Word desktop evidence. This is not a
+Word for the web pass, and it does not change the Docentric AX `not_tested`
+status.
 
 ## Local candidate evidence (not Word Web)
 
@@ -46,21 +47,22 @@ the default header carries company name/VAT on page 2 without the logo. It does
 python scripts/build_wordweb_evidence.py --write
 ```
 
-The missing evidence remains: Word Web export PDF, Word Web page screenshots and
-the completed checklist below. Issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53)
-stays open until those exist.
+Issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) is closed
+on the accepted Word desktop evidence. A Word Web export PDF and Word Web page
+screenshots were not supplied; they are not required for the maintainer's
+closure decision but must not be claimed as performed.
 
 ## Why deferred
 
 | Prerequisite | Availability |
 | --- | --- |
-| Microsoft account with Word for the web | Not available in this environment |
+| Microsoft account with Word for the web | Not used; Word desktop evidence accepted by the maintainer |
 | OneDrive upload/export | Not available |
 | Independent human reviewer | Not available |
 | Automated browser access to Word for the web | Deliberately out of scope (V013-06 forbids a Word Web CI pipeline) |
 
 This is an external-access limitation, not a generator exception. The manual
-check remains open and is tracked by issue [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53).
+check is closed by maintainer decision on the Word desktop evidence; Word for the web itself remains untested.
 
 ## Fixture to validate
 

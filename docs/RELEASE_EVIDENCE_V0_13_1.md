@@ -78,7 +78,7 @@ See [DEMO_SMOKE_V013](DEMO_SMOKE_V013.md).
 
 | ID | Status | Blocker |
 | --- | --- | --- |
-| V013-06 / #53 Word for the web | Deferred | Microsoft 365/OneDrive access; local kit is not Word Web evidence |
+| V013-06 / #53 Word for the web | Closed by maintainer decision | Microsoft Word desktop check accepted; Word for the web itself not performed |
 | V013-09/V013-10 / #54 videos | Deferred | No human review/final polish/YouTube publication; Product Demo needs T-01 |
 
 Publish-ready draft videos are 1080p H.264/AAC with SRT, but the manifest
@@ -115,5 +115,5 @@ therefore contains:
   from the committed benchmark/reference JSON.
 
 These additions are on `main` after the v0.13.1 tag and do not change the
-release assets or the P0 status: Word for the web (#53) is still pending and the
+release assets or the P0 status: Word for the web itself remains untested, while #53 is closed by the maintainer on the Word desktop evidence; the
 videos still need human review/YouTube publication (#54).

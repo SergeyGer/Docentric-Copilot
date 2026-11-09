@@ -36,6 +36,10 @@ def test_video_content_rules_are_recorded_and_clean() -> None:
     assert rules["spoken_version_numbers"] is False
     assert rules["on_screen_version_numbers"] is False
     assert rules["bullet_slides"] is False
+    assert rules["real_llm_evidence"] is True
+    assert rules["no_word_screenshots"] is True
+    assert data["llm_evidence"]["model"] == "claude-sonnet-5-5"
+    assert data["llm_evidence"]["match"] is True
     for name in ("demo", "technical"):
         text = (ROOT / "docs" / "media" / f"{name}-v013-narration.md").read_text(encoding="utf-8")
         assert not re.search(r"v0?\.\d+|zero thirteen|version\s+\d", text, flags=re.IGNORECASE)

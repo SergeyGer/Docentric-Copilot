@@ -6,9 +6,9 @@ access. It is not a claim that the v0.13 Definition of Done is complete.
 
 | ID | Task | Priority | Status | Evidence / blocker |
 | --- | --- | --- | --- | --- |
-| T-01 | Word for the web invoice check | P0 | **Blocked — external** | Local candidate kit in `docs/media/v013-wordweb/`; no Microsoft 365/OneDrive session. Issue #53 |
-| T-02 | Product Demo video | P0 | **Draft kit built — publication/review blocked** | 2:52 draft `docs/media/demo-v013.mp4`; Word Web still pending, no human review/YouTube. Issue #54 |
-| T-03 | Technical Deep-Dive video | P0 | **Draft kit built — publication/review blocked** | 5:18 draft `docs/media/technical-v013.mp4`; no human review/YouTube. Issue #54 |
+| T-01 | Word for the web invoice check | P0 | **Word desktop passed; Word Web blocked** | User-provided Word desktop DOCX + page 1/2 screenshots (`docs/media/v013-wordweb/user-word-desktop/`); no browser/Word Web PDF. Issue #53 |
+| T-02 | Product Demo video | P0 | **Publish-ready draft 2:36 — awaiting review/upload** | `docs/media/demo-v013.mp4`; real UI/Word screenshots, no bullets/version numbers; no human review/YouTube. Issue #54 |
+| T-03 | Technical Deep-Dive video | P0 | **Publish-ready draft 5:11 — awaiting review/upload** | `docs/media/technical-v013.mp4`; Mermaid diagrams from the Wiki; no human review/YouTube. Issue #54 |
 | T-04 | Two Reference Evaluation pipeline failures | P1 | **Classified** | `docs/REFERENCE_EVALUATION_V013.md` failure table; tests for both boundaries |
 | T-05 | 13 rejected tables | P1 | **Classified** | 30 observed body tables: 15 accepted / 15 deliberately unsupported / 0 defect / 0 not evaluable; reasons in `docs/REFERENCE_EVALUATION_V013.md` |
 | T-06 | 10 Gemini structured_output failures | P1 | **Classified** | `docs/GEMINI_FAILURES_V013.md`; all Gemini compact-v2, 10 vs 4 in v0.12 |
@@ -53,8 +53,9 @@ corrective prompt/schema changes require a full benchmark rerun.
 
 - A human with Microsoft 365/OneDrive must perform the Word for the web checklist
   and attach the Word Web PDF/screenshots.
-- The draft videos must be reviewed, polished, published to YouTube and linked;
-  Product Demo still needs the Word Web confirmation.
+- The publish-ready drafts must be reviewed and uploaded to YouTube, then linked
+  in the README, release notes and #54. Word for the web remains a separate open
+  item; the Word desktop check is not Word Web.
 - The deployed Streamlit revision is verified at commit `1cbe073` (main after the
   diagnostic merge), not the release tag commit; this is recorded as the demo build.
 

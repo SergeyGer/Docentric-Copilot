@@ -25,7 +25,7 @@ reproducible.
 | Gemini failure classification | `scripts/gemini_failures.py`; `docs/GEMINI_FAILURES_V013.md` |
 | Documentation/IR sync | `docs/FEATURE_COVERAGE_V013.md`, `docs/RELEASE_EVIDENCE_V0_13.md`, `CHANGELOG.md` |
 | Deployed demo (T-08) | `docs/DEMO_SMOKE_V013.md`; `scripts/deployed_demo_smoke.py` |
-| Word Web kit (T-01) | `docs/media/v013-wordweb/`; `docs/WORD_WEB_VALIDATION_V013.md` |
+| Word Web kit (T-01) | `docs/media/v013-wordweb/`; user-provided Microsoft Word desktop pages; `docs/WORD_WEB_VALIDATION_V013.md` |
 | Video draft kit (T-02/T-03) | `docs/media/demo-v013.mp4`, `technical-v013.mp4`; `scripts/build_v013_videos.py` |
 
 ## 2. T-04 — Reference Evaluation pipeline failures
@@ -81,7 +81,7 @@ See [DEMO_SMOKE_V013](DEMO_SMOKE_V013.md).
 | V013-06 / #53 Word for the web | Deferred | Microsoft 365/OneDrive access; local kit is not Word Web evidence |
 | V013-09/V013-10 / #54 videos | Deferred | No human review/final polish/YouTube publication; Product Demo needs T-01 |
 
-The draft videos are 2:52 and 5:18, 1080p H.264/AAC with SRT, but the manifest
+Publish-ready draft videos are 1080p H.264/AAC with SRT, but the manifest
 records `human_review: false` and `youtube_published: false`.
 
 ## 7. Verification
@@ -99,3 +99,21 @@ records `human_review: false` and `youtube_published: false`.
 - AT-07 remains `partial`; there is no independent human review of the gold labels.
 - The demo build is main commit `1cbe073`, not the v0.13.0 tag commit.
 - v0.13.1 does not claim that every v0.13 P0 deliverable is complete.
+
+## 9. Post-release evidence rework
+
+After the v0.13.1 tag, the maintainer supplied a Microsoft Word desktop check
+(two pages plus the DOCX) and asked for a video rework. The current repository
+therefore contains:
+
+- `docs/media/v013-wordweb/user-word-desktop/` — Word **desktop** evidence,
+  explicitly not Word for the web;
+- reworked publish-ready video drafts in `docs/media/demo-v013.mp4` and
+  `technical-v013.mp4`, with SRTs, thumbnails and no spoken/on-screen version
+  numbers;
+- Mermaid diagrams rendered from `docs/wiki/Architecture.md` and charts built
+  from the committed benchmark/reference JSON.
+
+These additions are on `main` after the v0.13.1 tag and do not change the
+release assets or the P0 status: Word for the web (#53) is still pending and the
+videos still need human review/YouTube publication (#54).

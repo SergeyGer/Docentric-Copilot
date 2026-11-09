@@ -8,6 +8,24 @@ fixtures are covered by automated tests, but the independent manual check
 required by V013-06 has not been performed. This page does **not** claim Word
 compatibility and must not be cited as a pass.
 
+## Independent Microsoft Word desktop check (user-provided)
+
+The maintainer opened the demo invoice in **Microsoft Word desktop** and supplied
+two screenshots plus the DOCX:
+
+| File | Note |
+| --- | --- |
+| [`invoice-work-desktop.docx`](media/v013-wordweb/user-word-desktop/invoice-work-desktop.docx) | 2 pages, 71 words; SHA-256 `643bf9bb…`, matches the deployed demo invoice |
+| [`invoice-page-1.png`](media/v013-wordweb/user-word-desktop/invoice-page-1.png) | Word desktop page 1: logo present |
+| [`invoice-page-2.png`](media/v013-wordweb/user-word-desktop/invoice-page-2.png) | Word desktop page 2: no logo; company name/VAT header and footer intact |
+| [`manifest.json`](media/v013-wordweb/user-word-desktop/manifest.json) | Checklist and hashes; `word_for_the_web: false` |
+
+This is valuable independent **Word desktop** rendering evidence, but it is **not
+Word for the web**: the screenshots show the Microsoft Word desktop ribbon and
+status bar, with no browser URL or Word Web PDF. V013-06 therefore remains
+**not performed** until Word Web evidence is supplied. The separate Word desktop
+observation does not change the Docentric AX `not_tested` status.
+
 ## Local candidate evidence (not Word Web)
 
 A synthetic 3-page invoice kit is committed under

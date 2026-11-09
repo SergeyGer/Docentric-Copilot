@@ -1,41 +1,41 @@
 # demo narration
 
-## 1. Docentric Copilot v0.13.0 (20.5s)
+## 1. A brief is not a document. (22.4s)
 
-Docentric Copilot turns a business brief and a data source into a generic Word document. The planner proposes the structure. Deterministic code validates, compiles and reports evidence. Docentric AX runtime compatibility is not tested, and this video is a draft production asset.
+A business brief looks simple: a logo, customer and supplier details, line items, totals, payment terms. The hard part is turning it into a Word document that survives the real file. The logo must stay on the first page. Later pages need the company identity, but not the logo again. And every number must come from the right field.
 
-## 2. From brief to schema (15.0s)
+## 2. Start with evidence, not a blank prompt. (15.1s)
 
-Start with a real DDSP package. The inspector exposes fields, collections and sample data. The brief is split into typed requirements, and the planner receives only bounded, evidence-backed candidates.
+Here is the same brief in the live demo. The data source is a DDSP package: typed fields, collections and sample values. The planner is not allowed to invent a field. It can only choose from schema evidence.
 
-## 3. Review before compile (14.1s)
+## 3. The schema is the source of truth. (17.6s)
 
-The mapping review shows what is confirmed, schema-valid, ambiguous or missing. A reviewer can confirm the correct field; the confirmation is preserved and the document compiles only when no blocking mapping remains.
+The schema is the source of truth. Fields have types, collections have scope, and sample data shows how values are shaped. The planner can search those candidates, but the resolver decides whether a path is legal. That is why a confident sentence cannot become a wrong binding.
 
-## 4. Three deterministic steps (19.1s)
+## 4. The brief becomes typed requirements. (13.4s)
 
-The workflow has three steps. First, understand the brief and the available schema evidence. Second, let a person review ambiguous mappings. Third, validate the typed template and compile the DOCX. The model never writes OOXML directly.
+Generate the document and the brief becomes concrete requirements. Each requirement points to a candidate field, with its type and scope visible. That is the difference between a prompt and a reviewable plan.
 
-## 5. Preview and DOCX (14.0s)
+## 5. Every binding is visible. (16.8s)
 
-The preview is built from the same Template IR as the DOCX. The live demo now exposes the download button after confirmation and records the artifact hash, fixing the earlier Sales Quotation flow.
+The mapping review separates confirmed bindings from ambiguous or missing ones. When a choice is ambiguous, a reviewer can confirm the correct field. The decision is recorded, and a blocking mapping stops compilation. Nothing silently falls through.
 
-## 6. First-page header only (15.4s)
+## 6. One structure, two outputs. (14.2s)
 
-Template IR 1.2 adds a first-page header. The compiler writes a real title-page header part. Page one carries the logo, later pages keep the company identity without it, and footer page numbers remain intact.
+The preview and the Word file are built from the same template structure, so headers and layout follow the same rules. When the mapping is ready, download the document. The demo also records the artifact hash for verification.
 
-## 7. What v0.13 adds (17.5s)
+## 7. The download is evidence, not a trick. (16.1s)
 
-Version zero thirteen adds the image family, conservative reference table inference and first-page headers. It also turns IR sections into real Word sections, fixes the live demo confirmation flow, and adds honest evidence for every remaining limitation.
+The demo does not stop at pixels. Downloading the file records its size and SHA-256. The same hash is reproduced by the deterministic local build, so a reviewer can verify that the demo and the evidence describe the same artifact.
 
-## 8. Images and tables (18.3s)
+## 8. The logo stays on page one. (12.5s)
 
-The image family supports static assets, schema images, image collections and fallback policy. Reference table inference produces header and repeated rows, optional cells, footer rows and nested repeat structures, with explicit diagnostics for ambiguous shapes.
+Open the result in Word. The logo appears only on the first page. The invoice number, customer and supplier details, items and totals are all there, and the table stays aligned.
 
-## 9. Benchmark and reference evidence (20.9s)
+## 9. Later pages keep the identity, not the logo. (12.2s)
 
-The final benchmark records two hundred eighty-eight planned runs, with ten Gemini structured-output failures separated from semantics. Precision is zero point nine five one, semantic pass is ninety-eight point five six percent, and the reference evaluation classifies every observed table, including deliberate refusals.
+Page two keeps the company name and VAT in the header, without repeating the logo. The footer keeps its page numbers. That is the first-page header rule working in a real document.
 
-## 10. Honest limits (17.5s)
+## 10. The brief became a checked document. (16.3s)
 
-Word for the web validation still requires a human with Microsoft 365. These videos are drafts without human review or YouTube publication. AT-07 remains partial, and Docentric AX runtime compatibility remains not tested.
+The brief became a typed plan, the plan became a validated document, and every binding has evidence. The same pipeline covers quotations, invoices and purchase orders. Docentric Copilot is a narrow AI boundary around a deterministic document engine.

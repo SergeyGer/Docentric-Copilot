@@ -1,19 +1,45 @@
 {
-  "schema": "v013-video-kit/v1",
-  "status": "draft_production_kit",
+  "schema": "v013-video-kit/v2",
+  "status": "publish_ready_draft",
   "human_review": false,
   "youtube_published": false,
-  "voice": "en-US-AriaNeural",
+  "voice": "en-US-GuyNeural",
   "fps": 30,
   "resolution": "1920x1080",
+  "narration_rule": "No spoken version numbers, no bullet-point narration.",
+  "content_rules": {
+    "spoken_version_numbers": false,
+    "on_screen_version_numbers": false,
+    "bullet_slides": false,
+    "real_ui_screenshots": true,
+    "wiki_mermaid_diagrams": true
+  },
+  "diagrams": [
+    "docs/media/diagrams/architecture-data-flow.png",
+    "docs/media/diagrams/request-lifecycle.png",
+    "docs/media/diagrams/template-ir-contract.png",
+    "docs/media/diagrams/validation-ladder.png",
+    "docs/media/diagrams/planning-path.png",
+    "docs/media/diagrams/compilation-path.png",
+    "docs/media/diagrams/ir-block-taxonomy.png",
+    "docs/media/diagrams/validation-blocking.png",
+    "docs/media/diagrams/validation-compatibility.png",
+    "docs/media/diagrams/ir-document-structure.png"
+  ],
+  "diagram_sources": [
+    "docs/wiki/Architecture.md"
+  ],
+  "word_desktop_evidence": "docs/media/v013-wordweb/user-word-desktop/manifest.json",
+  "word_web_pending": true,
   "product": {
     "name": "demo",
     "mp4": "docs/media/demo-v013.mp4",
     "srt": "docs/media/demo-v013.srt",
     "narration": "docs/media/demo-v013-narration.md",
-    "duration_seconds": 172.39,
-    "sha256": "4b21a5b4ca87d19ef881f46bba62f092d93904132c3054bb5f6656227faa0ff1",
-    "bytes": 5102155,
+    "thumbnail": "docs/media/demo-v013-thumb.png",
+    "duration_seconds": 156.5,
+    "sha256": "415790e4fb371d4465c7490a991eb5e583792748e507e0e3bc3418d7fabcfa9e",
+    "bytes": 30834460,
     "probe": {
       "programs": [],
       "streams": [
@@ -31,7 +57,7 @@
         }
       ],
       "format": {
-        "duration": "172.369336"
+        "duration": "156.492000"
       }
     }
   },
@@ -40,9 +66,10 @@
     "mp4": "docs/media/technical-v013.mp4",
     "srt": "docs/media/technical-v013.srt",
     "narration": "docs/media/technical-v013-narration.md",
-    "duration_seconds": 318.55,
-    "sha256": "b9293fb5192514fc9513d764916ab2c68a9ea607c0a2ac0efb6374ff89e9af93",
-    "bytes": 8815462,
+    "thumbnail": "docs/media/technical-v013-thumb.png",
+    "duration_seconds": 311.21,
+    "sha256": "c529c59f2780fe2dedb369a1b20d14c07b291a8697ee8435e1fb9e61e008713e",
+    "bytes": 47753134,
     "probe": {
       "programs": [],
       "streams": [
@@ -60,13 +87,13 @@
         }
       ],
       "format": {
-        "duration": "318.474667"
+        "duration": "311.106667"
       }
     }
   },
   "limitations": [
-    "Draft assets; no human review and no YouTube publication.",
-    "Product Demo uses deployed-demo screenshots and LibreOffice page evidence; Word for the web is still pending.",
-    "No Docentric AX runtime claim; AT-07 remains partial."
+    "Draft for maintainer review; no YouTube publication.",
+    "Word for the web remains an external manual step; the Word desktop check is separate.",
+    "No Docentric AX runtime claim."
   ]
 }

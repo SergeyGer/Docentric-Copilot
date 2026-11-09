@@ -8,8 +8,8 @@
 | Field | Value |
 | --- | --- |
 | Current release | **v0.13.1** released — [v0.13.1 evidence](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/RELEASE_EVIDENCE_V0_13_1.md) |
-| Status | v0.13 released; Word Web and videos Deferred (external access) |
-| Open issues | 9 (5 backlog + #37/#40 + #53 Word Web + #54 videos) |
+| Status | v0.13 released; #53 closed on Word desktop; both videos published |
+| Open issues | 6 (backlog #12/#13/#14/#15/#17 + benchmark #37) |
 | Honest status | [Honest Status](Honest-Status) |
 
 ## Milestones
@@ -38,15 +38,15 @@ Full evidence and gaps: [Release Evidence v0.13](https://github.com/SergeyGer/Do
 | V013-03 | Reference-to-IR table inference | **Passed** | Header/repeated rows, optional/footer cells, nested repeat |
 | V013-04 | First-page header | **Passed** — real Word sections, inheritance and per-section first pages | — |
 | V013-05 | Reference Evaluation | **Passed** | — |
-| V013-06 | Word for the web | **Deferred** | [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) |
+| V013-06 | Word for the web | **Closed by maintainer decision** — Word desktop accepted | [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) closed |
 | V013-07 | Live Demo reliability/UX | **Passed** | — |
 | V013-08 | Final quality benchmark | **Passed** — 278/288 completed, 274 semantic passes | — |
-| V013-09 | Product Demo video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
-| V013-10 | Technical video | **Deferred** | [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) |
+| V013-09 | Product Demo video | **Passed — published on YouTube** | [watch](https://youtu.be/HZcP_lrjcrw) |
+| V013-10 | Technical video | **Passed — published on GitHub** | [video](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) |
 
 The audit follow-up is tracked in
 [Open Tasks v0.13](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/OPEN_TASKS_V013.md):
-Word Web and videos remain P0 external blockers; T-04/T-05/T-06 are classified P1 diagnostics.
+[#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) and [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) are closed; T-04/T-05/T-06 are classified P1 diagnostics.
 
 ## v0.12 — previous released status
 
@@ -59,7 +59,7 @@ Full evidence and limitations: [Release Evidence v0.12](https://github.com/Serge
 | V012-03 | Image-family expansion | **Deferred** to v0.13 | [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) open |
 | V012-04 | D365 real-corpus regression | **Passed** | [#38](https://github.com/SergeyGer/Docentric-Copilot/issues/38) closed |
 | V012-05 | Gemini nested table / Anthropic Repeat alias | **Passed** | [#39](https://github.com/SergeyGer/Docentric-Copilot/issues/39) closed |
-| V012-06 | Reference → IR table inference | **Deferred** to v0.13 | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) open |
+| V012-06 | Reference → IR table inference | **Delivered in v0.13** | [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) closed |
 | V012-07 | Real LibreOffice/Poppler Visual CI | **Passed** | [#41](https://github.com/SergeyGer/Docentric-Copilot/issues/41) closed |
 | V012-08 | Playwright E2E | **Passed** | [#42](https://github.com/SergeyGer/Docentric-Copilot/issues/42) closed |
 | V012-09 | Report retention/deletion | **Passed** | [#43](https://github.com/SergeyGer/Docentric-Copilot/issues/43) closed |
@@ -80,9 +80,7 @@ Open issues are listed in ascending number. “Planned” means no release targe
 | [#15](https://github.com/SergeyGer/Docentric-Copilot/issues/15) | Line-item product images | Quality | Open — planned (P2) |
 | [#17](https://github.com/SergeyGer/Docentric-Copilot/issues/17) | Streamlit demo: upload your own DDSP | Demo | Open — planned (P3) |
 | [#37](https://github.com/SergeyGer/Docentric-Copilot/issues/37) | Image-family benchmark expansion | Benchmark | **Partial** in v0.13; benchmark expansion open |
-| [#40](https://github.com/SergeyGer/Docentric-Copilot/issues/40) | Reference-to-IR table inference and diagnostics | Reference | **Partial** in v0.13; edge cases open |
-| [#53](https://github.com/SergeyGer/Docentric-Copilot/issues/53) | Word for the web targeted validation | Validation | **Deferred** — no Microsoft 365 access |
-| [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) | Product/technical videos | Docs | **Deferred** — no production/YouTube session |
+
 
 ### Deferred from v0.12 — target v0.13
 
@@ -90,7 +88,7 @@ Open issues are listed in ascending number. “Planned” means no release targe
   adding cases would invalidate that artifact. v0.13 scope: company logo, product image with
   row/collection context, image collection, optional image, missing image, wrong-type decoy,
   static-asset vs dynamic-binding distinction, abstention instead of a false binding, subtype scorecard.
-- **#40 Reference-to-IR table inference.** v0.12 deliberately keeps Table/Row/Cell material in
+- **#40 Reference-to-IR table inference.** Delivered in v0.13; the issue is closed. The v0.12 note said Table/Row/Cell material was kept in
   `skipped[]` and does not claim table inference. v0.13 scope: Table/Row/Cell boundaries, header vs
   repeated rows, Repeat bound to collection scope with schema evidence, provenance, strict mode for
   ambiguous structure, best-effort diagnostics, and fixtures for simple/header+nested/empty tables.
@@ -142,7 +140,7 @@ Kubernetes without a measured need.
 ## How this page stays in sync
 
 - **GitHub Issues is authoritative.** This page was checked against the tracker on **2026-11-06**:
-  9 open issues (#12, #13, #14, #15, #17, #37, #40, #53, #54) and the closed v0.12/v0.11 items above.
+  6 open issues (#12, #13, #14, #15, #17, #37) and the closed v0.12/v0.11/v0.13 items above.
 - On every release and on every issue open/close/retarget, update this page and the repository copy
   [`docs/wiki/Roadmap.md`](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/wiki/Roadmap.md)
   in the same pull request, then publish with `python scripts/sync_wiki.py --push`.

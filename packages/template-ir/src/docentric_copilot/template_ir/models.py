@@ -189,9 +189,11 @@ class Expression(StrictModel):
                     raise ValueError(f"operator '{op.value}' requires a value")
                 if op is ExpressionOperator.CONTAINS and not isinstance(self.value, str):
                     raise ValueError("operator 'contains' requires a string value")
-            elif op in {ExpressionOperator.NOT_NULL, ExpressionOperator.IS_NULL}:
-                if self.value is not None:
-                    raise ValueError(f"operator '{op.value}' must not carry a value")
+            elif (
+                op in {ExpressionOperator.NOT_NULL, ExpressionOperator.IS_NULL}
+                and self.value is not None
+            ):
+                raise ValueError(f"operator '{op.value}' must not carry a value")
         if _expression_depth(self) > MAX_EXPRESSION_DEPTH:
             raise ValueError(f"expression nesting exceeds {MAX_EXPRESSION_DEPTH} levels")
         return self

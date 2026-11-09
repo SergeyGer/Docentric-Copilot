@@ -1,15 +1,15 @@
 {
   "schema": "demo-smoke/v1",
   "verification_scope": "local AppTest + deployed Streamlit Playwright verification",
-  "verified_at": "2026-11-08T16:20:28Z",
-  "application_version": "0.13.0",
-  "git_commit": "72f455ced556",
+  "verified_at": "2026-11-09T14:50:00Z",
+  "application_version": "0.13.1",
+  "git_commit": "3d1c85885764",
   "working_tree_dirty": false,
   "template_ir": "1.2",
   "provider": "mock",
   "execution_mode": "Deterministic Demo",
   "deployed_url": "https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app",
-  "deployed_url_status": "HTTP 303 to Streamlit Cloud auth; interactive check unavailable in this environment",
+  "deployed_url_status": "Verified current deployment: v0.13.1, commit 3d1c85885764",
   "metadata_panel": "Application: v0.13.0\nGit Commit: 72f455ced556\nTemplate IR: 1.2\nProvider: mock\nModel: heuristic-baseline-v1\nExecution Mode: Deterministic Demo\nBuild: 2026-11-08T16:20:27Z\nCompatibility: Not tested with Docentric AX Runtime",
   "scenarios": [
     {
@@ -49,46 +49,22 @@
     }
   ],
   "deployed_verification": {
-    "verified_at": "2026-11-08T16:24:00Z",
+    "verified_at": "2026-11-09T14:50:00Z",
     "url": "https://docentric-copilot-bqpx8652tmmliwk9c2d5rq.streamlit.app",
-    "application_version": "0.13.0",
-    "git_commit": "1cbe073239f6",
+    "application_version": "0.13.1",
+    "git_commit": "3d1c85885764",
     "template_ir": "1.2",
     "provider": "mock",
     "model": "heuristic-baseline-v1",
     "execution_mode": "Deterministic Demo",
-    "build": "2026-11-08T16:16:44Z",
-    "scenarios": [
-      {
-        "case_id": "quotation",
-        "title": "Sales quotation",
-        "download_available": true,
-        "docx_size_bytes": 41911,
-        "docx_sha256": "22d69712d2d1bfbef765caa98ba5f2207728310efffd704139cb5347e4f470dd",
-        "screenshot": "media/v013-demo/deployed-quotation.png"
-      },
-      {
-        "case_id": "invoice",
-        "title": "Tax invoice",
-        "download_available": true,
-        "docx_size_bytes": 41660,
-        "docx_sha256": "643bf9bbe95733ceece260120cb47094c442f855745b4078d9fde0e294f43c0f",
-        "screenshot": "media/v013-demo/deployed-invoice.png"
-      },
-      {
-        "case_id": "purchase-order",
-        "title": "Purchase order",
-        "download_available": true,
-        "docx_size_bytes": 41501,
-        "docx_sha256": "9c509595dc98784aea8ca9af4285d1172cca1310298a281c49e7b5152ca5561c",
-        "screenshot": "media/v013-demo/deployed-purchase-order.png"
-      }
-    ],
-    "screenshots": [
-      "media/v013-demo/deployed-quotation.png",
-      "media/v013-demo/deployed-invoice.png",
-      "media/v013-demo/deployed-purchase-order.png"
-    ],
-    "note": "The deployed app runs main commit 1cbe073 (post-v0.13.0 diagnostic merge), version 0.13.0. It was woken from Streamlit sleep and exercised in Chromium; downloaded DOCX hashes match the local deterministic build."
+    "build": "2026-11-09T14:49:07Z",
+    "current_check": true,
+    "invoice_download": {
+      "docx_size_bytes": 41660,
+      "docx_sha256": "643bf9bbe95733ceece260120cb47094c442f855745b4078d9fde0e294f43c0f",
+      "path": "media/v013-demo/invoice-current.docx"
+    },
+    "screenshot": "media/v013-demo/streamlit-current.png",
+    "note": "Current Streamlit Cloud deployment woken and checked with Playwright: metadata shows v0.13.1 / commit 3d1c858 / IR 1.2; the invoice Download DOCX works and the hash matches the deterministic local artifact."
   }
 }

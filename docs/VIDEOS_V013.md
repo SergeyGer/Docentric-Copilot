@@ -1,15 +1,15 @@
 # Demo videos — v0.13 production status
 
-**Status: publish-ready drafts (2:58 and 5:11), not reviewed or published.**
+**Status: published.** Product Demo on YouTube; Technical Deep-Dive on GitHub.
 
 | Video | Target | Draft | Publication |
 | --- | --- | --- | --- |
-| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:58** | Awaiting human review and the maintainer's YouTube upload |
-| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + SRT | **5:11** | Same |
+| Product Demo | 2:30–3:00, 1080p, English voiceover + SRT | **2:58** | [YouTube](https://youtu.be/HZcP_lrjcrw) |
+| Technical Deep-Dive | 5–7 min, 1080p, English voiceover + SRT | **5:11** | [GitHub](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) |
 
-The maintainer will publish both videos to YouTube and provide the links. This
-repository prepares the encoded assets, narration, SRT and thumbnails; it does
-not perform the upload.
+The Product Demo is published on YouTube. The Technical Deep-Dive was not
+uploaded to YouTube at the maintainer's request; the GitHub media file is the
+canonical link.
 
 ## Content rules applied
 
@@ -120,12 +120,14 @@ a separate insert; it is not claimed to be part of the 2:58 cut.
 - Every shown number comes from a committed generated artifact.
 - No compatibility claim beyond the evidence.
 
-## Publication gate
+## Publication
 
-The drafts are ready for the maintainer's review. T-02/T-03 become **Passed** only
-after a human watches them end-to-end and the YouTube links are recorded in the
-README, release notes and issue [#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54).
-The manifest records `human_review: false` and `youtube_published: false`.
+- **Product Demo:** https://youtu.be/HZcP_lrjcrw
+- **Technical Deep-Dive:** https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4
+
+T-02/T-03 are **Passed** on these links. Issue
+[#54](https://github.com/SergeyGer/Docentric-Copilot/issues/54) is closed. The
+technical cut is not a YouTube upload; it is published as a repository media file.
 
 Word for the web itself remains untested; #53 was closed by the maintainer on
 the supplied Word desktop evidence.

@@ -108,9 +108,9 @@ therefore contains:
 
 - `docs/media/v013-wordweb/user-word-desktop/` — Word **desktop** evidence,
   explicitly not Word for the web;
-- reworked publish-ready video drafts in `docs/media/demo-v013.mp4` and
-  `technical-v013.mp4`, with SRTs, thumbnails and no spoken/on-screen version
-  numbers;
+- published videos: [Product Demo](https://youtu.be/HZcP_lrjcrw) on YouTube and
+  [Technical Deep-Dive](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4)
+  on GitHub, with SRTs, thumbnails and no spoken/on-screen version numbers;
 - Mermaid diagrams rendered from `docs/wiki/Architecture.md` and charts built
   from the committed benchmark/reference JSON.
 

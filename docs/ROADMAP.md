@@ -218,20 +218,20 @@ weakening the compatibility gate. Evidence:
 | V013-03 | Reference-to-IR table inference | **Passed** | Header/repeated rows, optional cells, footer rows, static/nested tables and nested repeat under the outer row |
 | V013-04 | First-page header | **Passed** | `titlePg` + first-page header parts + preview; real Word sections, inheritance and per-section first pages tested |
 | V013-05 | Reference Evaluation | **Passed** | [REFERENCE_EVALUATION_V013](REFERENCE_EVALUATION_V013.md) |
-| V013-06 | Word for the web validation | **Deferred** | Issue #53; no Microsoft 365/OneDrive access |
+| V013-06 | Word for the web validation | **Closed by maintainer decision** | Word desktop check accepted; Word Web itself not performed; #53 closed |
 | V013-07 | Live Demo reliability/UX | **Passed** | Version panel, confirmation state, download regression |
 | V013-08 | Final quality benchmark | **Passed** | [BENCHMARKS §11](BENCHMARKS.md#11-v013-full-benchmark-v013-08); 288 planned, 278 completed, 10 technical, 274 semantic passes |
-| V013-09 | Product demo video | **Deferred** | Issue #54; no production/publishing pipeline in this environment |
-| V013-10 | Technical deep-dive video | **Deferred** | Issue #54 |
+| V013-09 | Product demo video | **Passed — published** | [YouTube](https://youtu.be/HZcP_lrjcrw) · 2:58 |
+| V013-10 | Technical deep-dive video | **Passed — published** | [GitHub](https://github.com/SergeyGer/Docentric-Copilot/blob/main/docs/media/technical-v013.mp4) · 5:11 |
 
-V013-06 and the videos remain Deferred; they are documented as external
+The videos are published and #53 is closed on the accepted Word desktop check;
 dependencies, not passes. The branch is an implementation candidate, not
 a claim that all P0 acceptance criteria are met.
 
 ## v0.13 open-task closure
 
 The audit follow-up is tracked in [OPEN_TASKS_V013](OPEN_TASKS_V013.md): T-01
-Word Web and T-02/T-03 videos remain P0 external blockers; T-04/T-05/T-06 are
+No P0 items remain; T-04/T-05/T-06 are
 classified P1 diagnostics; T-07 is complete; T-08 has local smoke evidence but
 the deployed Streamlit revision could not be verified headlessly.
 

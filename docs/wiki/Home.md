@@ -67,7 +67,7 @@ No Microsoft Word. No template designer session. No Dynamics 365 environment.
 | | |
 | --- | --- |
 | Licence | Apache-2.0 |
-| Language | Python 3.12 · TypeScript (Next.js 15) |
+| Language | Python 3.12 · TypeScript (Next.js 16) |
 | Interfaces | Web workspace · CLI · REST API |
 | Data formats | DDSP (ZIP + XML), XML, XSD → DOCX (OOXML) |
 | AI providers | OpenAI · Anthropic · Google Gemini · deterministic offline baseline |

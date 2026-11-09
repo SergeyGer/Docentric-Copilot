@@ -9,10 +9,11 @@
 | Tag | `v0.13.0` |
 | Compatibility | Docentric AX runtime **`not_tested`**; AT-07 **`partial`** |
 
-> V013-01…V013-05, V013-07 and V013-08 are Passed. V013-06 (Word for the web) and
-> V013-09/V013-10 (videos) are Deferred because the required external access and
-> production session are not available in this environment; they are not reported
-> as passed. See the honest status table below.
+> At the v0.13.0 tag, V013-01…V013-05, V013-07 and V013-08 were Passed; V013-06
+> (Word for the web) and V013-09/V013-10 (videos) were Deferred. Post-release
+> closure is recorded in [RELEASE_EVIDENCE_V0_13_1](RELEASE_EVIDENCE_V0_13_1.md):
+> #53 closed on the accepted Word desktop check; both videos published (#54).
+> This page remains the historical v0.13.0 record.
 
 ## 1. What was implemented
 
